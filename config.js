@@ -27,7 +27,7 @@
 
   // --- DATOS PERSONALES (EDITA AQUÍ) ---
   const config = {
-    nombreCompleto: "Lic. Pedro Ignacio Schwindt",
+    nombreCompleto: "Subprefecto Lic. Pedro Ignacio Schwindt",
     cargo: "Director U.P. N° 7 Gualeguay",
     empresa: "S.P.E.R.",
 
@@ -41,24 +41,27 @@
     email: "ignacio2820@gmail.com",
     emailInstitucional: "Secretariaup7@sper.gob.ar",
 
-    /** Usuario sin @ o URL completa */
-    instagram: "sericiopenitenciario.er",
+    /** Botón Instagram → perfil oficial (incluye ?igsh=…) */
+    instagram: "https://www.instagram.com/serviciopenitenciario.er?igsh=bHlpOTJzam4xZnBv",
     /** Slug del perfil o URL completa */
     linkedin: "ignacio-schwindt-82138517b",
 
-    /** Enlace Google Maps (o deja vacío y usa mapsUrl abajo) */
+    /**
+     * Solo botón «Dirección / mapa» (coordenadas). No mezclar con sitioWeb.
+     */
     direccion:
       "https://www.google.com/maps/search/?api=1&query=-33.1468333,-59.3057778",
 
     fotoPerfil: "perfil.jpg",
     logo: "logo-sper.jpg",
 
-    sitioWeb: "https://portal.entrerios.gov.ar",
+    /** Solo botón web (portal). Las coordenadas van en `direccion`. */
+    sitioWeb: "https://portal.entrerios.gov.ar/seguridadyjusticia/penitenciario/pf/establecimiento/2527",
     direccionTexto: "33°08'48.6\"S 59°18'20.8\"W",
 
     bio: "",
 
-    tituloPagina: "Lic. Pedro Ignacio Schwindt — Tarjeta digital",
+    tituloPagina: "Subprefecto Lic. Pedro Ignacio Schwindt — Tarjeta digital",
     metaDescription: "Contacto — S.P.E.R.",
   };
 
@@ -67,6 +70,7 @@
   window.CARD_CONFIG = Object.assign({}, config, {
     whatsappNumero: digits(config.whatsappNumero || config.whatsapp),
     instagram: igUrl(config.instagram),
+    sitioWeb: String(config.sitioWeb || "").trim(),
     linkedin: liUrl(config.linkedin),
     mapsUrl: maps,
     organizacion:

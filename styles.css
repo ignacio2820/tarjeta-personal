@@ -12,14 +12,35 @@
 }
 
 html {
-  background: var(--lux-black);
+  height: 100%;
+  background: radial-gradient(
+    ellipse 120% 90% at 50% 20%,
+    #1a1610 0%,
+    #0a0908 50%,
+    #000000 100%
+  );
+  background-color: var(--lux-black);
 }
 
 body.luxury-body {
+  min-height: 100%;
+  min-height: 100dvh;
+  margin: 0;
   font-family: var(--font-lux);
-  background: var(--lux-black);
+  background: transparent;
   color: var(--lux-ivory);
   -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+}
+
+/* Ocupa todo el alto útil cuando el navegador oculta barras o en modo app */
+.app-shell {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  /* 9:16 respecto al alto de ventana; fallback vh por si dvh falla en escritorio */
+  max-width: min(100vw, 56.25vh);
+  max-width: min(100vw, 56.25dvh);
 }
 
 /* Contenedor del avatar: equilibrado, sin “placa” */
@@ -29,26 +50,26 @@ body.luxury-body {
   justify-content: center;
 }
 
-/* Halo muy sutil (opcional, estilo referencia limpia) */
+/* Halo suave — rectángulo redondeado tipo iPhone */
 .avatar-led-halo {
   position: absolute;
   left: 50%;
   top: 50%;
   z-index: 0;
-  width: 112%;
-  height: 112%;
+  width: 106%;
+  height: 106%;
   transform: translate(-50%, -50%);
-  border-radius: 50%;
+  border-radius: 1.6875rem;
   pointer-events: none;
   background: radial-gradient(
-    circle,
-    rgba(191, 149, 63, 0.12) 0%,
-    transparent 72%
+    ellipse at center,
+    rgba(191, 149, 63, 0.14) 0%,
+    transparent 70%
   );
-  filter: blur(10px);
+  filter: blur(12px);
 }
 
-/* Anillo dorado fino tipo sello circular */
+/* Marco dorado fino — esquinas redondeadas */
 .avatar-gold-ring {
   position: relative;
   z-index: 1;
@@ -57,7 +78,7 @@ body.luxury-body {
   align-items: center;
   justify-content: center;
   padding: 2px;
-  border-radius: 50%;
+  border-radius: 1.5625rem;
   background: linear-gradient(
     140deg,
     var(--lux-gold-c) 0%,
@@ -72,32 +93,24 @@ body.luxury-body {
 }
 
 /**
- * Círculo perfecto: misma anchura y altura, aspect-ratio 1,
- * sin estiramientos del flex padre.
+ * Retrato estilo iPhone: 4:5, esquinas suaves, sin deformar la imagen.
  */
 .avatar-inner {
   position: relative;
-  width: 8.75rem;
-  height: 8.75rem;
-  min-width: 8.75rem;
-  min-height: 8.75rem;
-  max-width: 8.75rem;
-  max-height: 8.75rem;
-  aspect-ratio: 1 / 1;
+  width: min(8.75rem, 78vw);
+  aspect-ratio: 4 / 5;
   flex-shrink: 0;
-  border-radius: 50%;
+  border-radius: 1.5rem;
   overflow: hidden;
   background: #0a0a0a;
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(191, 149, 63, 0.12);
 }
 
 @media (min-width: 640px) {
   .avatar-inner {
-    width: 9.5rem;
-    height: 9.5rem;
-    min-width: 9.5rem;
-    min-height: 9.5rem;
-    max-width: 9.5rem;
-    max-height: 9.5rem;
+    width: min(9.5rem, 72vw);
   }
 }
 
@@ -107,6 +120,7 @@ body.luxury-body {
   height: 100%;
   object-fit: cover;
   object-position: center center;
+  image-rendering: auto;
 }
 
 /* Cabecera */
@@ -114,14 +128,16 @@ body.luxury-body {
   color: var(--lux-ivory);
   font-weight: 700;
   letter-spacing: 0.01em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
 }
 
 .led-sub {
-  color: var(--lux-silk);
+  color: #c8c8c8;
   font-weight: 400;
   font-size: 0.8125rem;
   line-height: 1.55;
   letter-spacing: 0.02em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75);
 }
 
 @media (min-width: 640px) {
@@ -333,5 +349,137 @@ body.luxury-body {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  .preloader-y-spin,
+  .preloader-shine,
+  .preloader-logo-img {
+    animation: none !important;
+  }
+}
+
+/* ——— Preloader PWA ——— */
+body.preloader-active {
+  overflow: hidden;
+}
+
+#preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(
+    ellipse 130% 100% at 50% 30%,
+    #252018 0%,
+    #12100c 42%,
+    #030302 100%
+  );
+  background-color: #050403;
+  transition: opacity 0.75s ease, visibility 0.75s ease;
+}
+
+#preloader.preloader--hide {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+#preloader.preloader--done {
+  display: none;
+}
+
+.preloader-scene {
+  perspective: 920px;
+  perspective-origin: 50% 45%;
+}
+
+.preloader-y-spin {
+  transform-style: preserve-3d;
+  animation: preloader-spin-y 3.2s linear infinite;
+}
+
+@keyframes preloader-spin-y {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
+}
+
+.preloader-logo-wrap {
+  position: relative;
+  width: 4.55rem;
+  height: 4.55rem;
+  transform-style: preserve-3d;
+}
+
+@media (min-width: 400px) {
+  .preloader-logo-wrap {
+    width: 5.25rem;
+    height: 5.25rem;
+  }
+}
+
+.preloader-logo-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 0.875rem;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(191, 149, 63, 0.25);
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
+  animation: preloader-logo-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes preloader-logo-pulse {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.12) drop-shadow(0 0 18px rgba(191, 149, 63, 0.35));
+  }
+}
+
+.preloader-shine {
+  position: absolute;
+  inset: -2px;
+  border-radius: 1.2rem;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 38%,
+    rgba(252, 246, 186, 0.55) 48%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(191, 149, 63, 0.45) 52%,
+    transparent 65%,
+    transparent 100%
+  );
+  background-size: 220% 100%;
+  mix-blend-mode: overlay;
+  animation: preloader-shine-move 2.4s ease-in-out infinite;
+  opacity: 0.85;
+}
+
+@supports (mix-blend-mode: plus-lighter) {
+  .preloader-shine {
+    mix-blend-mode: plus-lighter;
+  }
+}
+
+@keyframes preloader-shine-move {
+  0% {
+    background-position: 130% 0;
+  }
+  100% {
+    background-position: -130% 0;
   }
 }
