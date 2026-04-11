@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Tarjeta digital</title>
+    <meta name="description" content="" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="luxury-body min-h-[100dvh] antialiased">
+    <div
+      id="app-root"
+      class="mx-auto flex min-h-[100dvh] w-full max-w-[min(100vw,calc(100dvh*9/16))] flex-col bg-black"
+    >
+      <header class="flex flex-col items-center px-5 pb-5 pt-9 text-center">
+        <div class="avatar-led-wrap reveal-item reveal-d1 mb-6">
+          <div class="avatar-led-halo" aria-hidden="true"></div>
+          <div class="avatar-gold-ring">
+            <div class="avatar-inner">
+              <img
+                id="avatar-img"
+                class="avatar-photo"
+                src=""
+                alt=""
+                width="152"
+                height="152"
+                decoding="async"
+              />
+            </div>
+          </div>
+        </div>
+        <h1
+          id="display-name"
+          class="led-name reveal-item reveal-d2 max-w-[20rem] px-1 text-lg font-bold leading-tight sm:text-[1.35rem]"
+        ></h1>
+        <p
+          id="display-role"
+          class="led-sub reveal-item reveal-d3 mt-2.5 max-w-[19rem]"
+        ></p>
+        <p
+          id="display-org"
+          class="led-sub reveal-item reveal-d4 mt-1 max-w-[19rem]"
+          hidden
+        ></p>
+        <p
+          id="display-bio"
+          class="led-sub reveal-item reveal-d5 mt-4 hidden max-w-sm leading-relaxed"
+        ></p>
+      </header>
+
+      <main
+        class="links-stagger flex flex-1 flex-col gap-3 px-4 pb-[7.5rem]"
+        id="links-container"
+      ></main>
+
+      <footer
+        class="footer-bar-light footer-reveal fixed bottom-0 left-0 right-0 z-20 flex justify-center px-2 pb-[max(0.45rem,env(safe-area-inset-bottom))] pt-1.5"
+      >
+        <div
+          class="flex w-full max-w-[min(100vw,calc(100dvh*9/16))] flex-col items-stretch"
+        >
+          <div
+            id="footer-seal-wrap"
+            class="footer-seal-wrap footer-seal-reveal mb-1.5 hidden-seal flex justify-center"
+          >
+            <div class="footer-seal-ring">
+              <img
+                id="footer-institutional-logo"
+                class="footer-seal-img"
+                src=""
+                alt=""
+                width="32"
+                height="32"
+                decoding="async"
+              />
+            </div>
+          </div>
+          <div class="flex items-stretch justify-stretch gap-0">
+            <button
+              type="button"
+              id="btn-vcard"
+              class="pill-action flex flex-1 items-center justify-center gap-2 border-r border-black/12 py-2.5"
+            >
+              <img
+                id="footer-avatar"
+                src=""
+                alt=""
+                class="footer-avatar-mini shrink-0"
+                width="22"
+                height="22"
+              />
+              <span class="footer-action-label">Guardar contacto</span>
+            </button>
+            <button
+              type="button"
+              id="btn-share"
+              class="pill-action flex flex-1 items-center justify-center gap-2 py-2.5"
+            >
+              <i
+                class="fa-solid fa-qrcode footer-icon-gold text-base sm:text-lg"
+                aria-hidden="true"
+              ></i>
+              <span class="footer-action-label">Compartir</span>
+            </button>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <div
+      id="toast"
+      class="pointer-events-none fixed bottom-24 left-1/2 z-30 hidden -translate-x-1/2 rounded-full border border-white/10 bg-zinc-900/95 px-4 py-2 text-xs text-zinc-200 shadow-lg"
+      role="status"
+    ></div>
+
+    <!-- Modal WhatsApp -->
+    <div
+      id="wa-modal"
+      class="fixed inset-0 z-50 hidden items-end justify-center bg-black/70 p-3 sm:items-center"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="wa-modal-title"
+    >
+      <div
+        class="max-h-[90dvh] w-full max-w-md overflow-y-auto rounded-2xl border border-neutral-700 bg-zinc-950 p-4 shadow-2xl"
+      >
+        <div class="mb-4 flex items-start justify-between gap-2">
+          <h2 id="wa-modal-title" class="text-lg font-bold text-white">
+            Contactame por WhatsApp
+          </h2>
+          <button
+            type="button"
+            id="wa-modal-close"
+            class="rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-white"
+            aria-label="Cerrar"
+          >
+            <i class="fa-solid fa-xmark text-lg" aria-hidden="true"></i>
+          </button>
+        </div>
+        <p class="mb-4 text-xs text-zinc-500">
+          Completá tus datos y se abrirá WhatsApp con el mensaje listo para enviar.
+        </p>
+        <div class="flex flex-col gap-3">
+          <label class="block">
+            <span class="mb-1 block text-xs font-medium text-zinc-400">Nombre</span>
+            <input
+              id="wa-nombre"
+              type="text"
+              autocomplete="given-name"
+              class="w-full rounded-xl border border-neutral-700 bg-black px-3 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-[#25D366] focus:outline-none"
+              placeholder="Nombre"
+            />
+          </label>
+          <label class="block">
+            <span class="mb-1 block text-xs font-medium text-zinc-400">Apellido</span>
+            <input
+              id="wa-apellido"
+              type="text"
+              autocomplete="family-name"
+              class="w-full rounded-xl border border-neutral-700 bg-black px-3 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-[#25D366] focus:outline-none"
+              placeholder="Apellido"
+            />
+          </label>
+          <label class="block">
+            <span class="mb-1 block text-xs font-medium text-zinc-400">Teléfono</span>
+            <input
+              id="wa-telefono"
+              type="tel"
+              autocomplete="tel"
+              inputmode="tel"
+              class="w-full rounded-xl border border-neutral-700 bg-black px-3 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-[#25D366] focus:outline-none"
+              placeholder="Tu número de contacto"
+            />
+          </label>
+          <label class="block">
+            <span class="mb-1 block text-xs font-medium text-zinc-400">Comentario</span>
+            <textarea
+              id="wa-comentario"
+              rows="3"
+              class="w-full resize-y rounded-xl border border-neutral-700 bg-black px-3 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-[#25D366] focus:outline-none"
+              placeholder="Escribí tu mensaje o consulta"
+            ></textarea>
+          </label>
+          <button
+            type="button"
+            id="wa-iniciar"
+            class="mt-2 flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] py-3.5 text-sm font-bold text-white transition hover:bg-[#20bd5a]"
+          >
+            <i class="fa-brands fa-whatsapp text-lg" aria-hidden="true"></i>
+            Iniciar WhatsApp
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fuerza generación de utilidades usadas solo desde JS (Tailwind CDN) -->
+    <span
+      class="hidden bg-[#25D366] bg-[#EA4335] bg-[#0A66C2] bg-[#34A853] bg-gradient-to-br from-[#f58529] via-[#dd2a7b] to-[#8134af]"
+      aria-hidden="true"
+    ></span>
+
+    <script src="config.js"></script>
+    <script>
+      (function () {
+        var cfg = window.CARD_CONFIG;
+        if (!cfg) {
+          console.error("CARD_CONFIG no está definido. Revisa config.js");
+          return;
+        }
+        if (typeof cfg.nombreCompleto === "undefined" && cfg.nombre) {
+          cfg.nombreCompleto = cfg.nombre;
+        }
+
+        function onlyDigits(s) {
+          return String(s || "").replace(/\D/g, "");
+        }
+
+        function buildVCard(c) {
+          var full = (c.nombreCompleto || c.nombre || "").trim();
+          var parts = full.split(/\s+/).filter(Boolean);
+          var family = parts.length > 1 ? parts[parts.length - 1] : full;
+          var given = parts.length > 1 ? parts.slice(0, -1).join(" ") : "";
+
+          var lines = [
+            "BEGIN:VCARD",
+            "VERSION:3.0",
+            "FN:" + escapeVCard(full),
+            "N:" + escapeVCard(family) + ";" + escapeVCard(given) + ";;;",
+          ];
+
+          if (c.telefono) {
+            lines.push(
+              "TEL;TYPE=VOICE:" + escapeVCard(String(c.telefono).trim())
+            );
+          }
+          if (c.email) {
+            lines.push("EMAIL;TYPE=INTERNET:" + escapeVCard(c.email));
+          }
+          if (c.emailInstitucional) {
+            lines.push(
+              "EMAIL;TYPE=WORK:" + escapeVCard(c.emailInstitucional)
+            );
+          }
+          var waDigits = onlyDigits(c.whatsappNumero || c.whatsapp);
+          if (waDigits) {
+            lines.push("TEL;TYPE=CELL:" + escapeVCard(waDigits));
+          }
+          var orgVcard = c.organizacion || c.empresa;
+          if (orgVcard) {
+            lines.push("ORG:" + escapeVCard(String(orgVcard).trim()));
+          }
+          if (c.cargo) {
+            lines.push("TITLE:" + escapeVCard(String(c.cargo).trim()));
+          }
+          if (c.sitioWeb) {
+            lines.push("URL:" + escapeVCard(c.sitioWeb));
+          }
+          if (c.linkedin) {
+            lines.push("URL;type=LinkedIn:" + escapeVCard(c.linkedin));
+          }
+          if (c.instagram) {
+            lines.push("URL;type=Instagram:" + escapeVCard(c.instagram));
+          }
+          if (c.direccionTexto) {
+            lines.push(
+              "ADR;TYPE=WORK:;;" + escapeVCard(c.direccionTexto) + ";;;;"
+            );
+          }
+          if (c.bio) {
+            lines.push("NOTE:" + escapeVCard(c.bio));
+          }
+
+          lines.push("END:VCARD");
+          return lines.join("\r\n");
+        }
+
+        function escapeVCard(text) {
+          return String(text || "")
+            .replace(/\\/g, "\\\\")
+            .replace(/\n/g, "\\n")
+            .replace(/;/g, "\\;")
+            .replace(/,/g, "\\,");
+        }
+
+        function downloadVCard() {
+          var body = buildVCard(cfg);
+          var blob = new Blob([body], { type: "text/vcard;charset=utf-8" });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement("a");
+          a.href = url;
+          a.download = "contacto.vcf";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }
+
+        function showToast(msg) {
+          var el = document.getElementById("toast");
+          if (!el) return;
+          el.textContent = msg;
+          el.classList.remove("hidden");
+          clearTimeout(showToast._t);
+          showToast._t = setTimeout(function () {
+            el.classList.add("hidden");
+          }, 2500);
+        }
+
+        async function shareCard() {
+          var url = window.location.href;
+          var nombreShare = String(
+            cfg.nombreCompleto || cfg.nombre || ""
+          ).trim();
+          var title =
+            cfg.tituloPagina || nombreShare || "Tarjeta digital";
+          var text =
+            (nombreShare ? nombreShare + " — " : "") +
+            (cfg.cargo || "Mi tarjeta de contacto");
+
+          if (navigator.share) {
+            try {
+              await navigator.share({ title: title, text: text, url: url });
+            } catch (e) {
+              if (e && e.name !== "AbortError") {
+                await copyFallback(url);
+              }
+            }
+          } else {
+            await copyFallback(url);
+          }
+        }
+
+        async function copyFallback(url) {
+          try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              await navigator.clipboard.writeText(url);
+              showToast("Enlace copiado al portapapeles");
+            } else {
+              window.prompt("Copia este enlace:", url);
+            }
+          } catch (err) {
+            window.prompt("Copia este enlace:", url);
+          }
+        }
+
+        function pill(href, label, iconClass, iconCircleClass) {
+          var a = document.createElement("a");
+          a.href = href;
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+          a.className =
+            "link-pill pill-action grid w-full grid-cols-[2.5rem_1fr_2.5rem] items-center overflow-hidden rounded-full border border-neutral-700 bg-black py-0.5 pl-0.5 pr-0.5 text-[0.8125rem] font-medium tracking-[0.06em] text-[#F5E1A4]";
+
+          var circle = document.createElement("span");
+          circle.className =
+            "pill-icon-disc flex shrink-0 items-center justify-center rounded-full " +
+            iconCircleClass;
+          var i = document.createElement("i");
+          i.className = iconClass + " text-white";
+          i.setAttribute("aria-hidden", "true");
+          circle.appendChild(i);
+
+          var labelEl = document.createElement("span");
+          labelEl.className = "col-start-2 justify-self-center text-center";
+          labelEl.textContent = label;
+
+          var spacer = document.createElement("span");
+          spacer.className = "col-start-3";
+          spacer.setAttribute("aria-hidden", "true");
+
+          a.appendChild(circle);
+          a.appendChild(labelEl);
+          a.appendChild(spacer);
+          return a;
+        }
+
+        function pillButton(label, iconClass, iconCircleClass, onClick) {
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className =
+            "link-pill pill-action grid w-full grid-cols-[2.5rem_1fr_2.5rem] items-center overflow-hidden rounded-full border border-neutral-700 bg-black py-0.5 pl-0.5 pr-0.5 text-[0.8125rem] font-medium tracking-[0.06em] text-[#F5E1A4]";
+          btn.addEventListener("click", onClick);
+
+          var circle = document.createElement("span");
+          circle.className =
+            "pill-icon-disc flex shrink-0 items-center justify-center rounded-full " +
+            iconCircleClass;
+          var i = document.createElement("i");
+          i.className = iconClass + " text-white";
+          i.setAttribute("aria-hidden", "true");
+          circle.appendChild(i);
+
+          var labelEl = document.createElement("span");
+          labelEl.className = "col-start-2 justify-self-center text-center";
+          labelEl.textContent = label;
+
+          var spacer = document.createElement("span");
+          spacer.className = "col-start-3";
+          spacer.setAttribute("aria-hidden", "true");
+
+          btn.appendChild(circle);
+          btn.appendChild(labelEl);
+          btn.appendChild(spacer);
+          return btn;
+        }
+
+        function openWaModal() {
+          var modal = document.getElementById("wa-modal");
+          if (!modal) return;
+          modal.classList.remove("hidden");
+          modal.classList.add("flex");
+          document.getElementById("wa-nombre").focus();
+        }
+
+        function closeWaModal() {
+          var modal = document.getElementById("wa-modal");
+          if (!modal) return;
+          modal.classList.add("hidden");
+          modal.classList.remove("flex");
+        }
+
+        function buildWhatsAppMessage() {
+          var nom = (document.getElementById("wa-nombre").value || "").trim();
+          var ape = (document.getElementById("wa-apellido").value || "").trim();
+          var tel = (document.getElementById("wa-telefono").value || "").trim();
+          var com = (document.getElementById("wa-comentario").value || "").trim();
+          var nombreForm = [nom, ape].filter(Boolean).join(" ");
+          var parts = [];
+          parts.push(
+            "Hola, soy " + (nombreForm || "[sin nombre]") + "."
+          );
+          parts.push("Mi teléfono: " + (tel || "—") + ".");
+          if (com) {
+            parts.push("");
+            parts.push("Comentario:");
+            parts.push(com);
+          }
+          return parts.join("\n");
+        }
+
+        function iniciarWhatsApp() {
+          var num = onlyDigits(cfg.whatsappNumero || cfg.whatsapp);
+          if (!num) {
+            showToast("Falta configurar el número de WhatsApp");
+            return;
+          }
+          var text = buildWhatsAppMessage();
+          var url =
+            "https://wa.me/" + num + "?text=" + encodeURIComponent(text);
+          window.open(url, "_blank", "noopener,noreferrer");
+          closeWaModal();
+        }
+
+        function initMeta() {
+          if (cfg.tituloPagina) {
+            document.title = cfg.tituloPagina;
+          } else {
+            var n = String(cfg.nombreCompleto || cfg.nombre || "").trim();
+            if (n) document.title = n + " — Tarjeta digital";
+          }
+          var meta = document.querySelector('meta[name="description"]');
+          if (meta && cfg.metaDescription) {
+            meta.setAttribute("content", cfg.metaDescription);
+          }
+        }
+
+        function initHeader() {
+          var nombre = String(cfg.nombreCompleto || cfg.nombre || "").trim();
+          var cargo = String(cfg.cargo || "").trim();
+          var empresaLine = String(cfg.empresa || cfg.organizacion || "").trim();
+
+          var avatar = document.getElementById("avatar-img");
+          avatar.src = cfg.fotoPerfil || "perfil.jpg";
+          avatar.alt = nombre || "Foto de perfil";
+
+          var nameEl = document.getElementById("display-name");
+          var roleEl = document.getElementById("display-role");
+          nameEl.textContent = nombre;
+          roleEl.textContent = cargo;
+
+          var orgEl = document.getElementById("display-org");
+          if (empresaLine) {
+            orgEl.textContent = empresaLine;
+            orgEl.removeAttribute("hidden");
+            orgEl.setAttribute("aria-hidden", "false");
+          } else {
+            orgEl.textContent = "";
+            orgEl.setAttribute("hidden", "");
+            orgEl.setAttribute("aria-hidden", "true");
+          }
+
+          var bioEl = document.getElementById("display-bio");
+          var bio = (cfg.bio || "").trim();
+          if (bio) {
+            bioEl.textContent = bio;
+            bioEl.classList.remove("hidden");
+          } else {
+            bioEl.textContent = "";
+            bioEl.classList.add("hidden");
+          }
+
+          var footImg = document.getElementById("footer-avatar");
+          footImg.src = cfg.fotoPerfil || "perfil.jpg";
+          footImg.alt = "";
+
+          var sealWrap = document.getElementById("footer-seal-wrap");
+          var sealImg = document.getElementById("footer-institutional-logo");
+          if (cfg.logo && sealImg && sealWrap) {
+            sealImg.src = cfg.logo;
+            sealImg.alt =
+              empresaLine ||
+              String(cfg.organizacion || cfg.empresa || "").trim() ||
+              "Institucional";
+            sealWrap.classList.remove("hidden-seal");
+          } else if (sealWrap) {
+            sealWrap.classList.add("hidden-seal");
+          }
+        }
+
+        function initLinks() {
+          var container = document.getElementById("links-container");
+
+          if (cfg.telefono) {
+            var telHref = "tel:" + cfg.telefono.replace(/\s/g, "");
+            container.appendChild(
+              pill(
+                telHref,
+                "Llámame",
+                "fa-solid fa-phone",
+                "bg-neutral-600"
+              )
+            );
+          }
+
+          var waNum = onlyDigits(cfg.whatsappNumero || cfg.whatsapp);
+          if (waNum) {
+            container.appendChild(
+              pillButton(
+                "Contactame por WhatsApp",
+                "fa-brands fa-whatsapp",
+                "bg-[#25D366]",
+                openWaModal
+              )
+            );
+          }
+
+          if (cfg.email) {
+            container.appendChild(
+              pill(
+                "mailto:" + cfg.email,
+                "Escríbeme (correo)",
+                "fa-solid fa-envelope",
+                "bg-[#EA4335]"
+              )
+            );
+          }
+
+          if (cfg.emailInstitucional) {
+            container.appendChild(
+              pill(
+                "mailto:" + cfg.emailInstitucional,
+                "Correo institucional",
+                "fa-solid fa-building",
+                "bg-[#0A66C2]"
+              )
+            );
+          }
+
+          if (cfg.instagram) {
+            container.appendChild(
+              pill(
+                cfg.instagram,
+                "Instagram",
+                "fa-brands fa-instagram",
+                "bg-gradient-to-br from-[#f58529] via-[#dd2a7b] to-[#8134af]"
+              )
+            );
+          }
+
+          if (cfg.sitioWeb) {
+            container.appendChild(
+              pill(
+                cfg.sitioWeb,
+                "Página web",
+                "fa-solid fa-globe",
+                "bg-amber-600"
+              )
+            );
+          }
+
+          if (cfg.linkedin) {
+            container.appendChild(
+              pill(
+                cfg.linkedin,
+                "LinkedIn",
+                "fa-brands fa-linkedin-in",
+                "bg-[#0A66C2]"
+              )
+            );
+          }
+
+          if (cfg.mapsUrl) {
+            container.appendChild(
+              pill(
+                cfg.mapsUrl,
+                "Dirección / mapa",
+                "fa-solid fa-location-dot",
+                "bg-[#34A853]"
+              )
+            );
+          }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+          initMeta();
+          initHeader();
+          initLinks();
+
+          document.getElementById("btn-vcard").addEventListener("click", downloadVCard);
+          document.getElementById("btn-share").addEventListener("click", shareCard);
+
+          var waModal = document.getElementById("wa-modal");
+          var waClose = document.getElementById("wa-modal-close");
+          var waIniciar = document.getElementById("wa-iniciar");
+          var waPanel = waModal && waModal.querySelector(".rounded-2xl");
+          if (waClose) waClose.addEventListener("click", closeWaModal);
+          if (waIniciar) waIniciar.addEventListener("click", iniciarWhatsApp);
+          if (waModal) {
+            waModal.addEventListener("click", function (e) {
+              if (e.target === waModal) closeWaModal();
+            });
+          }
+          if (waPanel) {
+            waPanel.addEventListener("click", function (e) {
+              e.stopPropagation();
+            });
+          }
+          document.addEventListener("keydown", function (e) {
+            if (
+              e.key === "Escape" &&
+              waModal &&
+              !waModal.classList.contains("hidden")
+            ) {
+              closeWaModal();
+            }
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>
