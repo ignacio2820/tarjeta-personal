@@ -263,9 +263,19 @@
 
         function buildVCard(c) {
           var full = (c.nombreCompleto || c.nombre || "").trim();
-          var parts = full.split(/\s+/).filter(Boolean);
-          var family = parts.length > 1 ? parts[parts.length - 1] : full;
-          var given = parts.length > 1 ? parts.slice(0, -1).join(" ") : "";
+          var family;
+          var given;
+          if (
+            c.vcardApellidos != null &&
+            String(c.vcardApellidos).trim() !== ""
+          ) {
+            family = String(c.vcardApellidos).trim();
+            given = String(c.vcardNombres || "").trim();
+          } else {
+            var parts = full.split(/\s+/).filter(Boolean);
+            family = parts.length > 1 ? parts[parts.length - 1] : full;
+            given = parts.length > 1 ? parts.slice(0, -1).join(" ") : "";
+          }
 
           var lines = [
             "BEGIN:VCARD",

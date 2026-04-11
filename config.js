@@ -27,7 +27,10 @@
 
   // --- DATOS PERSONALES (EDITA AQUÍ) ---
   const config = {
-    nombreCompleto: "Subprefecto Lic. Pedro Ignacio Schwindt",
+    nombreCompleto: "Subprefecto Lic. Schwindt Pedro Ignacio",
+    /** vCard: apellido y nombres (para agenda; el nombre en pantalla es nombreCompleto) */
+    vcardApellidos: "Schwindt",
+    vcardNombres: "Pedro Ignacio",
     cargo: "Director U.P. N° 7 Gualeguay",
     empresa: "S.P.E.R.",
 
@@ -61,7 +64,7 @@
 
     bio: "",
 
-    tituloPagina: "Subprefecto Lic. Pedro Ignacio Schwindt — Tarjeta digital",
+    tituloPagina: "Subprefecto Lic. Schwindt Pedro Ignacio — Tarjeta digital",
     metaDescription: "Contacto — S.P.E.R.",
   };
 
