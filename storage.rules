@@ -1,0 +1,25 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    /**
+     * WebElite — rutas `usuarios/{uid}/fotoPerfil` y `usuarios/{uid}/logoInstitucional`
+     * - Lectura pública: las URLs de descarga de la tarjeta pública deben ser accesibles
+     *   (listado sigue denegado; solo objetos bajo esta ruta con reglas de lectura).
+     * - Escritura (subir / sobrescribir / borrar): solo el dueño (uid = carpeta).
+     * En borrado, `request.resource` no existe; por eso la condición de imagen solo aplica
+     * cuando hay un recurso nuevo.
+     */
+    match /usuarios/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null
+        && request.auth.uid == userId
+        && (
+          request.resource == null
+          || (
+            request.resource.size < 8 * 1024 * 1024
+            && request.resource.contentType.matches('image/.*')
+          )
+        );
+    }
+  }
+}

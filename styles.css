@@ -1,25 +1,30 @@
-/* LED2Team / tarjeta limpia — negro, dorado metálico sutil, marfil, gris seda */
+/**
+ * EliteCard — tokens alineados con admin (Dark Premium)
+ * Dorado #D4AF37 · fondos #050505 / #101010 · texto principal #E0E0E0
+ */
 
 :root {
-  --lux-black: #000000;
-  --lux-ivory: #f5e1a4;
-  --lux-silk: #b0b0b0;
-  --lux-gold-a: #bf953f;
-  --lux-gold-b: #fcf6ba;
-  --lux-gold-c: #b38728;
-  --lux-footer-bg: #c0c0c0;
-  --font-lux: "Manrope", system-ui, -apple-system, sans-serif;
+  --ec-void: #050505;
+  --ec-coal: #101010;
+  --ec-card: #181818;
+  --ec-gold: #d4af37;
+  --ec-gold-soft: rgba(212, 175, 55, 0.35);
+  --ec-mist: #e0e0e0;
+  --ec-mist-dim: rgba(224, 224, 224, 0.52);
+  --lux-black: var(--ec-void);
+  --lux-ivory: #ebe6dc;
+  --lux-silk: #a3a3a3;
+  --lux-gold-a: #d4af37;
+  --lux-gold-b: #f2e6a7;
+  --lux-gold-c: #9a7b28;
+  --lux-footer-bg: #d8d4cc;
+  --font-lux: "Poppins", system-ui, -apple-system, sans-serif;
 }
 
 html {
   height: 100%;
-  background: radial-gradient(
-    ellipse 120% 90% at 50% 20%,
-    #1a1610 0%,
-    #0a0908 50%,
-    #000000 100%
-  );
-  background-color: var(--lux-black);
+  background: linear-gradient(168deg, var(--ec-void) 0%, var(--ec-coal) 45%, #0c0c0c 100%);
+  background-color: var(--ec-void);
 }
 
 body.luxury-body {
@@ -27,6 +32,7 @@ body.luxury-body {
   min-height: 100dvh;
   margin: 0;
   font-family: var(--font-lux);
+  font-weight: 300;
   background: transparent;
   color: var(--lux-ivory);
   -webkit-font-smoothing: antialiased;
@@ -63,7 +69,7 @@ body.luxury-body {
   pointer-events: none;
   background: radial-gradient(
     ellipse at center,
-    rgba(191, 149, 63, 0.14) 0%,
+    rgba(212, 175, 55, 0.12) 0%,
     transparent 70%
   );
   filter: blur(12px);
@@ -88,7 +94,7 @@ body.luxury-body {
     var(--lux-gold-c) 100%
   );
   box-shadow:
-    0 0 0 1px rgba(191, 149, 63, 0.2),
+    0 0 0 1px rgba(212, 175, 55, 0.22),
     0 10px 28px rgba(0, 0, 0, 0.35);
 }
 
@@ -105,7 +111,34 @@ body.luxury-body {
   background: #0a0a0a;
   box-shadow:
     0 16px 40px rgba(0, 0, 0, 0.45),
-    0 0 0 1px rgba(191, 149, 63, 0.12);
+    0 0 0 1px rgba(212, 175, 55, 0.14);
+}
+
+.avatar-inner.avatar-inner--empty {
+  background: linear-gradient(160deg, #141414 0%, #0a0a0a 50%, #121212 100%);
+}
+
+.avatar-inner.avatar-inner--empty::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 38%;
+  height: 38%;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.avatar-inner--empty .avatar-photo {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Con foto: el <img> debe seguir siendo bloque (nunca display:none solo por Tailwind en móvil). */
+.avatar-inner:not(.avatar-inner--empty) .avatar-photo {
+  visibility: visible;
 }
 
 @media (min-width: 640px) {
@@ -118,25 +151,136 @@ body.luxury-body {
   display: block;
   width: 100%;
   height: 100%;
+  max-width: none;
   object-fit: cover;
   object-position: center center;
   image-rendering: auto;
 }
 
+/**
+ * Contenedor tarjeta / botones / retrato — visibilidad estable en móvil (.ec-*).
+ * No usar display:none ni opacity:0 sobre estos selectores en breakpoints móviles.
+ */
+.ec-card-container {
+  position: relative;
+  z-index: 1;
+}
+
+.ec-profile-frame {
+  height: auto;
+  min-height: 100px;
+}
+
+.ec-profile-frame .ec-profile-img {
+  display: block;
+  min-height: 100px;
+  width: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+
+.ec-contact-button {
+  position: relative;
+  z-index: 999;
+}
+
+.footer-bar-light .ec-contact-button {
+  z-index: 999;
+}
+
+/* Móvil: contenedor de retrato y píldoras sin colapso a 0 ni ocultar por error de grid */
+@media (max-width: 639.98px) {
+  .ec-card-container {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  .ec-card-container .reveal-item {
+    opacity: 1 !important;
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .ec-card-container .links-stagger > a.ec-contact-button,
+  .ec-card-container .links-stagger > button.ec-contact-button {
+    opacity: 1 !important;
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .ec-contact-button {
+    z-index: 999;
+  }
+
+  .avatar-inner:not(.avatar-inner--empty) .ec-profile-img {
+    opacity: 1 !important;
+  }
+
+  .avatar-inner--empty .ec-profile-img {
+    visibility: hidden !important;
+  }
+
+  .avatar-led-wrap,
+  .avatar-gold-ring,
+  .avatar-inner,
+  .avatar-inner.ec-profile-frame {
+    max-width: 100%;
+  }
+
+  .avatar-inner,
+  .avatar-inner.ec-profile-frame {
+    width: min(8.75rem, 78vw);
+    min-width: 6.5rem;
+    height: auto;
+    min-height: 100px;
+  }
+
+  .avatar-photo,
+  .ec-profile-frame .ec-profile-img {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    min-height: 100px;
+  }
+
+  .link-pill.pill-action,
+  .link-pill.pill-action.ec-contact-button {
+    display: grid !important;
+    width: 100% !important;
+    min-width: 0;
+    min-height: 2.75rem;
+    box-sizing: border-box;
+    opacity: 1 !important;
+    animation: none !important;
+    transform: none !important;
+  }
+
+  #btn-vcard.ec-contact-button,
+  #btn-share.ec-contact-button {
+    display: flex !important;
+    min-height: 2.75rem;
+    min-width: 0;
+    flex: 1 1 0%;
+    z-index: 999;
+  }
+}
+
 /* Cabecera */
 .led-name {
   color: var(--lux-ivory);
-  font-weight: 700;
-  letter-spacing: 0.01em;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
 }
 
 .led-sub {
-  color: #c8c8c8;
-  font-weight: 400;
+  color: var(--ec-mist-dim);
+  font-weight: 300;
   font-size: 0.8125rem;
   line-height: 1.55;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75);
 }
 
@@ -159,9 +303,9 @@ body.luxury-body {
   border-radius: 50%;
   background: linear-gradient(
     145deg,
-    rgba(191, 149, 63, 0.45),
-    rgba(252, 246, 186, 0.28),
-    rgba(179, 135, 40, 0.42)
+    rgba(212, 175, 55, 0.48),
+    rgba(242, 230, 167, 0.3),
+    rgba(154, 123, 40, 0.45)
   );
   box-shadow: 0 0 0 1px rgba(191, 149, 63, 0.18);
 }
@@ -205,7 +349,7 @@ body.luxury-body {
   object-fit: cover;
   object-position: center center;
   flex-shrink: 0;
-  box-shadow: 0 0 0 1px rgba(179, 135, 40, 0.55);
+  box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.5);
 }
 
 .footer-icon-gold {
@@ -236,8 +380,9 @@ body.luxury-body {
 }
 
 .link-pill:hover {
-  background-color: #080808;
-  border-color: rgba(191, 149, 63, 0.32) !important;
+  background-color: #0c0c0c;
+  border-color: rgba(212, 175, 55, 0.38) !important;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.06);
 }
 
 .pill-icon-disc {
@@ -281,6 +426,9 @@ body.luxury-body {
 }
 .reveal-d5 {
   animation-delay: 0.54s;
+}
+.reveal-d6 {
+  animation-delay: 0.66s;
 }
 
 .links-stagger > a,
@@ -352,6 +500,7 @@ body.luxury-body {
   }
 
   .preloader-y-spin,
+  .preloader-x-float,
   .preloader-shine,
   .preloader-logo-img {
     animation: none !important;
@@ -370,13 +519,7 @@ body.preloader-active {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(
-    ellipse 130% 100% at 50% 30%,
-    #252018 0%,
-    #12100c 42%,
-    #030302 100%
-  );
-  background-color: #050403;
+  background: linear-gradient(168deg, var(--ec-void) 0%, var(--ec-coal) 55%, #080808 100%);
   transition: opacity 0.75s ease, visibility 0.75s ease;
 }
 
@@ -391,13 +534,13 @@ body.preloader-active {
 }
 
 .preloader-scene {
-  perspective: 920px;
-  perspective-origin: 50% 45%;
+  perspective: 1100px;
+  perspective-origin: 50% 42%;
 }
 
 .preloader-y-spin {
   transform-style: preserve-3d;
-  animation: preloader-spin-y 3.2s linear infinite;
+  animation: preloader-spin-y 4s linear infinite;
 }
 
 @keyframes preloader-spin-y {
@@ -406,6 +549,22 @@ body.preloader-active {
   }
   to {
     transform: rotateY(360deg);
+  }
+}
+
+/* Inclinación en X para lectura 3D tipo moneda / placa */
+.preloader-x-float {
+  transform-style: preserve-3d;
+  animation: preloader-x-float 2.8s ease-in-out infinite;
+}
+
+@keyframes preloader-x-float {
+  0%,
+  100% {
+    transform: rotateX(10deg) translateZ(0.5rem);
+  }
+  50% {
+    transform: rotateX(-14deg) translateZ(0.25rem);
   }
 }
 
@@ -432,7 +591,7 @@ body.preloader-active {
   border-radius: 0.875rem;
   box-shadow:
     0 12px 40px rgba(0, 0, 0, 0.55),
-    0 0 0 1px rgba(191, 149, 63, 0.25);
+    0 0 0 1px rgba(212, 175, 55, 0.28);
   backface-visibility: visible;
   -webkit-backface-visibility: visible;
   animation: preloader-logo-pulse 2.4s ease-in-out infinite;
@@ -444,7 +603,7 @@ body.preloader-active {
     filter: brightness(1);
   }
   50% {
-    filter: brightness(1.12) drop-shadow(0 0 18px rgba(191, 149, 63, 0.35));
+    filter: brightness(1.12) drop-shadow(0 0 18px rgba(212, 175, 55, 0.38));
   }
 }
 
@@ -457,9 +616,9 @@ body.preloader-active {
     105deg,
     transparent 0%,
     transparent 38%,
-    rgba(252, 246, 186, 0.55) 48%,
-    rgba(255, 255, 255, 0.35) 50%,
-    rgba(191, 149, 63, 0.45) 52%,
+    rgba(242, 230, 167, 0.5) 48%,
+    rgba(255, 255, 255, 0.32) 50%,
+    rgba(212, 175, 55, 0.42) 52%,
     transparent 65%,
     transparent 100%
   );
@@ -482,4 +641,81 @@ body.preloader-active {
   100% {
     background-position: -130% 0;
   }
+}
+
+/* Crédito EliteCard / WebElite Solutions (PWA / tarjeta) */
+.webelite-credit {
+  display: inline-block;
+  font-size: 0.625rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.45);
+  text-decoration: none;
+  transition:
+    color 0.28s ease,
+    letter-spacing 0.28s ease;
+}
+
+.webelite-credit:hover {
+  color: rgba(242, 230, 167, 0.88);
+  letter-spacing: 0.16em;
+}
+
+.webelite-credit-brand {
+  font-weight: 500;
+  background: linear-gradient(
+    105deg,
+    rgba(212, 175, 55, 0.9),
+    rgba(255, 248, 220, 0.95),
+    rgba(212, 175, 55, 0.9)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.webelite-credit:hover .webelite-credit-brand {
+  background: linear-gradient(105deg, #e8d060, #fffef5, #e8d060);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Shell tarjeta — coherente con panel */
+.app-shell.ec-app-shell {
+  background: linear-gradient(180deg, transparent 0%, rgba(8, 8, 8, 0.35) 100%);
+}
+
+/* Modales EliteCard (glass + borde dorado fino) */
+.ec-modal-elite-backdrop {
+  background: rgba(5, 5, 5, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.ec-modal-elite-panel {
+  background: rgba(24, 24, 24, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
+}
+
+.ec-modal-elite-panel .ec-input-elite {
+  border: 1px solid rgba(224, 224, 224, 0.12);
+  background: rgba(5, 5, 5, 0.55);
+  color: var(--ec-mist);
+  font-family: var(--font-lux);
+  font-weight: 300;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.ec-toast-elite {
+  font-family: var(--font-lux);
+  font-weight: 300;
+  border-color: rgba(212, 175, 55, 0.2) !important;
+  background: rgba(24, 24, 24, 0.92) !important;
+  color: var(--ec-mist) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }

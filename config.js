@@ -1,87 +1,97 @@
 /**
- * Tarjeta digital — edita el objeto `config` y guarda.
- * Los campos se normalizan a window.CARD_CONFIG (usa index.html).
+ * Valores por defecto (Firestore los sobrescribe en vivo).
+ * Campos planos para que coincidan con admin.html / Firestore.
  */
 (function () {
-  function digits(s) {
+  "use strict";
+
+  function onlyDigits(s) {
     return String(s || "").replace(/\D/g, "");
   }
 
   function igUrl(v) {
-    if (v == null || !String(v).trim()) return "";
-    var s = String(v).trim();
+    var s = String(v || "").trim();
+    if (!s) return "";
     if (/^https?:\/\//i.test(s)) return s;
-    return (
-      "https://www.instagram.com/" + s.replace(/^@/, "").replace(/\/+$/, "") + "/"
-    );
+    var u = s.replace(/^@/, "");
+    return "https://instagram.com/" + u;
   }
 
   function liUrl(v) {
-    if (v == null || !String(v).trim()) return "";
-    var s = String(v).trim();
+    var s = String(v || "").trim();
+    if (!s) return "";
     if (/^https?:\/\//i.test(s)) return s;
-    return (
-      "https://www.linkedin.com/in/" + s.replace(/^\/+|\/+$/g, "") + "/"
-    );
+    return "https://linkedin.com/in/" + s.replace(/^\/+/, "");
   }
 
-  // --- DATOS PERSONALES (EDITA AQUÍ) ---
-  const config = {
-    nombreCompleto: "Subprefecto Lic. Schwindt Pedro Ignacio",
-    /** vCard: apellido y nombres (para agenda; el nombre en pantalla es nombreCompleto) */
-    vcardApellidos: "Schwindt",
-    vcardNombres: "Pedro Ignacio",
-    cargo: "Director U.P. N° 7 Gualeguay",
-    empresa: "S.P.E.R.",
-
-    /** Opcional: nombre largo para vCard / metadatos (si vacío, se usa empresa) */
-    organizacion: "Servicio Penitenciario Entre Ríos",
-
-    telefono: "+549344653659",
-    /** WhatsApp destino del formulario (solo dígitos, con código país, sin +) */
-    whatsapp: "5493444438273",
-
-    email: "ignacio2820@gmail.com",
-    emailInstitucional: "Secretariaup7@sper.gob.ar",
-
-    /** Botón Instagram → perfil oficial (incluye ?igsh=…) */
-    instagram: "https://www.instagram.com/serviciopenitenciario.er?igsh=bHlpOTJzam4xZnBv",
-    /** Slug del perfil o URL completa */
-    linkedin: "ignacio-schwindt-82138517b",
-
-    /**
-     * Solo botón «Dirección / mapa» (coordenadas). No mezclar con sitioWeb.
-     */
-    direccion:
-      "https://www.google.com/maps/search/?api=1&query=-33.1468333,-59.3057778",
-
-    fotoPerfil: "perfil.jpg",
-    logo: "logo-sper.jpg",
-
-    /** Solo botón web (portal). Las coordenadas van en `direccion`. */
-    sitioWeb: "https://portal.entrerios.gov.ar/seguridadyjusticia/penitenciario/pf/establecimiento/2527",
-    direccionTexto: "33°08'48.6\"S 59°18'20.8\"W",
-
-    bio: "",
-
-    tituloPagina: "Subprefecto Lic. Schwindt Pedro Ignacio — Tarjeta digital",
-    metaDescription: "Contacto — S.P.E.R.",
+  /**
+   * Plantilla base (vacía): la tarjeta toma los datos reales desde Firestore.
+   * Sin `fotoUrl` / `photoURL` en el documento → no se usa imagen local fantasma.
+   */
+  window.DEFAULT_TARJETA_RAW = {
+    nombreCompleto: "",
+    cargo: "",
+    /** Alias legacy en Firestore: director_up7 */
+    cargoDetalle: "",
+    empresa: "",
+    telefono: "",
+    whatsappNumero: "",
+    email: "",
+    instagram: "",
+    linkedin: "",
+    sitioWeb: "",
+    mapsUrl: "",
+    fotoUrl: "",
+    logoUrl: "",
+    photoURL: "",
+    vcardNombres: "",
+    vcardApellidos: "",
+    vcardOrganizacion: "",
+    vcardTitulo: "",
+    /** Si tiene valor, "Agendar cita" abre modal con Calendly en lugar de WhatsApp */
+    calendlyUrl: "",
+    mensajeCitaWhatsapp:
+      "Hola, me gustaría agendar una reunión con usted.",
   };
 
-  var maps = String(config.mapsUrl || config.direccion || "").trim();
+  /**
+   * Fusiona con defaults y devuelve el objeto `cfg` que usa index.html (URLs normalizadas).
+   */
+  window.normalizeTarjetaData = function (patch) {
+    var o = Object.assign({}, window.DEFAULT_TARJETA_RAW, patch || {});
+    var w = onlyDigits(o.whatsappNumero);
+    var foto =
+      String(o.photoURL || "").trim() ||
+      String(o.fotoUrl || "").trim() ||
+      String(o.fotoPerfil || "").trim();
+    var logo = String(o.logoUrl || "").trim() || String(o.logo || "").trim();
+    return {
+      nombreCompleto: String(o.nombreCompleto || "").trim(),
+      cargo: String(o.cargo || "").trim(),
+      cargoDetalle: String(o.cargoDetalle || o.director_up7 || "").trim(),
+      empresa: String(o.empresa || "").trim(),
+      telefono: String(o.telefono || "").trim(),
+      whatsappNumero: w,
+      email: String(o.email || "").trim(),
+      instagram: igUrl(o.instagram),
+      linkedin: liUrl(o.linkedin),
+      sitioWeb: String(o.sitioWeb || "").trim(),
+      mapsUrl: String(o.mapsUrl || "").trim(),
+      fotoUrl: foto,
+      photoURL: String(o.photoURL || "").trim(),
+      logoUrl: logo,
+      vcardNombres: String(o.vcardNombres || "").trim(),
+      vcardApellidos: String(o.vcardApellidos || "").trim(),
+      vcardOrganizacion: String(o.vcardOrganizacion || o.empresa || "").trim(),
+      vcardTitulo: String(o.vcardTitulo || o.cargo || "").trim(),
+      calendlyUrl: String(o.calendlyUrl || "").trim(),
+      mensajeCitaWhatsapp: String(
+        o.mensajeCitaWhatsapp ||
+          window.DEFAULT_TARJETA_RAW.mensajeCitaWhatsapp ||
+          ""
+      ).trim(),
+    };
+  };
 
-  window.CARD_CONFIG = Object.assign({}, config, {
-    whatsappNumero: digits(config.whatsappNumero || config.whatsapp),
-    instagram: igUrl(config.instagram),
-    sitioWeb: String(config.sitioWeb || "").trim(),
-    linkedin: liUrl(config.linkedin),
-    mapsUrl: maps,
-    organizacion:
-      config.organizacion != null && String(config.organizacion).trim() !== ""
-        ? String(config.organizacion).trim()
-        : String(config.empresa || "").trim(),
-  });
-
-  /** Alias por si en otro script leés `config` */
-  window.config = window.CARD_CONFIG;
+  window.CARD_DEFAULTS = window.normalizeTarjetaData(window.DEFAULT_TARJETA_RAW);
 })();

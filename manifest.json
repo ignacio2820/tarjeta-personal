@@ -1,27 +1,36 @@
 {
-  "name": "Tarjeta digital — S.P.E.R.",
-  "short_name": "Tarjeta",
-  "description": "Tarjeta de presentación digital",
+  "id": "./",
+  "name": "EliteCard - Tarjeta Digital",
+  "short_name": "EliteCard",
+  "description": "EliteCard — tu identidad digital de élite. WebElite Solutions.",
   "lang": "es",
   "dir": "ltr",
   "start_url": "./",
   "scope": "./",
-  "display": "fullscreen",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait-primary",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "logo-sper.jpg",
+      "src": "icons/icon-192.png",
       "sizes": "192x192",
-      "type": "image/jpeg",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "logo-sper.jpg",
+      "src": "icons/icon-512.png",
       "sizes": "512x512",
-      "type": "image/jpeg",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

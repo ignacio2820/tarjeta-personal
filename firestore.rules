@@ -1,0 +1,15 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    /**
+     * WebElite — colección `usuarios`
+     * - Lectura pública: la tarjeta (index.html) lee el documento sin autenticación.
+     * - Escritura: solo el usuario autenticado cuyo uid coincide con el ID del documento
+     *   (mismo modelo que admin.html: usuarios/{uid}).
+     */
+    match /usuarios/{userId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}

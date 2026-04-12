@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Panel de Gestión | EliteCard</title>
+    <meta name="theme-color" content="#050505" />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              elite: {
+                void: "#050505",
+                coal: "#0d0d0d",
+                graphite: "#181818",
+                gold: "#D4AF37",
+                goldmid: "#D4AF37",
+                golddim: "#9a7b28",
+                mist: "#E0E0E0",
+              },
+            },
+            fontFamily: {
+              sans: ["Poppins", "system-ui", "sans-serif"],
+              display: ["Poppins", "system-ui", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ec-bg-a: #050505;
+        --ec-bg-b: #101010;
+        --ec-card: #181818;
+        --ec-gold: #d4af37;
+        --ec-text: #e0e0e0;
+        --ec-text-dim: rgba(224, 224, 224, 0.55);
+      }
+
+      body.ec-admin-body {
+        font-family: "Poppins", system-ui, sans-serif;
+        color: var(--ec-text);
+        background: linear-gradient(168deg, var(--ec-bg-a) 0%, var(--ec-bg-b) 42%, #0c0c0c 100%);
+        min-height: 100dvh;
+      }
+
+      .elite-noise {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.035;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+      .elite-grid {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        background-image: linear-gradient(
+            rgba(212, 175, 55, 0.028) 1px,
+            transparent 1px
+          ),
+          linear-gradient(90deg, rgba(212, 175, 55, 0.028) 1px, transparent 1px);
+        background-size: 72px 72px;
+        mask-image: radial-gradient(ellipse 75% 55% at 50% 0%, black, transparent);
+      }
+      .elite-glow {
+        position: fixed;
+        width: 130vw;
+        height: 65vh;
+        top: -18%;
+        left: 50%;
+        transform: translateX(-50%);
+        pointer-events: none;
+        z-index: 0;
+        background: radial-gradient(
+          ellipse closest-side,
+          rgba(212, 175, 55, 0.09),
+          transparent 72%
+        );
+      }
+
+      .elite-card {
+        background: var(--ec-card);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border: 1px solid var(--ec-gold);
+        border-radius: 1.75rem;
+        box-shadow:
+          0 0 0 1px rgba(212, 175, 55, 0.12),
+          0 28px 90px -28px rgba(0, 0, 0, 0.85);
+      }
+
+      .elite-input {
+        background: rgba(8, 8, 8, 0.65);
+        border: 1px solid rgba(224, 224, 224, 0.14);
+        color: var(--ec-text);
+        font-weight: 300;
+        transition: border-color 0.28s ease, box-shadow 0.28s ease;
+      }
+      .elite-input::placeholder {
+        color: rgba(224, 224, 224, 0.28);
+      }
+      .elite-input:focus {
+        outline: none;
+        border-color: var(--ec-gold);
+        box-shadow:
+          0 0 0 1px rgba(212, 175, 55, 0.35),
+          0 0 24px rgba(212, 175, 55, 0.18);
+      }
+
+      .elite-btn-gold {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        background: linear-gradient(135deg, #c9a132 0%, #d4af37 38%, #e8c547 52%, #d4af37 100%);
+        color: #0a0a0a;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        font-size: 0.72rem;
+        border: none;
+        box-shadow:
+          0 6px 32px rgba(212, 175, 55, 0.35),
+          inset 0 1px 0 rgba(255, 255, 255, 0.45);
+      }
+      .elite-btn-gold::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background: linear-gradient(
+          105deg,
+          transparent 0%,
+          transparent 40%,
+          rgba(255, 255, 255, 0.55) 50%,
+          transparent 60%,
+          transparent 100%
+        );
+        background-size: 200% 100%;
+        animation: ec-shimmer 2.8s ease-in-out infinite;
+        pointer-events: none;
+        opacity: 0.45;
+      }
+      .elite-btn-gold > span {
+        position: relative;
+        z-index: 1;
+      }
+      .elite-btn-gold:hover {
+        filter: brightness(1.05);
+      }
+      .elite-btn-gold:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        filter: none;
+      }
+      .elite-btn-gold:disabled::after {
+        animation: none;
+        opacity: 0;
+      }
+      @keyframes ec-shimmer {
+        0%,
+        100% {
+          background-position: 130% 0;
+        }
+        50% {
+          background-position: -130% 0;
+        }
+      }
+
+      .elite-line {
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(212, 175, 55, 0.45),
+          rgba(255, 235, 180, 0.65),
+          rgba(212, 175, 55, 0.45),
+          transparent
+        );
+      }
+
+      .elite-upload {
+        border: 1px dashed rgba(212, 175, 55, 0.28);
+        background: rgba(0, 0, 0, 0.4);
+        transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+      }
+      .elite-upload:hover {
+        border-color: rgba(212, 175, 55, 0.5);
+        background: rgba(212, 175, 55, 0.04);
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.08);
+      }
+
+      /* Login · glass premium */
+      .apple-login {
+        font-family: "Poppins", system-ui, sans-serif;
+        background: linear-gradient(165deg, #050505 0%, #101010 50%, #080808 100%);
+      }
+      .ec-login-glass {
+        background: rgba(24, 24, 24, 0.42);
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
+        border: 1px solid rgba(212, 175, 55, 0.22);
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      }
+      .apple-input {
+        width: 100%;
+        border-radius: 14px;
+        border: 1px solid rgba(224, 224, 224, 0.12);
+        background: rgba(5, 5, 5, 0.55);
+        padding: 14px 16px;
+        font-size: 16px;
+        font-weight: 300;
+        line-height: 1.35;
+        color: var(--ec-text);
+        transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+      }
+      .apple-input::placeholder {
+        color: rgba(224, 224, 224, 0.3);
+      }
+      .apple-input:focus {
+        outline: none;
+        border-color: var(--ec-gold);
+        background: rgba(8, 8, 8, 0.7);
+        box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.3), 0 0 22px rgba(212, 175, 55, 0.14);
+      }
+      .apple-submit {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, #c9a132, #d4af37 50%, #e0bc4a);
+        color: #0a0a0a;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        transition: filter 0.2s, transform 0.15s;
+      }
+      .apple-submit:hover {
+        filter: brightness(1.06);
+      }
+      .apple-submit:active {
+        transform: scale(0.99);
+      }
+
+      .portal-tab {
+        color: var(--ec-text-dim);
+        font-weight: 300 !important;
+        transition: color 0.25s, background 0.25s, border-color 0.25s, box-shadow 0.25s;
+        border: 1px solid transparent;
+      }
+      .portal-tab:hover {
+        color: rgba(224, 224, 224, 0.88);
+      }
+      .portal-tab-active {
+        color: #fff;
+        background: rgba(212, 175, 55, 0.1);
+        border-color: rgba(212, 175, 55, 0.35);
+        box-shadow: 0 0 18px rgba(212, 175, 55, 0.12);
+      }
+
+      .ec-tab-bar {
+        background: rgba(12, 12, 12, 0.65);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(212, 175, 55, 0.12);
+        border-radius: 1.125rem;
+      }
+
+      /* Entrada suave dashboard */
+      .ec-reveal {
+        opacity: 0;
+        transform: translateY(16px);
+        transition:
+          opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+          transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .ec-dashboard-mounted .ec-reveal {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .ec-dashboard-mounted .ec-reveal-d1 {
+        transition-delay: 0.05s;
+      }
+      .ec-dashboard-mounted .ec-reveal-d2 {
+        transition-delay: 0.12s;
+      }
+      .ec-dashboard-mounted .ec-reveal-d3 {
+        transition-delay: 0.2s;
+      }
+      .ec-dashboard-mounted .ec-reveal-d4 {
+        transition-delay: 0.28s;
+      }
+
+      /* Modal glass */
+      .ec-modal-backdrop {
+        background: rgba(5, 5, 5, 0.72);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+      }
+      .ec-modal-panel {
+        background: rgba(24, 24, 24, 0.88);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid var(--ec-gold);
+        box-shadow: 0 28px 100px rgba(0, 0, 0, 0.75);
+      }
+
+      /* Alertas tipo cristal */
+      #save-error:not(.hidden) {
+        display: block;
+        padding: 0.85rem 1.1rem;
+        border-radius: 1rem;
+        background: rgba(24, 24, 24, 0.75);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(248, 113, 113, 0.35);
+      }
+
+      /* Overlay guardado + spinner 3D */
+      .ec-save-overlay {
+        flex-direction: column;
+        background: rgba(5, 5, 5, 0.62);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      .ec-spinner-scene {
+        perspective: 900px;
+        perspective-origin: 50% 50%;
+      }
+      .ec-spinner-ring {
+        width: 3.25rem;
+        height: 3.25rem;
+        border-radius: 50%;
+        border: 2px solid rgba(212, 175, 55, 0.2);
+        border-top-color: var(--ec-gold);
+        border-right-color: rgba(212, 175, 55, 0.65);
+        transform-style: preserve-3d;
+        animation: ec-spin-3d 1.15s linear infinite;
+        box-shadow:
+          0 0 28px rgba(212, 175, 55, 0.25),
+          inset 0 0 14px rgba(212, 175, 55, 0.08);
+      }
+      @keyframes ec-spin-3d {
+        from {
+          transform: rotateX(18deg) rotateY(0deg);
+        }
+        to {
+          transform: rotateX(18deg) rotateY(360deg);
+        }
+      }
+
+      .ec-label {
+        font-weight: 500;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: rgba(224, 224, 224, 0.42);
+        font-size: 0.65rem;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .ec-reveal,
+        .ec-dashboard-mounted .ec-reveal {
+          opacity: 1;
+          transform: none;
+          transition: none;
+        }
+        .elite-btn-gold::after {
+          animation: none;
+        }
+        .ec-spinner-ring {
+          animation: none;
+          border-color: var(--ec-gold);
+        }
+      }
+    </style>
+  </head>
+  <body class="ec-admin-body min-h-[100dvh] text-elite-mist antialiased font-light">
+    <div class="elite-noise" aria-hidden="true"></div>
+    <div class="elite-grid" aria-hidden="true"></div>
+    <div class="elite-glow" aria-hidden="true"></div>
+
+    <!-- Login · glass dark premium -->
+    <section
+      id="view-login"
+      class="apple-login relative z-10 flex min-h-[100dvh] flex-col justify-center px-5 py-14 sm:px-8"
+    >
+      <div class="ec-login-glass mx-auto w-full max-w-[420px] rounded-[1.75rem] px-7 py-10 sm:px-10 sm:py-12">
+        <div class="mb-12 text-center">
+          <p class="text-[11px] font-medium uppercase tracking-[0.28em] text-elite-gold/90">WebElite Solutions</p>
+          <h1 class="mt-3 text-[1.65rem] font-light leading-tight tracking-tight text-white sm:text-[1.85rem]">
+            Acceso a EliteCard
+          </h1>
+          <p class="mt-3 text-[14px] font-light text-elite-mist/55">Iniciá sesión con tu correo corporativo.</p>
+        </div>
+        <form id="form-login" class="space-y-3.5" autocomplete="on">
+          <div>
+            <label class="sr-only" for="login-email">Email</label>
+            <input
+              id="login-email"
+              type="email"
+              name="email"
+              autocomplete="username"
+              required
+              class="apple-input"
+              placeholder="Email"
+            />
+          </div>
+          <div>
+            <label class="sr-only" for="login-password">Contraseña</label>
+            <input
+              id="login-password"
+              type="password"
+              name="password"
+              autocomplete="current-password"
+              required
+              class="apple-input"
+              placeholder="Contraseña"
+            />
+          </div>
+          <p id="login-error" class="hidden pt-1 text-[13px] font-light text-red-400/95" role="alert"></p>
+          <button type="submit" class="apple-submit mt-6 w-full rounded-full py-3.5 text-[15px]">
+            Entrar
+          </button>
+        </form>
+        <p class="mt-10 text-center text-[12px] font-light text-elite-mist/40">
+          <a href="index.html" class="transition hover:text-elite-gold/90">Ver tarjeta pública</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- Panel · EliteCard -->
+    <section id="view-panel" class="relative z-10 hidden min-h-[100dvh] pb-36 pt-8 sm:pb-32 sm:pt-10">
+      <div class="mx-auto max-w-4xl px-5 sm:px-10">
+        <!-- Marca WebElite + acciones -->
+        <header
+          class="ec-reveal ec-reveal-d1 mb-10 flex flex-col gap-6 border-b border-white/[0.07] pb-8 sm:flex-row sm:items-start sm:justify-between"
+        >
+          <a
+            href="https://webelite-app.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group flex items-center gap-4 self-start transition hover:opacity-92"
+            aria-label="WebElite Solutions — sitio de la agencia"
+          >
+            <div
+              class="flex h-[3.35rem] w-[3.35rem] shrink-0 items-center justify-center rounded-2xl border border-elite-gold/45 bg-gradient-to-br from-zinc-900/90 to-black shadow-lg ring-1 ring-white/[0.06]"
+            >
+              <svg
+                class="h-8 w-8 text-elite-gold"
+                viewBox="0 0 32 32"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M16 3.5 27.5 26h-6.2l-1.3-2.8H11.9L10.7 26H4.5L16 3.5zm0 7.2-3.5 9.1h7L16 10.7z"
+                  fill="currentColor"
+                />
+              </svg>
+            </div>
+            <div class="text-left">
+              <p class="text-[1.05rem] font-light tracking-wide text-white sm:text-[1.15rem]">
+                Web<span class="font-normal text-elite-gold">Elite</span>
+                <span class="text-elite-mist/35"> · </span>
+                <span class="text-elite-mist/75">Solutions</span>
+              </p>
+              <p class="mt-1 text-[0.6rem] font-medium uppercase tracking-[0.32em] text-elite-gold/75">
+                Technology &amp; Design
+              </p>
+            </div>
+          </a>
+          <div class="flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row sm:items-center sm:justify-end">
+            <a
+              id="btnVerTarjeta"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="rounded-full border border-elite-gold/35 bg-elite-gold/10 px-5 py-2.5 text-[12px] font-medium tracking-wide text-elite-gold transition hover:bg-elite-gold/18"
+              style="display: block; width: 100%; text-align: center"
+            >
+              Ver mi Tarjeta Pública
+            </a>
+            <button
+              type="button"
+              id="btn-logout"
+              class="rounded-full border border-white/[0.1] px-5 py-2.5 text-[12px] font-light text-elite-mist/55 transition hover:border-white/20 hover:text-elite-mist"
+            >
+              Cerrar sesión
+            </button>
+          </div>
+        </header>
+
+        <!-- Bienvenida alto impacto -->
+        <div class="ec-reveal ec-reveal-d2 mb-10">
+          <h2
+            class="max-w-3xl text-[1.5rem] font-light leading-[1.25] tracking-tight text-white sm:text-[2rem] sm:leading-tight"
+          >
+            Bienvenido a tu Panel de Gestión
+            <span class="font-normal text-elite-gold">EliteCard</span>
+          </h2>
+          <p class="mt-4 text-lg font-light text-elite-mist sm:text-xl">
+            Hola,
+            <span id="panel-hola-name" class="font-normal text-white">Cliente</span>
+          </p>
+          <p class="mt-4 max-w-2xl text-sm font-light leading-relaxed text-elite-mist/50">
+            Tu perfil es privado: solo vos podés editarlo. Los visitantes ven los cambios al instante en tu enlace
+            público.
+          </p>
+          <p
+            id="panel-uid-hint"
+            class="mt-4 hidden max-w-2xl font-mono text-[0.62rem] font-light leading-relaxed text-elite-mist/40"
+          ></p>
+        </div>
+
+        <div class="ec-reveal ec-reveal-d3 mb-8 elite-card p-6 sm:p-8">
+          <p class="ec-label mb-2 block text-elite-gold/90">Tu enlace público</p>
+          <p class="mb-5 text-sm font-light text-elite-mist/48">
+            Este es el link que compartís con tus contactos
+          </p>
+          <input
+            id="input-public-url"
+            type="text"
+            readonly
+            class="elite-input mb-4 w-full rounded-xl px-4 py-3.5 text-sm"
+            value=""
+            aria-readonly="true"
+            autocomplete="off"
+          />
+          <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <button
+              type="button"
+              id="btn-copy-public-url"
+              class="elite-btn-gold flex-1 rounded-2xl py-3.5 sm:min-w-[11rem] sm:flex-none"
+            >
+              <span>Copiar enlace</span>
+            </button>
+            <button
+              type="button"
+              id="btn-share-public-url"
+              class="flex-1 rounded-2xl border border-white/[0.12] bg-black/30 py-3.5 text-center text-[11px] font-medium uppercase tracking-[0.14em] text-elite-mist transition hover:border-elite-gold/35 hover:bg-white/[0.04] sm:min-w-[11rem] sm:flex-none"
+            >
+              Compartir
+            </button>
+          </div>
+        </div>
+
+        <form id="form-card" class="ec-reveal ec-reveal-d4 elite-card p-6 sm:p-10">
+          <p id="panel-status" class="mb-5 text-sm font-light text-elite-mist/45" role="status"></p>
+
+          <div
+            class="ec-tab-bar mb-8 flex gap-1 p-1"
+            role="tablist"
+            aria-label="Secciones del panel"
+          >
+            <button
+              type="button"
+              role="tab"
+              id="tab-btn-datos"
+              aria-selected="true"
+              aria-controls="tab-datos"
+              data-tab="datos"
+              class="portal-tab portal-tab-active flex-1 rounded-xl py-2.5 text-[13px] sm:text-sm"
+            >
+              Mis Datos
+            </button>
+            <button
+              type="button"
+              role="tab"
+              id="tab-btn-imagenes"
+              aria-selected="false"
+              aria-controls="tab-imagenes"
+              data-tab="imagenes"
+              class="portal-tab flex-1 rounded-xl py-2.5 text-[13px] sm:text-sm"
+            >
+              Imágenes
+            </button>
+            <button
+              type="button"
+              role="tab"
+              id="tab-btn-seguridad"
+              aria-selected="false"
+              aria-controls="tab-seguridad"
+              data-tab="seguridad"
+              class="portal-tab flex-1 rounded-xl py-2.5 text-[13px] sm:text-sm"
+            >
+              Seguridad
+            </button>
+          </div>
+
+          <p id="save-error" class="mb-4 hidden text-sm text-red-400/90" role="alert"></p>
+
+          <!-- Pestaña: Mis Datos -->
+          <div id="tab-datos" role="tabpanel" aria-labelledby="tab-btn-datos" class="tab-panel">
+            <p class="ec-label mb-5 block tracking-[0.22em]">Nombre, cargo y redes</p>
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <label class="sm:col-span-2">
+                <span class="ec-label mb-2 block">Nombre completo</span>
+                <input
+                  id="f-nombreCompleto"
+                  type="text"
+                  class="elite-input w-full rounded-xl px-4 py-3.5 text-sm"
+                />
+              </label>
+              <label>
+                <span class="ec-label mb-2 block">Cargo</span>
+                <input id="f-cargo" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" />
+              </label>
+              <label>
+                <span class="ec-label mb-2 block">Empresa</span>
+                <input id="f-empresa" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" />
+              </label>
+              <label class="sm:col-span-2">
+                <span class="ec-label mb-2 block">WhatsApp</span>
+                <input
+                  id="f-whatsappNumero"
+                  type="text"
+                  inputmode="numeric"
+                  class="elite-input w-full rounded-xl px-4 py-3.5 text-sm"
+                  placeholder="54911…"
+                />
+              </label>
+              <label>
+                <span class="ec-label mb-2 block">Instagram</span>
+                <input
+                  id="f-instagram"
+                  type="text"
+                  class="elite-input w-full rounded-xl px-4 py-3.5 text-sm"
+                  placeholder="@usuario o URL"
+                />
+              </label>
+              <label>
+                <span class="ec-label mb-2 block">LinkedIn</span>
+                <input
+                  id="f-linkedin"
+                  type="text"
+                  class="elite-input w-full rounded-xl px-4 py-3.5 text-sm"
+                  placeholder="Perfil o URL"
+                />
+              </label>
+              <label class="sm:col-span-2">
+                <span class="ec-label mb-2 block">Sitio web</span>
+                <input id="f-sitioWeb" type="url" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" />
+              </label>
+              <label class="sm:col-span-2">
+                <span class="ec-label mb-2 block">Dirección / Google Maps (URL)</span>
+                <input id="f-mapsUrl" type="url" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" />
+              </label>
+            </div>
+            <div class="mt-10 flex justify-center">
+              <button
+                type="submit"
+                id="btn-save-datos"
+                class="elite-btn-gold w-full max-w-md rounded-2xl py-4 sm:px-16"
+              >
+                <span>Guardar cambios</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Pestaña: Imágenes -->
+          <div id="tab-imagenes" role="tabpanel" aria-labelledby="tab-btn-imagenes" class="tab-panel hidden">
+            <p class="ec-label mb-2 block text-elite-gold/90">Imágenes</p>
+            <p class="mb-7 text-sm font-light text-elite-mist/48">
+              Subí o reemplazá la foto de perfil y el logo. Recordá guardar al final.
+            </p>
+            <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
+              <div>
+                <span class="ec-label mb-2 block normal-case tracking-normal">Foto de perfil</span>
+                <p class="mb-3 text-[0.7rem] font-light leading-relaxed text-elite-mist/38">
+                  Visible en la tarjeta y al guardar contacto. Imagen, máx. recomendado 8&nbsp;MB.
+                </p>
+                <label
+                  class="elite-upload flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl px-4 py-8"
+                >
+                  <input id="file-foto" type="file" accept="image/*" class="hidden" />
+                  <span class="text-center text-xs font-light text-elite-mist/45">Tocá para elegir archivo</span>
+                  <img
+                    id="preview-foto"
+                    alt="Vista previa de foto de perfil — EliteCard"
+                    class="pointer-events-none hidden max-h-36 max-w-full rounded-lg object-contain"
+                  />
+                </label>
+              </div>
+              <div>
+                <span class="ec-label mb-2 block normal-case tracking-normal">Logo institucional</span>
+                <p class="mb-3 text-[0.7rem] font-light text-elite-mist/38">
+                  Escudo o marca en el sello de la tarjeta.
+                </p>
+                <label
+                  class="elite-upload flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl px-4 py-8"
+                >
+                  <input id="file-logo" type="file" accept="image/*" class="hidden" />
+                  <span class="text-center text-xs font-light text-elite-mist/45">Tocá para elegir archivo</span>
+                  <img
+                    id="preview-logo"
+                    alt="Vista previa de logo institucional — EliteCard"
+                    class="pointer-events-none hidden max-h-24 max-w-full rounded-lg object-contain"
+                  />
+                </label>
+              </div>
+            </div>
+            <div class="mt-10 flex justify-center">
+              <button
+                type="submit"
+                id="btn-save-imagenes"
+                class="elite-btn-gold w-full max-w-md rounded-2xl py-4 sm:px-16"
+              >
+                <span>Guardar cambios</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Pestaña: Seguridad -->
+          <div id="tab-seguridad" role="tabpanel" aria-labelledby="tab-btn-seguridad" class="tab-panel hidden">
+            <p class="ec-label mb-2 block text-elite-gold/90">Seguridad</p>
+            <p class="mb-7 text-sm font-light text-elite-mist/48">
+              Cambiá la contraseña de acceso al portal o solicitá un enlace de recuperación por email.
+            </p>
+            <button
+              type="button"
+              id="btn-password-open-account"
+              class="w-full rounded-2xl border border-white/[0.1] bg-black/35 px-6 py-6 text-left backdrop-blur-sm transition hover:border-elite-gold/40 hover:bg-white/[0.03] sm:max-w-lg"
+            >
+              <span class="block text-base font-light text-white">Cambiar contraseña</span>
+              <span class="mt-1.5 block text-sm font-light text-elite-mist/45"
+                >Correo de recuperación o nueva clave con la actual</span
+              >
+              <span class="mt-4 inline-block text-[0.7rem] font-medium tracking-wide text-elite-gold"
+                >Abrir asistente →</span
+              >
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Overlay guardado (Firestore / Storage) -->
+    <div
+      id="save-overlay"
+      class="ec-save-overlay fixed inset-0 z-[200] hidden items-center justify-center p-6"
+      aria-hidden="true"
+      aria-live="polite"
+    >
+      <div class="ec-spinner-scene flex flex-col items-center">
+        <div class="ec-spinner-ring" role="presentation"></div>
+        <p class="mt-8 text-[13px] font-light tracking-[0.2em] text-elite-mist/70">Guardando cambios…</p>
+      </div>
+    </div>
+
+    <!-- Modal contraseña -->
+    <div
+      id="modal-password"
+      class="ec-modal-backdrop fixed inset-0 z-[100] hidden items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="pwd-modal-title"
+    >
+      <div
+        class="ec-modal-panel relative max-h-[90dvh] w-full max-w-md overflow-y-auto rounded-[1.35rem] p-8 sm:p-9"
+      >
+        <button
+          type="button"
+          id="pwd-modal-close"
+          class="absolute right-4 top-4 rounded-xl p-2.5 text-elite-mist/45 transition hover:bg-white/5 hover:text-elite-mist"
+          aria-label="Cerrar"
+        >
+          ✕
+        </button>
+        <h3 id="pwd-modal-title" class="text-xl font-light tracking-tight text-white">Seguridad de cuenta</h3>
+        <p class="mt-2 text-sm font-light text-elite-mist/48">
+          Recuperación por correo o cambio directo con tu sesión actual.
+        </p>
+
+        <div class="mt-8 space-y-4">
+          <button
+            type="button"
+            id="btn-send-reset"
+            class="w-full rounded-xl border border-elite-gold/35 py-3.5 text-[11px] font-medium uppercase tracking-[0.2em] text-elite-gold transition hover:bg-elite-gold/10"
+          >
+            Enviar enlace de recuperación al correo
+          </button>
+          <p id="pwd-reset-msg" class="hidden rounded-xl border border-emerald-500/25 bg-emerald-950/30 px-3 py-2.5 text-sm font-light text-emerald-400/95 backdrop-blur-md"></p>
+        </div>
+
+        <div class="my-8 flex items-center gap-3">
+          <div class="h-px flex-1 bg-white/10"></div>
+          <span class="text-[0.65rem] uppercase tracking-widest text-zinc-600">o</span>
+          <div class="h-px flex-1 bg-white/10"></div>
+        </div>
+
+        <p class="ec-label mb-4 block">Nueva contraseña</p>
+        <div class="flex flex-col gap-3">
+          <input
+            id="pwd-current"
+            type="password"
+            autocomplete="current-password"
+            class="elite-input w-full rounded-xl px-4 py-3.5 text-sm"
+            placeholder="Contraseña actual"
+          />
+          <input
+            id="pwd-new"
+            type="password"
+            autocomplete="new-password"
+            class="elite-input w-full rounded-xl px-4 py-3.5 text-sm"
+            placeholder="Nueva contraseña"
+          />
+          <input
+            id="pwd-new2"
+            type="password"
+            autocomplete="new-password"
+            class="elite-input w-full rounded-xl px-4 py-3.5 text-sm"
+            placeholder="Repetir nueva contraseña"
+          />
+          <p id="pwd-inline-error" class="hidden text-sm font-light text-red-400/90"></p>
+          <button
+            type="button"
+            id="btn-update-password"
+            class="mt-3 w-full rounded-xl border border-white/[0.12] py-3.5 text-[11px] font-medium uppercase tracking-[0.18em] text-elite-mist transition hover:border-elite-gold/25 hover:bg-white/[0.04]"
+          >
+            Actualizar contraseña
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="firebase-config.js"></script>
+    <script src="config.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+    <script>
+      (function () {
+        var lastDoc = {};
+        var pendingFotoFile = null;
+        var pendingLogoFile = null;
+        var docRef = null;
+
+        function onlyDigits(s) {
+          return String(s || "").replace(/\D/g, "");
+        }
+
+        function usersCollection() {
+          return (window.FIRESTORE_USERS_COLLECTION || "usuarios").trim() || "usuarios";
+        }
+
+        function storageFotoPath(uid) {
+          return "usuarios/" + uid + "/fotoPerfil";
+        }
+
+        function storageLogoPath(uid) {
+          return "usuarios/" + uid + "/logoInstitucional";
+        }
+
+        function bindUserDocument(db, user) {
+          docRef = user ? db.collection(usersCollection()).doc(user.uid) : null;
+          var hint = document.getElementById("panel-uid-hint");
+          if (hint) {
+            if (user) {
+              hint.textContent =
+                "ID público (compartí tu tarjeta): " +
+                user.uid +
+                " → ?id=" +
+                user.uid;
+              hint.classList.remove("hidden");
+            } else {
+              hint.textContent = "";
+              hint.classList.add("hidden");
+            }
+          }
+        }
+
+        function showLoginError(msg) {
+          var el = document.getElementById("login-error");
+          if (!el) return;
+          el.textContent = msg || "";
+          el.classList.toggle("hidden", !msg);
+        }
+
+        function showSaveError(msg) {
+          var el = document.getElementById("save-error");
+          if (!el) return;
+          el.textContent = msg || "";
+          el.classList.toggle("hidden", !msg);
+        }
+
+        function setStatus(msg) {
+          var el = document.getElementById("panel-status");
+          if (el) el.textContent = msg || "";
+        }
+
+        function setSaveOverlay(visible) {
+          var el = document.getElementById("save-overlay");
+          if (!el) return;
+          el.classList.toggle("hidden", !visible);
+          el.classList.toggle("flex", !!visible);
+          el.setAttribute("aria-hidden", visible ? "false" : "true");
+        }
+
+        function viewsForUser(user) {
+          var loginEl = document.getElementById("view-login");
+          var panelEl = document.getElementById("view-panel");
+          if (user) {
+            loginEl.classList.add("hidden");
+            panelEl.classList.remove("hidden");
+            panelEl.classList.remove("ec-dashboard-mounted");
+            void panelEl.offsetWidth;
+            panelEl.classList.add("ec-dashboard-mounted");
+          } else {
+            panelEl.classList.remove("ec-dashboard-mounted");
+            panelEl.classList.add("hidden");
+            loginEl.classList.remove("hidden");
+          }
+        }
+
+        function updatePanelWelcome(authUser) {
+          var span = document.getElementById("panel-hola-name");
+          if (!span) return;
+          var input = document.getElementById("f-nombreCompleto");
+          var nombre = input ? String(input.value || "").trim() : "";
+          if (!nombre && lastDoc.nombreCompleto) nombre = String(lastDoc.nombreCompleto).trim();
+          if (!nombre && authUser && authUser.displayName) nombre = String(authUser.displayName).trim();
+          if (!nombre && authUser && authUser.email) {
+            var at = authUser.email.indexOf("@");
+            nombre = at > 0 ? authUser.email.slice(0, at) : authUser.email;
+          }
+          if (!nombre) nombre = "Cliente";
+          span.textContent = nombre;
+        }
+
+        function fillFormFromData(data) {
+          var base = Object.assign({}, window.DEFAULT_TARJETA_RAW || {}, data || {});
+          var map = [
+            ["f-nombreCompleto", "nombreCompleto"],
+            ["f-cargo", "cargo"],
+            ["f-empresa", "empresa"],
+            ["f-whatsappNumero", "whatsappNumero"],
+            ["f-instagram", "instagram"],
+            ["f-linkedin", "linkedin"],
+            ["f-sitioWeb", "sitioWeb"],
+            ["f-mapsUrl", "mapsUrl"],
+          ];
+          map.forEach(function (pair) {
+            var el = document.getElementById(pair[0]);
+            if (el) el.value = base[pair[1]] != null ? String(base[pair[1]]) : "";
+          });
+        }
+
+        /** Campos alineados con config.js / tarjeta (Firestore usuarios/{uid}). */
+        function readFormObject() {
+          return {
+            nombreCompleto: document.getElementById("f-nombreCompleto").value.trim(),
+            cargo: document.getElementById("f-cargo").value.trim(),
+            empresa: document.getElementById("f-empresa").value.trim(),
+            whatsappNumero: onlyDigits(document.getElementById("f-whatsappNumero").value),
+            instagram: document.getElementById("f-instagram").value.trim(),
+            linkedin: document.getElementById("f-linkedin").value.trim(),
+            sitioWeb: document.getElementById("f-sitioWeb").value.trim(),
+            mapsUrl: document.getElementById("f-mapsUrl").value.trim(),
+          };
+        }
+
+        function setPreview(imgId, url) {
+          var img = document.getElementById(imgId);
+          if (!img || !url) return;
+          img.src = url;
+          img.classList.remove("hidden");
+        }
+
+        function clearPendingFiles() {
+          pendingFotoFile = null;
+          pendingLogoFile = null;
+          var ff = document.getElementById("file-foto");
+          var fl = document.getElementById("file-logo");
+          if (ff) ff.value = "";
+          if (fl) fl.value = "";
+        }
+
+        function uploadToStorage(path, file) {
+          var ref = firebase.storage().ref(path);
+          var meta = { contentType: file.type || "image/jpeg" };
+          return ref.put(file, meta).then(function (snap) {
+            return snap.ref.getDownloadURL().then(function (url) {
+              var u = String(url || "").trim();
+              if (!u) throw new Error("Storage no devolvió URL de descarga.");
+              return u;
+            });
+          });
+        }
+
+        function openPwdModal() {
+          var m = document.getElementById("modal-password");
+          m.classList.remove("hidden");
+          m.classList.add("flex");
+          document.getElementById("pwd-reset-msg").classList.add("hidden");
+          document.getElementById("pwd-inline-error").classList.add("hidden");
+          document.getElementById("pwd-current").value = "";
+          document.getElementById("pwd-new").value = "";
+          document.getElementById("pwd-new2").value = "";
+        }
+
+        function closePwdModal() {
+          var m = document.getElementById("modal-password");
+          m.classList.add("hidden");
+          m.classList.remove("flex");
+        }
+
+        var fbCfg = window.FIREBASE_WEB_CONFIG;
+        var fbReady =
+          fbCfg &&
+          fbCfg.apiKey &&
+          String(fbCfg.apiKey).indexOf("REEMPLAZAR") === -1 &&
+          String(fbCfg.appId || "").indexOf("REEMPLAZAR") === -1;
+
+        if (!fbReady) {
+          showLoginError("Configurá firebase-config.js con los datos de tu app web.");
+        } else {
+          firebase.initializeApp(fbCfg);
+          var auth = firebase.auth();
+          var db = firebase.firestore();
+
+          function loadDocument() {
+            if (!docRef) return;
+            setStatus("Sincronizando…");
+            docRef
+              .get()
+              .then(function (snap) {
+                lastDoc = snap.exists ? snap.data() : {};
+                fillFormFromData(lastDoc);
+                updatePanelWelcome(auth.currentUser);
+                if (lastDoc.fotoUrl) setPreview("preview-foto", lastDoc.fotoUrl);
+                else document.getElementById("preview-foto").classList.add("hidden");
+                if (lastDoc.logoUrl) setPreview("preview-logo", lastDoc.logoUrl);
+                else document.getElementById("preview-logo").classList.add("hidden");
+                setStatus(snap.exists ? "Listo. Editá y guardá cuando quieras." : "Sin datos previos: completá y guardá.");
+              })
+              .catch(function (e) {
+                setStatus("");
+                showSaveError(e.message || "Error al leer Firestore");
+              });
+          }
+
+          function syncPublicCardHref() {
+            var a = document.getElementById("btnVerTarjeta");
+            if (!a) return;
+            var u = auth.currentUser;
+            var origin = String(window.location.origin || "").replace(/\/$/, "");
+            if (u && origin) {
+              a.href = origin + "/?id=" + encodeURIComponent(u.uid);
+            } else {
+              a.href = "#";
+            }
+          }
+
+          function buildPublicUrl(uid) {
+            return (
+              window.location.protocol +
+              "//" +
+              window.location.host +
+              "/?id=" +
+              encodeURIComponent(uid)
+            );
+          }
+
+          function updatePublicLinkInput(user) {
+            var input = document.getElementById("input-public-url");
+            if (!input) return;
+            input.value = user && user.uid ? buildPublicUrl(user.uid) : "";
+          }
+
+          function fallbackExecCopyPublic(text) {
+            var ta = document.createElement("textarea");
+            ta.value = text;
+            ta.setAttribute("readonly", "");
+            ta.style.position = "fixed";
+            ta.style.left = "-9999px";
+            document.body.appendChild(ta);
+            ta.select();
+            var ok = false;
+            try {
+              ok = document.execCommand("copy");
+            } catch (e) {}
+            document.body.removeChild(ta);
+            return ok;
+          }
+
+          function setCopyPublicLabel(btn, text) {
+            var span = btn && btn.querySelector("span");
+            if (span) span.textContent = text;
+          }
+
+          var btnCopyPublicUrl = document.getElementById("btn-copy-public-url");
+          if (btnCopyPublicUrl) {
+            btnCopyPublicUrl.addEventListener("click", function () {
+              var u = auth.currentUser;
+              if (!u) return;
+              var text = buildPublicUrl(u.uid);
+              var defaultLabel = "Copiar enlace";
+              function showCopied() {
+                setCopyPublicLabel(btnCopyPublicUrl, "¡Copiado!");
+                setTimeout(function () {
+                  setCopyPublicLabel(btnCopyPublicUrl, defaultLabel);
+                }, 2000);
+              }
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(showCopied).catch(function () {
+                  if (fallbackExecCopyPublic(text)) showCopied();
+                });
+              } else {
+                if (fallbackExecCopyPublic(text)) showCopied();
+              }
+            });
+          }
+
+          var btnSharePublicUrl = document.getElementById("btn-share-public-url");
+          if (btnSharePublicUrl) {
+            btnSharePublicUrl.addEventListener("click", function () {
+              var u = auth.currentUser;
+              if (!u) return;
+              var url = buildPublicUrl(u.uid);
+              var nombre = "";
+              var nombreInput = document.getElementById("f-nombreCompleto");
+              if (nombreInput) nombre = String(nombreInput.value || "").trim();
+              if (!nombre && lastDoc && lastDoc.nombreCompleto) {
+                nombre = String(lastDoc.nombreCompleto).trim();
+              }
+              if (!nombre && u.displayName) nombre = String(u.displayName).trim();
+              var title = (nombre || "Mi perfil") + " — Tarjeta Digital";
+              if (navigator.share) {
+                try {
+                  navigator
+                    .share({ title: title, url: url })
+                    .catch(function (err) {
+                      if (err && err.name === "AbortError") return;
+                      if (btnCopyPublicUrl) btnCopyPublicUrl.click();
+                    });
+                } catch (e) {
+                  if (btnCopyPublicUrl) btnCopyPublicUrl.click();
+                }
+              } else {
+                if (btnCopyPublicUrl) btnCopyPublicUrl.click();
+              }
+            });
+          }
+
+          auth.onAuthStateChanged(function (user) {
+            viewsForUser(user);
+            bindUserDocument(db, user);
+            syncPublicCardHref();
+            updatePublicLinkInput(user);
+            if (user) {
+              loadDocument();
+            } else {
+              lastDoc = {};
+              showSaveError("");
+            }
+          });
+
+          var btnTarjetaPublica = document.getElementById("btnVerTarjeta");
+          if (btnTarjetaPublica) {
+            btnTarjetaPublica.addEventListener("click", function (e) {
+              if (e.button !== 0) return;
+              if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+                syncPublicCardHref();
+                return;
+              }
+              var u = auth.currentUser;
+              if (!u) {
+                e.preventDefault();
+                return;
+              }
+              var origin = String(window.location.origin || "").replace(/\/$/, "");
+              var url = origin + "/?id=" + encodeURIComponent(u.uid);
+              e.preventDefault();
+              var w = window.open(url, "_blank", "noopener,noreferrer");
+              if (!w) {
+                window.location.assign(url);
+              }
+            });
+          }
+
+          var nombreInput = document.getElementById("f-nombreCompleto");
+          if (nombreInput) {
+            nombreInput.addEventListener("input", function () {
+              updatePanelWelcome(auth.currentUser);
+            });
+            nombreInput.addEventListener("blur", function () {
+              updatePanelWelcome(auth.currentUser);
+            });
+          }
+
+          document.getElementById("form-login").addEventListener("submit", function (e) {
+            e.preventDefault();
+            showLoginError("");
+            var email = document.getElementById("login-email").value.trim();
+            var password = document.getElementById("login-password").value;
+            auth.signInWithEmailAndPassword(email, password).catch(function (err) {
+              var map = {
+                "auth/invalid-email": "Correo no válido.",
+                "auth/user-disabled": "Usuario deshabilitado.",
+                "auth/user-not-found": "Usuario no encontrado.",
+                "auth/wrong-password": "Contraseña incorrecta.",
+                "auth/invalid-credential": "Credenciales incorrectas.",
+              };
+              showLoginError(map[err.code] || err.message || "No se pudo iniciar sesión");
+            });
+          });
+
+          document.getElementById("btn-logout").addEventListener("click", function () {
+            auth.signOut();
+            clearPendingFiles();
+          });
+
+          document.getElementById("file-foto").addEventListener("change", function (e) {
+            var f = e.target.files && e.target.files[0];
+            pendingFotoFile = f || null;
+            if (f) {
+              var r = new FileReader();
+              r.onload = function () {
+                setPreview("preview-foto", r.result);
+              };
+              r.readAsDataURL(f);
+            }
+          });
+
+          document.getElementById("file-logo").addEventListener("change", function (e) {
+            var f = e.target.files && e.target.files[0];
+            pendingLogoFile = f || null;
+            if (f) {
+              var r = new FileReader();
+              r.onload = function () {
+                setPreview("preview-logo", r.result);
+              };
+              r.readAsDataURL(f);
+            }
+          });
+
+          function setSaveButtonsDisabled(disabled) {
+            ["btn-save-datos", "btn-save-imagenes"].forEach(function (id) {
+              var b = document.getElementById(id);
+              if (b) b.disabled = disabled;
+            });
+          }
+
+          function initPortalTabs() {
+            var buttons = document.querySelectorAll('[role="tab"][data-tab]');
+            var map = {
+              datos: document.getElementById("tab-datos"),
+              imagenes: document.getElementById("tab-imagenes"),
+              seguridad: document.getElementById("tab-seguridad"),
+            };
+            function show(which) {
+              Object.keys(map).forEach(function (key) {
+                var p = map[key];
+                if (p) p.classList.toggle("hidden", key !== which);
+              });
+              buttons.forEach(function (btn) {
+                var on = btn.getAttribute("data-tab") === which;
+                btn.setAttribute("aria-selected", on ? "true" : "false");
+                btn.classList.toggle("portal-tab-active", on);
+              });
+            }
+            buttons.forEach(function (btn) {
+              btn.addEventListener("click", function () {
+                show(btn.getAttribute("data-tab"));
+              });
+            });
+          }
+          initPortalTabs();
+
+          document.getElementById("form-card").addEventListener("submit", function (e) {
+            e.preventDefault();
+            showSaveError("");
+            if (!auth.currentUser || !docRef) {
+              showSaveError("No hay sesión.");
+              return;
+            }
+            var uid = auth.currentUser.uid;
+            setSaveButtonsDisabled(true);
+            setSaveOverlay(true);
+            var textData = readFormObject();
+            /* docRef → Firestore usuarios/{uid}; mismos campos que la tarjeta (merge conserva fotoUrl/logoUrl). */
+            var payload = Object.assign({}, lastDoc, textData);
+
+            var chain = Promise.resolve();
+
+            if (pendingFotoFile) {
+              chain = chain.then(function () {
+                return uploadToStorage(storageFotoPath(uid), pendingFotoFile).then(function (url) {
+                  var u = String(url || "").trim();
+                  if (!u) throw new Error("No se obtuvo downloadURL para la foto de perfil.");
+                  payload.fotoUrl = u;
+                });
+              });
+            }
+            if (pendingLogoFile) {
+              chain = chain.then(function () {
+                return uploadToStorage(storageLogoPath(uid), pendingLogoFile).then(function (url) {
+                  var u = String(url || "").trim();
+                  if (!u) throw new Error("No se obtuvo downloadURL para el logo.");
+                  payload.logoUrl = u;
+                });
+              });
+            }
+
+            chain
+              .then(function () {
+                return docRef.set(payload, { merge: true });
+              })
+              .then(function () {
+                lastDoc = payload;
+                clearPendingFiles();
+                updatePanelWelcome(auth.currentUser);
+                if (payload.fotoUrl) setPreview("preview-foto", String(payload.fotoUrl).trim());
+                else {
+                  var pf = document.getElementById("preview-foto");
+                  if (pf) {
+                    pf.removeAttribute("src");
+                    pf.classList.add("hidden");
+                  }
+                }
+                if (payload.logoUrl) setPreview("preview-logo", String(payload.logoUrl).trim());
+                else {
+                  var pl = document.getElementById("preview-logo");
+                  if (pl) {
+                    pl.removeAttribute("src");
+                    pl.classList.add("hidden");
+                  }
+                }
+                setStatus("Cambios guardados. La tarjeta se actualiza en vivo.");
+                try {
+                  console.log("[EliteCard admin] Firestore usuarios/" + uid + " — media guardada:", {
+                    fotoUrl: payload.fotoUrl || "(no enviado en este guardado)",
+                    logoUrl: payload.logoUrl || "(no enviado en este guardado)",
+                  });
+                } catch (logErr) {}
+              })
+              .catch(function (err) {
+                showSaveError(err.message || "Error al guardar");
+              })
+              .finally(function () {
+                setSaveButtonsDisabled(false);
+                setSaveOverlay(false);
+              });
+          });
+
+          document.getElementById("btn-password-open-account").addEventListener("click", openPwdModal);
+          document.getElementById("pwd-modal-close").addEventListener("click", closePwdModal);
+          document.getElementById("modal-password").addEventListener("click", function (e) {
+            if (e.target === e.currentTarget) closePwdModal();
+          });
+          document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape") closePwdModal();
+          });
+
+          document.getElementById("btn-send-reset").addEventListener("click", function () {
+            var user = auth.currentUser;
+            var msg = document.getElementById("pwd-reset-msg");
+            var errEl = document.getElementById("pwd-inline-error");
+            errEl.classList.add("hidden");
+            msg.classList.add("hidden");
+            if (!user || !user.email) {
+              errEl.textContent = "No hay correo asociado a la sesión.";
+              errEl.classList.remove("hidden");
+              return;
+            }
+            auth
+              .sendPasswordResetEmail(user.email)
+              .then(function () {
+                msg.textContent = "Revisá tu bandeja: te enviamos un enlace para restablecer la contraseña.";
+                msg.classList.remove("hidden");
+              })
+              .catch(function (err) {
+                errEl.textContent = err.message || "No se pudo enviar el correo.";
+                errEl.classList.remove("hidden");
+              });
+          });
+
+          document.getElementById("btn-update-password").addEventListener("click", function () {
+            var user = auth.currentUser;
+            var errEl = document.getElementById("pwd-inline-error");
+            var cur = document.getElementById("pwd-current").value;
+            var n1 = document.getElementById("pwd-new").value;
+            var n2 = document.getElementById("pwd-new2").value;
+            errEl.classList.add("hidden");
+            if (!user || !user.email) {
+              errEl.textContent = "Sesión no válida.";
+              errEl.classList.remove("hidden");
+              return;
+            }
+            if (n1.length < 6) {
+              errEl.textContent = "La nueva contraseña debe tener al menos 6 caracteres.";
+              errEl.classList.remove("hidden");
+              return;
+            }
+            if (n1 !== n2) {
+              errEl.textContent = "Las contraseñas nuevas no coinciden.";
+              errEl.classList.remove("hidden");
+              return;
+            }
+            var cred = firebase.auth.EmailAuthProvider.credential(user.email, cur);
+            user
+              .reauthenticateWithCredential(cred)
+              .then(function () {
+                return user.updatePassword(n1);
+              })
+              .then(function () {
+                closePwdModal();
+                setStatus("Contraseña actualizada correctamente.");
+              })
+              .catch(function (err) {
+                var map = {
+                  "auth/wrong-password": "La contraseña actual es incorrecta.",
+                  "auth/weak-password": "La nueva contraseña es demasiado débil.",
+                  "auth/requires-recent-login": "Volvé a iniciar sesión e intentá de nuevo.",
+                };
+                errEl.textContent = map[err.code] || err.message || "No se pudo actualizar.";
+                errEl.classList.remove("hidden");
+              });
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>
