@@ -2,7 +2,12 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="ec-asset-version" content="1776100094282" />
+    <meta name="ec-asset-version" content="1776101887490" />
+    <script>
+      (function () {
+        window.__EC_PAGE_LOAD_TS = Date.now();
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Panel de Gestión | EliteCard</title>
     <meta name="theme-color" content="#050505" />
@@ -865,11 +870,11 @@
               <div id="email-signature-options" class="grid gap-3">
                 <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-white/[0.08] bg-black/20 px-3 py-2.5 text-sm text-elite-mist/88 transition hover:border-elite-gold/25">
                   <input id="sig-opt-foto-perfil" type="checkbox" checked class="h-4 w-4 rounded border-white/20 text-elite-gold focus:ring-elite-gold/40" />
-                  Mostrar foto de perfil
+                  Incluir foto de perfil
                 </label>
                 <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-white/[0.08] bg-black/20 px-3 py-2.5 text-sm text-elite-mist/88 transition hover:border-elite-gold/25">
                   <input id="sig-opt-logo-empresa" type="checkbox" checked class="h-4 w-4 rounded border-white/20 text-elite-gold focus:ring-elite-gold/40" />
-                  Mostrar logo de empresa
+                  Incluir logo de empresa
                 </label>
                 <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-white/[0.08] bg-black/20 px-3 py-2.5 text-sm text-elite-mist/88 transition hover:border-elite-gold/25">
                   <input id="sig-opt-datos-principales" type="checkbox" checked class="h-4 w-4 rounded border-white/20 text-elite-gold focus:ring-elite-gold/40" />
@@ -1216,8 +1221,13 @@
       </div>
     </div>
 
-    <script src="firebase-config.js?v=1776100094282"></script>
-    <script src="config.js?v=1776100094282"></script>
+    <script>
+      (function () {
+        var t = window.__EC_PAGE_LOAD_TS || Date.now();
+        document.write('<script src="firebase-config.js?v=' + t + '"><\/script>');
+        document.write('<script src="config.js?v=' + t + '"><\/script>');
+      })();
+    </script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
@@ -2340,6 +2350,7 @@
                 setStatus("Cambios guardados. La tarjeta se actualiza en vivo.");
                 updateAnalyticsCards(payload);
                 if (auth.currentUser) updateQrPreview(auth.currentUser.uid);
+                if (auth.currentUser) renderEmailSignaturePreview(auth.currentUser);
                 showAdminToast("¡Tarjeta actualizada con éxito!", "ok");
                 try {
                   console.log("[EliteCard admin] Firestore usuarios/" + uid + " — media guardada:", {

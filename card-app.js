@@ -1064,13 +1064,8 @@
       initFullscreenOnFirstGesture();
 
       if ("serviceWorker" in navigator) {
-        var ecV = "";
-        try {
-          var m = document.querySelector('meta[name="ec-asset-version"]');
-          ecV = m && m.getAttribute("content") ? String(m.getAttribute("content")).trim() : "";
-        } catch (eSwMeta) {}
-        var swPath = ecV ? "sw.js?v=" + encodeURIComponent(ecV) : "sw.js";
-        navigator.serviceWorker.register(swPath).catch(function () {});
+        /* sw.js va sin ?v= dinámico: cada carga con Date.now() registraría un SW distinto. Cache-Control: no-cache en hosting. */
+        navigator.serviceWorker.register("sw.js").catch(function () {});
       }
 
       if (wireFirestoreProfile()) {

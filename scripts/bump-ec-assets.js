@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
- * Actualiza <meta name="ec-asset-version"> y los parámetros ?v= de los JS/CSS locales
- * en index.html y admin.html. Ejecutar antes de cada deploy: npm run bump-assets
+ * Actualiza solo <meta name="ec-asset-version"> (referencia de build / diagnóstico).
+ * Los JS/CSS locales usan ?v=Date.now() en cada carga (index.html / admin.html).
+ * Ejecutar antes de deploy: npm run bump-assets
  */
 "use strict";
 
@@ -34,23 +35,6 @@ function bumpHtml(rel) {
       "$1" + v + "$2"
     );
   }
-
-  s = s.replace(
-    /(\s(?:href|src)=")([^"]*(?:firebase-config|config|card-app|styles)\.(?:js|css))(\?v=)(\d+)(")/gi,
-    function (m, pre, url, q, old, post) {
-      if (/^https?:\/\//i.test(url)) return m;
-      return pre + url + q + v + post;
-    }
-  );
-
-  s = s.replace(
-    /(\s(?:href|src)=")([^"]*(?:firebase-config|config|card-app|styles)\.(?:js|css))(")/gi,
-    function (m, pre, url, quote) {
-      if (/^https?:\/\//i.test(url)) return m;
-      if (/\?v=/.test(url)) return m;
-      return pre + url + "?v=" + v + quote;
-    }
-  );
 
   fs.writeFileSync(p, s);
 }

@@ -2,7 +2,7 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="ec-asset-version" content="1776100094282" />
+    <meta name="ec-asset-version" content="1776101887490" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
@@ -118,7 +118,14 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <link rel="stylesheet" href="styles.css?v=1776100094282" />
+    <script>
+      (function () {
+        window.__EC_PAGE_LOAD_TS = Date.now();
+        document.write(
+          '<link rel="stylesheet" href="styles.css?v=' + window.__EC_PAGE_LOAD_TS + '">'
+        );
+      })();
+    </script>
   </head>
   <!-- Visor universal: Firestore usuarios/{id}. URL ?id=IDENTIFICADOR (también ?user= / ?uid=). Sin id → perfil por defecto (FIRESTORE_DEFAULT_CARD_UID o "perfil"). -->
   <body class="luxury-body preloader-active min-h-[100dvh] font-light antialiased">
@@ -229,15 +236,14 @@
         ></p>
       </header>
 
-      <!-- FIX: pb aumentado para que el último botón no quede tapado por el footer fijo -->
+      <!-- Espacio inferior: footer fijo + safe area (sin bloque de captura de leads) -->
       <main
-        class="links-stagger flex flex-1 flex-col gap-3 px-4 pb-[calc(7rem+env(safe-area-inset-bottom))]"
+        class="links-stagger flex flex-1 flex-col gap-3 px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))]"
         id="links-container"
       ></main>
 
-      <!-- FIX: pb aumentado para que el crédito no quede tapado en celulares con notch/home bar -->
       <div
-        class="webelite-credit-outer mx-auto w-full max-w-[min(100vw,56.25dvh)] shrink-0 px-4 pb-[calc(7.5rem+env(safe-area-inset-bottom))] pt-1 text-center"
+        class="webelite-credit-outer mx-auto w-full max-w-[min(100vw,56.25dvh)] shrink-0 px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-1 text-center"
       >
         <a
           class="webelite-credit"
@@ -442,12 +448,22 @@
       </div>
     </div>
 
-    <script src="firebase-config.js?v=1776100094282"></script>
-    <script src="config.js?v=1776100094282"></script>
+    <script>
+      (function () {
+        var t = window.__EC_PAGE_LOAD_TS || Date.now();
+        document.write('<script src="firebase-config.js?v=' + t + '"><\/script>');
+        document.write('<script src="config.js?v=' + t + '"><\/script>');
+      })();
+    </script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-    <script src="card-app.js?v=1776100094282"></script>
+    <script>
+      (function () {
+        var t = window.__EC_PAGE_LOAD_TS || Date.now();
+        document.write('<script src="card-app.js?v=' + t + '"><\/script>');
+      })();
+    </script>
     <script>
 (function() {
   // Banner instalación PWA — Chrome Android
