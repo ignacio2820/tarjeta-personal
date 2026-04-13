@@ -167,6 +167,28 @@
         animation: none;
         opacity: 0;
       }
+
+      /* Publicar al final del dashboard: integrado al flujo, sin tapar contenido */
+      .ec-publish-footer {
+        margin-top: 0;
+      }
+      .ec-publish-footer .ec-publish-footer-inner {
+        max-width: 42rem;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .ec-publish-footer .elite-btn-gold {
+        width: 100%;
+        border-radius: 1rem;
+        padding-top: 1.15rem;
+        padding-bottom: 1.15rem;
+        font-size: 0.78rem;
+        box-shadow:
+          0 8px 40px rgba(212, 175, 55, 0.42),
+          0 6px 32px rgba(212, 175, 55, 0.28),
+          inset 0 1px 0 rgba(255, 255, 255, 0.45);
+      }
+
       @keyframes ec-shimmer {
         0%,
         100% {
@@ -544,8 +566,8 @@
     </section>
 
     <!-- Panel · EliteCard -->
-    <section id="view-panel" class="relative z-10 hidden min-h-[100dvh] pb-36 pt-8 sm:pb-32 sm:pt-10">
-      <div class="ec-dashboard-stack mx-auto max-w-4xl space-y-10 px-5 pb-24 sm:px-10">
+    <section id="view-panel" class="relative z-10 hidden min-h-[100dvh] pb-12 pt-8 sm:pb-14 sm:pt-10">
+      <div class="ec-dashboard-stack mx-auto max-w-4xl space-y-10 px-5 pb-10 sm:px-10">
         <!-- Marca EliteCard + WebElite + acciones -->
         <header class="ec-reveal ec-reveal-d1 border-b border-white/[0.07] pb-8">
           <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
@@ -833,20 +855,29 @@
         <div id="ec-card-email-signature" class="ec-reveal ec-reveal-d6 elite-card hidden p-6 sm:p-8" data-dashboard-panel="email-signature">
           <p class="ec-label mb-2 block text-elite-gold/90">Firma de Email</p>
           <p class="mb-6 text-sm font-light text-elite-mist/48">
-            Activá o desactivá los bloques de tu firma y copiá el HTML para usarlo en Gmail u Outlook.
+            Elegí qué bloques incluir. El HTML usa tablas para verse bien en Gmail y Outlook. Fondo claro para que encaje en cualquier correo.
           </p>
 
           <div class="grid gap-6 lg:grid-cols-[1fr_minmax(0,340px)]">
             <div class="rounded-2xl border border-white/10 bg-black/25 p-4">
-              <p class="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-elite-gold/85">Elementos incluidos</p>
-              <div id="email-signature-options" class="grid gap-2 sm:grid-cols-2">
-                <label class="flex items-center gap-2 text-sm text-elite-mist/85"><input id="sig-opt-foto" type="checkbox" checked />Foto</label>
-                <label class="flex items-center gap-2 text-sm text-elite-mist/85"><input id="sig-opt-logo" type="checkbox" checked />Logo</label>
-                <label class="flex items-center gap-2 text-sm text-elite-mist/85"><input id="sig-opt-nombre" type="checkbox" checked />Nombre</label>
-                <label class="flex items-center gap-2 text-sm text-elite-mist/85"><input id="sig-opt-cargo" type="checkbox" checked />Cargo</label>
-                <label class="flex items-center gap-2 text-sm text-elite-mist/85"><input id="sig-opt-whatsapp" type="checkbox" checked />WhatsApp</label>
-                <label class="flex items-center gap-2 text-sm text-elite-mist/85"><input id="sig-opt-email" type="checkbox" checked />Email</label>
-                <label class="flex items-center gap-2 text-sm text-elite-mist/85 sm:col-span-2"><input id="sig-opt-qr" type="checkbox" checked />Código QR</label>
+              <p class="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-elite-gold/85">Mostrar en la firma</p>
+              <div id="email-signature-options" class="grid gap-3">
+                <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-white/[0.08] bg-black/20 px-3 py-2.5 text-sm text-elite-mist/88 transition hover:border-elite-gold/25">
+                  <input id="sig-opt-foto" type="checkbox" checked class="h-4 w-4 rounded border-white/20 text-elite-gold focus:ring-elite-gold/40" />
+                  Foto y logo (columna izquierda)
+                </label>
+                <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-white/[0.08] bg-black/20 px-3 py-2.5 text-sm text-elite-mist/88 transition hover:border-elite-gold/25">
+                  <input id="sig-opt-nombre-cargo" type="checkbox" checked class="h-4 w-4 rounded border-white/20 text-elite-gold focus:ring-elite-gold/40" />
+                  Nombre y cargo
+                </label>
+                <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-white/[0.08] bg-black/20 px-3 py-2.5 text-sm text-elite-mist/88 transition hover:border-elite-gold/25">
+                  <input id="sig-opt-redes" type="checkbox" checked class="h-4 w-4 rounded border-white/20 text-elite-gold focus:ring-elite-gold/40" />
+                  Iconos / enlaces de redes (Instagram, LinkedIn, web, WhatsApp, email)
+                </label>
+                <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-white/[0.08] bg-black/20 px-3 py-2.5 text-sm text-elite-mist/88 transition hover:border-elite-gold/25">
+                  <input id="sig-opt-qr" type="checkbox" checked class="h-4 w-4 rounded border-white/20 text-elite-gold focus:ring-elite-gold/40" />
+                  Código QR
+                </label>
               </div>
               <div class="mt-4">
                 <label class="mb-1.5 block text-xs font-medium uppercase tracking-[0.14em] text-elite-gold/80" for="sig-bg-mode">
@@ -864,9 +895,9 @@
                 <button
                   type="button"
                   id="btn-copy-email-signature"
-                  class="elite-btn-gold rounded-xl px-5 py-2.5 text-[11px]"
+                  class="elite-btn-gold rounded-xl px-5 py-3 text-[11px] sm:px-8"
                 >
-                  <span>Copiar firma (HTML)</span>
+                  <span>Copiar HTML de la Firma</span>
                 </button>
               </div>
             </div>
@@ -1084,20 +1115,20 @@
             </button>
           </div>
         </form>
+
+        <footer class="ec-publish-footer ec-reveal elite-card p-6 sm:p-8" aria-label="Publicar perfil">
+          <div class="ec-publish-footer-inner">
+            <p class="mb-3 text-center text-xs font-light leading-relaxed text-elite-mist/45">
+              Al publicar se guardan datos, imágenes pendientes y estilo (tema, forma del avatar y diseño de botones) en la nube.
+              La tarjeta pública se actualiza al instante para quienes abren tu enlace.
+            </p>
+            <button type="submit" id="btn-publish-footer" class="elite-btn-gold" form="form-card">
+              <span>Publicar cambios</span>
+            </button>
+          </div>
+        </footer>
       </div>
     </section>
-
-    <div class="pointer-events-none fixed inset-x-0 bottom-4 z-[220] px-4">
-      <div class="mx-auto max-w-4xl">
-        <button
-          type="button"
-          id="btn-publish-sticky"
-          class="elite-btn-gold pointer-events-auto w-full rounded-2xl py-4 text-[0.74rem] sm:py-4 sm:text-[0.78rem]"
-        >
-          <span>Publicar cambios</span>
-        </button>
-      </div>
-    </div>
 
     <!-- Overlay guardado (Firestore / Storage) -->
     <div
@@ -1570,15 +1601,13 @@
             var el = document.getElementById(id);
             return !!(el && el.checked);
           }
+          var bgEl = document.getElementById("sig-bg-mode");
           return {
-            foto: on("sig-opt-foto"),
-            logo: on("sig-opt-logo"),
-            nombre: on("sig-opt-nombre"),
-            cargo: on("sig-opt-cargo"),
-            whatsapp: on("sig-opt-whatsapp"),
-            email: on("sig-opt-email"),
-            qr: on("sig-opt-qr"),
-            backgroundMode: (document.getElementById("sig-bg-mode") || {}).value || "white",
+            showFoto: on("sig-opt-foto"),
+            showNameRole: on("sig-opt-nombre-cargo"),
+            showSocial: on("sig-opt-redes"),
+            showQr: on("sig-opt-qr"),
+            backgroundMode: (bgEl && bgEl.value) || "white",
           };
         }
 
@@ -1588,15 +1617,53 @@
             var el = document.getElementById(id);
             if (el) el.checked = !!value;
           }
-          set("sig-opt-foto", c.foto !== false);
-          set("sig-opt-logo", c.logo !== false);
-          set("sig-opt-nombre", c.nombre !== false);
-          set("sig-opt-cargo", c.cargo !== false);
-          set("sig-opt-whatsapp", c.whatsapp !== false);
-          set("sig-opt-email", c.email !== false);
-          set("sig-opt-qr", c.qr !== false);
+          var showFoto =
+            c.showFoto !== undefined
+              ? !!c.showFoto
+              : c.foto !== false || c.logo !== false;
+          var showNameRole =
+            c.showNameRole !== undefined
+              ? !!c.showNameRole
+              : c.nombre !== false || c.cargo !== false;
+          var showSocial =
+            c.showSocial !== undefined
+              ? !!c.showSocial
+              : c.whatsapp !== false || c.email !== false;
+          var showQr = c.showQr !== undefined ? !!c.showQr : c.qr !== false;
+          set("sig-opt-foto", showFoto);
+          set("sig-opt-nombre-cargo", showNameRole);
+          set("sig-opt-redes", showSocial);
+          set("sig-opt-qr", showQr);
           var bg = document.getElementById("sig-bg-mode");
           if (bg) bg.value = c.backgroundMode === "transparent" ? "transparent" : "white";
+        }
+
+        function escHtmlSig(s) {
+          return String(s || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+        }
+
+        function escAttrSig(s) {
+          return String(s || "")
+            .replace(/&/g, "&amp;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+        }
+
+        function sigInstagramHref(raw) {
+          var s = String(raw || "").trim();
+          if (!s) return "";
+          if (/^https?:\/\//i.test(s)) return s;
+          return "https://instagram.com/" + s.replace(/^@/, "");
+        }
+
+        function sigLinkedinHref(raw) {
+          var s = String(raw || "").trim();
+          if (!s) return "";
+          if (/^https?:\/\//i.test(s)) return s;
+          return "https://linkedin.com/in/" + s.replace(/^\/+/, "");
         }
 
         function getEmailSignatureHtml(user) {
@@ -1607,44 +1674,148 @@
           var qrUrl = "https://quickchart.io/qr?size=200&margin=1&text=" + encodeURIComponent(publicUrl);
           var bgMode = sig.backgroundMode === "transparent" ? "transparent" : "white";
           var tableBg = bgMode === "transparent" ? "transparent" : "#ffffff";
-          var tableBorder = bgMode === "transparent" ? "#d1d5db" : "#e5e7eb";
+          var tableBorder = bgMode === "transparent" ? "#d1d5db" : "#e8e4dc";
 
           var fotoUrl = String((lastDoc && (lastDoc.fotoUrl || lastDoc.photoURL)) || "").trim();
           var logoUrl = String((lastDoc && lastDoc.logoUrl) || "").trim();
-          var safeName = data.nombreCompleto || "Tu nombre";
-          var safeCargo = data.cargo || "Tu cargo";
-          var safeEmail = data.emailInstitucional || "";
-          var safeWa = data.whatsappNumero ? "+" + data.whatsappNumero : "";
-
-          var cellsLeft = "";
-          if (sig.foto && fotoUrl) {
-            cellsLeft +=
-              '<img src="' + fotoUrl + '" alt="Foto" width="72" height="72" style="display:block;border-radius:12px;object-fit:cover;border:1px solid #d4af37;" />';
-          }
-          if (sig.logo && logoUrl) {
-            cellsLeft +=
-              '<img src="' + logoUrl + '" alt="Logo" width="56" height="56" style="display:block;margin-top:8px;border-radius:50%;background:#fff;padding:4px;object-fit:contain;border:1px solid #d4af37;" />';
-          }
-          if (!cellsLeft) {
-            cellsLeft = '<div style="width:72px;height:72px;border:1px solid #ddd;border-radius:12px;background:#f8f8f8;"></div>';
+          var safeName = escHtmlSig(data.nombreCompleto || "Tu nombre");
+          var safeCargo = escHtmlSig(data.cargo || "Tu cargo");
+          var safeEmail = String(data.emailInstitucional || "").trim();
+          var waDigits = String(data.whatsappNumero || "").replace(/\D/g, "");
+          var waHref = waDigits ? "https://wa.me/" + waDigits : "";
+          var igHref = sigInstagramHref(data.instagram);
+          var liHref = sigLinkedinHref(data.linkedin);
+          var webRaw = String(data.sitioWeb || "").trim();
+          var webHref = "";
+          if (webRaw) {
+            webHref = /^https?:\/\//i.test(webRaw) ? webRaw : "https://" + webRaw.replace(/^\/+/, "");
           }
 
-          var center = "";
-          if (sig.nombre) center += '<div style="font-family:Poppins,Arial,sans-serif;font-size:16px;font-weight:600;color:#111;">' + safeName + "</div>";
-          if (sig.cargo) center += '<div style="font-family:Poppins,Arial,sans-serif;font-size:13px;color:#555;margin-top:3px;">' + safeCargo + "</div>";
-          if (sig.whatsapp && safeWa) center += '<div style="font-family:Arial,sans-serif;font-size:12px;color:#0a0a0a;margin-top:8px;">WhatsApp: ' + safeWa + "</div>";
-          if (sig.email && safeEmail) center += '<div style="font-family:Arial,sans-serif;font-size:12px;color:#0a0a0a;margin-top:4px;">Email: ' + safeEmail + "</div>";
-          center += '<div style="font-family:Arial,sans-serif;font-size:11px;color:#666;margin-top:10px;">Escaneá mi QR para agendarme</div>';
+          var leftCol = "";
+          if (sig.showFoto) {
+            var stack = "";
+            if (fotoUrl) {
+              stack +=
+                '<img src="' +
+                escAttrSig(fotoUrl) +
+                '" alt="" width="80" height="80" style="display:block;border-radius:14px;object-fit:cover;border:1px solid #d4af37;" />';
+            }
+            if (logoUrl) {
+              stack +=
+                '<img src="' +
+                escAttrSig(logoUrl) +
+                '" alt="" width="64" height="64" style="display:block;margin-top:10px;border-radius:999px;background:#fff;padding:5px;object-fit:contain;border:1px solid rgba(212,175,55,0.55);" />';
+            }
+            if (!stack) {
+              stack =
+                '<div style="width:80px;height:80px;border:1px dashed #d4af37;border-radius:14px;background:#fafafa;"></div>';
+            }
+            leftCol =
+              '<td style="padding:14px 12px 14px 14px;vertical-align:top;width:96px;">' + stack + "</td>";
+          }
 
-          var qrBlock = sig.qr
-            ? '<td style="vertical-align:top;padding-left:14px;"><a href="' + publicUrl + '" target="_blank" rel="noopener noreferrer"><img src="' + qrUrl + '" width="90" height="90" alt="QR EliteCard" style="display:block;border:1px solid #ddd;border-radius:8px;background:#fff;padding:4px;" /></a></td>'
-            : "";
+          var centerParts = "";
+          if (sig.showNameRole) {
+            centerParts +=
+              '<div style="font-family:Georgia,\'Times New Roman\',serif;font-size:17px;font-weight:600;color:#111111;line-height:1.25;">' +
+              safeName +
+              "</div>";
+            centerParts +=
+              '<div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#444444;margin-top:4px;line-height:1.35;">' +
+              safeCargo +
+              "</div>";
+          }
+
+          if (sig.showSocial) {
+            var linkStyle =
+              "color:#9a7b28;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:600;text-decoration:none;";
+            var sep =
+              '<span style="color:#cccccc;font-size:11px;padding:0 5px;">|</span>';
+            var parts = [];
+            if (igHref) {
+              parts.push(
+                '<a href="' +
+                  escAttrSig(igHref) +
+                  '" style="' +
+                  linkStyle +
+                  '" target="_blank" rel="noopener noreferrer">Instagram</a>'
+              );
+            }
+            if (liHref) {
+              parts.push(
+                '<a href="' +
+                  escAttrSig(liHref) +
+                  '" style="' +
+                  linkStyle +
+                  '" target="_blank" rel="noopener noreferrer">LinkedIn</a>'
+              );
+            }
+            if (webHref) {
+              parts.push(
+                '<a href="' +
+                  escAttrSig(webHref) +
+                  '" style="' +
+                  linkStyle +
+                  '" target="_blank" rel="noopener noreferrer">Web</a>'
+              );
+            }
+            if (waHref) {
+              parts.push(
+                '<a href="' +
+                  escAttrSig(waHref) +
+                  '" style="' +
+                  linkStyle +
+                  '" target="_blank" rel="noopener noreferrer">WhatsApp</a>'
+              );
+            }
+            if (safeEmail) {
+              parts.push(
+                '<a href="mailto:' +
+                  escAttrSig(safeEmail) +
+                  '" style="' +
+                  linkStyle +
+                  '">Email</a>'
+              );
+            }
+            if (parts.length) {
+              centerParts +=
+                '<div style="margin-top:12px;line-height:1.7;">' + parts.join(sep) + "</div>";
+            }
+          }
+
+          if (sig.showQr) {
+            centerParts +=
+              '<div style="font-family:Arial,Helvetica,sans-serif;font-size:10px;color:#888888;margin-top:10px;letter-spacing:0.04em;">ESCANEÁ EL QR PARA MI TARJETA DIGITAL</div>';
+          }
+
+          var mainCellStyle = sig.showFoto
+            ? "padding:14px 18px 14px 18px;vertical-align:top;border-left:2px solid #d4af37;"
+            : "padding:14px 16px;vertical-align:top;";
+          var centerCol =
+            '<td style="' + mainCellStyle + '">' + (centerParts || '<span style="font-size:12px;color:#999;">Activá nombre o redes para completar la firma.</span>') + "</td>";
+
+          var qrBlock = "";
+          if (sig.showQr) {
+            qrBlock =
+              '<td style="vertical-align:middle;padding:12px 14px 12px 8px;">' +
+              '<a href="' +
+              escAttrSig(publicUrl) +
+              '" target="_blank" rel="noopener noreferrer">' +
+              '<img src="' +
+              escAttrSig(qrUrl) +
+              '" width="92" height="92" alt="QR" style="display:block;border:1px solid #e0dcd4;border-radius:10px;background:#ffffff;padding:4px;" />' +
+              "</a></td>";
+          }
 
           return (
-            '<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:620px;border:1px solid ' + tableBorder + ';border-radius:12px;background:' + tableBg + ';">' +
-            '<tr>' +
-            '<td style="padding:12px;vertical-align:top;width:90px;">' + cellsLeft + "</td>" +
-            '<td style="padding:12px;vertical-align:top;">' + center + "</td>" +
+            '<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:640px;border-collapse:collapse;border:1px solid ' +
+            tableBorder +
+            ";border-radius:14px;background:" +
+            tableBg +
+            ';">' +
+            "<tr>" +
+            leftCol +
+            centerCol +
             qrBlock +
             "</tr>" +
             "</table>"
@@ -1959,7 +2130,7 @@
           });
 
           function setSaveButtonsDisabled(disabled) {
-            ["btn-save-datos", "btn-save-imagenes", "btn-save-personalization", "btn-publish-sticky"].forEach(function (id) {
+            ["btn-save-datos", "btn-save-imagenes", "btn-save-personalization", "btn-publish-footer"].forEach(function (id) {
               var b = document.getElementById(id);
               if (b) b.disabled = disabled;
             });
@@ -2012,14 +2183,6 @@
             var form = document.getElementById("form-card");
             if (form) form.requestSubmit();
           });
-
-          var btnPublishSticky = document.getElementById("btn-publish-sticky");
-          if (btnPublishSticky) {
-            btnPublishSticky.addEventListener("click", function () {
-              var form = document.getElementById("form-card");
-              if (form) form.requestSubmit();
-            });
-          }
 
           var btnDownloadQr = document.getElementById("btn-download-qr");
           if (btnDownloadQr) {
@@ -2079,7 +2242,15 @@
             });
           }
 
-          ["f-nombreCompleto", "f-cargo", "f-emailInstitucional", "f-whatsappNumero"].forEach(function (id) {
+          [
+            "f-nombreCompleto",
+            "f-cargo",
+            "f-emailInstitucional",
+            "f-whatsappNumero",
+            "f-instagram",
+            "f-linkedin",
+            "f-sitioWeb",
+          ].forEach(function (id) {
             var elSig = document.getElementById(id);
             if (!elSig) return;
             elSig.addEventListener("input", function () {
