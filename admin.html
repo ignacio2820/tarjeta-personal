@@ -195,6 +195,76 @@
           inset 0 1px 0 rgba(255, 255, 255, 0.45);
       }
 
+      /* CTA de pago — máximo contraste en el dashboard */
+      .ec-btn-pay-hero {
+        position: relative;
+        isolation: isolate;
+        display: inline-flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem 1.5rem;
+        border-radius: 1rem;
+        font-weight: 700;
+        font-size: 0.95rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #0a0a0a;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        background: linear-gradient(125deg, #f0d78c 0%, #d4af37 28%, #e8c547 48%, #c9a132 100%);
+        box-shadow:
+          0 0 0 2px rgba(212, 175, 55, 0.65),
+          0 12px 48px rgba(212, 175, 55, 0.55),
+          0 8px 28px rgba(0, 0, 0, 0.45),
+          inset 0 2px 0 rgba(255, 255, 255, 0.55);
+        transition: transform 0.18s ease, filter 0.18s ease, box-shadow 0.22s ease;
+        animation: ec-pay-pulse 2.4s ease-in-out infinite;
+      }
+      .ec-btn-pay-hero:hover {
+        filter: brightness(1.08);
+        transform: translateY(-2px);
+        box-shadow:
+          0 0 0 2px rgba(255, 220, 140, 0.85),
+          0 16px 56px rgba(212, 175, 55, 0.65),
+          0 10px 32px rgba(0, 0, 0, 0.5),
+          inset 0 2px 0 rgba(255, 255, 255, 0.6);
+      }
+      @keyframes ec-pay-pulse {
+        0%,
+        100% {
+          box-shadow:
+            0 0 0 2px rgba(212, 175, 55, 0.65),
+            0 12px 48px rgba(212, 175, 55, 0.5),
+            0 8px 28px rgba(0, 0, 0, 0.45),
+            inset 0 2px 0 rgba(255, 255, 255, 0.55);
+        }
+        50% {
+          box-shadow:
+            0 0 0 3px rgba(255, 224, 150, 0.55),
+            0 14px 52px rgba(212, 175, 55, 0.62),
+            0 8px 28px rgba(0, 0, 0, 0.45),
+            inset 0 2px 0 rgba(255, 255, 255, 0.6);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .ec-btn-pay-hero {
+          animation: none;
+        }
+      }
+
+      .ec-tab-pro-locked {
+        opacity: 0.72;
+      }
+
+      .ec-trial-modal-panel {
+        border-width: 2px;
+        box-shadow:
+          0 0 0 1px rgba(212, 175, 55, 0.2),
+          0 32px 100px -24px rgba(0, 0, 0, 0.9);
+      }
+
       @keyframes ec-shimmer {
         0%,
         100% {
@@ -299,6 +369,352 @@
         -webkit-backdrop-filter: blur(12px);
         border: 1px solid rgba(212, 175, 55, 0.12);
         border-radius: 1.125rem;
+      }
+
+      /* —— Layout EliteCard Pro: sidebar ancho + centro glass + preview —— */
+      :root {
+        --ec-sidebar-w: 16.25rem;
+      }
+      .ec-dash-sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 50;
+        display: flex;
+        width: var(--ec-sidebar-w);
+        height: 100dvh;
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1.25rem 0.75rem 1rem;
+        box-sizing: border-box;
+        border-right: 1px solid rgba(212, 175, 55, 0.22);
+        background: #0a0a0a;
+        box-shadow: 6px 0 40px rgba(0, 0, 0, 0.55);
+      }
+      .ec-sidebar-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0 0.5rem 1rem;
+        margin-bottom: 0.25rem;
+        border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+      }
+      .ec-sidebar-brand-text {
+        min-width: 0;
+        font-family: "Poppins", system-ui, sans-serif;
+        font-size: 0.9375rem;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+        color: rgba(250, 250, 250, 0.92);
+        line-height: 1.2;
+      }
+      .ec-sidebar-brand-tag {
+        display: block;
+        font-size: 0.5625rem;
+        font-weight: 600;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(212, 175, 55, 0.65);
+        margin-top: 0.15rem;
+      }
+      .ec-sidebar-btn {
+        display: flex;
+        width: 100%;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 0.75rem;
+        border-radius: 0.75rem;
+        padding: 0.7rem 0.85rem;
+        margin-bottom: 0.2rem;
+        color: rgba(245, 245, 245, 0.42);
+        transition:
+          color 0.2s,
+          background 0.2s,
+          box-shadow 0.2s,
+          border-color 0.2s;
+        border: 1px solid transparent;
+        background: transparent;
+        cursor: pointer;
+        text-align: left;
+        position: relative;
+      }
+      .ec-sidebar-btn:hover {
+        color: rgba(232, 197, 87, 0.88);
+        background: rgba(212, 175, 55, 0.06);
+        border-color: rgba(212, 175, 55, 0.12);
+      }
+      .ec-sidebar-btn.portal-tab-active {
+        color: #f4d03f;
+        background: rgba(212, 175, 55, 0.1);
+        border-color: rgba(244, 208, 63, 0.35);
+        box-shadow:
+          0 0 28px rgba(244, 208, 63, 0.12),
+          inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      }
+      .ec-sidebar-icon {
+        width: 1.25rem;
+        height: 1.25rem;
+        flex-shrink: 0;
+        stroke-width: 1.75;
+      }
+      .ec-sidebar-label {
+        font-size: 0.8125rem;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        line-height: 1.2;
+        color: inherit;
+      }
+      .ec-sidebar-nav {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 0.35rem 0.15rem 0.5rem;
+        scrollbar-width: thin;
+      }
+      .ec-sidebar-btn .ec-tab-lock-icon {
+        position: absolute;
+        right: 0.65rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 0.7rem;
+        height: 0.7rem;
+      }
+      .ec-trial-urgency-bar {
+        position: fixed;
+        top: 0;
+        left: var(--ec-sidebar-w);
+        right: 0;
+        z-index: 45;
+        padding: 0.55rem 1.25rem;
+        text-align: center;
+        font-size: 0.75rem;
+        font-weight: 500;
+        line-height: 1.45;
+        color: rgba(252, 250, 245, 0.95);
+        background: linear-gradient(
+          105deg,
+          rgba(30, 28, 22, 0.97) 0%,
+          rgba(55, 48, 28, 0.92) 45%,
+          rgba(20, 19, 16, 0.97) 100%
+        );
+        border-bottom: 1px solid rgba(212, 175, 55, 0.28);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+      }
+      .ec-trial-urgency-bar strong {
+        color: #f4d03f;
+        font-weight: 600;
+      }
+      #view-panel.ec-trial-banner-visible .ec-dash-stage {
+        padding-top: 2.85rem;
+      }
+      .ec-dash-stage {
+        display: flex;
+        align-items: flex-start;
+        min-height: 100dvh;
+        padding-left: var(--ec-sidebar-w);
+      }
+      .ec-dash-center {
+        flex: 1;
+        min-width: 0;
+        min-height: 100dvh;
+        max-width: 56rem;
+        padding: 1.75rem 1.25rem 6rem;
+      }
+      @media (min-width: 640px) {
+        .ec-dash-center {
+          padding: 2rem 2rem 6.5rem;
+        }
+      }
+      .ec-dash-center .elite-card,
+      .ec-publish-footer.elite-card {
+        position: relative;
+        background: rgba(12, 12, 12, 0.52);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: none;
+        box-shadow:
+          0 4px 48px rgba(0, 0, 0, 0.5),
+          inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      }
+      .ec-dash-center .elite-card::before,
+      .ec-publish-footer.elite-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 1px;
+        background: linear-gradient(
+          145deg,
+          rgba(0, 0, 0, 0.95) 0%,
+          rgba(35, 32, 28, 0.85) 42%,
+          rgba(160, 124, 48, 0.35) 100%
+        );
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        mask-composite: exclude;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .ec-dash-center .elite-card > *,
+      .ec-publish-footer.elite-card > * {
+        position: relative;
+        z-index: 1;
+      }
+      .ec-dash-preview-col {
+        display: none;
+        position: sticky;
+        top: 0;
+        align-self: flex-start;
+        width: min(20rem, 26vw);
+        max-height: 100dvh;
+        flex-shrink: 0;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: auto;
+        padding: 1.75rem 1rem 2rem;
+        border-left: 1px solid rgba(212, 175, 55, 0.1);
+        background: rgba(6, 6, 6, 0.45);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+      }
+      @media (min-width: 1280px) {
+        .ec-dash-preview-col {
+          display: flex;
+        }
+      }
+      .ec-phone-device {
+        position: relative;
+        padding: 0.65rem;
+        border-radius: 2.25rem;
+        background: linear-gradient(145deg, #2a2a2a 0%, #0a0a0a 40%, #151515 100%);
+        border: 2px solid rgba(212, 175, 55, 0.25);
+        box-shadow:
+          0 0 0 1px rgba(212, 175, 55, 0.08),
+          0 24px 64px rgba(0, 0, 0, 0.65),
+          inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      }
+      .ec-phone-device::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 0.45rem;
+        transform: translateX(-50%);
+        width: 3.5rem;
+        height: 0.28rem;
+        border-radius: 9999px;
+        background: rgba(0, 0, 0, 0.55);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        z-index: 2;
+      }
+      .ec-dash-preview-col .ec-preview-shell {
+        max-height: min(520px, 72dvh);
+        max-width: 260px;
+        margin-top: 0.5rem;
+        border-radius: 1.35rem;
+        border: 1px solid rgba(212, 175, 55, 0.28);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+      }
+      .ec-dash-center .elite-input,
+      .ec-dash-center select.elite-input {
+        padding: 0.95rem 1.15rem;
+        border-radius: 0.95rem;
+        background: #1a1a1a;
+        border: 1px solid transparent;
+        font-size: 0.9375rem;
+        transition:
+          box-shadow 0.2s,
+          background 0.2s,
+          border-color 0.2s;
+      }
+      .ec-dash-center .elite-input:focus,
+      .ec-dash-center select.elite-input:focus {
+        outline: none;
+        border-color: rgba(244, 208, 63, 0.35);
+        background: #141414;
+        box-shadow:
+          0 0 0 1px rgba(244, 208, 63, 0.25),
+          0 0 22px rgba(212, 175, 55, 0.2);
+      }
+      .ec-dash-center .portal-tab {
+        border: 1px solid transparent;
+        transition:
+          box-shadow 0.2s,
+          border-color 0.2s;
+      }
+      .ec-dash-center .portal-tab-active {
+        box-shadow: 0 0 18px rgba(212, 175, 55, 0.12);
+      }
+      /* Planes suscripción — estética lujo */
+      .ec-plan-grid {
+        display: grid;
+        gap: 1.5rem;
+      }
+      @media (min-width: 1024px) {
+        .ec-plan-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .ec-plan-card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        border-radius: 1.25rem;
+        padding: 1.75rem 1.65rem;
+        background: linear-gradient(165deg, rgba(18, 18, 18, 0.95) 0%, rgba(8, 8, 8, 0.88) 100%);
+        border: 1px solid rgba(212, 175, 55, 0.14);
+        box-shadow:
+          0 20px 50px rgba(0, 0, 0, 0.55),
+          inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      }
+      .ec-plan-card--featured {
+        border-color: rgba(244, 208, 63, 0.45);
+        background: linear-gradient(165deg, rgba(28, 26, 18, 0.98) 0%, rgba(10, 10, 8, 0.92) 100%);
+        box-shadow:
+          0 0 0 1px rgba(244, 208, 63, 0.12),
+          0 24px 64px rgba(0, 0, 0, 0.6),
+          0 0 48px rgba(212, 175, 55, 0.08);
+      }
+      .ec-plan-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.28rem 0.65rem;
+        border-radius: 9999px;
+        font-size: 0.5625rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #0a0a0a;
+        background: linear-gradient(120deg, #f4d03f, #c9a132);
+        box-shadow: 0 4px 16px rgba(244, 208, 63, 0.35);
+      }
+      .ec-plan-card .ec-btn-pay-hero {
+        max-width: 100%;
+      }
+      .ec-plan-card--featured .ec-btn-pay-hero {
+        animation-duration: 2s;
+      }
+      .ec-gradient-action {
+        background: linear-gradient(135deg, #e0bc4a 0%, #d4af37 32%, #c9a132 55%, #e8c547 88%, #d4af37 100%) !important;
+        box-shadow:
+          0 4px 28px rgba(212, 175, 55, 0.4),
+          0 8px 40px rgba(212, 175, 55, 0.22),
+          inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+      }
+      .ec-gradient-action:hover {
+        filter: brightness(1.06);
+      }
+      .ec-dash-hero-title {
+        font-family: "Poppins", system-ui, sans-serif;
+        font-size: clamp(1.65rem, 3.5vw, 2.35rem);
+        font-weight: 300;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+        color: #fafafa;
       }
 
       /* Entrada suave dashboard */
@@ -572,101 +988,172 @@
     </section>
 
     <!-- Panel · EliteCard -->
-    <section id="view-panel" class="relative z-10 hidden min-h-[100dvh] pb-12 pt-8 sm:pb-14 sm:pt-10">
-      <div class="ec-dashboard-stack mx-auto max-w-4xl space-y-10 px-5 pb-10 sm:px-10">
-        <!-- Marca EliteCard + WebElite + acciones -->
-        <header class="ec-reveal ec-reveal-d1 border-b border-white/[0.07] pb-8">
-          <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-            <div class="flex min-w-0 flex-col gap-5">
-              <div class="flex flex-wrap items-center gap-3 sm:gap-4">
-                <img
-                  src="icons/elitecard-shield.png"
-                  alt=""
-                  width="52"
-                  height="52"
-                  class="h-12 w-auto shrink-0 object-contain sm:h-14"
-                  decoding="async"
+    <section id="view-panel" class="relative z-10 hidden min-h-[100dvh]">
+      <div
+        id="ec-trial-urgency-bar"
+        class="ec-trial-urgency-bar hidden"
+        role="status"
+        aria-live="polite"
+      >
+        <span id="ec-trial-urgency-text"></span>
+      </div>
+      <aside
+        id="ec-dash-sidebar"
+        class="ec-dash-sidebar ec-reveal ec-reveal-d1"
+        role="tablist"
+        aria-label="Módulos del dashboard"
+      >
+        <div class="ec-sidebar-brand">
+          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-elite-gold/25 bg-black/50">
+            <img src="icons/elitecard-shield.png" alt="" width="28" height="28" class="h-7 w-auto opacity-90" decoding="async" />
+          </div>
+          <div class="ec-sidebar-brand-text">
+            EliteCard <span class="text-elite-gold">Pro</span>
+            <span class="ec-sidebar-brand-tag">Studio</span>
+          </div>
+        </div>
+        <div class="ec-sidebar-nav">
+          <button
+            type="button"
+            role="tab"
+            class="ec-sidebar-btn portal-tab portal-tab-active"
+            data-dashboard-tab="design"
+            aria-selected="true"
+            title="Diseño"
+          >
+            <svg class="ec-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <rect x="3" y="3" width="7" height="9" rx="1" stroke-width="1.75" />
+              <rect x="14" y="3" width="7" height="5" rx="1" stroke-width="1.75" />
+              <rect x="14" y="12" width="7" height="9" rx="1" stroke-width="1.75" />
+              <rect x="3" y="16" width="7" height="5" rx="1" stroke-width="1.75" />
+            </svg>
+            <span class="ec-sidebar-label">Diseño</span>
+          </button>
+          <button type="button" role="tab" class="ec-sidebar-btn portal-tab" data-dashboard-tab="content" aria-selected="false" title="Contenido">
+            <svg class="ec-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.75"
+                d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"
+              />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
+            </svg>
+            <span class="ec-sidebar-label">Contenido</span>
+          </button>
+          <button type="button" role="tab" class="ec-sidebar-btn portal-tab" data-dashboard-tab="analytics" aria-selected="false" title="Analíticas">
+            <svg class="ec-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <path d="M18 20V10M12 20V4M6 20v-6" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" />
+            </svg>
+            <span class="ec-sidebar-label">Analíticas</span>
+          </button>
+          <button type="button" role="tab" class="ec-sidebar-btn portal-tab" data-dashboard-tab="qr" aria-selected="false" title="QR y compartir">
+            <svg class="ec-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.75"
+                d="M3 3h6v6H3V3zm12 0h6v6h-6V3zM3 15h6v6H3v-6zm15 0h3v3h-3v-3zm-6 6h3v3h-3v-3zm6-6h3v3h-3v-3zm-9 0h3v3H9v-3z"
+              />
+            </svg>
+            <span class="ec-sidebar-label">QR</span>
+          </button>
+          <button type="button" role="tab" class="ec-sidebar-btn portal-tab" data-dashboard-tab="subscription" aria-selected="false" title="Suscripción">
+            <svg class="ec-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <rect x="2" y="5" width="20" height="14" rx="2" stroke-width="1.75" />
+              <path d="M2 10h20" stroke-width="1.75" />
+            </svg>
+            <span class="ec-sidebar-label">Suscripción</span>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            class="ec-sidebar-btn portal-tab"
+            data-dashboard-tab="email-signature"
+            aria-selected="false"
+            title="Firma de email"
+          >
+            <span class="ec-tab-lock-icon hidden text-elite-gold" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor" class="h-full w-full">
+                <path
+                  d="M12 1a5 5 0 00-5 5v3H6a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V11a2 2 0 00-2-2h-1V6a5 5 0 00-5-5zm-3 8V6a3 3 0 116 0v3H9z"
                 />
-                <span
-                  class="text-[1.35rem] font-semibold tracking-tight text-white sm:text-[1.5rem]"
-                  style="font-family: Poppins, system-ui, sans-serif"
-                  >EliteCard</span>
-              </div>
+              </svg>
+            </span>
+            <svg class="ec-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.75"
+                d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+              />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="m22 6-10 7L2 6" />
+            </svg>
+            <span class="ec-sidebar-label">Firma</span>
+          </button>
+        </div>
+        <button
+          type="button"
+          id="btn-logout"
+          class="mt-auto w-full rounded-xl border border-white/[0.08] px-3 py-3 text-left text-[11px] font-medium uppercase tracking-[0.14em] text-elite-mist/50 transition hover:border-red-400/25 hover:text-red-300/90"
+          title="Cerrar sesión"
+        >
+          Cerrar sesión
+        </button>
+      </aside>
+
+      <div class="ec-dash-stage">
+        <div class="ec-dash-center ec-dashboard-stack space-y-8 sm:space-y-10">
+        <!-- Marca EliteCard + WebElite + acciones -->
+        <header class="ec-reveal ec-reveal-d1 border-b border-white/[0.08] pb-7">
+          <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex min-w-0 flex-wrap items-center gap-4">
               <a
                 href="https://webelite-app.vercel.app/"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="group flex w-fit max-w-full items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2 transition hover:border-elite-gold/25 hover:bg-white/[0.04] sm:ml-1"
-                aria-label="WebElite Solutions — sitio de la agencia"
+                class="group inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.2em] text-elite-gold/75 transition hover:border-elite-gold/30"
               >
-                <span class="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-elite-gold/80"
-                  >Partner</span>
-                <span class="text-sm font-light text-elite-mist/80">
-                  Web<span class="font-medium text-elite-gold">Elite</span> Solutions
-                </span>
+                Web<span class="text-elite-gold">Elite</span>
               </a>
             </div>
-            <div class="flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row sm:items-center sm:justify-end lg:shrink-0">
-            <a
-              id="btnVerTarjeta"
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="rounded-full border border-elite-gold/35 bg-elite-gold/10 px-5 py-2.5 text-[12px] font-medium tracking-wide text-elite-gold transition hover:bg-elite-gold/18"
-              style="display: block; width: 100%; text-align: center"
-            >
-              Ver mi Tarjeta Pública
-            </a>
-            <button
-              type="button"
-              id="btn-logout"
-              class="rounded-full border border-white/[0.1] px-5 py-2.5 text-[12px] font-light text-elite-mist/55 transition hover:border-white/20 hover:text-elite-mist"
-            >
-              Cerrar sesión
-            </button>
+            <div class="flex flex-wrap items-center gap-2 sm:justify-end">
+              <a
+                id="btnVerTarjeta"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="rounded-full border border-elite-gold/35 bg-elite-gold/10 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-elite-gold transition hover:bg-elite-gold/18"
+              >
+                Ver mi tarjeta en vivo
+              </a>
             </div>
           </div>
         </header>
 
-        <!-- Bienvenida alto impacto -->
-        <div class="ec-reveal ec-reveal-d2 elite-card p-6 sm:p-8">
-          <h2
-            class="max-w-3xl text-[1.5rem] font-light leading-[1.25] tracking-tight text-white sm:text-[2rem] sm:leading-tight"
-          >
-            Bienvenido a tu Panel de Gestión
-            <span class="font-normal text-elite-gold">EliteCard</span>
+        <div class="ec-reveal ec-reveal-d2 elite-card p-7 sm:p-9">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-elite-gold/80">Tu marca, en primer plano</p>
+          <h2 class="ec-dash-hero-title mt-3 max-w-2xl">
+            Potenciá tu marca personal con una tarjeta que cierra reuniones.
           </h2>
           <p class="mt-4 text-lg font-light text-elite-mist sm:text-xl">
-            Hola,
-            <span id="panel-hola-name" class="font-normal text-white">Cliente</span>
+            Hola, <span id="panel-hola-name" class="font-medium text-white">Cliente</span>
           </p>
-          <p class="mt-4 max-w-2xl text-sm font-light leading-relaxed text-elite-mist/50">
-            Tu perfil es privado: solo vos podés editarlo. Los visitantes ven los cambios al instante en tu enlace
-            público.
+          <p class="mt-4 max-w-2xl text-[15px] font-light leading-relaxed text-elite-mist/55">
+            Cada edición te acerca a un perfil impecable: publicá cuando quieras y compartí un enlace que transmite confianza al
+            instante. Quien te busque ve la versión más reciente de tu EliteCard.
           </p>
           <p
             id="panel-uid-hint"
-            class="mt-4 hidden max-w-2xl font-mono text-[0.62rem] font-light leading-relaxed text-elite-mist/40"
+            class="mt-5 hidden max-w-2xl rounded-xl border border-white/[0.06] bg-black/30 px-3 py-2 font-mono text-[0.62rem] font-light leading-relaxed text-elite-mist/40"
           ></p>
         </div>
 
-        <div
-          id="dashboard-tabs"
-          class="ec-reveal ec-reveal-d3 ec-tab-bar flex gap-1 p-1"
-          role="tablist"
-          aria-label="Módulos del dashboard"
-        >
-          <button type="button" class="portal-tab portal-tab-active flex-1 rounded-xl py-2.5 text-[13px] sm:text-sm" data-dashboard-tab="design" aria-selected="true">Diseño</button>
-          <button type="button" class="portal-tab flex-1 rounded-xl py-2.5 text-[13px] sm:text-sm" data-dashboard-tab="content" aria-selected="false">Contenido</button>
-          <button type="button" class="portal-tab flex-1 rounded-xl py-2.5 text-[13px] sm:text-sm" data-dashboard-tab="analytics" aria-selected="false">Analíticas</button>
-          <button type="button" class="portal-tab flex-1 rounded-xl py-2.5 text-[13px] sm:text-sm" data-dashboard-tab="qr" aria-selected="false">QR &amp; Compartir</button>
-          <button type="button" class="portal-tab flex-1 rounded-xl py-2.5 text-[13px] sm:text-sm" data-dashboard-tab="email-signature" aria-selected="false">Firma de Email</button>
-        </div>
-
-        <div id="ec-card-public-link" class="ec-reveal ec-reveal-d4 elite-card hidden p-6 sm:p-8" data-dashboard-panel="qr">
-          <p class="ec-label mb-2 block text-elite-gold/90">Tu enlace público</p>
-          <p class="mb-5 text-sm font-light text-elite-mist/48">
-            Este es el link que compartís con tus contactos
+        <div id="ec-card-public-link" class="ec-reveal ec-reveal-d4 elite-card hidden p-7 sm:p-9" data-dashboard-panel="qr">
+          <p class="ec-label mb-2 block text-elite-gold/90">Compartí con impacto</p>
+          <h3 class="mt-1 text-xl font-light text-white sm:text-2xl">Tu enlace y tu QR, listos para la red</h3>
+          <p class="mb-6 mt-3 max-w-2xl text-[15px] font-light leading-relaxed text-elite-mist/50">
+            Un solo link para WhatsApp, firma de mail o bio de Instagram. El QR te acompaña en eventos y tarjetas físicas.
           </p>
           <input
             id="input-public-url"
@@ -713,15 +1200,15 @@
 
         <div
           id="ec-personalization-card"
-          class="ec-reveal ec-reveal-d4 elite-card p-6 sm:p-8"
+          class="ec-reveal ec-reveal-d4 elite-card p-7 sm:p-9"
           data-dashboard-panel="design"
           data-ec-style-panel="true"
         >
-          <p class="ec-label mb-2 block text-elite-gold/90">Personalización de estilo</p>
-          <p class="mb-6 text-sm font-light leading-relaxed text-elite-mist/48">
-            Elegí forma del avatar, diseño de los botones y tema. La vista previa del teléfono se actualiza al instante.
-            Usá «Guardar cambios de estilo» para subir todo el perfil (datos + estilo) a la nube, o seguí usando «Guardar
-            cambios» en Mis Datos / Imágenes cuando edites esas secciones.
+          <p class="ec-label mb-2 block text-elite-gold/90">Estética de tu tarjeta</p>
+          <h3 class="mt-1 text-xl font-light tracking-tight text-white sm:text-2xl">Diseño que refleja tu nivel</h3>
+          <p class="mb-8 mt-3 max-w-2xl text-[15px] font-light leading-relaxed text-elite-mist/50">
+            Definí forma del avatar, disposición de botones y paleta. La vista previa a la derecha (en pantallas grandes) se
+            actualiza en tiempo real. Cuando termines, guardá el estilo o publicá todo el perfil desde abajo.
           </p>
 
           <input type="hidden" id="f-cardTheme" value="gold" />
@@ -729,7 +1216,7 @@
           <input type="hidden" id="f-buttonLayout" value="pills" />
           <input type="hidden" id="f-leadCaptureEnabled" value="off" />
 
-          <div class="grid gap-10 lg:grid-cols-[1fr_minmax(0,300px)] lg:items-start">
+          <div class="max-w-2xl space-y-10">
             <div class="space-y-9">
               <div>
                 <span class="ec-label mb-3 block normal-case tracking-[0.12em]">Forma del avatar</span>
@@ -799,40 +1286,25 @@
                 </div>
               </div>
             </div>
-
-            <div class="lg:pt-1">
-              <span class="ec-label mb-3 block normal-case tracking-[0.12em]">Vista previa en vivo</span>
-              <div
-                id="live-preview-container"
-                class="ec-preview-shell shadow-2xl shadow-black/40"
-                data-preview-theme="gold"
-                data-preview-avatar="rect"
-                data-preview-layout="pills"
-              >
-                <iframe
-                  id="ec-live-preview"
-                  class="ec-preview-iframe"
-                  title="Vista previa de la tarjeta pública"
-                  loading="lazy"
-                ></iframe>
-              </div>
-            </div>
           </div>
 
-          <div class="mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:justify-center">
+          <div class="mt-12 flex flex-col items-stretch gap-3 sm:flex-row sm:justify-center">
             <button
               type="button"
               id="btn-save-personalization"
-              class="elite-btn-gold w-full rounded-2xl py-4 sm:max-w-md sm:px-12"
+              class="elite-btn-gold ec-gradient-action w-full rounded-2xl py-4 sm:max-w-md sm:px-12"
             >
-              <span>Guardar cambios de estilo</span>
+              <span>Guardar estilo</span>
             </button>
           </div>
         </div>
 
-        <div id="ec-card-analytics" class="ec-reveal ec-reveal-d5 elite-card hidden p-6 sm:p-8" data-dashboard-panel="analytics">
-          <p class="ec-label mb-2 block text-elite-gold/90">Analíticas rápidas</p>
-          <p class="mb-6 text-sm font-light text-elite-mist/48">Seguimiento comercial de tu tarjeta digital.</p>
+        <div id="ec-card-analytics" class="ec-reveal ec-reveal-d5 elite-card hidden p-7 sm:p-9" data-dashboard-panel="analytics">
+          <p class="ec-label mb-2 block text-elite-gold/90">Inteligencia comercial</p>
+          <h3 class="mt-1 text-xl font-light text-white sm:text-2xl">Medí qué interesa a tu audiencia</h3>
+          <p class="mb-8 mt-3 max-w-2xl text-[15px] font-light leading-relaxed text-elite-mist/50">
+            Vistas y clics clave para afinar tu mensaje y priorizar canales que realmente convierten.
+          </p>
           <div class="grid gap-4 sm:grid-cols-3">
             <article class="rounded-2xl border border-white/10 bg-black/35 p-4">
               <p class="text-[0.62rem] uppercase tracking-[0.16em] text-elite-mist/45">Vistas totales</p>
@@ -858,13 +1330,52 @@
           </div>
         </div>
 
-        <div id="ec-card-email-signature" class="ec-reveal ec-reveal-d6 elite-card hidden p-6 sm:p-8" data-dashboard-panel="email-signature">
-          <p class="ec-label mb-2 block text-elite-gold/90">Firma de Email</p>
-          <p class="mb-6 text-sm font-light text-elite-mist/48">
-            Firma limpia estilo profesional: fondo blanco y tablas HTML compatibles con Gmail y Outlook. El QR enlaza a tu tarjeta EliteCard pública.
+        <div id="ec-card-subscription" class="ec-reveal ec-reveal-d5 elite-card hidden p-7 sm:p-9" data-dashboard-panel="subscription">
+          <p class="ec-label mb-2 block text-elite-gold/90">Membresía EliteCard Pro</p>
+          <h3 class="mt-1 text-xl font-light text-white sm:text-2xl">Invertí en una presencia que te posiciona</h3>
+          <p class="mb-8 mt-3 max-w-2xl text-[15px] font-light leading-relaxed text-elite-mist/50">
+            Acceso completo a analíticas, firma de email Pro y prioridad en novedades. Elegí tu plan y pegá tu enlace de pago en
+            los botones dorados cuando tengas el checkout listo.
           </p>
+          <div class="ec-plan-grid">
+            <article class="ec-plan-card">
+              <p class="text-[0.65rem] font-medium uppercase tracking-[0.2em] text-elite-gold/75">Colección Semestral</p>
+              <p class="mt-3 text-2xl font-light text-white">6 meses</p>
+              <p class="mt-2 text-sm font-light leading-relaxed text-elite-mist/48">
+                Flexibilidad para equipos y profesionales que quieren Pro sin compromiso anual.
+              </p>
+              <div class="mt-auto pt-8">
+                <!-- Reemplazar href por tu checkout (Mercado Pago / Stripe) -->
+                <a href="#" class="ec-btn-pay-hero" id="ec-pay-semestral" target="_blank" rel="noopener noreferrer">Desbloquear 6 meses</a>
+              </div>
+            </article>
+            <article class="ec-plan-card ec-plan-card--featured">
+              <span class="ec-plan-badge">Recomendado · Ahorrá 20%</span>
+              <p class="text-[0.65rem] font-medium uppercase tracking-[0.2em] text-elite-gold">Colección Anual</p>
+              <p class="mt-3 text-2xl font-light text-white">12 meses</p>
+              <p class="mt-2 text-sm font-light leading-relaxed text-elite-mist/48">
+                La opción preferida: máximo ahorro, tranquilidad todo el año y tu tarjeta siempre al nivel de tu carrera.
+              </p>
+              <div class="mt-auto pt-8">
+                <a href="#" class="ec-btn-pay-hero" id="ec-pay-anual" target="_blank" rel="noopener noreferrer">Quiero el plan anual</a>
+              </div>
+            </article>
+          </div>
+          <p class="mt-8 text-center text-xs font-light text-elite-mist/40">
+            Tras el pago, actualizá en Firestore el campo <span class="font-mono text-elite-mist/55">plan_status</span> a
+            <span class="font-mono text-elite-gold/80">active</span> (o integrá un webhook más adelante).
+          </p>
+        </div>
 
-          <div class="grid gap-6 lg:grid-cols-[1fr_minmax(0,340px)]">
+        <div id="ec-card-email-signature" class="ec-reveal ec-reveal-d6 elite-card hidden p-7 sm:p-9" data-dashboard-panel="email-signature">
+          <div id="email-signature-pro-inner">
+            <p class="ec-label mb-2 block text-elite-gold/90">Presencia en cada correo</p>
+            <h3 class="mt-1 text-xl font-light text-white sm:text-2xl">Firma de email con QR</h3>
+            <p class="mb-6 mt-3 max-w-2xl text-[15px] font-light leading-relaxed text-elite-mist/50">
+              HTML compatible con Gmail y Outlook: fondo claro, datos claros y enlace directo a tu tarjeta pública.
+            </p>
+
+            <div class="grid gap-6 lg:grid-cols-[1fr_minmax(0,340px)]">
             <div class="rounded-2xl border border-white/10 bg-black/25 p-4">
               <p class="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-elite-gold/85">Mostrar en la firma</p>
               <div id="email-signature-options" class="grid gap-3">
@@ -901,13 +1412,50 @@
               <div id="email-signature-preview" class="overflow-auto rounded-xl border border-zinc-200 bg-white p-3"></div>
             </div>
           </div>
-        </div>
-
-        <form id="form-card" class="ec-reveal ec-reveal-d7 elite-card hidden p-6 sm:p-10" data-dashboard-panel="content">
-          <p id="panel-status" class="mb-5 text-sm font-light text-elite-mist/45" role="status"></p>
+          </div>
 
           <div
-            class="ec-tab-bar mb-8 flex gap-1 p-1"
+            id="email-signature-locked"
+            class="hidden flex flex-col items-center justify-center gap-5 py-14 text-center"
+            aria-hidden="true"
+          >
+            <div
+              class="flex h-20 w-20 items-center justify-center rounded-full border-2 border-elite-gold/55 bg-black/40 shadow-[0_0_40px_rgba(212,175,55,0.25)]"
+              aria-hidden="true"
+            >
+              <svg class="h-10 w-10 text-elite-gold" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M12 1a5 5 0 00-5 5v3H6a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V11a2 2 0 00-2-2h-1V6a5 5 0 00-5-5zm-3 8V6a3 3 0 116 0v3H9z"
+                />
+              </svg>
+            </div>
+            <div class="max-w-sm">
+              <p class="text-lg font-light text-white">Firma de email <span class="text-elite-gold">Pro</span></p>
+              <p class="mt-2 text-sm font-light leading-relaxed text-elite-mist/48">
+                Incluida en planes de pago. Activá tu suscripción para generar y copiar la firma HTML con QR y datos
+                profesionales.
+              </p>
+            </div>
+            <button
+              type="button"
+              class="rounded-xl border border-elite-gold/45 bg-elite-gold/10 px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-elite-gold transition hover:bg-elite-gold/18"
+              id="btn-email-signature-go-subscribe"
+            >
+              Ver planes
+            </button>
+          </div>
+        </div>
+
+        <form id="form-card" class="ec-reveal ec-reveal-d7 elite-card hidden p-7 sm:p-10" data-dashboard-panel="content">
+          <p class="ec-label mb-2 block text-elite-gold/90">Tu información</p>
+          <h3 class="mt-1 text-xl font-light text-white sm:text-2xl">Contenido que tu red va a recordar</h3>
+          <p class="mb-6 mt-3 max-w-2xl text-[15px] font-light leading-relaxed text-elite-mist/50">
+            Completá datos y redes con espacio para pensar. Guardá por sección o publicá todo junto al final.
+          </p>
+          <p id="panel-status" class="mb-6 text-sm font-light text-elite-mist/45" role="status"></p>
+
+          <div
+            class="ec-tab-bar mb-10 flex gap-1 p-1.5"
             role="tablist"
             aria-label="Secciones del panel"
           >
@@ -942,7 +1490,7 @@
               data-tab="seguridad"
               class="portal-tab flex-1 rounded-xl py-2.5 text-[13px] sm:text-sm"
             >
-              Seguridad
+              Cuenta
             </button>
           </div>
 
@@ -1028,9 +1576,9 @@
               <button
                 type="submit"
                 id="btn-save-datos"
-                class="elite-btn-gold w-full max-w-md rounded-2xl py-4 sm:px-16"
+                class="elite-btn-gold ec-gradient-action w-full max-w-md rounded-2xl py-4 sm:px-16"
               >
-                <span>Guardar cambios</span>
+                <span>Guardar datos</span>
               </button>
             </div>
           </div>
@@ -1081,18 +1629,18 @@
               <button
                 type="submit"
                 id="btn-save-imagenes"
-                class="elite-btn-gold w-full max-w-md rounded-2xl py-4 sm:px-16"
+                class="elite-btn-gold ec-gradient-action w-full max-w-md rounded-2xl py-4 sm:px-16"
               >
-                <span>Guardar cambios</span>
+                <span>Guardar imágenes</span>
               </button>
             </div>
           </div>
 
           <!-- Pestaña: Seguridad -->
           <div id="tab-seguridad" role="tabpanel" aria-labelledby="tab-btn-seguridad" class="tab-panel hidden">
-            <p class="ec-label mb-2 block text-elite-gold/90">Seguridad</p>
+            <p class="ec-label mb-2 block text-elite-gold/90">Potencia tu marca personal</p>
             <p class="mb-7 text-sm font-light text-elite-mist/48">
-              Cambiá la contraseña de acceso al portal o solicitá un enlace de recuperación por email.
+              Protegé el acceso a tu estudio EliteCard: cambiá la contraseña del portal o recuperá el acceso por email en segundos.
             </p>
             <button
               type="button"
@@ -1110,19 +1658,81 @@
           </div>
         </form>
 
-        <footer class="ec-publish-footer ec-reveal elite-card p-6 sm:p-8" aria-label="Publicar perfil">
+        <footer class="ec-publish-footer ec-reveal elite-card p-7 sm:p-9" aria-label="Publicar perfil">
           <div class="ec-publish-footer-inner">
-            <p class="mb-3 text-center text-xs font-light leading-relaxed text-elite-mist/45">
-              Al publicar se guardan datos, imágenes pendientes y estilo (tema, forma del avatar y diseño de botones) en la nube.
-              La tarjeta pública se actualiza al instante para quienes abren tu enlace.
+            <p class="mb-4 text-center text-[13px] font-light leading-relaxed text-elite-mist/50">
+              Un clic y tu identidad queda en la nube lista para impresionar: datos, imágenes y estilo viajan juntos. Tu enlace
+              público muestra siempre lo que acabás de publicar.
             </p>
-            <button type="submit" id="btn-publish-footer" class="elite-btn-gold" form="form-card">
+            <button type="submit" id="btn-publish-footer" class="elite-btn-gold ec-gradient-action" form="form-card">
               <span>Publicar cambios</span>
             </button>
           </div>
         </footer>
+        </div>
+
+        <aside class="ec-dash-preview-col ec-reveal ec-reveal-d2" aria-label="Vista previa de tarjeta pública">
+          <p class="mb-1 text-center text-[10px] font-semibold uppercase tracking-[0.22em] text-elite-gold/75">Vista en vivo</p>
+          <p class="mb-4 max-w-[13rem] text-center text-[11px] font-light leading-snug text-elite-mist/50">
+            El estilo se actualiza al instante. Los textos e imágenes reflejan lo último que publicaste: recargá la vista para verlos
+            en el teléfono.
+          </p>
+          <button
+            type="button"
+            id="btn-ec-refresh-preview"
+            class="mb-5 w-full rounded-xl border border-elite-gold/30 bg-elite-gold/8 px-3 py-2.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-elite-gold transition hover:border-elite-gold/50 hover:bg-elite-gold/14"
+          >
+            Recargar vista previa
+          </button>
+          <div class="ec-phone-device">
+            <div
+              id="live-preview-container"
+              class="ec-preview-shell shadow-2xl shadow-black/50"
+              data-preview-theme="gold"
+              data-preview-avatar="rect"
+              data-preview-layout="pills"
+            >
+              <iframe
+                id="ec-live-preview"
+                class="ec-preview-iframe"
+                title="Vista previa de la tarjeta pública en tiempo real"
+                loading="lazy"
+              ></iframe>
+            </div>
+          </div>
+        </aside>
       </div>
     </section>
+
+    <!-- Trial vencido: bloqueo hasta suscripción -->
+    <div
+      id="ec-trial-expired-modal"
+      class="fixed inset-0 z-[280] hidden items-center justify-center bg-[#050505]/92 p-5 backdrop-blur-md"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="ec-trial-expired-title"
+      aria-hidden="true"
+    >
+      <div class="ec-trial-modal-panel elite-card relative max-w-md p-8 sm:p-10 text-center">
+        <div class="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-elite-gold/5 bg-elite-gold/10">
+          <svg class="h-8 w-8 text-elite-gold" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+            />
+          </svg>
+        </div>
+        <h2 id="ec-trial-expired-title" class="text-xl font-light tracking-tight text-white sm:text-2xl">
+          Tu semana de prueba ha finalizado
+        </h2>
+        <p class="mt-4 text-sm font-light leading-relaxed text-elite-mist/55">
+          ¡No pierdas el acceso a tus analíticas premium! Activá un plan y seguí editando, publicando y midiendo el impacto de tu
+          EliteCard sin interrupciones.
+        </p>
+        <button type="button" id="ec-trial-go-subscribe" class="ec-btn-pay-hero mt-8">
+          Ver planes y recuperar acceso Pro
+        </button>
+      </div>
+    </div>
 
     <!-- Overlay guardado (Firestore / Storage) -->
     <div
@@ -1241,6 +1851,105 @@
         var analyticsUnsub = null;
         var ecLivePreviewRaf = null;
         var ecToastHideTimer = null;
+        var selectDashboardTab = null;
+        var EC_TRIAL_DAYS = 7;
+
+        function getPlanStatusFromDoc(docData) {
+          var s = String((docData && docData.plan_status) || "trial")
+            .trim()
+            .toLowerCase();
+          if (s === "active" || s === "pro" || s === "paid") return "active";
+          return "trial";
+        }
+
+        function getFechaRegistroMs(docData) {
+          if (!docData || docData.fecha_registro == null) return null;
+          var f = docData.fecha_registro;
+          if (typeof f === "number" && isFinite(f)) return f;
+          if (f && typeof f.toMillis === "function") return f.toMillis();
+          if (f && typeof f.seconds === "number") return f.seconds * 1000;
+          return null;
+        }
+
+        function isTrialPeriodExpired(docData) {
+          if (getPlanStatusFromDoc(docData) !== "trial") return false;
+          var ms = getFechaRegistroMs(docData);
+          if (ms == null) return false;
+          return Date.now() - ms > EC_TRIAL_DAYS * 24 * 60 * 60 * 1000;
+        }
+
+        function isEmailSignatureLocked(docData) {
+          return getPlanStatusFromDoc(docData) === "trial";
+        }
+
+        function setTrialExpiredModalVisible(visible) {
+          var el = document.getElementById("ec-trial-expired-modal");
+          if (!el) return;
+          el.classList.toggle("hidden", !visible);
+          el.classList.toggle("flex", !!visible);
+          el.classList.toggle("flex-col", !!visible);
+          el.setAttribute("aria-hidden", visible ? "false" : "true");
+        }
+
+        function applySubscriptionUI(docData) {
+          var d = docData || {};
+          var lockSig = isEmailSignatureLocked(d);
+          var proInner = document.getElementById("email-signature-pro-inner");
+          var locked = document.getElementById("email-signature-locked");
+          if (proInner && locked) {
+            proInner.classList.toggle("hidden", lockSig);
+            locked.classList.toggle("hidden", !lockSig);
+            locked.setAttribute("aria-hidden", lockSig ? "false" : "true");
+          }
+          var tabBtn = document.querySelector('[data-dashboard-tab="email-signature"]');
+          if (tabBtn) {
+            tabBtn.classList.toggle("ec-tab-pro-locked", lockSig);
+            var ic = tabBtn.querySelector(".ec-tab-lock-icon");
+            if (ic) ic.classList.toggle("hidden", !lockSig);
+          }
+        }
+
+        function syncTrialExpiredModal(docData) {
+          setTrialExpiredModalVisible(isTrialPeriodExpired(docData));
+        }
+
+        function updateTrialUrgencyBar(docData) {
+          var bar = document.getElementById("ec-trial-urgency-bar");
+          var panel = document.getElementById("view-panel");
+          var textEl = document.getElementById("ec-trial-urgency-text");
+          if (!bar || !panel) return;
+          var trialOn = getPlanStatusFromDoc(docData) === "trial" && !isTrialPeriodExpired(docData);
+          var ms = getFechaRegistroMs(docData);
+          if (!trialOn || ms == null) {
+            bar.classList.add("hidden");
+            panel.classList.remove("ec-trial-banner-visible");
+            return;
+          }
+          var end = ms + EC_TRIAL_DAYS * 24 * 60 * 60 * 1000;
+          var msLeft = end - Date.now();
+          if (msLeft <= 0) {
+            bar.classList.add("hidden");
+            panel.classList.remove("ec-trial-banner-visible");
+            return;
+          }
+          var dayMs = 24 * 60 * 60 * 1000;
+          var daysLeft = Math.ceil(msLeft / dayMs);
+          var msg;
+          if (msLeft < dayMs) {
+            msg =
+              "Te queda menos de un día de acceso total. ¡Aprovechá para configurar tu Firma de Email!";
+          } else if (daysLeft === 1) {
+            msg = "Te queda 1 día de acceso total. ¡Aprovechá para configurar tu Firma de Email!";
+          } else {
+            msg =
+              "Te quedan " +
+              daysLeft +
+              " días de acceso total. ¡Aprovechá para configurar tu Firma de Email!";
+          }
+          if (textEl) textEl.textContent = msg;
+          bar.classList.remove("hidden");
+          panel.classList.add("ec-trial-banner-visible");
+        }
 
         function showAdminToast(message, kind) {
           var el = document.getElementById("ec-admin-toast");
@@ -1331,6 +2040,13 @@
               function (snapA) {
                 var d = snapA && snapA.exists ? snapA.data() : {};
                 updateAnalyticsCards(d || {});
+                if (snapA && snapA.exists) {
+                  lastDoc.plan_status = d.plan_status;
+                  lastDoc.fecha_registro = d.fecha_registro;
+                  applySubscriptionUI(lastDoc);
+                  syncTrialExpiredModal(lastDoc);
+                  updateTrialUrgencyBar(lastDoc);
+                }
               },
               function () {}
             );
@@ -1465,13 +2181,14 @@
         function setupPreviewIframe(uid) {
           var f = document.getElementById("ec-live-preview");
           if (!f || !uid) return;
-          var origin = String(window.location.origin || "").replace(/\/$/, "");
-          var url = origin + "/index.html?id=" + encodeURIComponent(uid);
+          var url = new URL("card.html", window.location.href);
+          url.searchParams.set("id", uid);
+          var urlStr = url.toString();
           f.onload = function () {
             syncPreviewAppearance();
           };
-          if (f.getAttribute("src") !== url) {
-            f.setAttribute("src", url);
+          if (f.getAttribute("src") !== urlStr) {
+            f.setAttribute("src", urlStr);
           } else {
             syncPreviewAppearance();
           }
@@ -1821,7 +2538,11 @@
           var tabs = document.querySelectorAll("[data-dashboard-tab]");
           var panels = document.querySelectorAll("[data-dashboard-panel]");
           if (!tabs.length || !panels.length) return;
-          function show(which) {
+          function show(which, force) {
+            if (!force && isTrialPeriodExpired(lastDoc) && which !== "subscription") {
+              setTrialExpiredModalVisible(true);
+              return;
+            }
             tabs.forEach(function (btn) {
               var on = btn.getAttribute("data-dashboard-tab") === which;
               btn.classList.toggle("portal-tab-active", on);
@@ -1830,13 +2551,17 @@
             panels.forEach(function (panel) {
               panel.classList.toggle("hidden", panel.getAttribute("data-dashboard-panel") !== which);
             });
+            if (isTrialPeriodExpired(lastDoc) && which === "subscription") {
+              setTrialExpiredModalVisible(false);
+            }
           }
+          selectDashboardTab = show;
           tabs.forEach(function (btn) {
             btn.addEventListener("click", function () {
-              show(btn.getAttribute("data-dashboard-tab"));
+              show(btn.getAttribute("data-dashboard-tab"), false);
             });
           });
-          show("design");
+          show("design", true);
         }
 
         function setPreview(imgId, url) {
@@ -1904,6 +2629,24 @@
             docRef
               .get()
               .then(function (snap) {
+                var data = snap.exists ? snap.data() : {};
+                var patch = {};
+                if (snap.exists) {
+                  if (!data.fecha_registro) patch.fecha_registro = firebase.firestore.FieldValue.serverTimestamp();
+                  if (data.plan_status == null || String(data.plan_status).trim() === "")
+                    patch.plan_status = "trial";
+                } else {
+                  patch.fecha_registro = firebase.firestore.FieldValue.serverTimestamp();
+                  patch.plan_status = "trial";
+                }
+                if (Object.keys(patch).length) {
+                  return docRef.set(patch, { merge: true }).then(function () {
+                    return docRef.get();
+                  });
+                }
+                return snap;
+              })
+              .then(function (snap) {
                 lastDoc = snap.exists ? snap.data() : {};
                 fillFormFromData(lastDoc);
                 updatePanelWelcome(auth.currentUser);
@@ -1914,6 +2657,17 @@
                 if (lastDoc.logoUrl) setPreview("preview-logo", lastDoc.logoUrl);
                 else document.getElementById("preview-logo").classList.add("hidden");
                 setStatus(snap.exists ? "Listo. Editá y guardá cuando quieras." : "Sin datos previos: completá y guardá.");
+                applySubscriptionUI(lastDoc);
+                syncTrialExpiredModal(lastDoc);
+                updateTrialUrgencyBar(lastDoc);
+                if (auth.currentUser) renderEmailSignaturePreview(auth.currentUser);
+                if (typeof selectDashboardTab === "function") {
+                  if (isTrialPeriodExpired(lastDoc)) {
+                    selectDashboardTab("subscription", true);
+                  } else {
+                    selectDashboardTab("design", true);
+                  }
+                }
               })
               .catch(function (e) {
                 setStatus("");
@@ -2036,6 +2790,7 @@
             } else {
               lastDoc = {};
               showSaveError("");
+              updateTrialUrgencyBar({});
             }
           });
 
@@ -2151,6 +2906,48 @@
           }
           initPortalTabs();
           initDashboardTabs();
+
+          var trialGoBtn = document.getElementById("ec-trial-go-subscribe");
+          if (trialGoBtn) {
+            trialGoBtn.addEventListener("click", function () {
+              setTrialExpiredModalVisible(false);
+              if (selectDashboardTab) selectDashboardTab("subscription", true);
+            });
+          }
+          var sigGoSubscribe = document.getElementById("btn-email-signature-go-subscribe");
+          if (sigGoSubscribe) {
+            sigGoSubscribe.addEventListener("click", function () {
+              if (selectDashboardTab) selectDashboardTab("subscription", true);
+            });
+          }
+          ["ec-pay-semestral", "ec-pay-anual"].forEach(function (payId) {
+            var linkEl = document.getElementById(payId);
+            if (!linkEl) return;
+            linkEl.addEventListener("click", function (e) {
+              var h = String(linkEl.getAttribute("href") || "").trim();
+              if (!h || h === "#") {
+                e.preventDefault();
+                showAdminToast("Pegá tu enlace de pago en el href de este botón en admin.html.", "error");
+              }
+            });
+          });
+
+          var btnEcRefreshPreview = document.getElementById("btn-ec-refresh-preview");
+          if (btnEcRefreshPreview) {
+            btnEcRefreshPreview.addEventListener("click", function () {
+              var u = auth.currentUser;
+              if (!u) return;
+              var f = document.getElementById("ec-live-preview");
+              if (!f) return;
+              var url = new URL("card.html", window.location.href);
+              url.searchParams.set("id", u.uid);
+              url.searchParams.set("_r", String(Date.now()));
+              f.onload = function () {
+                syncPreviewAppearance();
+              };
+              f.setAttribute("src", url.toString());
+            });
+          }
 
           var stylePanel = document.getElementById("ec-personalization-card");
           if (stylePanel) {
