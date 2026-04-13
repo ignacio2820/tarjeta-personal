@@ -74,11 +74,11 @@
       String(o.fotoUrl || "").trim() ||
       String(o.fotoPerfil || "").trim();
     var logo = String(o.logoUrl || "").trim() || String(o.logo || "").trim();
-    var theme = String(o.cardTheme || "gold").trim().toLowerCase();
+    var theme = String(o.cardTheme || o.selectedTheme || "gold").trim().toLowerCase();
     if (["gold", "minimal", "electric"].indexOf(theme) < 0) theme = "gold";
     var avatarShape = String(o.avatarShape || "rect").trim().toLowerCase();
     if (avatarShape !== "circle") avatarShape = "rect";
-    var buttonLayout = String(o.buttonLayout || "pills").trim().toLowerCase();
+    var buttonLayout = String(o.buttonLayout || o.buttonStyle || "pills").trim().toLowerCase();
     if (buttonLayout !== "icons") buttonLayout = "pills";
     var leadCaptureEnabled = !!o.leadCaptureEnabled;
     return {

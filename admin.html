@@ -632,6 +632,7 @@
           <button type="button" class="portal-tab flex-1 rounded-xl py-2.5 text-[13px] sm:text-sm" data-dashboard-tab="content" aria-selected="false">Contenido</button>
           <button type="button" class="portal-tab flex-1 rounded-xl py-2.5 text-[13px] sm:text-sm" data-dashboard-tab="analytics" aria-selected="false">Analíticas</button>
           <button type="button" class="portal-tab flex-1 rounded-xl py-2.5 text-[13px] sm:text-sm" data-dashboard-tab="qr" aria-selected="false">QR &amp; Compartir</button>
+          <button type="button" class="portal-tab flex-1 rounded-xl py-2.5 text-[13px] sm:text-sm" data-dashboard-tab="email-signature" aria-selected="false">Firma de Email</button>
         </div>
 
         <div id="ec-card-public-link" class="ec-reveal ec-reveal-d4 elite-card hidden p-6 sm:p-8" data-dashboard-panel="qr">
@@ -829,7 +830,55 @@
           </div>
         </div>
 
-        <form id="form-card" class="ec-reveal ec-reveal-d6 elite-card hidden p-6 sm:p-10" data-dashboard-panel="content">
+        <div id="ec-card-email-signature" class="ec-reveal ec-reveal-d6 elite-card hidden p-6 sm:p-8" data-dashboard-panel="email-signature">
+          <p class="ec-label mb-2 block text-elite-gold/90">Firma de Email</p>
+          <p class="mb-6 text-sm font-light text-elite-mist/48">
+            Activá o desactivá los bloques de tu firma y copiá el HTML para usarlo en Gmail u Outlook.
+          </p>
+
+          <div class="grid gap-6 lg:grid-cols-[1fr_minmax(0,340px)]">
+            <div class="rounded-2xl border border-white/10 bg-black/25 p-4">
+              <p class="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-elite-gold/85">Elementos incluidos</p>
+              <div id="email-signature-options" class="grid gap-2 sm:grid-cols-2">
+                <label class="flex items-center gap-2 text-sm text-elite-mist/85"><input id="sig-opt-foto" type="checkbox" checked />Foto</label>
+                <label class="flex items-center gap-2 text-sm text-elite-mist/85"><input id="sig-opt-logo" type="checkbox" checked />Logo</label>
+                <label class="flex items-center gap-2 text-sm text-elite-mist/85"><input id="sig-opt-nombre" type="checkbox" checked />Nombre</label>
+                <label class="flex items-center gap-2 text-sm text-elite-mist/85"><input id="sig-opt-cargo" type="checkbox" checked />Cargo</label>
+                <label class="flex items-center gap-2 text-sm text-elite-mist/85"><input id="sig-opt-whatsapp" type="checkbox" checked />WhatsApp</label>
+                <label class="flex items-center gap-2 text-sm text-elite-mist/85"><input id="sig-opt-email" type="checkbox" checked />Email</label>
+                <label class="flex items-center gap-2 text-sm text-elite-mist/85 sm:col-span-2"><input id="sig-opt-qr" type="checkbox" checked />Código QR</label>
+              </div>
+              <div class="mt-4">
+                <label class="mb-1.5 block text-xs font-medium uppercase tracking-[0.14em] text-elite-gold/80" for="sig-bg-mode">
+                  Fondo de firma
+                </label>
+                <select
+                  id="sig-bg-mode"
+                  class="elite-input w-full rounded-xl px-3 py-2.5 text-sm"
+                >
+                  <option value="white" selected>Blanco</option>
+                  <option value="transparent">Transparente</option>
+                </select>
+              </div>
+              <div class="mt-5 flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  id="btn-copy-email-signature"
+                  class="elite-btn-gold rounded-xl px-5 py-2.5 text-[11px]"
+                >
+                  <span>Copiar firma (HTML)</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="rounded-2xl border border-white/10 bg-[#fbfbfb] p-4">
+              <p class="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-zinc-600">Vista previa de firma</p>
+              <div id="email-signature-preview" class="overflow-auto rounded-xl border border-zinc-200 bg-white p-3"></div>
+            </div>
+          </div>
+        </div>
+
+        <form id="form-card" class="ec-reveal ec-reveal-d7 elite-card hidden p-6 sm:p-10" data-dashboard-panel="content">
           <p id="panel-status" class="mb-5 text-sm font-light text-elite-mist/45" role="status"></p>
 
           <div
@@ -1433,9 +1482,11 @@
             if (ha) ha.value = av;
             if (hl) hl.value = bl;
             if (hd) hd.value = lead;
+            applySignatureConfigToUI(base.signatureConfig || {});
             refreshStyleControlUI();
             if (auth.currentUser) setupPreviewIframe(auth.currentUser.uid);
             scheduleLivePreviewSync();
+            renderEmailSignaturePreview(auth.currentUser);
           })();
         }
 
@@ -1464,9 +1515,12 @@
             sitioWeb: document.getElementById("f-sitioWeb").value.trim(),
             mapsUrl: document.getElementById("f-mapsUrl").value.trim(),
             cardTheme: theme,
+            selectedTheme: theme,
             avatarShape: avatarShape,
             buttonLayout: buttonLayout,
+            buttonStyle: buttonLayout,
             leadCaptureEnabled: leadCaptureEnabled,
+            signatureConfig: readSignatureConfigFromUI(),
           };
         }
 
@@ -1509,6 +1563,98 @@
           img.setAttribute("src", qrSrc);
           img.setAttribute("data-download-url", qrSrc);
           img.setAttribute("data-target-url", link);
+        }
+
+        function readSignatureConfigFromUI() {
+          function on(id) {
+            var el = document.getElementById(id);
+            return !!(el && el.checked);
+          }
+          return {
+            foto: on("sig-opt-foto"),
+            logo: on("sig-opt-logo"),
+            nombre: on("sig-opt-nombre"),
+            cargo: on("sig-opt-cargo"),
+            whatsapp: on("sig-opt-whatsapp"),
+            email: on("sig-opt-email"),
+            qr: on("sig-opt-qr"),
+            backgroundMode: (document.getElementById("sig-bg-mode") || {}).value || "white",
+          };
+        }
+
+        function applySignatureConfigToUI(cfg) {
+          var c = cfg || {};
+          function set(id, value) {
+            var el = document.getElementById(id);
+            if (el) el.checked = !!value;
+          }
+          set("sig-opt-foto", c.foto !== false);
+          set("sig-opt-logo", c.logo !== false);
+          set("sig-opt-nombre", c.nombre !== false);
+          set("sig-opt-cargo", c.cargo !== false);
+          set("sig-opt-whatsapp", c.whatsapp !== false);
+          set("sig-opt-email", c.email !== false);
+          set("sig-opt-qr", c.qr !== false);
+          var bg = document.getElementById("sig-bg-mode");
+          if (bg) bg.value = c.backgroundMode === "transparent" ? "transparent" : "white";
+        }
+
+        function getEmailSignatureHtml(user) {
+          var data = readFormObject();
+          var sig = readSignatureConfigFromUI();
+          var uid = user && user.uid ? user.uid : "";
+          var publicUrl = uid ? buildPublicUrl(uid) : "#";
+          var qrUrl = "https://quickchart.io/qr?size=200&margin=1&text=" + encodeURIComponent(publicUrl);
+          var bgMode = sig.backgroundMode === "transparent" ? "transparent" : "white";
+          var tableBg = bgMode === "transparent" ? "transparent" : "#ffffff";
+          var tableBorder = bgMode === "transparent" ? "#d1d5db" : "#e5e7eb";
+
+          var fotoUrl = String((lastDoc && (lastDoc.fotoUrl || lastDoc.photoURL)) || "").trim();
+          var logoUrl = String((lastDoc && lastDoc.logoUrl) || "").trim();
+          var safeName = data.nombreCompleto || "Tu nombre";
+          var safeCargo = data.cargo || "Tu cargo";
+          var safeEmail = data.emailInstitucional || "";
+          var safeWa = data.whatsappNumero ? "+" + data.whatsappNumero : "";
+
+          var cellsLeft = "";
+          if (sig.foto && fotoUrl) {
+            cellsLeft +=
+              '<img src="' + fotoUrl + '" alt="Foto" width="72" height="72" style="display:block;border-radius:12px;object-fit:cover;border:1px solid #d4af37;" />';
+          }
+          if (sig.logo && logoUrl) {
+            cellsLeft +=
+              '<img src="' + logoUrl + '" alt="Logo" width="56" height="56" style="display:block;margin-top:8px;border-radius:50%;background:#fff;padding:4px;object-fit:contain;border:1px solid #d4af37;" />';
+          }
+          if (!cellsLeft) {
+            cellsLeft = '<div style="width:72px;height:72px;border:1px solid #ddd;border-radius:12px;background:#f8f8f8;"></div>';
+          }
+
+          var center = "";
+          if (sig.nombre) center += '<div style="font-family:Poppins,Arial,sans-serif;font-size:16px;font-weight:600;color:#111;">' + safeName + "</div>";
+          if (sig.cargo) center += '<div style="font-family:Poppins,Arial,sans-serif;font-size:13px;color:#555;margin-top:3px;">' + safeCargo + "</div>";
+          if (sig.whatsapp && safeWa) center += '<div style="font-family:Arial,sans-serif;font-size:12px;color:#0a0a0a;margin-top:8px;">WhatsApp: ' + safeWa + "</div>";
+          if (sig.email && safeEmail) center += '<div style="font-family:Arial,sans-serif;font-size:12px;color:#0a0a0a;margin-top:4px;">Email: ' + safeEmail + "</div>";
+          center += '<div style="font-family:Arial,sans-serif;font-size:11px;color:#666;margin-top:10px;">Escaneá mi QR para agendarme</div>';
+
+          var qrBlock = sig.qr
+            ? '<td style="vertical-align:top;padding-left:14px;"><a href="' + publicUrl + '" target="_blank" rel="noopener noreferrer"><img src="' + qrUrl + '" width="90" height="90" alt="QR EliteCard" style="display:block;border:1px solid #ddd;border-radius:8px;background:#fff;padding:4px;" /></a></td>'
+            : "";
+
+          return (
+            '<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:620px;border:1px solid ' + tableBorder + ';border-radius:12px;background:' + tableBg + ';">' +
+            '<tr>' +
+            '<td style="padding:12px;vertical-align:top;width:90px;">' + cellsLeft + "</td>" +
+            '<td style="padding:12px;vertical-align:top;">' + center + "</td>" +
+            qrBlock +
+            "</tr>" +
+            "</table>"
+          );
+        }
+
+        function renderEmailSignaturePreview(user) {
+          var wrap = document.getElementById("email-signature-preview");
+          if (!wrap) return;
+          wrap.innerHTML = getEmailSignatureHtml(user);
         }
 
         function initDashboardTabs() {
@@ -1724,6 +1870,7 @@
             syncPublicCardHref();
             updatePublicLinkInput(user);
             if (user) updateQrPreview(user.uid);
+            renderEmailSignaturePreview(user);
             if (user) {
               loadDocument();
             } else {
@@ -1889,6 +2036,56 @@
               document.body.removeChild(a);
             });
           }
+
+          var signatureOptionsWrap = document.getElementById("email-signature-options");
+          if (signatureOptionsWrap) {
+            signatureOptionsWrap.addEventListener("change", function () {
+              renderEmailSignaturePreview(auth.currentUser);
+            });
+          }
+          var sigBgMode = document.getElementById("sig-bg-mode");
+          if (sigBgMode) {
+            sigBgMode.addEventListener("change", function () {
+              renderEmailSignaturePreview(auth.currentUser);
+            });
+          }
+
+          var btnCopySignature = document.getElementById("btn-copy-email-signature");
+          if (btnCopySignature) {
+            btnCopySignature.addEventListener("click", function () {
+              var html = getEmailSignatureHtml(auth.currentUser);
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard
+                  .writeText(html)
+                  .then(function () {
+                    showAdminToast("Firma copiada al portapapeles.", "ok");
+                  })
+                  .catch(function () {
+                    showAdminToast("No se pudo copiar automáticamente.", "error");
+                  });
+                return;
+              }
+              var ta = document.createElement("textarea");
+              ta.value = html;
+              document.body.appendChild(ta);
+              ta.select();
+              try {
+                document.execCommand("copy");
+                showAdminToast("Firma copiada al portapapeles.", "ok");
+              } catch (eSig) {
+                showAdminToast("No se pudo copiar automáticamente.", "error");
+              }
+              document.body.removeChild(ta);
+            });
+          }
+
+          ["f-nombreCompleto", "f-cargo", "f-emailInstitucional", "f-whatsappNumero"].forEach(function (id) {
+            var elSig = document.getElementById(id);
+            if (!elSig) return;
+            elSig.addEventListener("input", function () {
+              renderEmailSignaturePreview(auth.currentUser);
+            });
+          });
 
           var btnResetAnalytics = document.getElementById("btn-reset-analytics");
           if (btnResetAnalytics) {
