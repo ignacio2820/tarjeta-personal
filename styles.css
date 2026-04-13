@@ -330,14 +330,14 @@ body.luxury-body {
 .footer-bar-light .footer-action-label {
   color: #0a0a0a !important;
   font-weight: 600;
-  font-size: 1.1rem !important;
+  font-size: 1rem !important;
   letter-spacing: 0.01em;
   line-height: 1.2;
 }
 
 @media (min-width: 400px) {
   .footer-bar-light .footer-action-label {
-    font-size: 1.2rem !important;
+    font-size: 1.1rem !important;
   }
 }
 
@@ -378,12 +378,12 @@ body.luxury-body {
 
 /* Texto de botones incrementado */
 .ec-contact-button .col-start-2 {
-  font-size: 1.125rem !important;
+  font-size: 1.05rem !important;
   letter-spacing: 0.04em;
 }
 @media (min-width: 400px) {
   .ec-contact-button .col-start-2 {
-    font-size: 1.25rem !important;
+    font-size: 1.15rem !important;
   }
 }
 
