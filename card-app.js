@@ -2,6 +2,7 @@
   "use strict";
 
   var cfg = window.normalizeTarjetaData ? window.normalizeTarjetaData() : {};
+  var analyticsTrack = function () {};
 
   function onlyDigits(s) {
     return String(s || "").replace(/\D/g, "");
@@ -160,13 +161,14 @@
     }
   }
 
-  function pill(href, label, iconClass, iconCircleClass) {
+  function pill(href, label, iconClass, iconCircleClass, metricKey) {
     var a = document.createElement("a");
     a.href = href;
     a.target = "_blank";
     a.rel = "noopener noreferrer";
     a.className =
       "ec-contact-button link-pill pill-action grid w-full grid-cols-[2.5rem_minmax(0,1fr)_2.5rem] items-center overflow-hidden rounded-full border border-neutral-700 bg-[#0a0a0a] py-0.5 pl-0.5 pr-0.5 text-[0.8125rem] font-light tracking-[0.07em] text-[#ebe6dc]";
+    a.setAttribute("aria-label", label);
 
     var circle = document.createElement("span");
     circle.className =
@@ -187,16 +189,25 @@
     a.appendChild(circle);
     a.appendChild(labelEl);
     a.appendChild(spacer);
+    if (metricKey) {
+      a.addEventListener("click", function () {
+        analyticsTrack(metricKey);
+      });
+    }
     return a;
   }
 
-  function pillButton(label, iconClass, iconCircleClass, onClick, extraClass) {
+  function pillButton(label, iconClass, iconCircleClass, onClick, extraClass, metricKey) {
     var btn = document.createElement("button");
     btn.type = "button";
     btn.className =
       "ec-contact-button link-pill pill-action grid w-full grid-cols-[2.5rem_minmax(0,1fr)_2.5rem] items-center overflow-hidden rounded-full border border-neutral-700 bg-[#0a0a0a] py-0.5 pl-0.5 pr-0.5 text-[0.8125rem] font-light tracking-[0.07em] text-[#ebe6dc] " +
       (extraClass || "");
-    btn.addEventListener("click", onClick);
+    btn.setAttribute("aria-label", label);
+    btn.addEventListener("click", function (ev) {
+      if (metricKey) analyticsTrack(metricKey);
+      onClick(ev);
+    });
 
     var circle = document.createElement("span");
     circle.className =
@@ -461,7 +472,7 @@
     if (cfg.telefono) {
       var telHref = "tel:" + cfg.telefono.replace(/\s/g, "");
       container.appendChild(
-        pill(telHref, "Llámame", "fa-solid fa-phone", "bg-neutral-600")
+        pill(telHref, "Llamame", "fa-solid fa-phone", "bg-neutral-600", "clics_telefono")
       );
     }
 
@@ -472,7 +483,9 @@
           "Contactame por WhatsApp",
           "fa-brands fa-whatsapp",
           "bg-[#25D366]",
-          openWaModal
+          openWaModal,
+          "",
+          "clics_whatsapp"
         )
       );
     }
@@ -483,7 +496,8 @@
           "mailto:" + cfg.email,
           "Escríbeme (correo)",
           "fa-solid fa-envelope",
-          "bg-[#EA4335]"
+          "bg-[#EA4335]",
+          "clics_email"
         )
       );
     }
@@ -494,7 +508,8 @@
           "mailto:" + cfg.emailInstitucional,
           "Correo institucional",
           "fa-solid fa-building",
-          "bg-[#0A66C2]"
+          "bg-[#0A66C2]",
+          "clics_email_institucional"
         )
       );
     }
@@ -505,14 +520,15 @@
           cfg.instagram,
           "Instagram",
           "fa-brands fa-instagram",
-          "bg-gradient-to-br from-[#f58529] via-[#dd2a7b] to-[#8134af]"
+          "bg-gradient-to-br from-[#f58529] via-[#dd2a7b] to-[#8134af]",
+          "clics_instagram"
         )
       );
     }
 
     if (cfg.sitioWeb) {
       container.appendChild(
-        pill(cfg.sitioWeb, "Página web", "fa-solid fa-globe", "bg-amber-600")
+        pill(cfg.sitioWeb, "Página web", "fa-solid fa-globe", "bg-amber-600", "clics_perfil")
       );
     }
 
@@ -522,7 +538,8 @@
           cfg.linkedin,
           "LinkedIn",
           "fa-brands fa-linkedin-in",
-          "bg-[#0A66C2]"
+          "bg-[#0A66C2]",
+          "clics_linkedin"
         )
       );
     }
@@ -533,7 +550,8 @@
           cfg.mapsUrl,
           "Dirección / mapa",
           "fa-solid fa-location-dot",
-          "bg-[#34A853]"
+          "bg-[#34A853]",
+          "clics_mapa"
         )
       );
     }
@@ -545,13 +563,72 @@
           "fa-regular fa-calendar-check",
           "bg-amber-600",
           openAgendarCita,
-          "ring-2 ring-amber-500/40 border-amber-600/50"
+          "ring-2 ring-amber-500/40 border-amber-600/50",
+          "clics_agendar_cita"
         )
       );
+    }
+
+    if (cfg.leadCaptureEnabled) {
+      var leadWrap = document.createElement("section");
+      leadWrap.className =
+        "mt-2 rounded-2xl border border-white/10 bg-black/35 p-3.5 backdrop-blur-sm";
+      var leadTitle = document.createElement("p");
+      leadTitle.className = "mb-2 text-center text-xs font-medium tracking-[0.08em] text-[#d4af37]";
+      leadTitle.textContent = "Dejá tus datos y te contacto";
+      var leadName = document.createElement("input");
+      leadName.type = "text";
+      leadName.placeholder = "Tu nombre";
+      leadName.className =
+        "mb-2 w-full rounded-xl border border-white/12 bg-black/55 px-3 py-2 text-sm text-[#ebe6dc] placeholder:text-[#a3a3a3]";
+      var leadEmail = document.createElement("input");
+      leadEmail.type = "email";
+      leadEmail.placeholder = "Tu email";
+      leadEmail.className =
+        "mb-2 w-full rounded-xl border border-white/12 bg-black/55 px-3 py-2 text-sm text-[#ebe6dc] placeholder:text-[#a3a3a3]";
+      var leadBtn = document.createElement("button");
+      leadBtn.type = "button";
+      leadBtn.className =
+        "w-full rounded-xl border border-amber-400/45 bg-amber-500/15 px-3 py-2 text-[0.8rem] font-medium tracking-[0.08em] text-[#f2e6a7]";
+      leadBtn.textContent = "Enviar datos";
+      leadBtn.addEventListener("click", function () {
+        showToast("Gracias. Te vamos a contactar pronto.");
+      });
+      leadWrap.appendChild(leadTitle);
+      leadWrap.appendChild(leadName);
+      leadWrap.appendChild(leadEmail);
+      leadWrap.appendChild(leadBtn);
+      container.appendChild(leadWrap);
+    }
+  }
+
+  function applyCardAppearance() {
+    var theme = String(cfg.cardTheme || "gold").trim().toLowerCase();
+    if (["gold", "minimal", "electric"].indexOf(theme) < 0) theme = "gold";
+    var avatarShape = String(cfg.avatarShape || "rect").trim().toLowerCase();
+    if (avatarShape !== "circle") avatarShape = "rect";
+    var linkLayout = String(cfg.buttonLayout || "pills").trim().toLowerCase();
+    if (linkLayout !== "icons") linkLayout = "pills";
+
+    var root = document.documentElement;
+    root.classList.remove("ec-theme-gold", "ec-theme-minimal", "ec-theme-electric");
+    root.classList.add("ec-theme-" + theme);
+    if (document.body) {
+      document.body.classList.remove("ec-theme-gold", "ec-theme-minimal", "ec-theme-electric");
+      document.body.classList.add("ec-theme-" + theme);
+    }
+
+    var app = document.getElementById("app-root");
+    if (app) {
+      app.classList.remove("ec-theme-gold", "ec-theme-minimal", "ec-theme-electric");
+      app.classList.add("ec-theme-" + theme);
+      app.setAttribute("data-avatar-shape", avatarShape);
+      app.setAttribute("data-link-layout", linkLayout);
     }
   }
 
   function applyCardUI() {
+    applyCardAppearance();
     initMeta();
     initHeader();
     initLinks();
@@ -805,6 +882,7 @@
 
     var profileUnsub = null;
     var splashDismissed = false;
+    var analyticsLastViewDocId = "";
 
     function applyRemoteAndMaybeDismissSplash() {
       if (splashDismissed) return;
@@ -861,6 +939,25 @@
         console.log("[EliteCard] Sin documento Firestore; fotoUrl/logoUrl no aplicables.");
         cfg = window.normalizeTarjetaData({});
       }
+      // Actualizar logo del preloader con el logo institucional del usuario
+      (function updatePreloaderLogo() {
+        try {
+          var logo = String(
+            (snap && snap.exists && snap.data().logoUrl) || ""
+          ).trim();
+          if (!logo) return;
+          var preloaderImg = document.getElementById("preloader-logo-img");
+          if (!preloaderImg) return;
+          var tmpImg = new Image();
+          tmpImg.onload = function () {
+            preloaderImg.src = logo;
+          };
+          tmpImg.onerror = function () {
+            // Si falla, mantener el ícono genérico
+          };
+          tmpImg.src = logo;
+        } catch (e) {}
+      })();
       applyCardUI();
       applyRemoteAndMaybeDismissSplash();
     }
@@ -880,9 +977,31 @@
 
       var docRef = db.collection(usersCollection()).doc(userId);
 
+      function incrementMetric(metricKey) {
+        if (!metricKey) return;
+        try {
+          var payload = {};
+          payload[metricKey] = firebase.firestore.FieldValue.increment(1);
+          payload.clics_totales = firebase.firestore.FieldValue.increment(1);
+          docRef.set(payload, { merge: true }).catch(function () {});
+        } catch (eInc) {}
+      }
+      analyticsTrack = incrementMetric;
+
       function attachSnapshotListener() {
         profileUnsub = docRef.onSnapshot(
           function (snap) {
+            if (snap && snap.exists && analyticsLastViewDocId !== cardDocId) {
+              analyticsLastViewDocId = cardDocId;
+              try {
+                docRef
+                  .set(
+                    { vistas_totales: firebase.firestore.FieldValue.increment(1) },
+                    { merge: true }
+                  )
+                  .catch(function () {});
+              } catch (eViews) {}
+            }
             applySnapshot(snap, explicitFromUrl);
           },
           function (err) {

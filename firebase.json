@@ -5,6 +5,9 @@
   "storage": {
     "rules": "storage.rules"
   },
+  "functions": {
+    "source": "functions"
+  },
   "hosting": {
     "public": ".",
     "cleanUrls": false,
@@ -16,6 +19,16 @@
       }
     ],
     "rewrites": [
+      {
+        "source": "/manifest-user",
+        "function": "manifest",
+        "region": "us-east1"
+      },
+      {
+        "source": "/card",
+        "function": "card",
+        "region": "us-east1"
+      },
       {
         "source": "/admin",
         "destination": "/admin.html"
@@ -29,6 +42,7 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**",
+      "functions/**",
       "firebase-debug.log",
       "firebase-debug.*.log",
       "firebase-config.example.js"

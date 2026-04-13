@@ -297,6 +297,9 @@
       .ec-dashboard-mounted .ec-reveal-d4 {
         transition-delay: 0.28s;
       }
+      .ec-dashboard-mounted .ec-reveal-d5 {
+        transition-delay: 0.36s;
+      }
 
       /* Modal glass */
       .ec-modal-backdrop {
@@ -379,6 +382,111 @@
           border-color: var(--ec-gold);
         }
       }
+
+      .ec-style-option {
+        border-radius: 0.875rem;
+        border: 1px solid rgba(224, 224, 224, 0.14);
+        background: rgba(0, 0, 0, 0.35);
+        color: var(--ec-text-dim);
+        font-size: 0.8125rem;
+        font-weight: 500;
+        padding: 0.65rem 1rem;
+        transition:
+          border-color 0.2s ease,
+          background 0.2s ease,
+          color 0.2s ease;
+      }
+      .ec-style-option:hover {
+        border-color: rgba(212, 175, 55, 0.35);
+        color: rgba(224, 224, 224, 0.88);
+      }
+      .ec-style-option-active {
+        border-color: rgba(212, 175, 55, 0.55) !important;
+        background: rgba(212, 175, 55, 0.1) !important;
+        color: #fff !important;
+        box-shadow: 0 0 18px rgba(212, 175, 55, 0.12);
+      }
+      .ec-theme-swatch {
+        width: 1.25rem;
+        height: 1.25rem;
+        border-radius: 9999px;
+        flex-shrink: 0;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+      .ec-preview-shell {
+        position: relative;
+        overflow: hidden;
+        border-radius: 1.25rem;
+        border: 1px solid rgba(212, 175, 55, 0.22);
+        background: #050505;
+        aspect-ratio: 9 / 16;
+        max-height: 480px;
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 280px;
+      }
+      .ec-preview-shell iframe {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 200%;
+        height: 200%;
+        border: 0;
+        transform: scale(0.5);
+        transform-origin: top left;
+        pointer-events: none;
+      }
+
+      #live-preview-container[data-preview-theme="gold"] {
+        box-shadow:
+          0 0 0 1px rgba(212, 175, 55, 0.35),
+          0 24px 48px rgba(0, 0, 0, 0.55);
+      }
+      #live-preview-container[data-preview-theme="minimal"] {
+        box-shadow:
+          0 0 0 1px rgba(64, 64, 64, 0.2),
+          0 24px 48px rgba(0, 0, 0, 0.25);
+      }
+      #live-preview-container[data-preview-theme="electric"] {
+        box-shadow:
+          0 0 0 1px rgba(34, 211, 238, 0.4),
+          0 24px 56px rgba(34, 211, 238, 0.12);
+      }
+
+      .ec-admin-toast {
+        position: fixed;
+        bottom: 1.5rem;
+        left: 50%;
+        z-index: 300;
+        max-width: min(92vw, 22rem);
+        transform: translateX(-50%) translateY(120%);
+        padding: 0.85rem 1.25rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        line-height: 1.35;
+        text-align: center;
+        pointer-events: none;
+        opacity: 0;
+        transition:
+          transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+          opacity 0.3s ease;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+      }
+      .ec-admin-toast.ec-admin-toast--visible {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+      .ec-admin-toast--ok {
+        border: 1px solid rgba(212, 175, 55, 0.45);
+        background: rgba(24, 24, 24, 0.95);
+        color: #ebe6dc;
+      }
+      .ec-admin-toast--err {
+        border: 1px solid rgba(248, 113, 113, 0.45);
+        background: rgba(40, 20, 20, 0.96);
+        color: #fecaca;
+      }
     </style>
   </head>
   <body class="ec-admin-body min-h-[100dvh] text-elite-mist antialiased font-light">
@@ -437,45 +545,40 @@
 
     <!-- Panel · EliteCard -->
     <section id="view-panel" class="relative z-10 hidden min-h-[100dvh] pb-36 pt-8 sm:pb-32 sm:pt-10">
-      <div class="mx-auto max-w-4xl px-5 sm:px-10">
-        <!-- Marca WebElite + acciones -->
-        <header
-          class="ec-reveal ec-reveal-d1 mb-10 flex flex-col gap-6 border-b border-white/[0.07] pb-8 sm:flex-row sm:items-start sm:justify-between"
-        >
-          <a
-            href="https://webelite-app.vercel.app/"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="group flex items-center gap-4 self-start transition hover:opacity-92"
-            aria-label="WebElite Solutions — sitio de la agencia"
-          >
-            <div
-              class="flex h-[3.35rem] w-[3.35rem] shrink-0 items-center justify-center rounded-2xl border border-elite-gold/45 bg-gradient-to-br from-zinc-900/90 to-black shadow-lg ring-1 ring-white/[0.06]"
-            >
-              <svg
-                class="h-8 w-8 text-elite-gold"
-                viewBox="0 0 32 32"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path
-                  d="M16 3.5 27.5 26h-6.2l-1.3-2.8H11.9L10.7 26H4.5L16 3.5zm0 7.2-3.5 9.1h7L16 10.7z"
-                  fill="currentColor"
+      <div class="ec-dashboard-stack mx-auto max-w-4xl space-y-10 px-5 pb-24 sm:px-10">
+        <!-- Marca EliteCard + WebElite + acciones -->
+        <header class="ec-reveal ec-reveal-d1 border-b border-white/[0.07] pb-8">
+          <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+            <div class="flex min-w-0 flex-col gap-5">
+              <div class="flex flex-wrap items-center gap-3 sm:gap-4">
+                <img
+                  src="icons/elitecard-shield.png"
+                  alt=""
+                  width="52"
+                  height="52"
+                  class="h-12 w-auto shrink-0 object-contain sm:h-14"
+                  decoding="async"
                 />
-              </svg>
+                <span
+                  class="text-[1.35rem] font-semibold tracking-tight text-white sm:text-[1.5rem]"
+                  style="font-family: Poppins, system-ui, sans-serif"
+                  >EliteCard</span>
+              </div>
+              <a
+                href="https://webelite-app.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="group flex w-fit max-w-full items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2 transition hover:border-elite-gold/25 hover:bg-white/[0.04] sm:ml-1"
+                aria-label="WebElite Solutions — sitio de la agencia"
+              >
+                <span class="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-elite-gold/80"
+                  >Partner</span>
+                <span class="text-sm font-light text-elite-mist/80">
+                  Web<span class="font-medium text-elite-gold">Elite</span> Solutions
+                </span>
+              </a>
             </div>
-            <div class="text-left">
-              <p class="text-[1.05rem] font-light tracking-wide text-white sm:text-[1.15rem]">
-                Web<span class="font-normal text-elite-gold">Elite</span>
-                <span class="text-elite-mist/35"> · </span>
-                <span class="text-elite-mist/75">Solutions</span>
-              </p>
-              <p class="mt-1 text-[0.6rem] font-medium uppercase tracking-[0.32em] text-elite-gold/75">
-                Technology &amp; Design
-              </p>
-            </div>
-          </a>
-          <div class="flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row sm:items-center sm:justify-end">
+            <div class="flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row sm:items-center sm:justify-end lg:shrink-0">
             <a
               id="btnVerTarjeta"
               href="#"
@@ -493,11 +596,12 @@
             >
               Cerrar sesión
             </button>
+            </div>
           </div>
         </header>
 
         <!-- Bienvenida alto impacto -->
-        <div class="ec-reveal ec-reveal-d2 mb-10">
+        <div class="ec-reveal ec-reveal-d2 elite-card p-6 sm:p-8">
           <h2
             class="max-w-3xl text-[1.5rem] font-light leading-[1.25] tracking-tight text-white sm:text-[2rem] sm:leading-tight"
           >
@@ -518,7 +622,19 @@
           ></p>
         </div>
 
-        <div class="ec-reveal ec-reveal-d3 mb-8 elite-card p-6 sm:p-8">
+        <div
+          id="dashboard-tabs"
+          class="ec-reveal ec-reveal-d3 ec-tab-bar flex gap-1 p-1"
+          role="tablist"
+          aria-label="Módulos del dashboard"
+        >
+          <button type="button" class="portal-tab portal-tab-active flex-1 rounded-xl py-2.5 text-[13px] sm:text-sm" data-dashboard-tab="design" aria-selected="true">Diseño</button>
+          <button type="button" class="portal-tab flex-1 rounded-xl py-2.5 text-[13px] sm:text-sm" data-dashboard-tab="content" aria-selected="false">Contenido</button>
+          <button type="button" class="portal-tab flex-1 rounded-xl py-2.5 text-[13px] sm:text-sm" data-dashboard-tab="analytics" aria-selected="false">Analíticas</button>
+          <button type="button" class="portal-tab flex-1 rounded-xl py-2.5 text-[13px] sm:text-sm" data-dashboard-tab="qr" aria-selected="false">QR &amp; Compartir</button>
+        </div>
+
+        <div id="ec-card-public-link" class="ec-reveal ec-reveal-d4 elite-card hidden p-6 sm:p-8" data-dashboard-panel="qr">
           <p class="ec-label mb-2 block text-elite-gold/90">Tu enlace público</p>
           <p class="mb-5 text-sm font-light text-elite-mist/48">
             Este es el link que compartís con tus contactos
@@ -548,9 +664,172 @@
               Compartir
             </button>
           </div>
+          <div class="mt-8 grid gap-6 sm:grid-cols-[1fr_auto] sm:items-center">
+            <div class="rounded-2xl border border-white/10 bg-black/30 p-4">
+              <p class="mb-2 text-xs font-medium uppercase tracking-[0.12em] text-elite-gold/80">Código QR dinámico</p>
+              <p class="text-xs font-light text-elite-mist/45">Escaneá o descargá para imprimir en tarjetas físicas.</p>
+            </div>
+            <div class="flex flex-col items-center gap-3">
+              <img id="qr-preview-img" class="h-36 w-36 rounded-xl border border-white/10 bg-white p-2 object-contain" src="" alt="QR de tu tarjeta pública" />
+              <button
+                type="button"
+                id="btn-download-qr"
+                class="rounded-xl border border-elite-gold/35 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.14em] text-elite-gold transition hover:bg-elite-gold/12"
+              >
+                Descargar QR
+              </button>
+            </div>
+          </div>
         </div>
 
-        <form id="form-card" class="ec-reveal ec-reveal-d4 elite-card p-6 sm:p-10">
+        <div
+          id="ec-personalization-card"
+          class="ec-reveal ec-reveal-d4 elite-card p-6 sm:p-8"
+          data-dashboard-panel="design"
+          data-ec-style-panel="true"
+        >
+          <p class="ec-label mb-2 block text-elite-gold/90">Personalización de estilo</p>
+          <p class="mb-6 text-sm font-light leading-relaxed text-elite-mist/48">
+            Elegí forma del avatar, diseño de los botones y tema. La vista previa del teléfono se actualiza al instante.
+            Usá «Guardar cambios de estilo» para subir todo el perfil (datos + estilo) a la nube, o seguí usando «Guardar
+            cambios» en Mis Datos / Imágenes cuando edites esas secciones.
+          </p>
+
+          <input type="hidden" id="f-cardTheme" value="gold" />
+          <input type="hidden" id="f-avatarShape" value="rect" />
+          <input type="hidden" id="f-buttonLayout" value="pills" />
+          <input type="hidden" id="f-leadCaptureEnabled" value="off" />
+
+          <div class="grid gap-10 lg:grid-cols-[1fr_minmax(0,300px)] lg:items-start">
+            <div class="space-y-9">
+              <div>
+                <span class="ec-label mb-3 block normal-case tracking-[0.12em]">Forma del avatar</span>
+                <div class="flex flex-wrap gap-2" data-style-group="avatarShape" role="group" aria-label="Forma del avatar">
+                  <button type="button" data-style-value="circle" class="ec-style-option" tabindex="0">
+                    Circular
+                  </button>
+                  <button type="button" data-style-value="rect" class="ec-style-option ec-style-option-active" tabindex="0">
+                    Rectangular (esquinas suaves)
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <span class="ec-label mb-3 block normal-case tracking-[0.12em]">Diseño de botones</span>
+                <div class="flex flex-wrap gap-2" data-style-group="buttonLayout" role="group" aria-label="Diseño de botones">
+                  <button type="button" data-style-value="pills" class="ec-style-option ec-style-option-active" tabindex="0">
+                    Botones largos (ícono + texto)
+                  </button>
+                  <button type="button" data-style-value="icons" class="ec-style-option" tabindex="0">
+                    Cuadrícula de íconos
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <span class="ec-label mb-3 block normal-case tracking-[0.12em]">Paleta de colores</span>
+                <div class="flex flex-wrap gap-2" data-style-group="cardTheme" role="group" aria-label="Tema de color">
+                  <button
+                    type="button"
+                    data-style-value="gold"
+                    class="ec-style-option ec-style-option-active flex items-center gap-2.5"
+                    tabindex="0"
+                  >
+                    <span
+                      class="ec-theme-swatch"
+                      style="background: linear-gradient(135deg, #0a0a0a 40%, #d4af37)"
+                    ></span>
+                    Premium Gold
+                  </button>
+                  <button type="button" data-style-value="minimal" class="ec-style-option flex items-center gap-2.5" tabindex="0">
+                    <span
+                      class="ec-theme-swatch"
+                      style="background: linear-gradient(135deg, #fff 45%, #404040)"
+                    ></span>
+                    Minimal White
+                  </button>
+                  <button type="button" data-style-value="electric" class="ec-style-option flex items-center gap-2.5" tabindex="0">
+                    <span
+                      class="ec-theme-swatch"
+                      style="background: linear-gradient(135deg, #050b14 40%, #22d3ee)"
+                    ></span>
+                    Electric Blue
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <span class="ec-label mb-3 block normal-case tracking-[0.12em]">Captura de leads</span>
+                <div class="flex flex-wrap gap-2" data-style-group="leadCaptureEnabled" role="group" aria-label="Formulario de captura">
+                  <button type="button" data-style-value="off" class="ec-style-option ec-style-option-active" tabindex="0">
+                    Desactivado
+                  </button>
+                  <button type="button" data-style-value="on" class="ec-style-option" tabindex="0">
+                    Activado (Nombre + Email)
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="lg:pt-1">
+              <span class="ec-label mb-3 block normal-case tracking-[0.12em]">Vista previa en vivo</span>
+              <div
+                id="live-preview-container"
+                class="ec-preview-shell shadow-2xl shadow-black/40"
+                data-preview-theme="gold"
+                data-preview-avatar="rect"
+                data-preview-layout="pills"
+              >
+                <iframe
+                  id="ec-live-preview"
+                  class="ec-preview-iframe"
+                  title="Vista previa de la tarjeta pública"
+                  loading="lazy"
+                ></iframe>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:justify-center">
+            <button
+              type="button"
+              id="btn-save-personalization"
+              class="elite-btn-gold w-full rounded-2xl py-4 sm:max-w-md sm:px-12"
+            >
+              <span>Guardar cambios de estilo</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="ec-card-analytics" class="ec-reveal ec-reveal-d5 elite-card hidden p-6 sm:p-8" data-dashboard-panel="analytics">
+          <p class="ec-label mb-2 block text-elite-gold/90">Analíticas rápidas</p>
+          <p class="mb-6 text-sm font-light text-elite-mist/48">Seguimiento comercial de tu tarjeta digital.</p>
+          <div class="grid gap-4 sm:grid-cols-3">
+            <article class="rounded-2xl border border-white/10 bg-black/35 p-4">
+              <p class="text-[0.62rem] uppercase tracking-[0.16em] text-elite-mist/45">Vistas totales</p>
+              <p id="stat-total-views" class="mt-2 text-3xl font-light text-white">0</p>
+            </article>
+            <article class="rounded-2xl border border-white/10 bg-black/35 p-4">
+              <p class="text-[0.62rem] uppercase tracking-[0.16em] text-elite-mist/45">Clics en WhatsApp</p>
+              <p id="stat-whatsapp-clicks" class="mt-2 text-3xl font-light text-white">0</p>
+            </article>
+            <article class="rounded-2xl border border-white/10 bg-black/35 p-4">
+              <p class="text-[0.62rem] uppercase tracking-[0.16em] text-elite-mist/45">Clics en perfil</p>
+              <p id="stat-profile-clicks" class="mt-2 text-3xl font-light text-white">0</p>
+            </article>
+          </div>
+          <div class="mt-6 flex justify-end">
+            <button
+              type="button"
+              id="btn-reset-analytics"
+              class="rounded-xl border border-red-400/35 bg-red-500/10 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.14em] text-red-300 transition hover:bg-red-500/18"
+            >
+              Resetear estadísticas
+            </button>
+          </div>
+        </div>
+
+        <form id="form-card" class="ec-reveal ec-reveal-d6 elite-card hidden p-6 sm:p-10" data-dashboard-panel="content">
           <p id="panel-status" class="mb-5 text-sm font-light text-elite-mist/45" role="status"></p>
 
           <div
@@ -615,7 +894,17 @@
                 <span class="ec-label mb-2 block">Empresa</span>
                 <input id="f-empresa" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" />
               </label>
-              <label class="sm:col-span-2">
+              <label>
+                <span class="ec-label mb-2 block">Teléfono</span>
+                <input
+                  id="f-telefono"
+                  type="text"
+                  inputmode="tel"
+                  class="elite-input w-full rounded-xl px-4 py-3.5 text-sm"
+                  placeholder="Ej: +54 9 11 1234-5678"
+                />
+              </label>
+              <label>
                 <span class="ec-label mb-2 block">WhatsApp</span>
                 <input
                   id="f-whatsappNumero"
@@ -623,6 +912,15 @@
                   inputmode="numeric"
                   class="elite-input w-full rounded-xl px-4 py-3.5 text-sm"
                   placeholder="54911…"
+                />
+              </label>
+              <label class="sm:col-span-2">
+                <span class="ec-label mb-2 block">Email institucional</span>
+                <input
+                  id="f-emailInstitucional"
+                  type="email"
+                  class="elite-input w-full rounded-xl px-4 py-3.5 text-sm"
+                  placeholder="usuario@organismo.gob.ar"
                 />
               </label>
               <label>
@@ -740,6 +1038,18 @@
       </div>
     </section>
 
+    <div class="pointer-events-none fixed inset-x-0 bottom-4 z-[220] px-4">
+      <div class="mx-auto max-w-4xl">
+        <button
+          type="button"
+          id="btn-publish-sticky"
+          class="elite-btn-gold pointer-events-auto w-full rounded-2xl py-4 text-[0.74rem] sm:py-4 sm:text-[0.78rem]"
+        >
+          <span>Publicar cambios</span>
+        </button>
+      </div>
+    </div>
+
     <!-- Overlay guardado (Firestore / Storage) -->
     <div
       id="save-overlay"
@@ -752,6 +1062,14 @@
         <p class="mt-8 text-[13px] font-light tracking-[0.2em] text-elite-mist/70">Guardando cambios…</p>
       </div>
     </div>
+
+    <div
+      id="ec-admin-toast"
+      class="ec-admin-toast hidden"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
 
     <!-- Modal contraseña -->
     <div
@@ -841,6 +1159,57 @@
         var pendingFotoFile = null;
         var pendingLogoFile = null;
         var docRef = null;
+        var analyticsUnsub = null;
+        var ecLivePreviewRaf = null;
+        var ecToastHideTimer = null;
+
+        function showAdminToast(message, kind) {
+          var el = document.getElementById("ec-admin-toast");
+          if (!el) return;
+          el.textContent = message || "";
+          el.classList.remove("ec-admin-toast--ok", "ec-admin-toast--err", "hidden");
+          el.classList.add(kind === "error" ? "ec-admin-toast--err" : "ec-admin-toast--ok");
+          void el.offsetWidth;
+          el.classList.add("ec-admin-toast--visible");
+          if (ecToastHideTimer) clearTimeout(ecToastHideTimer);
+          ecToastHideTimer = window.setTimeout(function () {
+            el.classList.remove("ec-admin-toast--visible");
+            ecToastHideTimer = window.setTimeout(function () {
+              el.classList.add("hidden");
+            }, 400);
+          }, 3200);
+        }
+
+        function syncLivePreviewChrome() {
+          var shell = document.getElementById("live-preview-container");
+          if (!shell) return;
+          var themeEl = document.getElementById("f-cardTheme");
+          var avEl = document.getElementById("f-avatarShape");
+          var layEl = document.getElementById("f-buttonLayout");
+          var leadEl = document.getElementById("f-leadCaptureEnabled");
+          var theme = (themeEl && themeEl.value) || "gold";
+          var avatar = (avEl && avEl.value) || "rect";
+          var layout = (layEl && layEl.value) || "pills";
+          var lead = (leadEl && leadEl.value) || "off";
+          if (["gold", "minimal", "electric"].indexOf(theme) < 0) theme = "gold";
+          if (avatar !== "circle") avatar = "rect";
+          if (layout !== "icons") layout = "pills";
+          if (lead !== "on") lead = "off";
+          shell.setAttribute("data-preview-theme", theme);
+          shell.setAttribute("data-preview-avatar", avatar);
+          shell.setAttribute("data-preview-layout", layout);
+          shell.setAttribute("data-preview-leads", lead);
+        }
+
+        function scheduleLivePreviewSync() {
+          if (ecLivePreviewRaf) cancelAnimationFrame(ecLivePreviewRaf);
+          ecLivePreviewRaf = requestAnimationFrame(function () {
+            ecLivePreviewRaf = requestAnimationFrame(function () {
+              ecLivePreviewRaf = null;
+              syncPreviewAppearance();
+            });
+          });
+        }
 
         function onlyDigits(s) {
           return String(s || "").replace(/\D/g, "");
@@ -859,6 +1228,10 @@
         }
 
         function bindUserDocument(db, user) {
+          if (analyticsUnsub) {
+            analyticsUnsub();
+            analyticsUnsub = null;
+          }
           docRef = user ? db.collection(usersCollection()).doc(user.uid) : null;
           var hint = document.getElementById("panel-uid-hint");
           if (hint) {
@@ -866,13 +1239,22 @@
               hint.textContent =
                 "ID público (compartí tu tarjeta): " +
                 user.uid +
-                " → ?id=" +
+                " → /card?id=" +
                 user.uid;
               hint.classList.remove("hidden");
             } else {
               hint.textContent = "";
               hint.classList.add("hidden");
             }
+          }
+          if (docRef) {
+            analyticsUnsub = docRef.onSnapshot(
+              function (snapA) {
+                var d = snapA && snapA.exists ? snapA.data() : {};
+                updateAnalyticsCards(d || {});
+              },
+              function () {}
+            );
           }
         }
 
@@ -934,13 +1316,97 @@
           span.textContent = nombre;
         }
 
+        function refreshStyleControlUI() {
+          document.querySelectorAll("[data-style-group]").forEach(function (grp) {
+            var key = grp.getAttribute("data-style-group");
+            var hid = document.getElementById("f-" + key);
+            if (!hid) return;
+            var v = hid.value;
+            grp.querySelectorAll("[data-style-value]").forEach(function (btn) {
+              var on = btn.getAttribute("data-style-value") === v;
+              btn.classList.toggle("ec-style-option-active", on);
+              btn.setAttribute("aria-pressed", on ? "true" : "false");
+            });
+          });
+        }
+
+        function syncPreviewAppearance() {
+          var iframe = document.getElementById("ec-live-preview");
+          if (!iframe || !iframe.contentWindow) return;
+          try {
+            var doc = iframe.contentWindow.document;
+            var app = doc.getElementById("app-root");
+            var body = doc.body;
+            var root = doc.documentElement;
+            if (!app || !body || !root) return;
+            var themeEl = document.getElementById("f-cardTheme");
+            var avEl = document.getElementById("f-avatarShape");
+            var layEl = document.getElementById("f-buttonLayout");
+            var leadEl = document.getElementById("f-leadCaptureEnabled");
+            var theme = (themeEl && themeEl.value) || "gold";
+            var avatar = (avEl && avEl.value) || "rect";
+            var layout = (layEl && layEl.value) || "pills";
+            var lead = (leadEl && leadEl.value) || "off";
+            if (["gold", "minimal", "electric"].indexOf(theme) < 0) theme = "gold";
+            if (avatar !== "circle") avatar = "rect";
+            if (layout !== "icons") layout = "pills";
+            if (lead !== "on") lead = "off";
+            root.classList.remove("ec-theme-gold", "ec-theme-minimal", "ec-theme-electric");
+            root.classList.add("ec-theme-" + theme);
+            body.classList.remove("ec-theme-gold", "ec-theme-minimal", "ec-theme-electric");
+            body.classList.add("ec-theme-" + theme);
+            app.classList.remove("ec-theme-gold", "ec-theme-minimal", "ec-theme-electric");
+            app.classList.add("ec-theme-" + theme);
+            app.setAttribute("data-avatar-shape", avatar);
+            app.setAttribute("data-link-layout", layout);
+
+            var links = doc.getElementById("links-container");
+            if (links) {
+              var leadPreview = doc.getElementById("ec-preview-lead-form");
+              if (lead === "on") {
+                if (!leadPreview) {
+                  leadPreview = doc.createElement("div");
+                  leadPreview.id = "ec-preview-lead-form";
+                  leadPreview.className =
+                    "mt-2 rounded-2xl border border-white/10 bg-black/35 p-3.5 backdrop-blur-sm";
+                  leadPreview.innerHTML =
+                    '<p class="mb-2 text-center text-xs font-medium tracking-[0.08em] text-[#d4af37]">Captura de leads activa</p>' +
+                    '<input type="text" placeholder="Tu nombre" class="mb-2 w-full rounded-xl border border-white/12 bg-black/55 px-3 py-2 text-sm text-[#ebe6dc]" />' +
+                    '<input type="email" placeholder="Tu email" class="w-full rounded-xl border border-white/12 bg-black/55 px-3 py-2 text-sm text-[#ebe6dc]" />';
+                  links.appendChild(leadPreview);
+                }
+              } else if (leadPreview && leadPreview.parentNode) {
+                leadPreview.parentNode.removeChild(leadPreview);
+              }
+            }
+          } catch (e) {}
+          syncLivePreviewChrome();
+        }
+
+        function setupPreviewIframe(uid) {
+          var f = document.getElementById("ec-live-preview");
+          if (!f || !uid) return;
+          var origin = String(window.location.origin || "").replace(/\/$/, "");
+          var url = origin + "/index.html?id=" + encodeURIComponent(uid);
+          f.onload = function () {
+            syncPreviewAppearance();
+          };
+          if (f.getAttribute("src") !== url) {
+            f.setAttribute("src", url);
+          } else {
+            syncPreviewAppearance();
+          }
+        }
+
         function fillFormFromData(data) {
           var base = Object.assign({}, window.DEFAULT_TARJETA_RAW || {}, data || {});
           var map = [
             ["f-nombreCompleto", "nombreCompleto"],
             ["f-cargo", "cargo"],
             ["f-empresa", "empresa"],
+            ["f-telefono", "telefono"],
             ["f-whatsappNumero", "whatsappNumero"],
+            ["f-emailInstitucional", "emailInstitucional"],
             ["f-instagram", "instagram"],
             ["f-linkedin", "linkedin"],
             ["f-sitioWeb", "sitioWeb"],
@@ -950,20 +1416,121 @@
             var el = document.getElementById(pair[0]);
             if (el) el.value = base[pair[1]] != null ? String(base[pair[1]]) : "";
           });
+
+          (function fillStyleFields() {
+            var theme = String(base.cardTheme || "gold").trim().toLowerCase();
+            if (["gold", "minimal", "electric"].indexOf(theme) < 0) theme = "gold";
+            var av = String(base.avatarShape || "rect").trim().toLowerCase();
+            if (av !== "circle") av = "rect";
+            var bl = String(base.buttonLayout || "pills").trim().toLowerCase();
+            if (bl !== "icons") bl = "pills";
+            var lead = base.leadCaptureEnabled ? "on" : "off";
+            var ht = document.getElementById("f-cardTheme");
+            var ha = document.getElementById("f-avatarShape");
+            var hl = document.getElementById("f-buttonLayout");
+            var hd = document.getElementById("f-leadCaptureEnabled");
+            if (ht) ht.value = theme;
+            if (ha) ha.value = av;
+            if (hl) hl.value = bl;
+            if (hd) hd.value = lead;
+            refreshStyleControlUI();
+            if (auth.currentUser) setupPreviewIframe(auth.currentUser.uid);
+            scheduleLivePreviewSync();
+          })();
         }
 
         /** Campos alineados con config.js / tarjeta (Firestore usuarios/{uid}). */
         function readFormObject() {
+          var t = document.getElementById("f-cardTheme");
+          var a = document.getElementById("f-avatarShape");
+          var b = document.getElementById("f-buttonLayout");
+          var l = document.getElementById("f-leadCaptureEnabled");
+          var theme = t ? String(t.value || "gold").trim().toLowerCase() : "gold";
+          var avatarShape = a ? String(a.value || "rect").trim().toLowerCase() : "rect";
+          var buttonLayout = b ? String(b.value || "pills").trim().toLowerCase() : "pills";
+          var leadCaptureEnabled = l ? String(l.value || "off").trim().toLowerCase() === "on" : false;
+          if (["gold", "minimal", "electric"].indexOf(theme) < 0) theme = "gold";
+          if (avatarShape !== "circle") avatarShape = "rect";
+          if (buttonLayout !== "icons") buttonLayout = "pills";
           return {
             nombreCompleto: document.getElementById("f-nombreCompleto").value.trim(),
             cargo: document.getElementById("f-cargo").value.trim(),
             empresa: document.getElementById("f-empresa").value.trim(),
+            telefono: document.getElementById("f-telefono").value.trim(),
             whatsappNumero: onlyDigits(document.getElementById("f-whatsappNumero").value),
+            emailInstitucional: document.getElementById("f-emailInstitucional").value.trim(),
             instagram: document.getElementById("f-instagram").value.trim(),
             linkedin: document.getElementById("f-linkedin").value.trim(),
             sitioWeb: document.getElementById("f-sitioWeb").value.trim(),
             mapsUrl: document.getElementById("f-mapsUrl").value.trim(),
+            cardTheme: theme,
+            avatarShape: avatarShape,
+            buttonLayout: buttonLayout,
+            leadCaptureEnabled: leadCaptureEnabled,
           };
+        }
+
+        function toMetricValue(v) {
+          var n = Number(v);
+          return Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0;
+        }
+
+        function updateAnalyticsCards(data) {
+          var d = data || {};
+          var analytics = d.analytics || {};
+          var views =
+            toMetricValue(analytics.viewsTotal) ||
+            toMetricValue(d.vistas_totales) ||
+            toMetricValue(d.viewsTotal) ||
+            toMetricValue(d.visitasTotales);
+          var wa =
+            toMetricValue(analytics.whatsappClicks) ||
+            toMetricValue(d.clics_whatsapp) ||
+            toMetricValue(d.whatsappClicks);
+          var profile =
+            toMetricValue(analytics.profileClicks) ||
+            toMetricValue(d.clics_perfil) ||
+            toMetricValue(d.profileClicks);
+          var elViews = document.getElementById("stat-total-views");
+          var elWa = document.getElementById("stat-whatsapp-clicks");
+          var elProfile = document.getElementById("stat-profile-clicks");
+          if (elViews) elViews.textContent = String(views);
+          if (elWa) elWa.textContent = String(wa);
+          if (elProfile) elProfile.textContent = String(profile);
+        }
+
+        function updateQrPreview(uid) {
+          var img = document.getElementById("qr-preview-img");
+          if (!img || !uid) return;
+          var link = buildPublicUrl(uid);
+          var qrSrc =
+            "https://quickchart.io/qr?size=512&margin=2&text=" +
+            encodeURIComponent(link);
+          img.setAttribute("src", qrSrc);
+          img.setAttribute("data-download-url", qrSrc);
+          img.setAttribute("data-target-url", link);
+        }
+
+        function initDashboardTabs() {
+          var tabs = document.querySelectorAll("[data-dashboard-tab]");
+          var panels = document.querySelectorAll("[data-dashboard-panel]");
+          if (!tabs.length || !panels.length) return;
+          function show(which) {
+            tabs.forEach(function (btn) {
+              var on = btn.getAttribute("data-dashboard-tab") === which;
+              btn.classList.toggle("portal-tab-active", on);
+              btn.setAttribute("aria-selected", on ? "true" : "false");
+            });
+            panels.forEach(function (panel) {
+              panel.classList.toggle("hidden", panel.getAttribute("data-dashboard-panel") !== which);
+            });
+          }
+          tabs.forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              show(btn.getAttribute("data-dashboard-tab"));
+            });
+          });
+          show("design");
         }
 
         function setPreview(imgId, url) {
@@ -1034,6 +1601,8 @@
                 lastDoc = snap.exists ? snap.data() : {};
                 fillFormFromData(lastDoc);
                 updatePanelWelcome(auth.currentUser);
+                updateAnalyticsCards(lastDoc);
+                if (auth.currentUser) updateQrPreview(auth.currentUser.uid);
                 if (lastDoc.fotoUrl) setPreview("preview-foto", lastDoc.fotoUrl);
                 else document.getElementById("preview-foto").classList.add("hidden");
                 if (lastDoc.logoUrl) setPreview("preview-logo", lastDoc.logoUrl);
@@ -1052,7 +1621,7 @@
             var u = auth.currentUser;
             var origin = String(window.location.origin || "").replace(/\/$/, "");
             if (u && origin) {
-              a.href = origin + "/?id=" + encodeURIComponent(u.uid);
+              a.href = origin + "/card?id=" + encodeURIComponent(u.uid);
             } else {
               a.href = "#";
             }
@@ -1063,7 +1632,7 @@
               window.location.protocol +
               "//" +
               window.location.host +
-              "/?id=" +
+              "/card?id=" +
               encodeURIComponent(uid)
             );
           }
@@ -1154,6 +1723,7 @@
             bindUserDocument(db, user);
             syncPublicCardHref();
             updatePublicLinkInput(user);
+            if (user) updateQrPreview(user.uid);
             if (user) {
               loadDocument();
             } else {
@@ -1176,7 +1746,7 @@
                 return;
               }
               var origin = String(window.location.origin || "").replace(/\/$/, "");
-              var url = origin + "/?id=" + encodeURIComponent(u.uid);
+              var url = origin + "/card?id=" + encodeURIComponent(u.uid);
               e.preventDefault();
               var w = window.open(url, "_blank", "noopener,noreferrer");
               if (!w) {
@@ -1242,7 +1812,7 @@
           });
 
           function setSaveButtonsDisabled(disabled) {
-            ["btn-save-datos", "btn-save-imagenes"].forEach(function (id) {
+            ["btn-save-datos", "btn-save-imagenes", "btn-save-personalization", "btn-publish-sticky"].forEach(function (id) {
               var b = document.getElementById(id);
               if (b) b.disabled = disabled;
             });
@@ -1273,6 +1843,100 @@
             });
           }
           initPortalTabs();
+          initDashboardTabs();
+
+          var stylePanel = document.getElementById("ec-personalization-card");
+          if (stylePanel) {
+            stylePanel.addEventListener("click", function (e) {
+              var btn = e.target.closest("[data-style-value]");
+              if (!btn || !e.currentTarget.contains(btn)) return;
+              var grp = btn.closest("[data-style-group]");
+              if (!grp) return;
+              var key = grp.getAttribute("data-style-group");
+              var hid = document.getElementById("f-" + key);
+              if (!hid) return;
+              hid.value = btn.getAttribute("data-style-value");
+              refreshStyleControlUI();
+              scheduleLivePreviewSync();
+            });
+          }
+
+          document.getElementById("btn-save-personalization").addEventListener("click", function () {
+            var form = document.getElementById("form-card");
+            if (form) form.requestSubmit();
+          });
+
+          var btnPublishSticky = document.getElementById("btn-publish-sticky");
+          if (btnPublishSticky) {
+            btnPublishSticky.addEventListener("click", function () {
+              var form = document.getElementById("form-card");
+              if (form) form.requestSubmit();
+            });
+          }
+
+          var btnDownloadQr = document.getElementById("btn-download-qr");
+          if (btnDownloadQr) {
+            btnDownloadQr.addEventListener("click", function () {
+              var img = document.getElementById("qr-preview-img");
+              if (!img) return;
+              var src = img.getAttribute("data-download-url") || img.getAttribute("src");
+              if (!src) return;
+              var a = document.createElement("a");
+              a.href = src;
+              a.download = "elitecard-qr.png";
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+            });
+          }
+
+          var btnResetAnalytics = document.getElementById("btn-reset-analytics");
+          if (btnResetAnalytics) {
+            btnResetAnalytics.addEventListener("click", function () {
+              if (!auth.currentUser || !docRef) {
+                showAdminToast("No hay sesión activa para resetear estadísticas.", "error");
+                return;
+              }
+              var ok = window.confirm(
+                "¿Resetear todas las estadísticas?\n\nEsto pondrá en 0 vistas y clics."
+              );
+              if (!ok) return;
+              setSaveButtonsDisabled(true);
+              setSaveOverlay(true);
+              var resetPayload = {
+                vistas_totales: 0,
+                clics_totales: 0,
+                clics_whatsapp: 0,
+                clics_instagram: 0,
+                clics_linkedin: 0,
+                clics_email: 0,
+                clics_email_institucional: 0,
+                clics_telefono: 0,
+                clics_mapa: 0,
+                clics_agendar_cita: 0,
+                clics_perfil: 0,
+                analytics: {
+                  viewsTotal: 0,
+                  whatsappClicks: 0,
+                  profileClicks: 0,
+                },
+              };
+              docRef
+                .set(resetPayload, { merge: true })
+                .then(function () {
+                  lastDoc = Object.assign({}, lastDoc, resetPayload);
+                  updateAnalyticsCards(lastDoc);
+                  showAdminToast("Estadísticas reseteadas correctamente.", "ok");
+                })
+                .catch(function (err) {
+                  showAdminToast(err.message || "No se pudieron resetear las estadísticas.", "error");
+                })
+                .finally(function () {
+                  setSaveButtonsDisabled(false);
+                  setSaveOverlay(false);
+                });
+            });
+          }
 
           document.getElementById("form-card").addEventListener("submit", function (e) {
             e.preventDefault();
@@ -1334,6 +1998,9 @@
                   }
                 }
                 setStatus("Cambios guardados. La tarjeta se actualiza en vivo.");
+                updateAnalyticsCards(payload);
+                if (auth.currentUser) updateQrPreview(auth.currentUser.uid);
+                showAdminToast("¡Tarjeta actualizada con éxito!", "ok");
                 try {
                   console.log("[EliteCard admin] Firestore usuarios/" + uid + " — media guardada:", {
                     fotoUrl: payload.fotoUrl || "(no enviado en este guardado)",
@@ -1343,6 +2010,7 @@
               })
               .catch(function (err) {
                 showSaveError(err.message || "Error al guardar");
+                showAdminToast("No se pudo publicar. Revisá tu conexión e intentá de nuevo.", "error");
               })
               .finally(function () {
                 setSaveButtonsDisabled(false);

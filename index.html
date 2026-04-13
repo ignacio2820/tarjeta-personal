@@ -45,10 +45,65 @@
     <meta name="apple-mobile-web-app-title" content="EliteCard" />
     <meta name="msapplication-TileColor" content="#050505" />
     <meta name="format-detection" content="telephone=no" />
-    <link rel="manifest" href="manifest.json" />
+    <link rel="manifest" href="manifest.json" id="manifest-link" />
     <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
     <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png" />
+    <script>
+      (function () {
+        try {
+          // Leer ?id= de la URL
+          var params = new URLSearchParams(window.location.search);
+          var uid =
+            params.get("id") ||
+            params.get("ID") ||
+            params.get("user") ||
+            params.get("uid") ||
+            "";
+          if (!uid && window.location.hash) {
+            var m = window.location.hash.match(/(?:^|[?&#])id=([^&]+)/i);
+            if (m && m[1]) {
+              try {
+                uid = decodeURIComponent(m[1]);
+              } catch (e) {
+                uid = m[1];
+              }
+            }
+          }
+          uid = uid.trim();
+          if (!uid) return; // Sin ?id= → manifest estático normal
+
+          var origin = window.location.origin;
+
+          // Usar manifest server-side que incluye nombre e ícono del usuario
+          var manifestUrl =
+            origin + "/manifest-user?id=" + encodeURIComponent(uid);
+
+          function injectManifest() {
+            var link = document.getElementById("manifest-link");
+            if (link) {
+              link.href = manifestUrl;
+            } else {
+              var newLink = document.createElement("link");
+              newLink.rel = "manifest";
+              newLink.id = "manifest-link";
+              newLink.href = manifestUrl;
+              document.head.appendChild(newLink);
+            }
+          }
+
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", injectManifest);
+          } else {
+            injectManifest();
+          }
+
+          try {
+            sessionStorage.setItem("ec-profile-uid", uid);
+          } catch (e2) {}
+        } catch (e) {}
+      })();
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -175,7 +230,7 @@
 
       <!-- FIX: pb aumentado para que el último botón no quede tapado por el footer fijo -->
       <main
-        class="links-stagger flex flex-1 flex-col gap-3 px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))]"
+        class="links-stagger flex flex-1 flex-col gap-3 px-4 pb-[calc(7rem+env(safe-area-inset-bottom))]"
         id="links-container"
       ></main>
 
@@ -192,61 +247,61 @@
           EliteCard™ by <span class="webelite-credit-brand">WebElite Solutions</span>
         </a>
       </div>
+    </div>
 
-      <footer
-        class="footer-bar-light footer-reveal fixed bottom-0 left-0 right-0 z-20 flex justify-center px-2 pb-[max(0.45rem,env(safe-area-inset-bottom))] pt-1.5"
+    <footer
+      class="footer-bar-light footer-reveal fixed bottom-0 left-0 right-0 z-[100] flex justify-center px-2 pb-[max(0.45rem,env(safe-area-inset-bottom))] pt-1.5"
+    >
+      <div
+        class="flex w-full max-w-[min(100vw,56.25dvh)] flex-col items-stretch"
       >
         <div
-          class="flex w-full max-w-[min(100vw,56.25dvh)] flex-col items-stretch"
+          id="footer-seal-wrap"
+          class="footer-seal-wrap footer-seal-reveal mb-1.5 hidden-seal flex justify-center"
         >
-          <div
-            id="footer-seal-wrap"
-            class="footer-seal-wrap footer-seal-reveal mb-1.5 hidden-seal flex justify-center"
-          >
-            <div class="footer-seal-ring">
-              <img
-                id="footer-institutional-logo"
-                class="footer-seal-img"
-                src=""
-                alt=""
-                width="32"
-                height="32"
-                decoding="async"
-                referrerpolicy="no-referrer"
-              />
-            </div>
-          </div>
-          <div class="flex items-stretch justify-stretch gap-0">
-            <button
-              type="button"
-              id="btn-vcard"
-              class="ec-contact-button pill-action flex flex-1 items-center justify-center gap-2 border-r border-black/12 py-2.5"
-            >
-              <img
-                id="footer-avatar"
-                src=""
-                alt=""
-                class="footer-avatar-mini shrink-0"
-                width="22"
-                height="22"
-              />
-              <span class="footer-action-label">Guardar contacto</span>
-            </button>
-            <button
-              type="button"
-              id="btn-share"
-              class="ec-contact-button pill-action flex flex-1 items-center justify-center gap-2 py-2.5"
-            >
-              <i
-                class="fa-solid fa-qrcode footer-icon-gold text-base sm:text-lg"
-                aria-hidden="true"
-              ></i>
-              <span class="footer-action-label">Compartir</span>
-            </button>
+          <div class="footer-seal-ring">
+            <img
+              id="footer-institutional-logo"
+              class="footer-seal-img"
+              src=""
+              alt=""
+              width="32"
+              height="32"
+              decoding="async"
+              referrerpolicy="no-referrer"
+            />
           </div>
         </div>
-      </footer>
-    </div>
+        <div class="flex items-stretch justify-stretch gap-0">
+          <button
+            type="button"
+            id="btn-vcard"
+            class="ec-contact-button pill-action flex flex-1 items-center justify-center gap-2 border-r border-black/12 py-2.5"
+          >
+            <img
+              id="footer-avatar"
+              src=""
+              alt=""
+              class="footer-avatar-mini shrink-0"
+              width="22"
+              height="22"
+            />
+            <span class="footer-action-label">Guardar contacto</span>
+          </button>
+          <button
+            type="button"
+            id="btn-share"
+            class="ec-contact-button pill-action flex flex-1 items-center justify-center gap-2 py-2.5"
+          >
+            <i
+              class="fa-solid fa-qrcode footer-icon-gold text-base sm:text-lg"
+              aria-hidden="true"
+            ></i>
+            <span class="footer-action-label">Compartir</span>
+          </button>
+        </div>
+      </div>
+    </footer>
 
     <div
       id="toast"

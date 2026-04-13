@@ -1,4 +1,4 @@
-var CACHE_NAME = "elitecard-shell-v1";
+var CACHE_NAME = "elitecard-shell-v2";
 var PRECACHE = [
   "./icons/icon-192.png",
   "./icons/icon-512.png"
@@ -42,11 +42,37 @@ self.addEventListener("fetch", function(event) {
   ) {
     return;
   }
-  // HTML y JS: network-first, sin cachear (Cache-Control del servidor manda)
+  // HTML: network-first; offline → caché del documento o index shell
   if (
     req.destination === "document" ||
-    req.destination === "script" ||
     url.indexOf(".html") >= 0 ||
+    url.indexOf("/card") >= 0
+  ) {
+    // Si la URL tiene ?id= siempre va directo a red, sin caché.
+    // Evita que la PWA instalada de un usuario sirva su tarjeta
+    // cuando otro usuario abre un link diferente.
+    var hasId = url.indexOf("?id=") >= 0 ||
+                url.indexOf("&id=") >= 0 ||
+                url.indexOf("/card") >= 0;
+    if (hasId) {
+      // Network-only: nunca cachear tarjetas con ?id=
+      event.respondWith(fetch(req));
+      return;
+    }
+    // Sin ?id=: network-first con fallback a caché
+    event.respondWith(
+      fetch(req).catch(function() {
+        return caches.match(req).then(function(cached) {
+          if (cached) return cached;
+          return caches.match("./");
+        });
+      })
+    );
+    return;
+  }
+  // JS: network-first, sin cachear (Cache-Control del servidor manda)
+  if (
+    req.destination === "script" ||
     url.indexOf(".js") >= 0
   ) {
     event.respondWith(
@@ -55,6 +81,11 @@ self.addEventListener("fetch", function(event) {
     return;
   }
   // Íconos y assets estáticos: cache-first
+  // Nunca cachear URLs con ?id= (son tarjetas de usuarios específicos)
+  if (url.indexOf("?id=") >= 0 || url.indexOf("&id=") >= 0) {
+    event.respondWith(fetch(req));
+    return;
+  }
   event.respondWith(
     caches.match(req).then(function(cached) {
       return cached || fetch(req).then(function(response) {

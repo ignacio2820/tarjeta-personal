@@ -181,11 +181,11 @@ body.luxury-body {
 
 .ec-contact-button {
   position: relative;
-  z-index: 999;
+  z-index: 1;
 }
 
 .footer-bar-light .ec-contact-button {
-  z-index: 999;
+  z-index: 101;
 }
 
 /* Móvil: contenedor de retrato y píldoras sin colapso a 0 ni ocultar por error de grid */
@@ -278,7 +278,7 @@ body.luxury-body {
 .led-sub {
   color: var(--ec-mist-dim);
   font-weight: 300;
-  font-size: 0.8125rem;
+  font-size: 1.15rem;
   line-height: 1.55;
   letter-spacing: 0.03em;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75);
@@ -324,19 +324,20 @@ body.luxury-body {
 .footer-bar-light {
   background-color: var(--lux-footer-bg);
   border-top: 1px solid rgba(0, 0, 0, 0.07);
+  z-index: 100;
 }
 
 .footer-bar-light .footer-action-label {
   color: #0a0a0a !important;
   font-weight: 600;
-  font-size: 0.8125rem;
+  font-size: 1.1rem !important;
   letter-spacing: 0.01em;
   line-height: 1.2;
 }
 
 @media (min-width: 400px) {
   .footer-bar-light .footer-action-label {
-    font-size: 0.875rem;
+    font-size: 1.2rem !important;
   }
 }
 
@@ -373,6 +374,17 @@ body.luxury-body {
 
 .pill-action:active {
   transform: scale(0.987);
+}
+
+/* Texto de botones incrementado */
+.ec-contact-button .col-start-2 {
+  font-size: 1.125rem !important;
+  letter-spacing: 0.04em;
+}
+@media (min-width: 400px) {
+  .ec-contact-button .col-start-2 {
+    font-size: 1.25rem !important;
+  }
 }
 
 .link-pill {
@@ -718,4 +730,167 @@ body.preloader-active {
   color: var(--ec-mist) !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+}
+
+/* ——— Temas de tarjeta (variables + html / body) ——— */
+html.ec-theme-minimal {
+  --ec-void: #f4f4f5;
+  --ec-coal: #fafafa;
+  --ec-card: #ffffff;
+  --ec-gold: #262626;
+  --ec-gold-soft: rgba(38, 38, 38, 0.2);
+  --ec-mist: #171717;
+  --ec-mist-dim: rgba(23, 23, 23, 0.55);
+  --lux-black: #171717;
+  --lux-ivory: #0a0a0a;
+  --lux-silk: #525252;
+  --lux-gold-a: #404040;
+  --lux-gold-b: #737373;
+  --lux-gold-c: #262626;
+  --lux-footer-bg: #e8e8e8;
+  background: linear-gradient(168deg, #fafafa 0%, #f0f0f0 45%, #e5e5e5 100%);
+  background-color: var(--ec-void);
+}
+
+html.ec-theme-electric {
+  --ec-void: #050b14;
+  --ec-coal: #0a1628;
+  --ec-card: #0f172a;
+  --ec-gold: #22d3ee;
+  --ec-gold-soft: rgba(34, 211, 238, 0.35);
+  --ec-mist: #ecfeff;
+  --ec-mist-dim: rgba(236, 254, 255, 0.55);
+  --lux-black: #020617;
+  --lux-ivory: #ecfeff;
+  --lux-silk: #94a3b8;
+  --lux-gold-a: #22d3ee;
+  --lux-gold-b: #67e8f9;
+  --lux-gold-c: #0e7490;
+  --lux-footer-bg: #0c1829;
+  background: linear-gradient(168deg, #050b14 0%, #0a1628 45%, #082030 100%);
+  background-color: var(--ec-void);
+}
+
+html.ec-theme-minimal .app-shell.ec-app-shell {
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.04) 100%);
+}
+
+html.ec-theme-electric .app-shell.ec-app-shell {
+  background: linear-gradient(180deg, transparent 0%, rgba(34, 211, 238, 0.06) 100%);
+}
+
+html.ec-theme-minimal .ec-contact-button.link-pill,
+html.ec-theme-minimal .ec-contact-button.pill-action {
+  color: #0a0a0a !important;
+  background-color: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+html.ec-theme-minimal .ec-contact-button .pill-icon-disc i {
+  color: #fff !important;
+}
+
+html.ec-theme-electric .ec-contact-button.link-pill,
+html.ec-theme-electric .ec-contact-button.pill-action {
+  color: #ecfeff !important;
+  background-color: rgba(15, 23, 42, 0.9) !important;
+  border-color: rgba(34, 211, 238, 0.35) !important;
+}
+
+html.ec-theme-electric .footer-bar-light {
+  border-top-color: rgba(34, 211, 238, 0.22);
+}
+
+html.ec-theme-electric .footer-bar-light .footer-action-label {
+  color: #ecfeff !important;
+}
+
+html.ec-theme-minimal .footer-bar-light {
+  border-top-color: rgba(0, 0, 0, 0.08);
+}
+
+html.ec-theme-minimal .footer-bar-light .footer-action-label {
+  color: #0a0a0a !important;
+}
+
+/* Avatar: circular vs retrato redondeado */
+#app-root[data-avatar-shape="circle"] .avatar-inner {
+  aspect-ratio: 1 / 1;
+  width: min(9.5rem, 82vw);
+  border-radius: 9999px;
+}
+
+#app-root[data-avatar-shape="circle"] .avatar-gold-ring {
+  border-radius: 9999px;
+}
+
+#app-root[data-avatar-shape="circle"] .avatar-led-halo {
+  border-radius: 9999px;
+}
+
+#app-root[data-avatar-shape="circle"] .avatar-photo {
+  border-radius: 9999px;
+}
+
+/* Botones: grilla solo íconos */
+#app-root[data-link-layout="icons"] #links-container {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+@media (max-width: 360px) {
+  #app-root[data-link-layout="icons"] #links-container {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+#app-root[data-link-layout="icons"] #links-container > .ec-contact-button {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+  aspect-ratio: 1;
+  padding: 0.4rem;
+  border-radius: 1rem;
+  justify-items: center;
+  align-items: center;
+}
+
+#app-root[data-link-layout="icons"] #links-container > .ec-contact-button .col-start-2,
+#app-root[data-link-layout="icons"] #links-container > .ec-contact-button .col-start-3 {
+  display: none !important;
+}
+
+#app-root[data-link-layout="icons"] #links-container > .ec-contact-button .pill-icon-disc {
+  grid-column: 1;
+}
+
+html.ec-theme-minimal .webelite-credit {
+  color: rgba(64, 64, 64, 0.5);
+}
+
+html.ec-theme-minimal .webelite-credit:hover {
+  color: rgba(23, 23, 23, 0.85);
+}
+
+html.ec-theme-minimal .led-name,
+html.ec-theme-minimal .led-sub,
+html.ec-theme-minimal #display-org,
+html.ec-theme-minimal #display-cargo-detalle {
+  color: #171717 !important;
+  text-shadow: none !important;
+}
+
+html.ec-theme-minimal .footer-bar-light .footer-action-label {
+  color: #111 !important;
+}
+
+html.ec-theme-electric .webelite-credit {
+  color: rgba(34, 211, 238, 0.42);
+}
+
+html.ec-theme-electric .webelite-credit:hover {
+  color: rgba(103, 232, 249, 0.88);
 }

@@ -37,6 +37,7 @@
     telefono: "",
     whatsappNumero: "",
     email: "",
+    emailInstitucional: "",
     instagram: "",
     linkedin: "",
     sitioWeb: "",
@@ -52,6 +53,14 @@
     calendlyUrl: "",
     mensajeCitaWhatsapp:
       "Hola, me gustaría agendar una reunión con usted.",
+    /** gold | minimal | electric — ver styles.css html.ec-theme-* */
+    cardTheme: "gold",
+    /** circle | rect — rect = retrato actual; circle = avatar circular */
+    avatarShape: "rect",
+    /** pills | icons — botones largos o solo íconos en grilla */
+    buttonLayout: "pills",
+    /** true muestra formulario de captura en la tarjeta pública */
+    leadCaptureEnabled: false,
   };
 
   /**
@@ -65,6 +74,13 @@
       String(o.fotoUrl || "").trim() ||
       String(o.fotoPerfil || "").trim();
     var logo = String(o.logoUrl || "").trim() || String(o.logo || "").trim();
+    var theme = String(o.cardTheme || "gold").trim().toLowerCase();
+    if (["gold", "minimal", "electric"].indexOf(theme) < 0) theme = "gold";
+    var avatarShape = String(o.avatarShape || "rect").trim().toLowerCase();
+    if (avatarShape !== "circle") avatarShape = "rect";
+    var buttonLayout = String(o.buttonLayout || "pills").trim().toLowerCase();
+    if (buttonLayout !== "icons") buttonLayout = "pills";
+    var leadCaptureEnabled = !!o.leadCaptureEnabled;
     return {
       nombreCompleto: String(o.nombreCompleto || "").trim(),
       cargo: String(o.cargo || "").trim(),
@@ -73,6 +89,7 @@
       telefono: String(o.telefono || "").trim(),
       whatsappNumero: w,
       email: String(o.email || "").trim(),
+      emailInstitucional: String(o.emailInstitucional || "").trim(),
       instagram: igUrl(o.instagram),
       linkedin: liUrl(o.linkedin),
       sitioWeb: String(o.sitioWeb || "").trim(),
@@ -90,6 +107,10 @@
           window.DEFAULT_TARJETA_RAW.mensajeCitaWhatsapp ||
           ""
       ).trim(),
+      cardTheme: theme,
+      avatarShape: avatarShape,
+      buttonLayout: buttonLayout,
+      leadCaptureEnabled: leadCaptureEnabled,
     };
   };
 
