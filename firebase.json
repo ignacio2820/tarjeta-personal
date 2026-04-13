@@ -1,4 +1,5 @@
 {
+  "predeploy": ["npm run bump-assets"],
   "firestore": {
     "rules": "firestore.rules"
   },

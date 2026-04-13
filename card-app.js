@@ -568,38 +568,6 @@
         )
       );
     }
-
-    if (cfg.leadCaptureEnabled) {
-      var leadWrap = document.createElement("section");
-      leadWrap.className =
-        "mt-2 rounded-2xl border border-white/10 bg-black/35 p-3.5 backdrop-blur-sm";
-      var leadTitle = document.createElement("p");
-      leadTitle.className = "mb-2 text-center text-xs font-medium tracking-[0.08em] text-[#d4af37]";
-      leadTitle.textContent = "Dejá tus datos y te contacto";
-      var leadName = document.createElement("input");
-      leadName.type = "text";
-      leadName.placeholder = "Tu nombre";
-      leadName.className =
-        "mb-2 w-full rounded-xl border border-white/12 bg-black/55 px-3 py-2 text-sm text-[#ebe6dc] placeholder:text-[#a3a3a3]";
-      var leadEmail = document.createElement("input");
-      leadEmail.type = "email";
-      leadEmail.placeholder = "Tu email";
-      leadEmail.className =
-        "mb-2 w-full rounded-xl border border-white/12 bg-black/55 px-3 py-2 text-sm text-[#ebe6dc] placeholder:text-[#a3a3a3]";
-      var leadBtn = document.createElement("button");
-      leadBtn.type = "button";
-      leadBtn.className =
-        "w-full rounded-xl border border-amber-400/45 bg-amber-500/15 px-3 py-2 text-[0.8rem] font-medium tracking-[0.08em] text-[#f2e6a7]";
-      leadBtn.textContent = "Enviar datos";
-      leadBtn.addEventListener("click", function () {
-        showToast("Gracias. Te vamos a contactar pronto.");
-      });
-      leadWrap.appendChild(leadTitle);
-      leadWrap.appendChild(leadName);
-      leadWrap.appendChild(leadEmail);
-      leadWrap.appendChild(leadBtn);
-      container.appendChild(leadWrap);
-    }
   }
 
   function applyCardAppearance() {
@@ -1020,26 +988,25 @@
         );
       }
 
-      if (explicitFromUrl) {
-        docRef
-          .get()
-          .then(function (snap0) {
-            applySnapshot(snap0, true);
-          })
-          .catch(function (errG) {
-            console.warn("[EliteCard] get() inicial (perfil público):", errG);
+      /* Lectura inicial desde el servidor: evita datos en caché desactualizados tras Publicar cambios. */
+      docRef
+        .get({ source: "server" })
+        .then(function (snap0) {
+          applySnapshot(snap0, explicitFromUrl);
+        })
+        .catch(function (errG) {
+          console.warn("[EliteCard] get({ source: 'server' }) inicial:", errG);
+          if (explicitFromUrl) {
             showPublicProfileMessage(
               "No se pudo cargar el perfil",
               (errG && errG.message) || "Error de red. Intentá de nuevo."
             );
             applyRemoteAndMaybeDismissSplash();
-          })
-          .finally(function () {
-            attachSnapshotListener();
-          });
-      } else {
-        attachSnapshotListener();
-      }
+          }
+        })
+        .finally(function () {
+          attachSnapshotListener();
+        });
     }
 
     if (urlProf.id) {
@@ -1097,7 +1064,13 @@
       initFullscreenOnFirstGesture();
 
       if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("sw.js").catch(function () {});
+        var ecV = "";
+        try {
+          var m = document.querySelector('meta[name="ec-asset-version"]');
+          ecV = m && m.getAttribute("content") ? String(m.getAttribute("content")).trim() : "";
+        } catch (eSwMeta) {}
+        var swPath = ecV ? "sw.js?v=" + encodeURIComponent(ecV) : "sw.js";
+        navigator.serviceWorker.register(swPath).catch(function () {});
       }
 
       if (wireFirestoreProfile()) {

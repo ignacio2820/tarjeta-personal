@@ -1,4 +1,4 @@
-var CACHE_NAME = "elitecard-shell-v2";
+var CACHE_NAME = "elitecard-shell-v3";
 var PRECACHE = [
   "./icons/icon-192.png",
   "./icons/icon-512.png"

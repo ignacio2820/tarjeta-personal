@@ -1,0 +1,8 @@
+{
+  "name": "elitecard",
+  "private": true,
+  "scripts": {
+    "bump-assets": "node scripts/bump-ec-assets.js",
+    "deploy": "firebase deploy"
+  }
+}
