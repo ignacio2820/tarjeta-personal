@@ -1476,6 +1476,30 @@
               <span class="ec-label mb-2 block">Instagram</span>
               <input id="f-mascota-instagram" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" placeholder="@cuenta" />
             </label>
+            <label>
+              <span class="ec-label mb-2 block">Género</span>
+              <select id="f-mascota-genero" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm">
+                <option value="macho">Macho</option>
+                <option value="hembra">Hembra</option>
+              </select>
+            </label>
+            <label>
+              <span class="ec-label mb-2 block">Tema visual</span>
+              <select id="f-mascota-tema-visual" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm">
+                <option value="theme-classic">Classic (Gold/Dark)</option>
+                <option value="theme-playful">Playful (vivo)</option>
+                <option value="theme-soft">Soft (pastel)</option>
+              </select>
+            </label>
+            <label class="sm:col-span-2">
+              <span class="ec-label mb-2 block">Color de acento</span>
+              <input
+                id="f-mascota-color-acento"
+                type="color"
+                value="#5f6fff"
+                class="h-12 w-full cursor-pointer rounded-xl border border-white/20 bg-black/40 p-1"
+              />
+            </label>
             <label class="sm:col-span-2">
               <span class="ec-label mb-2 block">Historia corta</span>
               <textarea
@@ -2591,6 +2615,9 @@
             mascotaTelefono: val("f-mascota-telefono"),
             mascotaWhatsapp: onlyDigits(val("f-mascota-whatsapp")),
             mascotaInstagram: val("f-mascota-instagram"),
+            mascotaGenero: val("f-mascota-genero") || "macho",
+            mascotaTemaVisual: val("f-mascota-tema-visual") || "theme-classic",
+            mascotaColorAcento: val("f-mascota-color-acento") || "#5f6fff",
             mascotaGustos: val("f-mascota-gustos"),
             mascotaQueCome: val("f-mascota-que-come"),
             mascotaCaracter: val("f-mascota-caracter"),
@@ -2631,6 +2658,9 @@
             buttonLayout: st.buttonLayout,
             fotoUrl: String((lastDoc && lastDoc.mascotaFotoUrl) || "").trim(),
             mascotaPerdida: !!m.mascotaPerdida,
+            mascotaGenero: m.mascotaGenero || "macho",
+            mascotaTemaVisual: m.mascotaTemaVisual || "theme-classic",
+            mascotaColorAcento: m.mascotaColorAcento || "#5f6fff",
             mascotaGustos: m.mascotaGustos,
             mascotaQueCome: m.mascotaQueCome,
             mascotaCaracter: m.mascotaCaracter,
@@ -3082,6 +3112,9 @@
             avatarShape: av,
             buttonLayout: bl,
             mascotaPerdida: !!d.mascotaPerdida,
+            mascotaGenero: String(d.mascotaGenero || "macho"),
+            mascotaTemaVisual: String(d.mascotaTemaVisual || "theme-classic"),
+            mascotaColorAcento: String(d.mascotaColorAcento || "#5f6fff"),
             mascotaGustos: String(d.mascotaGustos || ""),
             mascotaQueCome: String(d.mascotaQueCome || ""),
             mascotaCaracter: String(d.mascotaCaracter || ""),
@@ -3162,6 +3195,9 @@
               ["f-mascota-telefono", "mascotaTelefono"],
               ["f-mascota-whatsapp", "mascotaWhatsapp"],
               ["f-mascota-instagram", "mascotaInstagram"],
+              ["f-mascota-genero", "mascotaGenero"],
+              ["f-mascota-tema-visual", "mascotaTemaVisual"],
+              ["f-mascota-color-acento", "mascotaColorAcento"],
               ["f-mascota-gustos", "mascotaGustos"],
               ["f-mascota-que-come", "mascotaQueCome"],
               ["f-mascota-caracter", "mascotaCaracter"],

@@ -71,6 +71,9 @@
     mascotaInstagram: "",
     mascotaFotoUrl: "",
     mascotaPerdida: false,
+    mascotaGenero: "macho",
+    mascotaTemaVisual: "theme-classic",
+    mascotaColorAcento: "#5f6fff",
     /** Rasgos sociales MascotBook */
     mascotaGustos: "",
     mascotaQueCome: "",

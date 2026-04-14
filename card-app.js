@@ -76,6 +76,9 @@
       out.fotoUrl = mf;
       out.photoURL = mf;
     }
+    out.mascotaGenero = String(m.mascotaGenero || "").trim().toLowerCase();
+    out.mascotaTemaVisual = String(m.mascotaTemaVisual || "").trim().toLowerCase();
+    out.mascotaColorAcento = String(m.mascotaColorAcento || "").trim();
     return out;
   }
 
@@ -725,6 +728,8 @@
   function renderPetSocialFeed(container) {
     var raw = window.__ecPetFirestoreRaw || {};
     var petName = String(raw.mascotaNombre || cfg.nombreCompleto || "mi mascota").trim();
+    var generoRaw = String(raw.mascotaGenero || cfg.mascotaGenero || "").trim().toLowerCase();
+    var genero = generoRaw === "hembra" ? "Hembra" : "Macho";
     var wa = onlyDigits(raw.mascotaWhatsapp || cfg.whatsappNumero || "");
     var gustos = readPetGustos(raw);
     var momentos = mergeStudyUrlsForDisplay(raw).slice(0, 9);
@@ -789,6 +794,7 @@
     if (queCome || caracter || familia) {
       cards.push(
         '<section class="ec-pet-social-card ec-ficha-stack-card"><p class="ec-pet-social-kicker">Información de cuidado</p><div class="ec-pet-care-list">' +
+          '<p><strong>Género:</strong> ' + escapeHtmlPet(genero) + "</p>" +
           (queCome
             ? '<p><strong>Qué como:</strong> ' + escapeHtmlPet(queCome) + "</p>"
             : "") +
@@ -856,6 +862,23 @@
       app.setAttribute("data-avatar-shape", avatarShape);
       app.setAttribute("data-link-layout", linkLayout);
       app.classList.toggle("ec-pet-mode", !!window.__ecPublicViewPet);
+      app.classList.remove("theme-classic", "theme-playful", "theme-soft");
+      if (window.__ecPublicViewPet) {
+        var raw = window.__ecPetFirestoreRaw || {};
+        var petTheme = String(raw.mascotaTemaVisual || cfg.mascotaTemaVisual || "theme-classic")
+          .trim()
+          .toLowerCase();
+        if (["theme-classic", "theme-playful", "theme-soft"].indexOf(petTheme) < 0) {
+          petTheme = "theme-classic";
+        }
+        app.classList.add(petTheme);
+
+        var accent = String(raw.mascotaColorAcento || cfg.mascotaColorAcento || "#5f6fff").trim();
+        if (!/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(accent)) accent = "#5f6fff";
+        app.style.setProperty("--ec-pet-accent", accent);
+      } else {
+        app.style.removeProperty("--ec-pet-accent");
+      }
     }
     var footer = document.querySelector(".footer-bar-light");
     if (footer) footer.classList.toggle("hidden", !!window.__ecPublicViewPet);

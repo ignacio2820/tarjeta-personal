@@ -1183,6 +1183,7 @@ html.ec-mascota-alerta .ec-contact-button.link-pill {
   --ec-pet-text: #1f2937;
   --ec-pet-muted: #6b7280;
   --ec-pet-shadow: 0 14px 36px rgba(17, 24, 39, 0.12);
+  --ec-pet-accent: #5f6fff;
 }
 
 html.ec-pet-mode,
@@ -1235,7 +1236,7 @@ html:has(.ec-pet-mode) body {
 
 .ec-pet-social-card {
   border-radius: 1.15rem;
-  border: 1px solid rgba(95, 111, 255, 0.14);
+  border: 1px solid color-mix(in oklab, var(--ec-pet-accent), white 74%);
   background: var(--ec-pet-card);
   box-shadow: var(--ec-pet-shadow);
   padding: 0.95rem;
@@ -1247,7 +1248,7 @@ html:has(.ec-pet-mode) body {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #5f6fff;
+  color: var(--ec-pet-accent);
 }
 
 .ec-pet-social-text {
@@ -1282,7 +1283,7 @@ html:has(.ec-pet-mode) body {
   align-items: center;
   gap: 0.45rem;
   border-radius: 9999px;
-  background: linear-gradient(135deg, rgba(95, 111, 255, 0.12), rgba(54, 211, 153, 0.13));
+  background: color-mix(in oklab, var(--ec-pet-accent), white 88%);
   color: #283046;
   padding: 0.5rem 0.65rem;
   font-size: 0.82rem;
@@ -1290,7 +1291,7 @@ html:has(.ec-pet-mode) body {
 }
 
 .ec-pet-like-chip i {
-  color: #5f6fff;
+  color: var(--ec-pet-accent);
 }
 
 .ec-pet-moment-grid {
@@ -1336,8 +1337,8 @@ html:has(.ec-pet-mode) body {
   font-size: 0.88rem;
   font-weight: 600;
   color: #ffffff;
-  background: linear-gradient(135deg, #36d399 0%, #10b981 100%);
-  box-shadow: 0 12px 24px rgba(16, 185, 129, 0.25);
+  background: var(--ec-pet-accent);
+  box-shadow: 0 12px 24px color-mix(in oklab, var(--ec-pet-accent), black 72%);
   cursor: pointer;
   transition: transform 0.18s ease, filter 0.18s ease;
 }
@@ -1345,4 +1346,36 @@ html:has(.ec-pet-mode) body {
 .ec-pet-family-btn:hover {
   filter: brightness(1.04);
   transform: translateY(-1px);
+}
+
+#app-root.ec-pet-mode.theme-classic {
+  --ec-pet-card: #151515;
+  --ec-pet-text: #ebe6dc;
+  --ec-pet-muted: #b9b3aa;
+  --ec-pet-accent: #d4af37;
+  --ec-pet-shadow: 0 16px 34px rgba(0, 0, 0, 0.36);
+}
+
+#app-root.ec-pet-mode.theme-classic .ec-pet-social-card {
+  background: #151515;
+}
+
+#app-root.ec-pet-mode.theme-classic .ec-pet-social-text,
+#app-root.ec-pet-mode.theme-classic .ec-pet-care-list p,
+#app-root.ec-pet-mode.theme-classic .ec-pet-care-list strong {
+  color: #ebe6dc;
+}
+
+#app-root.ec-pet-mode.theme-playful {
+  --ec-pet-card: #ffffff;
+  --ec-pet-text: #1f2937;
+  --ec-pet-muted: #667085;
+  --ec-pet-accent: #5f6fff;
+}
+
+#app-root.ec-pet-mode.theme-soft {
+  --ec-pet-card: #fff9fb;
+  --ec-pet-text: #574e63;
+  --ec-pet-muted: #8a8195;
+  --ec-pet-accent: #c084fc;
 }

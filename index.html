@@ -52,6 +52,7 @@
     <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png" />
     <script>
       (function () {
+        window.__EC_IS_PROFILE_VIEW = false;
         try {
           // Leer ?id= de la URL
           var params = new URLSearchParams(window.location.search);
@@ -72,7 +73,8 @@
             }
           }
           uid = uid.trim();
-          if (!uid) return; // Sin ?id= → manifest estático normal
+          if (!uid) return; // Sin ?id= → landing
+          window.__EC_IS_PROFILE_VIEW = true;
 
           var origin = window.location.origin;
 
@@ -129,9 +131,47 @@
         );
       })();
     </script>
+    <style>
+      .ec-landing-shell { min-height: 100dvh; background: radial-gradient(circle at 10% 8%, rgba(212,175,55,.16), transparent 36%), linear-gradient(160deg,#050505 0%,#0f172a 52%,#050505 100%); color: #e5e7eb; font-family: "Poppins", system-ui, sans-serif; }
+      .ec-landing-card { border: 1px solid rgba(255,255,255,.14); background: rgba(17,24,39,.52); backdrop-filter: blur(12px); transition: transform .25s ease, border-color .25s ease; }
+      .ec-landing-card:hover { transform: translateY(-3px); border-color: rgba(212,175,55,.55); }
+      .ec-landing-cta { border-radius: 9999px; padding: .72rem 1.2rem; font-size: .78rem; letter-spacing: .11em; text-transform: uppercase; font-weight: 600; }
+      .ec-landing-cta--gold { background: linear-gradient(135deg,#c9a132,#d4af37 55%,#e7c867); color: #111; }
+      .ec-landing-cta--ghost { border: 1px solid rgba(255,255,255,.2); color: #f9fafb; }
+    </style>
   </head>
   <!-- Visor universal: Firestore usuarios/{id}. URL ?id=IDENTIFICADOR (también ?user= / ?uid=). Sin id → perfil por defecto (FIRESTORE_DEFAULT_CARD_UID o "perfil"). -->
   <body class="luxury-body preloader-active min-h-[100dvh] font-light antialiased">
+    <section id="ec-landing-home" class="ec-landing-shell hidden">
+      <header class="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
+        <a href="index.html" class="text-[11px] font-medium uppercase tracking-[0.28em] text-[#d4af37]">EliteCard / MascotBook</a>
+        <a href="login.html" class="ec-landing-cta ec-landing-cta--ghost">Acceso Clientes</a>
+      </header>
+      <main class="mx-auto max-w-6xl px-6 pb-12 pt-8">
+        <h1 class="max-w-3xl text-4xl font-semibold leading-tight text-white sm:text-5xl">Dos productos premium, un solo ecosistema.</h1>
+        <p class="mt-4 max-w-2xl text-base text-white/65">Diseña tu identidad profesional con EliteCard o crea un perfil social inolvidable para tu mascota con MascotBook.</p>
+        <section class="mt-10 grid gap-6 md:grid-cols-2">
+          <article class="ec-landing-card rounded-3xl p-7">
+            <p class="text-[11px] uppercase tracking-[0.2em] text-[#d4af37]">EliteCard</p>
+            <h2 class="mt-3 text-3xl font-semibold text-white">Tarjeta Profesional</h2>
+            <p class="mt-3 text-sm text-white/65">Comparte tu perfil, firma de email y datos siempre actualizados.</p>
+            <div class="mt-7 flex flex-wrap gap-3">
+              <a href="login.html" class="ec-landing-cta ec-landing-cta--ghost">Ver más</a>
+              <button type="button" class="ec-landing-cta ec-landing-cta--gold" data-create-app="elitecard">Probar ahora</button>
+            </div>
+          </article>
+          <article class="ec-landing-card rounded-3xl p-7">
+            <p class="text-[11px] uppercase tracking-[0.2em] text-emerald-300">MascotBook</p>
+            <h2 class="mt-3 text-3xl font-semibold text-white">Perfil Social de Mascota</h2>
+            <p class="mt-3 text-sm text-white/65">Momentos, personalidad, salud y contacto familiar en una sola tarjeta.</p>
+            <div class="mt-7 flex flex-wrap gap-3">
+              <a href="login.html" class="ec-landing-cta ec-landing-cta--ghost">Ver más</a>
+              <button type="button" class="ec-landing-cta ec-landing-cta--gold" data-create-app="mascotbook">Probar ahora</button>
+            </div>
+          </article>
+        </section>
+      </main>
+    </section>
     <!-- Splash: fondo negro + marca EliteCard en 3D hasta la primera respuesta de Firestore -->
     <div id="preloader" aria-busy="true" aria-label="Cargando EliteCard">
       <div class="preloader-scene">
@@ -595,12 +635,14 @@
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
     <script>
       (function () {
+        if (!window.__EC_IS_PROFILE_VIEW) return;
         var t = window.__EC_PAGE_LOAD_TS || Date.now();
         document.write('<script src="card-app.js?v=' + t + '"><\/script>');
       })();
     </script>
     <script>
 (function() {
+  if (!window.__EC_IS_PROFILE_VIEW) return;
   // Banner instalación PWA — Chrome Android
   var deferredPrompt = null;
   var installBanner = null;
@@ -734,6 +776,46 @@
     removeInstallBanner();
   });
 })();
+    </script>
+    <script>
+      (function () {
+        if (window.__EC_IS_PROFILE_VIEW) return;
+        document.body.classList.remove("preloader-active");
+        var ids = [
+          "preloader",
+          "profile-not-found",
+          "app-root",
+          "wa-modal",
+          "cal-modal",
+          "ec-lost-pet-geo-modal",
+          "ec-pet-study-lightbox",
+          "toast",
+        ];
+        ids.forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el) el.classList.add("hidden");
+        });
+        var landing = document.getElementById("ec-landing-home");
+        if (landing) landing.classList.remove("hidden");
+
+        var cfg = window.FIREBASE_WEB_CONFIG;
+        if (!cfg || !cfg.apiKey || String(cfg.apiKey).indexOf("REEMPLAZAR") !== -1) return;
+        try { firebase.initializeApp(cfg); } catch (e) {}
+        var auth = firebase.auth();
+        document.querySelectorAll("[data-create-app]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var app = btn.getAttribute("data-create-app") === "mascotbook" ? "mascotbook" : "elitecard";
+            auth.onAuthStateChanged(function (u) {
+              if (u) {
+                try { localStorage.setItem("ec_current_app", app); } catch (e1) {}
+                window.location.href = "selector-producto.html";
+                return;
+              }
+              window.location.href = "register.html?intent=create&app=" + encodeURIComponent(app);
+            });
+          });
+        });
+      })();
     </script>
   </body>
 </html>
