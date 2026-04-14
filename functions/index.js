@@ -86,7 +86,7 @@ exports.manifest = functions
 
       const startUrl =
         origin +
-        "/?id=" +
+        "/card.html?id=" +
         encodeURIComponent(uid) +
         (appMode === "mascotbook" ? "&view=pet" : "");
 
@@ -101,11 +101,7 @@ exports.manifest = functions
         lang: "es",
         dir: "ltr",
         start_url: startUrl,
-        scope:
-          origin +
-          "/?id=" +
-          encodeURIComponent(uid) +
-          (appMode === "mascotbook" ? "&view=pet" : ""),
+        scope: origin + "/",
         display: "standalone",
         display_override: ["standalone", "minimal-ui"],
         orientation: "portrait-primary",
@@ -136,7 +132,12 @@ exports.card = functions
     res.set("Cache-Control", "public, max-age=60, s-maxage=60");
 
     const uid = String(req.query.id || "").trim();
-    const origin = "https://tarjeta-profesional-pedro.web.app";
+    const host = req.get("x-forwarded-host") || req.get("host") || "";
+    const proto = req.get("x-forwarded-proto") || "https";
+    const origin =
+      host && !/localhost|127\.0\.0\.1/.test(host)
+        ? `${proto}://${host}`
+        : "https://tarjeta-profesional-pedro.web.app";
 
     if (!uid || uid.length > 256 || uid.indexOf("/") >= 0) {
       res.redirect(301, origin + "/");
@@ -153,7 +154,10 @@ exports.card = functions
       let ogTitle = "EliteCard | Tarjeta Profesional Digital";
       let ogDesc = "Hacé clic para ver mis datos de contacto.";
       let ogImage = origin + "/icons/icon-512.png";
-      const cardUrl = origin + "/?id=" + encodeURIComponent(uid);
+      const viewQ = String(req.query.view || "").trim();
+      const viewPart =
+        viewQ && /^(pet|mascota|mascotbook)$/i.test(viewQ) ? "&view=" + encodeURIComponent(viewQ.toLowerCase()) : "";
+      const cardUrl = origin + "/card.html?id=" + encodeURIComponent(uid) + viewPart;
 
       if (snap.exists) {
         const d = snap.data();
@@ -204,6 +208,6 @@ exports.card = functions
       res.status(200).send(html);
     } catch (err) {
       console.error("card error:", err);
-      res.redirect(301, origin + "/?id=" + encodeURIComponent(uid));
+      res.redirect(301, origin + "/card.html?id=" + encodeURIComponent(uid));
     }
   });

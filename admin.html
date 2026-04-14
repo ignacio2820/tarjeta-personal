@@ -419,6 +419,9 @@
         color: rgba(250, 250, 250, 0.92);
         line-height: 1.2;
       }
+      .ec-brand-line {
+        display: block;
+      }
       .ec-sidebar-brand-tag {
         display: block;
         font-size: 0.5625rem;
@@ -574,6 +577,72 @@
       .ec-publish-footer.elite-card > * {
         position: relative;
         z-index: 1;
+      }
+      .ec-template-selector-grid {
+        display: grid;
+        gap: 0.55rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      @media (min-width: 820px) {
+        .ec-template-selector-grid {
+          grid-template-columns: repeat(5, minmax(0, 1fr));
+        }
+      }
+      .ec-template-btn {
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(0, 0, 0, 0.32);
+        border-radius: 0.95rem;
+        padding: 0.45rem;
+        color: rgba(224, 224, 224, 0.82);
+        text-align: left;
+        transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .ec-template-btn:hover {
+        border-color: rgba(212, 175, 55, 0.42);
+        transform: translateY(-1px);
+      }
+      .ec-template-btn.is-active {
+        border-color: rgba(212, 175, 55, 0.75);
+        box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.4), 0 12px 28px rgba(0, 0, 0, 0.35);
+        color: #f8fafc;
+      }
+      .ec-template-thumb {
+        border-radius: 0.75rem;
+        height: 4.55rem;
+        margin-bottom: 0.35rem;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: linear-gradient(155deg, #171717 0%, #080808 100%);
+        position: relative;
+        overflow: hidden;
+      }
+      .ec-template-thumb::after {
+        content: "";
+        position: absolute;
+        left: 0.42rem;
+        right: 0.42rem;
+        bottom: 0.4rem;
+        height: 0.38rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.2);
+      }
+      .ec-template-thumb[data-template="theme-candy"] {
+        background: linear-gradient(145deg, #ffe6f5 0%, #ffd1e8 46%, #ffc7d8 100%);
+      }
+      .ec-template-thumb[data-template="theme-night"] {
+        background: linear-gradient(145deg, #0b1021 0%, #1d2a4c 46%, #243466 100%);
+      }
+      .ec-template-thumb[data-template="theme-organic"] {
+        background: linear-gradient(145deg, #e9f8e3 0%, #d5f4ca 45%, #c9efb7 100%);
+      }
+      .ec-template-thumb[data-template="theme-glass"] {
+        background: linear-gradient(145deg, rgba(178, 232, 255, 0.88) 0%, rgba(240, 247, 255, 0.95) 56%, rgba(198, 220, 255, 0.92) 100%);
+      }
+      .ec-template-name {
+        display: block;
+        font-size: 0.62rem;
+        letter-spacing: 0.11em;
+        text-transform: uppercase;
+        font-weight: 600;
       }
       .ec-dash-preview-col {
         display: none;
@@ -1021,36 +1090,171 @@
         user-select: none;
         filter: blur(2px) saturate(0.8);
       }
-      /* Modo MascotBook: visual más orgánico y con patrón de huellas */
+           /* Modo MascotBook: estudio violeta / oro (mock MascotBook) */
       #view-panel.ec-app-mascotbook .elite-grid {
-        opacity: 0.18;
-        background-size: 88px 88px;
+        opacity: 0.14;
+        background-size: 72px 72px;
         background-image:
-          radial-gradient(circle at 20px 20px, rgba(134, 239, 172, 0.12) 0 6px, transparent 7px),
-          radial-gradient(circle at 42px 16px, rgba(134, 239, 172, 0.1) 0 4px, transparent 5px),
-          radial-gradient(circle at 62px 20px, rgba(134, 239, 172, 0.1) 0 4px, transparent 5px),
-          radial-gradient(circle at 40px 36px, rgba(134, 239, 172, 0.11) 0 8px, transparent 9px);
+          linear-gradient(rgba(212, 175, 55, 0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(212, 175, 55, 0.05) 1px, transparent 1px);
       }
-      #view-panel.ec-app-mascotbook .elite-card {
-        border-radius: 2rem;
-        border-color: rgba(134, 239, 172, 0.38);
-        box-shadow: 0 0 0 1px rgba(134, 239, 172, 0.15), 0 20px 70px -24px rgba(17, 94, 89, 0.42);
+      #view-panel.ec-app-mascotbook .elite-glow {
+        background: radial-gradient(
+          ellipse closest-side,
+          rgba(139, 92, 246, 0.12),
+          rgba(212, 175, 55, 0.06),
+          transparent 70%
+        );
+      }
+      #view-panel.ec-app-mascotbook .elite-card,
+      #view-panel.ec-app-mascotbook .ec-publish-footer.elite-card {
+        border-radius: 1.75rem;
+        background: rgba(45, 27, 68, 0.78) !important;
+        border: 1px solid rgba(212, 175, 55, 0.28) !important;
+        box-shadow:
+          0 0 0 1px rgba(26, 11, 46, 0.6),
+          0 28px 80px -24px rgba(0, 0, 0, 0.65) !important;
+      }
+      #view-panel.ec-app-mascotbook .elite-card::before,
+      #view-panel.ec-app-mascotbook .ec-publish-footer.elite-card::before {
+        background: linear-gradient(
+          145deg,
+          rgba(26, 11, 46, 0.95) 0%,
+          rgba(45, 27, 68, 0.85) 45%,
+          rgba(212, 175, 55, 0.25) 100%
+        ) !important;
       }
       #view-panel.ec-app-mascotbook {
-        font-family: "Poppins", "Trebuchet MS", sans-serif;
-        background: radial-gradient(circle at 10% 10%, rgba(74, 222, 128, 0.16), transparent 38%),
-          linear-gradient(165deg, #04231b 0%, #052e24 45%, #031813 100%);
+        font-family: "Poppins", system-ui, sans-serif;
+        background:
+          radial-gradient(ellipse 85% 55% at 15% -15%, rgba(212, 175, 55, 0.09), transparent 52%),
+          radial-gradient(ellipse 70% 45% at 92% 5%, rgba(139, 92, 246, 0.14), transparent 48%),
+          linear-gradient(168deg, #1a0b2e 0%, #12081f 52%, #0f0618 100%);
       }
       #view-panel.ec-app-elitecard {
         font-family: "Poppins", system-ui, sans-serif;
         background: linear-gradient(168deg, #050505 0%, #101010 42%, #0c0c0c 100%);
       }
       #view-panel.ec-app-mascotbook .ec-sidebar-brand-text {
-        color: #bbf7d0;
+        color: rgba(250, 245, 255, 0.94);
+      }
+      #view-panel.ec-app-mascotbook .ec-dash-sidebar {
+        background: #15061f;
+        border-right-color: rgba(212, 175, 55, 0.22);
+        box-shadow: 6px 0 48px rgba(0, 0, 0, 0.5);
+      }
+      #view-panel.ec-app-mascotbook .ec-dash-preview-col {
+        background: rgba(21, 6, 31, 0.82);
+        border-left-color: rgba(212, 175, 55, 0.14);
+      }
+      #view-panel.ec-app-mascotbook .ec-dash-preview-col > p:first-of-type {
+        color: rgba(244, 208, 127, 0.88) !important;
+      }
+      #view-panel.ec-app-mascotbook .ec-dash-preview-col > p:nth-of-type(2) {
+        color: rgba(224, 209, 245, 0.58) !important;
       }
       #view-panel.ec-app-mascotbook #live-preview-container {
-        border-color: rgba(134, 239, 172, 0.42) !important;
-        border-radius: 2rem !important;
+        border-color: rgba(212, 175, 55, 0.42) !important;
+        border-radius: 1.35rem !important;
+      }
+      #view-panel.ec-app-mascotbook .ec-template-thumb {
+        height: 5.85rem;
+      }
+      #view-panel.ec-app-mascotbook .ec-template-thumb::before {
+        content: "";
+        position: absolute;
+        top: 0.38rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 2.35rem;
+        height: 2.35rem;
+        border-radius: 50%;
+        border: 2px solid rgba(212, 175, 55, 0.65);
+        background: #2d1b44 center/cover no-repeat;
+        z-index: 2;
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
+      }
+      #view-panel.ec-app-mascotbook .ec-template-thumb[data-template="theme-classic"]::before {
+        background-image: url("https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=128&h=128&fit=crop&q=80");
+      }
+      #view-panel.ec-app-mascotbook .ec-template-thumb[data-template="theme-candy"]::before {
+        background-image: url("https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=128&h=128&fit=crop&q=80");
+      }
+      #view-panel.ec-app-mascotbook .ec-template-thumb[data-template="theme-night"]::before {
+        background-image: url("https://images.unsplash.com/photo-1537151625747-b768f6ac9263?w=128&h=128&fit=crop&q=80");
+      }
+      #view-panel.ec-app-mascotbook .ec-template-thumb[data-template="theme-organic"]::before {
+        background-image: url("https://images.unsplash.com/photo-1552053831-71594a27632d?w=128&h=128&fit=crop&q=80");
+      }
+      #view-panel.ec-app-mascotbook .ec-template-thumb[data-template="theme-glass"]::before {
+        background-image: url("https://images.unsplash.com/photo-1517423440428-af27508d4eb0?w=128&h=128&fit=crop&q=80");
+      }
+      #view-panel.ec-app-mascotbook .ec-template-name {
+        font-size: 0.625rem;
+        letter-spacing: 0.04em;
+        text-transform: none;
+        font-weight: 600;
+        line-height: 1.25;
+        text-align: center;
+      }
+      #view-panel.ec-app-mascotbook .ec-mb-col-title {
+        margin: 0 0 1rem;
+        padding-bottom: 0.55rem;
+        border-bottom: 1px solid rgba(212, 175, 55, 0.22);
+        font-size: 0.6875rem;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: rgba(244, 208, 127, 0.92);
+      }
+      #view-panel.ec-app-mascotbook .ec-mb-triple-grid {
+        display: grid;
+        gap: 1.5rem;
+        max-width: none;
+      }
+      @media (min-width: 1024px) {
+        #view-panel.ec-app-mascotbook .ec-mb-triple-grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          align-items: start;
+        }
+      }
+      .ec-dash-help-fab {
+        display: none;
+        position: fixed;
+        right: 1.25rem;
+        bottom: 1.25rem;
+        z-index: 70;
+        min-width: 4.25rem;
+        max-width: 5.5rem;
+        min-height: 4.25rem;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        border: 2px solid rgba(212, 175, 55, 0.55);
+        background: linear-gradient(155deg, #2d1b44 0%, #1a0b2e 100%);
+        color: #f4d03f;
+        font-weight: 600;
+        font-size: 0.5625rem;
+        line-height: 1.2;
+        text-align: center;
+        padding: 0.45rem 0.5rem;
+        cursor: pointer;
+        box-shadow:
+          0 14px 40px rgba(0, 0, 0, 0.5),
+          0 0 0 1px rgba(26, 11, 46, 0.8);
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+      }
+      .ec-dash-help-fab:hover {
+        transform: translateY(-2px);
+        box-shadow:
+          0 18px 48px rgba(0, 0, 0, 0.55),
+          0 0 28px rgba(212, 175, 55, 0.2);
+      }
+      #view-panel.ec-app-mascotbook:not(.hidden) .ec-dash-help-fab {
+        display: flex;
+      }
+      #view-panel.ec-app-mascotbook .ec-sidebar-brand-tag {
+        display: none;
       }
     </style>
   </head>
@@ -1155,7 +1359,12 @@
             <img src="icons/elitecard-shield.png" alt="" width="28" height="28" class="h-7 w-auto opacity-90" decoding="async" />
           </div>
           <div class="ec-sidebar-brand-text">
-            EliteCard <span class="text-elite-gold">Pro</span>
+            <span class="ec-brand-line ec-brand-elite"
+              >EliteCard <span class="text-elite-gold">Pro</span></span
+            >
+            <span class="ec-brand-line ec-brand-mascot hidden"
+              >MascotBook <span class="text-elite-gold">Studio</span></span
+            >
             <span class="ec-sidebar-brand-tag">Studio</span>
           </div>
         </div>
@@ -1465,15 +1674,34 @@
 
               <div class="rounded-2xl border border-emerald-400/25 bg-emerald-900/10 p-4">
                 <p class="ec-label mb-2 block text-emerald-200/90">Diseño y Temas (MascotBook)</p>
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <label>
-                    <span class="ec-label mb-2 block">Familia visual</span>
-                    <select id="f-mascota-tema-visual-design" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm">
-                      <option value="theme-classic">Classic (Gold/Dark)</option>
-                      <option value="theme-park">Park (verdes orgánicos)</option>
-                      <option value="theme-candy">Candy (pastel suave)</option>
-                    </select>
-                  </label>
+                <input type="hidden" id="f-mascota-tema-visual-design" value="theme-classic" />
+                <input type="hidden" id="f-currentTemplate" value="theme-classic" />
+                <div>
+                  <span class="ec-label mb-2 block">Plantillas</span>
+                  <div class="ec-template-selector-grid" id="ec-template-selector">
+                    <button type="button" class="ec-template-btn is-active" data-template-value="theme-classic" aria-pressed="true">
+                      <span class="ec-template-thumb" data-template="theme-classic"></span>
+                      <span class="ec-template-name">Classic Paws</span>
+                    </button>
+                    <button type="button" class="ec-template-btn" data-template-value="theme-candy" aria-pressed="false">
+                      <span class="ec-template-thumb" data-template="theme-candy"></span>
+                      <span class="ec-template-name">Candy Pop</span>
+                    </button>
+                    <button type="button" class="ec-template-btn" data-template-value="theme-night" aria-pressed="false">
+                      <span class="ec-template-thumb" data-template="theme-night"></span>
+                      <span class="ec-template-name">Night Neon</span>
+                    </button>
+                    <button type="button" class="ec-template-btn" data-template-value="theme-organic" aria-pressed="false">
+                      <span class="ec-template-thumb" data-template="theme-organic"></span>
+                      <span class="ec-template-name">Organic Leaf</span>
+                    </button>
+                    <button type="button" class="ec-template-btn" data-template-value="theme-glass" aria-pressed="false">
+                      <span class="ec-template-thumb" data-template="theme-glass"></span>
+                      <span class="ec-template-name">Glassmorphism</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <label>
                     <span class="ec-label mb-2 block">Color de acento</span>
                     <input id="f-mascota-color-acento-design" type="color" value="#5f6fff" class="h-12 w-full cursor-pointer rounded-xl border border-white/20 bg-black/40 p-1" />
@@ -1498,12 +1726,135 @@
           </div>
         </div>
 
+        <div
+          id="ec-mascotbook-simple"
+          class="ec-reveal ec-reveal-d4 elite-card hidden p-7 sm:p-9"
+          data-dashboard-panel="mascotbook-content"
+        >
+          <p class="ec-label mb-2 block text-cyan-300/90">MascotBook · Contenido</p>
+          <h3 class="mt-1 text-xl font-light tracking-tight text-white sm:text-2xl">Datos de tu mascota</h3>
+          <p class="mb-8 mt-3 max-w-2xl text-[15px] font-light leading-relaxed text-elite-mist/50">
+            Estos campos se guardan con prefijo <span class="font-mono text-elite-mist/60">pet_</span> en Firestore, separados de tu perfil humano EliteCard.
+          </p>
+          <div class="ec-mb-triple-grid">
+            <div class="ec-mb-col ec-mb-col--perfil space-y-6">
+              <h4 class="ec-mb-col-title">Perfil</h4>
+              <label class="block">
+                <span class="ec-label mb-2 block">Nombre</span>
+                <input id="f-pet-nombre" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" placeholder="Ej: Luna" />
+              </label>
+              <label class="block">
+                <span class="ec-label mb-2 block">Raza</span>
+                <input id="f-pet-raza" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" placeholder="Ej: Golden" />
+              </label>
+              <label class="block">
+                <span class="ec-label mb-2 block">Sexo</span>
+                <select id="f-pet-sexo" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm">
+                  <option value="macho">Macho</option>
+                  <option value="hembra">Hembra</option>
+                </select>
+              </label>
+              <label class="block">
+                <span class="ec-label mb-2 block">Color del pelaje</span>
+                <input id="f-pet-color" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" placeholder="Dorado, negro y blanco…" />
+              </label>
+              <label class="block">
+                <span class="ec-label mb-2 block">Señas particulares</span>
+                <textarea id="f-pet-senas" rows="2" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" placeholder="Cicatriz, mancha, collar…"></textarea>
+              </label>
+              <label class="block">
+                <span class="ec-label mb-2 block">Qué le gusta (comas)</span>
+                <input
+                  id="f-pet-gustos"
+                  type="text"
+                  class="elite-input w-full rounded-xl px-4 py-3.5 text-sm"
+                  placeholder="pelota, siestas al sol…"
+                />
+              </label>
+              <label class="block">
+                <span class="ec-label mb-2 block">Qué come</span>
+                <input id="f-pet-que-come" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" placeholder="Balanceado, snacks…" />
+              </label>
+              <label class="block">
+                <span class="ec-label mb-2 block">Historia</span>
+                <textarea id="f-pet-historia" rows="4" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" placeholder="Resumen para la ficha pública…"></textarea>
+              </label>
+              <div>
+                <span class="ec-label mb-2 block">Foto</span>
+                <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+                  <div
+                    class="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-black/40"
+                  >
+                    <img id="preview-mascota-foto" class="hidden h-full w-full object-cover" alt="" />
+                  </div>
+                  <div>
+                    <input id="file-mascota-foto" type="file" accept="image/*" class="hidden" />
+                    <button
+                      type="button"
+                      id="btn-pick-mascota-foto"
+                      class="rounded-xl border border-elite-gold/35 px-4 py-2.5 text-[11px] font-medium uppercase tracking-[0.14em] text-elite-gold transition hover:bg-elite-gold/12"
+                    >
+                      Elegir imagen
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="ec-mb-col ec-mb-col--salud space-y-6">
+              <h4 class="ec-mb-col-title">Salud</h4>
+              <div>
+                <span class="ec-label mb-2 block">Vacunas</span>
+                <div class="overflow-x-auto rounded-xl border border-white/10">
+                  <table class="w-full min-w-[480px] text-left text-[13px] text-elite-mist/80">
+                    <thead class="border-b border-white/10 bg-black/40 text-[11px] uppercase tracking-wider text-elite-mist/45">
+                      <tr>
+                        <th class="px-3 py-2.5 font-medium">Vacuna</th>
+                        <th class="px-3 py-2.5 font-medium whitespace-nowrap">Fecha aplicación</th>
+                        <th class="px-3 py-2.5 font-medium whitespace-nowrap">Fecha vencimiento</th>
+                        <th class="px-3 py-2.5 font-medium w-24"></th>
+                      </tr>
+                    </thead>
+                    <tbody id="mascota-vacunas-tbody"></tbody>
+                  </table>
+                </div>
+                <button
+                  type="button"
+                  id="btn-mascota-vacuna-add"
+                  class="mt-3 rounded-xl border border-elite-gold/30 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.12em] text-elite-gold transition hover:bg-elite-gold/10"
+                >
+                  + Añadir vacuna
+                </button>
+              </div>
+            </div>
+            <div class="ec-mb-col ec-mb-col--contactos space-y-6">
+              <h4 class="ec-mb-col-title">Contactos</h4>
+              <label class="block">
+                <span class="ec-label mb-2 block">WhatsApp de la familia (emergencias)</span>
+                <input
+                  id="f-pet-whatsapp"
+                  type="text"
+                  class="elite-input w-full rounded-xl px-4 py-3.5 text-sm"
+                  inputmode="numeric"
+                  placeholder="54911…"
+                />
+              </label>
+              <label class="block">
+                <span class="ec-label mb-2 block">Textura de fondo público</span>
+                <select id="f-pet-textura-fondo" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm">
+                  <option value="burbujas">Burbujas</option>
+                  <option value="huellas">Huellas</option>
+                  <option value="glass">Relieve Glassmorphism</option>
+                </select>
+              </label>
+            </div>
+          </div>
+        </div>
+
         <div id="ec-card-mascotbook" class="ec-reveal ec-reveal-d4 elite-card hidden p-7 sm:p-9" data-dashboard-panel="mascotbook">
           <p class="ec-label mb-2 block text-elite-gold/90">MascotBook</p>
-          <h3 class="mt-1 text-xl font-light tracking-tight text-white sm:text-2xl">La tarjeta de tu mascota</h3>
+          <h3 class="mt-1 text-xl font-light tracking-tight text-white sm:text-2xl">Salud y comunidad</h3>
           <p class="mb-8 mt-3 max-w-2xl text-[15px] font-light leading-relaxed text-elite-mist/50">
-            Misma experiencia EliteCard, datos pensados para tu compañero: la vista previa del teléfono a la derecha muestra esta
-            tarjeta mientras editás. El diseño (tema, forma del avatar y botones) usa lo que definís en la pestaña Diseño.
+            Ficha avanzada, estudios y mapa. Los datos básicos de la mascota están en la pestaña «Tarjeta personal digital» cuando elegís MascotBook.
           </p>
           <div class="mb-8 flex max-w-2xl flex-col gap-3 rounded-2xl border border-red-500/30 bg-red-950/25 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -1517,87 +1868,9 @@
               <span class="text-sm font-medium text-red-100/90">Reportar mascota perdida</span>
             </label>
           </div>
-          <div class="grid max-w-2xl grid-cols-1 gap-6 sm:grid-cols-2">
+          <div class="mt-8 grid max-w-2xl grid-cols-1 gap-6 sm:grid-cols-2">
             <label class="sm:col-span-2">
-              <span class="ec-label mb-2 block">Nombre de la mascota</span>
-              <input id="f-mascota-nombre" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" placeholder="Ej: Luna" />
-            </label>
-            <label>
-              <span class="ec-label mb-2 block">Rol o raza</span>
-              <input id="f-mascota-cargo" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" placeholder="Ej: Golden · 3 años" />
-            </label>
-            <label>
-              <span class="ec-label mb-2 block">Teléfono (humano)</span>
-              <input id="f-mascota-telefono" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" inputmode="tel" />
-            </label>
-            <label>
-              <span class="ec-label mb-2 block">WhatsApp</span>
-              <input id="f-mascota-whatsapp" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" inputmode="numeric" placeholder="54911…" />
-            </label>
-            <label>
-              <span class="ec-label mb-2 block">Instagram</span>
-              <input id="f-mascota-instagram" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" placeholder="@cuenta" />
-            </label>
-            <label>
-              <span class="ec-label mb-2 block">Género</span>
-              <select id="f-mascota-genero" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm">
-                <option value="macho">Macho</option>
-                <option value="hembra">Hembra</option>
-              </select>
-            </label>
-            <label>
-              <span class="ec-label mb-2 block">Tema visual</span>
-              <select id="f-mascota-tema-visual" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm">
-                <option value="theme-classic">Classic (Gold/Dark)</option>
-                <option value="theme-park">Park (verdes orgánicos)</option>
-                <option value="theme-candy">Candy (pastel suave)</option>
-              </select>
-            </label>
-            <label class="sm:col-span-2">
-              <span class="ec-label mb-2 block">Color de acento</span>
-              <input
-                id="f-mascota-color-acento"
-                type="color"
-                value="#5f6fff"
-                class="h-12 w-full cursor-pointer rounded-xl border border-white/20 bg-black/40 p-1"
-              />
-            </label>
-            <label class="sm:col-span-2 flex items-center gap-3 rounded-xl border border-white/10 bg-black/25 px-4 py-3">
-              <input id="f-mascota-efecto-relieve" type="checkbox" class="h-5 w-5 rounded border-white/20 bg-black/50 text-elite-gold" />
-              <span class="text-sm text-elite-mist/75">Efecto relieve (neumórfico / glass) en la tarjeta pública</span>
-            </label>
-            <label class="sm:col-span-2">
-              <span class="ec-label mb-2 block">Historia corta</span>
-              <textarea
-                id="f-mascota-bio"
-                rows="3"
-                class="elite-input w-full rounded-xl px-4 py-3.5 text-sm"
-                placeholder="Una línea que enamore en la tarjeta pública…"
-              ></textarea>
-            </label>
-            <label class="sm:col-span-2">
-              <span class="ec-label mb-2 block">Lo que me gusta (separado por comas)</span>
-              <input
-                id="f-mascota-gustos"
-                type="text"
-                class="elite-input w-full rounded-xl px-4 py-3.5 text-sm"
-                placeholder="pelota, dormir al sol, premios, correr en el parque"
-              />
-            </label>
-            <label>
-              <span class="ec-label mb-2 block">Qué como</span>
-              <input id="f-mascota-que-come" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" placeholder="Balanceado + pollo hervido" />
-            </label>
-            <label>
-              <span class="ec-label mb-2 block">Mi carácter</span>
-              <input id="f-mascota-caracter" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" placeholder="Juguetón, sociable y curioso" />
-            </label>
-            <label class="sm:col-span-2">
-              <span class="ec-label mb-2 block">Mi dueño es...</span>
-              <input id="f-mascota-familia" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" placeholder="Muy cuidadoso y me lleva al parque todos los días" />
-            </label>
-            <label class="sm:col-span-2">
-              <span class="ec-label mb-2 block">Última aventura</span>
+              <span class="ec-label mb-2 block">Última aventura (feed social)</span>
               <textarea
                 id="f-mascota-ultima-aventura"
                 rows="2"
@@ -1605,34 +1878,22 @@
                 placeholder="Hoy fuimos al río y terminé empapado."
               ></textarea>
             </label>
-            <div class="sm:col-span-2">
-              <span class="ec-label mb-2 block">Foto de la mascota</span>
-              <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-                <div
-                  class="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-black/40"
-                >
-                  <img id="preview-mascota-foto" class="hidden h-full w-full object-cover" alt="" />
-                </div>
-                <div>
-                  <input id="file-mascota-foto" type="file" accept="image/*" class="hidden" />
-                  <button
-                    type="button"
-                    id="btn-pick-mascota-foto"
-                    class="rounded-xl border border-elite-gold/35 px-4 py-2.5 text-[11px] font-medium uppercase tracking-[0.14em] text-elite-gold transition hover:bg-elite-gold/12"
-                  >
-                    Elegir imagen
-                  </button>
-                </div>
-              </div>
-            </div>
+            <label>
+              <span class="ec-label mb-2 block">Mi carácter</span>
+              <input id="f-mascota-caracter" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" placeholder="Juguetón, sociable…" />
+            </label>
+            <label>
+              <span class="ec-label mb-2 block">Mi dueño es…</span>
+              <input id="f-mascota-familia" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" placeholder="Me cuidan mucho…" />
+            </label>
           </div>
 
           <div class="mt-10 max-w-3xl rounded-2xl border border-elite-gold/25 bg-gradient-to-b from-black/45 to-black/25 p-6 sm:p-8">
             <p class="ec-label mb-1 block text-elite-gold/90">Historial de salud</p>
             <p class="mb-6 text-[13px] font-light text-elite-mist/50">
-              Vacunas con fechas de aplicación y vencimiento, alertas para el veterinario, estudios en Storage
-              (<span class="font-mono text-[11px] text-elite-mist/40">usuarios/tu_uid/salud/</span>) y un PDF resumido para
-              viajes o hotel canino.
+              El calendario de vacunas lo editás en «Tarjeta personal digital» (contenido MascotBook). Acá: alertas, historial
+              clínico detallado, estudios en Storage
+              (<span class="font-mono text-[11px] text-elite-mist/40">usuarios/tu_uid/salud/</span>) y PDF sanitario.
             </p>
 
             <div class="mb-6 flex flex-col gap-3 rounded-xl border border-white/[0.08] bg-black/30 p-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
@@ -1659,31 +1920,6 @@
                 </span>
               </label>
             </div>
-
-            <p class="ec-label mb-2 block text-elite-gold/80">Calendario de vacunación</p>
-            <p class="mb-4 text-[12px] font-light text-elite-mist/45">
-              En la tarjeta pública, las dosis que vencen en menos de 15 días muestran un aviso animado.
-            </p>
-            <div class="overflow-x-auto rounded-xl border border-white/10">
-              <table class="w-full min-w-[480px] text-left text-[13px] text-elite-mist/80">
-                <thead class="border-b border-white/10 bg-black/40 text-[11px] uppercase tracking-wider text-elite-mist/45">
-                  <tr>
-                    <th class="px-3 py-2.5 font-medium">Vacuna</th>
-                    <th class="px-3 py-2.5 font-medium whitespace-nowrap">Fecha aplicación</th>
-                    <th class="px-3 py-2.5 font-medium whitespace-nowrap">Fecha vencimiento</th>
-                    <th class="px-3 py-2.5 font-medium w-24"></th>
-                  </tr>
-                </thead>
-                <tbody id="mascota-vacunas-tbody"></tbody>
-              </table>
-            </div>
-            <button
-              type="button"
-              id="btn-mascota-vacuna-add"
-              class="mt-3 rounded-xl border border-elite-gold/30 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.12em] text-elite-gold transition hover:bg-elite-gold/10"
-            >
-              + Añadir vacuna
-            </button>
 
             <label class="ec-ficha-admin-alertas mt-8 block rounded-2xl border border-amber-500/35 bg-amber-950/20 p-4 ring-1 ring-amber-500/15">
               <span class="ec-label mb-2 block text-amber-200/90">Alertas médicas y alergias</span>
@@ -2261,6 +2497,9 @@
           </button>
         </aside>
       </div>
+      <button type="button" id="ec-dash-help-fab" class="ec-dash-help-fab" aria-label="¿Necesitas ayuda?">
+        <span class="leading-tight">¿Necesitas<br />ayuda?</span>
+      </button>
     </section>
 
     <!-- Trial vencido: bloqueo hasta suscripción -->
@@ -2407,6 +2646,7 @@
       (function () {
         var lastDoc = {};
         var ecCurrentApp = "mascotbook";
+        var currentTemplate = "theme-classic";
         var ecActiveDashboardTab = "hub";
         var ecLastPublishedFingerprint = "";
         var ecPushPreviewTimer = null;
@@ -2674,45 +2914,69 @@
           var perdidaEl = document.getElementById("f-mascota-perdida");
           var pubEl = document.getElementById("f-mascota-salud-publica");
           var pvetEl = document.getElementById("f-mascota-pase-vet-activo");
-          var relieveEl = document.getElementById("f-mascota-efecto-relieve");
-          return {
-            mascotaNombre: val("f-mascota-nombre"),
-            mascotaCargo: val("f-mascota-cargo"),
-            mascotaBio: val("f-mascota-bio"),
-            mascotaTelefono: val("f-mascota-telefono"),
-            mascotaWhatsapp: onlyDigits(val("f-mascota-whatsapp")),
-            mascotaInstagram: val("f-mascota-instagram"),
-            mascotaGenero: val("f-mascota-genero") || "macho",
-            mascotaTemaVisual: val("f-mascota-tema-visual") || "theme-classic",
-            mascotaColorAcento: val("f-mascota-color-acento") || "#5f6fff",
+          var relieveDesign = document.getElementById("f-mascota-efecto-relieve-design");
+          var relieveLegacy = document.getElementById("f-mascota-efecto-relieve");
+          var relieveEl = relieveDesign || relieveLegacy;
+          var temaEl = document.getElementById("f-mascota-tema-visual-design") || document.getElementById("f-mascota-tema-visual");
+          var currentTplEl = document.getElementById("f-currentTemplate");
+          var colorEl = document.getElementById("f-mascota-color-acento-design") || document.getElementById("f-mascota-color-acento");
+          var currentTpl = String((currentTplEl && currentTplEl.value) || (temaEl && temaEl.value) || currentTemplate || "theme-classic").trim().toLowerCase();
+          if (currentTpl === "theme-park") currentTpl = "theme-organic";
+          if (["theme-classic", "theme-candy", "theme-night", "theme-organic", "theme-glass"].indexOf(currentTpl) < 0) currentTpl = "theme-classic";
+          var petCore =
+            ecCurrentApp === "mascotbook"
+              ? {
+                  pet_nombre: val("f-pet-nombre"),
+                  pet_raza: val("f-pet-raza"),
+                  pet_sexo: val("f-pet-sexo") || "macho",
+                  pet_color: val("f-pet-color"),
+                  pet_senas: val("f-pet-senas"),
+                  pet_whatsapp: onlyDigits(val("f-pet-whatsapp")),
+                  pet_texturaFondo: val("f-pet-textura-fondo") || "huellas",
+                  pet_gustos: val("f-pet-gustos"),
+                  pet_que_come: val("f-pet-que-come"),
+                  pet_vacunas: readMascotaVacunasFromDom(),
+                  pet_historia: val("f-pet-historia"),
+                }
+              : {};
+          var themed = {
+            currentTemplate: currentTpl,
+            mascotaTemaVisual: currentTpl,
+            mascotaColorAcento: (colorEl && String(colorEl.value || "").trim()) || "#5f6fff",
             mascotaEfectoRelieve: !!(relieveEl && relieveEl.checked),
-            mascotaGustos: val("f-mascota-gustos"),
-            mascotaQueCome: val("f-mascota-que-come"),
+            mascotaPerdida: !!(perdidaEl && perdidaEl.checked),
             mascotaCaracter: val("f-mascota-caracter"),
             mascotaFamilia: val("f-mascota-familia"),
             mascotaUltimaAventura: val("f-mascota-ultima-aventura"),
-            mascotaPerdida: !!(perdidaEl && perdidaEl.checked),
-            mascotaVacunas: readMascotaVacunasFromDom(),
-            mascotaHistorialClinico: val("f-mascota-historial"),
-            mascotaAlertasSalud: val("f-mascota-alertas-salud"),
             mascotaSaludPublica: !!(pubEl && pubEl.checked),
             paseVeterinarioActivo: !!(pvetEl && pvetEl.checked),
+            mascotaAlertasSalud: val("f-mascota-alertas-salud"),
+            mascotaHistorialClinico: val("f-mascota-historial"),
             mascotaEstudiosSaludUrls: saludEstudiosUrlsDraft.slice(),
             mascotaGaleriaUrls: readMascotaGaleriaUrlsFromTextarea(),
           };
+          return Object.assign({}, themed, petCore);
         }
 
         function buildMascotLivePreviewPatch() {
           var st = readFormObject();
           var m = readMascotBookForPayload();
+          var nom = String(m.pet_nombre || "").trim();
+          var raza = String(m.pet_raza || "").trim();
+          var colorPet = String(m.pet_color || "").trim();
+          var cargoLine = raza ? (colorPet ? raza + " · " + colorPet : raza) : "";
+          var bioLine = String(m.pet_senas || "").trim();
+          var wa = onlyDigits(m.pet_whatsapp || m.mascotaWhatsapp);
+          var vacs = Array.isArray(m.pet_vacunas) ? m.pet_vacunas : [];
+          var hist = String(m.pet_historia || m.mascotaHistorialClinico || "").trim();
           var patch = {
-            nombreCompleto: m.mascotaNombre,
-            cargo: m.mascotaCargo,
-            bio: m.mascotaBio,
+            nombreCompleto: nom,
+            cargo: cargoLine,
+            bio: bioLine,
             empresa: "",
-            telefono: m.mascotaTelefono,
-            whatsappNumero: m.mascotaWhatsapp,
-            instagram: m.mascotaInstagram,
+            telefono: "",
+            whatsappNumero: wa,
+            instagram: "",
             email: "",
             emailInstitucional: "",
             linkedin: "",
@@ -2724,24 +2988,36 @@
             cardTheme: st.cardTheme,
             avatarShape: st.avatarShape,
             buttonLayout: st.buttonLayout,
-            fotoUrl: String((lastDoc && lastDoc.mascotaFotoUrl) || "").trim(),
+            fotoUrl: String((lastDoc && lastDoc.pet_fotoUrl) || (lastDoc && lastDoc.mascotaFotoUrl) || "").trim(),
             mascotaPerdida: !!m.mascotaPerdida,
-            mascotaGenero: m.mascotaGenero || "macho",
+            mascotaGenero: (m.pet_sexo || m.mascotaGenero || "macho").trim().toLowerCase(),
+            currentTemplate: m.currentTemplate || "theme-classic",
             mascotaTemaVisual: m.mascotaTemaVisual || "theme-classic",
             mascotaColorAcento: m.mascotaColorAcento || "#5f6fff",
             mascotaEfectoRelieve: !!m.mascotaEfectoRelieve,
-            mascotaGustos: m.mascotaGustos,
-            mascotaQueCome: m.mascotaQueCome,
+            mascotaGustos: m.pet_gustos != null && m.pet_gustos !== "" ? m.pet_gustos : m.mascotaGustos,
+            mascotaQueCome: m.pet_que_come != null && m.pet_que_come !== "" ? m.pet_que_come : m.mascotaQueCome,
             mascotaCaracter: m.mascotaCaracter,
             mascotaFamilia: m.mascotaFamilia,
             mascotaUltimaAventura: m.mascotaUltimaAventura,
-            mascotaVacunas: m.mascotaVacunas,
+            mascotaVacunas: vacs.length ? vacs : m.mascotaVacunas,
             mascotaAlertasSalud: m.mascotaAlertasSalud,
             mascotaSaludPublica: !!m.mascotaSaludPublica,
             paseVeterinarioActivo: !!m.paseVeterinarioActivo,
             mascotaEstudiosSaludUrls: m.mascotaEstudiosSaludUrls,
             mascotaGaleriaUrls: m.mascotaGaleriaUrls,
-            mascotaHistorialClinico: m.mascotaHistorialClinico,
+            mascotaHistorialClinico: hist,
+            pet_texturaFondo: m.pet_texturaFondo || "huellas",
+            pet_nombre: m.pet_nombre,
+            pet_raza: m.pet_raza,
+            pet_sexo: m.pet_sexo,
+            pet_color: m.pet_color,
+            pet_senas: m.pet_senas,
+            pet_whatsapp: m.pet_whatsapp,
+            pet_vacunas: vacs,
+            pet_historia: m.pet_historia,
+            pet_gustos: m.pet_gustos,
+            pet_que_come: m.pet_que_come,
           };
           var pm = document.getElementById("preview-mascota-foto");
           if (pm && pm.src && (pm.src.indexOf("blob:") === 0 || pm.src.indexOf("data:") === 0)) {
@@ -2791,6 +3067,7 @@
             fotoUrl: String((lastDoc && lastDoc.fotoUrl) || "").trim(),
             logoUrl: String((lastDoc && lastDoc.logoUrl) || "").trim(),
             mascotaFotoUrl: String((lastDoc && lastDoc.mascotaFotoUrl) || "").trim(),
+            petFotoUrl: String((lastDoc && lastDoc.pet_fotoUrl) || "").trim(),
             pendingFoto: !!pendingFotoFile,
             pendingLogo: !!pendingLogoFile,
             pendingMascota: !!pendingMascotaFile,
@@ -2811,7 +3088,12 @@
           var bar = document.getElementById("ec-dashboard-mascota-health-alert");
           var text = document.getElementById("ec-dashboard-mascota-health-alert-text");
           if (!bar || !text) return;
-          var vacs = data && Array.isArray(data.mascotaVacunas) ? data.mascotaVacunas : [];
+          var vacs =
+            data && Array.isArray(data.pet_vacunas) && data.pet_vacunas.length
+              ? data.pet_vacunas
+              : data && Array.isArray(data.mascotaVacunas)
+                ? data.mascotaVacunas
+                : [];
           var minDays = null;
           var soonName = "";
           vacs.forEach(function (v) {
@@ -2899,16 +3181,39 @@
           return "mascotbook";
         }
 
+        function syncPublishLabels() {
+          var isMb = ecCurrentApp === "mascotbook";
+          var t = isMb ? "Aplicar Tema y Publicar" : "Publicar cambios";
+          var bf = document.getElementById("btn-publish-footer");
+          var bp = document.getElementById("btn-publish-preview-col");
+          if (bf) {
+            var span = bf.querySelector("span");
+            if (span) span.textContent = t;
+          }
+          if (bp) bp.textContent = t;
+        }
+
         function setCurrentApp(app) {
           ecCurrentApp = normalizeAppMode(app);
           try {
             localStorage.setItem("ec_current_app", ecCurrentApp);
           } catch (e3) {}
+          var tabMb = document.querySelector('[data-dashboard-tab="mascotbook"]');
+          if (tabMb) tabMb.classList.toggle("hidden", ecCurrentApp === "elitecard");
+          var tabSig = document.querySelector('[data-dashboard-tab="email-signature"]');
+          if (tabSig) tabSig.classList.toggle("hidden", ecCurrentApp === "mascotbook");
           var panel = document.getElementById("view-panel");
           if (panel) {
             panel.classList.toggle("ec-app-mascotbook", ecCurrentApp === "mascotbook");
             panel.classList.toggle("ec-app-elitecard", ecCurrentApp !== "mascotbook");
           }
+          var bel = document.querySelector(".ec-brand-elite");
+          var bmas = document.querySelector(".ec-brand-mascot");
+          if (bel && bmas) {
+            bel.classList.toggle("hidden", ecCurrentApp === "mascotbook");
+            bmas.classList.toggle("hidden", ecCurrentApp !== "mascotbook");
+          }
+          syncPublishLabels();
           var vh = document.getElementById("btnVerTarjeta");
           if (vh) {
             vh.textContent = ecCurrentApp === "mascotbook" ? "Ver ficha MascotBook" : "Ver mi tarjeta en vivo";
@@ -2947,7 +3252,7 @@
           if (hint) {
             if (user) {
               var origin = String(window.location.origin || "").replace(/\/$/, "");
-              var prof = origin + "/card?id=" + encodeURIComponent(user.uid);
+              var prof = origin + "/card.html?id=" + encodeURIComponent(user.uid);
               var pet = prof + "&view=pet";
               hint.innerHTML =
                 'ID público: <span class="font-mono text-white/75">' +
@@ -3017,18 +3322,24 @@
           var loginEl = document.getElementById("view-login");
           var panelEl = document.getElementById("view-panel");
           if (user) {
-            loginEl.classList.add("hidden");
-            loginEl.classList.remove("ec-login-overlay");
-            panelEl.classList.remove("hidden");
-            panelEl.classList.remove("ec-guest-mode");
-            panelEl.classList.remove("ec-dashboard-mounted");
-            void panelEl.offsetWidth;
-            panelEl.classList.add("ec-dashboard-mounted");
+            if (loginEl) {
+              loginEl.classList.add("hidden");
+              loginEl.classList.remove("ec-login-overlay");
+            }
+            if (panelEl) {
+              panelEl.classList.remove("hidden");
+              panelEl.classList.remove("ec-guest-mode");
+              panelEl.classList.remove("ec-dashboard-mounted");
+              void panelEl.offsetWidth;
+              panelEl.classList.add("ec-dashboard-mounted");
+            }
           } else {
-            panelEl.classList.remove("hidden");
-            panelEl.classList.add("ec-guest-mode");
-            loginEl.classList.remove("hidden");
-            loginEl.classList.add("ec-login-overlay");
+            var next = "admin.html";
+            try {
+              var qs = new URLSearchParams(window.location.search);
+              if (qs.get("next")) next = qs.get("next");
+            } catch (eR) {}
+            window.location.replace("login.html?next=" + encodeURIComponent(next));
           }
         }
 
@@ -3062,15 +3373,28 @@
         }
 
         function syncMascotThemeControls(fromDesign) {
-          var srcTheme = document.getElementById(fromDesign ? "f-mascota-tema-visual-design" : "f-mascota-tema-visual");
-          var srcColor = document.getElementById(fromDesign ? "f-mascota-color-acento-design" : "f-mascota-color-acento");
-          var srcRelieve = document.getElementById(fromDesign ? "f-mascota-efecto-relieve-design" : "f-mascota-efecto-relieve");
-          var dstTheme = document.getElementById(fromDesign ? "f-mascota-tema-visual" : "f-mascota-tema-visual-design");
-          var dstColor = document.getElementById(fromDesign ? "f-mascota-color-acento" : "f-mascota-color-acento-design");
-          var dstRelieve = document.getElementById(fromDesign ? "f-mascota-efecto-relieve" : "f-mascota-efecto-relieve-design");
-          if (srcTheme && dstTheme) dstTheme.value = srcTheme.value;
-          if (srcColor && dstColor) dstColor.value = srcColor.value;
-          if (srcRelieve && dstRelieve) dstRelieve.checked = !!srcRelieve.checked;
+          var srcTheme = document.getElementById("f-mascota-tema-visual-design");
+          var srcCurrent = document.getElementById("f-currentTemplate");
+          var srcColor = document.getElementById("f-mascota-color-acento-design");
+          var srcRelieve = document.getElementById("f-mascota-efecto-relieve-design");
+          if (!srcTheme || !srcColor || !srcRelieve) return;
+          var raw = String((srcCurrent && srcCurrent.value) || srcTheme.value || currentTemplate || "theme-classic").trim().toLowerCase();
+          if (raw === "theme-park") raw = "theme-organic";
+          if (["theme-classic", "theme-candy", "theme-night", "theme-organic", "theme-glass"].indexOf(raw) < 0) {
+            raw = "theme-classic";
+          }
+          currentTemplate = raw;
+          srcTheme.value = raw;
+          if (srcCurrent) srcCurrent.value = raw;
+          var selector = document.getElementById("ec-template-selector");
+          if (selector) {
+            selector.querySelectorAll("[data-template-value]").forEach(function (btn) {
+              var on = btn.getAttribute("data-template-value") === raw;
+              btn.classList.toggle("is-active", on);
+              btn.setAttribute("aria-pressed", on ? "true" : "false");
+            });
+          }
+          void fromDesign;
         }
 
         function syncPreviewAppearance() {
@@ -3130,6 +3454,10 @@
           return "usuarios/" + uid + "/mascotaFoto";
         }
 
+        function storagePetFotoPath(uid) {
+          return "usuarios/" + uid + "/pet_foto";
+        }
+
         function storageSaludStudyPath(uid, fileName) {
           var safe = String(fileName || "estudio")
             .replace(/[^a-zA-Z0-9._-]/g, "_")
@@ -3176,15 +3504,22 @@
           if (av !== "circle") av = "rect";
           var bl = String(d.buttonLayout || "pills").trim().toLowerCase();
           if (bl !== "icons") bl = "pills";
+          var nom = String(d.pet_nombre || d.mascotaNombre || "").trim();
+          var raza = String(d.pet_raza || "").trim();
+          var colorPet = String(d.pet_color || "").trim();
+          var cargoLine = raza ? (colorPet ? raza + " · " + colorPet : raza) : String(d.mascotaCargo || "").trim();
+          var bioLine = String(d.pet_senas || d.mascotaBio || "").trim();
+          var vacs = Array.isArray(d.pet_vacunas) && d.pet_vacunas.length ? d.pet_vacunas : Array.isArray(d.mascotaVacunas) ? d.mascotaVacunas : [];
+          var hist = String(d.pet_historia || d.mascotaHistorialClinico || "").trim();
           return {
-            nombreCompleto: String(d.mascotaNombre || "").trim(),
-            cargo: String(d.mascotaCargo || "").trim(),
-            bio: String(d.mascotaBio || "").trim(),
+            nombreCompleto: nom,
+            cargo: cargoLine,
+            bio: bioLine,
             empresa: "",
-            telefono: String(d.mascotaTelefono || "").trim(),
-            whatsappNumero: onlyDigits(d.mascotaWhatsapp),
-            instagram: String(d.mascotaInstagram || "").trim(),
-            fotoUrl: String(d.mascotaFotoUrl || "").trim(),
+            telefono: "",
+            whatsappNumero: onlyDigits(d.pet_whatsapp || d.mascotaWhatsapp),
+            instagram: "",
+            fotoUrl: String(d.pet_fotoUrl || d.mascotaFotoUrl || "").trim(),
             logoUrl: "",
             email: "",
             emailInstitucional: "",
@@ -3197,24 +3532,36 @@
             avatarShape: av,
             buttonLayout: bl,
             mascotaPerdida: !!d.mascotaPerdida,
-            mascotaGenero: String(d.mascotaGenero || "macho"),
-            mascotaTemaVisual: String(d.mascotaTemaVisual || "theme-classic"),
+            mascotaGenero: String(d.pet_sexo || d.mascotaGenero || "macho"),
+            currentTemplate: String(d.currentTemplate || d.mascotaTemaVisual || "theme-classic"),
+            mascotaTemaVisual: String(d.currentTemplate || d.mascotaTemaVisual || "theme-classic"),
             mascotaColorAcento: String(d.mascotaColorAcento || "#5f6fff"),
             mascotaEfectoRelieve: !!d.mascotaEfectoRelieve,
-            mascotaGustos: String(d.mascotaGustos || ""),
-            mascotaQueCome: String(d.mascotaQueCome || ""),
+            mascotaGustos: String(d.pet_gustos || d.mascotaGustos || ""),
+            mascotaQueCome: String(d.pet_que_come || d.mascotaQueCome || ""),
             mascotaCaracter: String(d.mascotaCaracter || ""),
             mascotaFamilia: String(d.mascotaFamilia || ""),
             mascotaUltimaAventura: String(d.mascotaUltimaAventura || ""),
             mascotaSaludPublica: !!d.mascotaSaludPublica,
             paseVeterinarioActivo: !!d.paseVeterinarioActivo,
-            mascotaVacunas: Array.isArray(d.mascotaVacunas) ? d.mascotaVacunas : [],
+            mascotaVacunas: vacs,
             mascotaAlertasSalud: String(d.mascotaAlertasSalud || ""),
             mascotaEstudiosSaludUrls: Array.isArray(d.mascotaEstudiosSaludUrls)
               ? d.mascotaEstudiosSaludUrls
               : [],
             mascotaGaleriaUrls: Array.isArray(d.mascotaGaleriaUrls) ? d.mascotaGaleriaUrls : [],
-            mascotaHistorialClinico: String(d.mascotaHistorialClinico || ""),
+            mascotaHistorialClinico: hist,
+            pet_texturaFondo: String(d.pet_texturaFondo || "huellas"),
+            pet_nombre: String(d.pet_nombre || ""),
+            pet_raza: String(d.pet_raza || ""),
+            pet_sexo: String(d.pet_sexo || ""),
+            pet_color: String(d.pet_color || ""),
+            pet_senas: String(d.pet_senas || ""),
+            pet_whatsapp: String(d.pet_whatsapp || ""),
+            pet_vacunas: vacs,
+            pet_historia: String(d.pet_historia || ""),
+            pet_gustos: String(d.pet_gustos || ""),
+            pet_que_come: String(d.pet_que_come || ""),
           };
         }
 
@@ -3276,18 +3623,37 @@
           });
 
           (function fillMascotaFields() {
+            function firstStr() {
+              for (var i = 0; i < arguments.length; i++) {
+                var v = arguments[i];
+                if (v != null && String(v).trim() !== "") return String(v);
+              }
+              return "";
+            }
+            var petNombre = document.getElementById("f-pet-nombre");
+            if (petNombre) petNombre.value = firstStr(base.pet_nombre, base.mascotaNombre);
+            var petRaza = document.getElementById("f-pet-raza");
+            if (petRaza) petRaza.value = firstStr(base.pet_raza);
+            var petSexo = document.getElementById("f-pet-sexo");
+            if (petSexo) petSexo.value = firstStr(base.pet_sexo, base.mascotaGenero, "macho") || "macho";
+            var petColor = document.getElementById("f-pet-color");
+            if (petColor) petColor.value = firstStr(base.pet_color);
+            var petS = document.getElementById("f-pet-senas");
+            if (petS) petS.value = firstStr(base.pet_senas, base.mascotaBio);
+            var petW = document.getElementById("f-pet-whatsapp");
+            if (petW) petW.value = firstStr(base.pet_whatsapp, base.mascotaWhatsapp);
+            var petTex = document.getElementById("f-pet-textura-fondo");
+            if (petTex) petTex.value = firstStr(base.pet_texturaFondo, "huellas") || "huellas";
+            var petG = document.getElementById("f-pet-gustos");
+            if (petG) petG.value = firstStr(base.pet_gustos, base.mascotaGustos);
+            var petQ = document.getElementById("f-pet-que-come");
+            if (petQ) petQ.value = firstStr(base.pet_que_come, base.mascotaQueCome);
+            var petH = document.getElementById("f-pet-historia");
+            if (petH) petH.value = firstStr(base.pet_historia, base.mascotaHistorialClinico);
+
             var mm = [
-              ["f-mascota-nombre", "mascotaNombre"],
-              ["f-mascota-cargo", "mascotaCargo"],
-              ["f-mascota-bio", "mascotaBio"],
-              ["f-mascota-telefono", "mascotaTelefono"],
-              ["f-mascota-whatsapp", "mascotaWhatsapp"],
-              ["f-mascota-instagram", "mascotaInstagram"],
-              ["f-mascota-genero", "mascotaGenero"],
-              ["f-mascota-tema-visual", "mascotaTemaVisual"],
-              ["f-mascota-color-acento", "mascotaColorAcento"],
-              ["f-mascota-gustos", "mascotaGustos"],
-              ["f-mascota-que-come", "mascotaQueCome"],
+              ["f-mascota-tema-visual-design", "mascotaTemaVisual"],
+              ["f-mascota-color-acento-design", "mascotaColorAcento"],
               ["f-mascota-caracter", "mascotaCaracter"],
               ["f-mascota-familia", "mascotaFamilia"],
               ["f-mascota-ultima-aventura", "mascotaUltimaAventura"],
@@ -3296,9 +3662,17 @@
               var el = document.getElementById(pair[0]);
               if (el) el.value = base[pair[1]] != null ? String(base[pair[1]]) : "";
             });
+            var tpl = String(base.currentTemplate || base.mascotaTemaVisual || "theme-classic").trim().toLowerCase();
+            if (tpl === "theme-park") tpl = "theme-organic";
+            if (["theme-classic", "theme-candy", "theme-night", "theme-organic", "theme-glass"].indexOf(tpl) < 0) tpl = "theme-classic";
+            var ct = document.getElementById("f-currentTemplate");
+            var mt = document.getElementById("f-mascota-tema-visual-design");
+            if (ct) ct.value = tpl;
+            if (mt) mt.value = tpl;
+            currentTemplate = tpl;
             var mp = document.getElementById("f-mascota-perdida");
             if (mp) mp.checked = !!base.mascotaPerdida;
-            var mre = document.getElementById("f-mascota-efecto-relieve");
+            var mre = document.getElementById("f-mascota-efecto-relieve-design");
             if (mre) mre.checked = !!base.mascotaEfectoRelieve;
             syncMascotThemeControls(false);
             var msp = document.getElementById("f-mascota-salud-publica");
@@ -3319,7 +3693,9 @@
                 .filter(Boolean)
                 .join("\n");
             }
-            renderMascotaVacunasTable(base.mascotaVacunas);
+            renderMascotaVacunasTable(
+              Array.isArray(base.pet_vacunas) && base.pet_vacunas.length ? base.pet_vacunas : base.mascotaVacunas
+            );
             saludEstudiosUrlsDraft = (
               Array.isArray(base.mascotaEstudiosSaludUrls) ? base.mascotaEstudiosSaludUrls : []
             )
@@ -3329,7 +3705,7 @@
               .filter(Boolean);
             pendingSaludStudyFiles = [];
             renderSaludEstudiosDraft();
-            var mf = String(base.mascotaFotoUrl || "").trim();
+            var mf = String(base.pet_fotoUrl || base.mascotaFotoUrl || "").trim();
             if (mf) setPreview("preview-mascota-foto", mf);
             else {
               var pm = document.getElementById("preview-mascota-foto");
@@ -3731,12 +4107,9 @@
           if (!tabs.length || !panels.length) return;
           function show(which, force) {
             var appMode = ecCurrentApp;
-            var panelTarget = which;
             if (which === "mascotbook") appMode = "mascotbook";
-            if (which === "content" || which === "email-signature") appMode = "elitecard";
-            if (which === "content") {
-              panelTarget = appMode === "mascotbook" ? "mascotbook" : "content";
-            }
+            if (which === "email-signature") appMode = "elitecard";
+            if (which === "content") appMode = ecCurrentApp;
             if (!force && subs && subs.isTrialPeriodExpired(lastDoc, appMode) && which !== "subscription") {
               setTrialExpiredModalVisible(true);
               return;
@@ -3749,7 +4122,23 @@
               btn.setAttribute("aria-selected", on ? "true" : "false");
             });
             panels.forEach(function (panel) {
-              panel.classList.toggle("hidden", panel.getAttribute("data-dashboard-panel") !== panelTarget);
+              var p = panel.getAttribute("data-dashboard-panel");
+              var hide = true;
+              if (which === "hub" && p === "hub") hide = false;
+              else if (which === "mascotbook" && p === "mascotbook") hide = false;
+              else if (which === "analytics" && p === "analytics") hide = false;
+              else if (which === "qr" && p === "qr") hide = false;
+              else if (which === "subscription" && p === "subscription") hide = false;
+              else if (which === "email-signature" && p === "email-signature") hide = false;
+              else if (which === "content") {
+                if (ecCurrentApp === "mascotbook") {
+                  if (p === "mascotbook-content") hide = false;
+                  else if (p === "content" && panel.id !== "form-card") hide = false;
+                } else {
+                  if (p === "content") hide = false;
+                }
+              }
+              panel.classList.toggle("hidden", hide);
             });
             if (subs && subs.isTrialPeriodExpired(lastDoc, appMode) && which === "subscription") {
               setTrialExpiredModalVisible(false);
@@ -3776,12 +4165,14 @@
           var hubMascot = document.getElementById("btn-hub-mascotbook");
           if (hubElite) {
             hubElite.addEventListener("click", function () {
-              show("content", false);
+              setCurrentApp("elitecard");
+              show("content", true);
             });
           }
           if (hubMascot) {
             hubMascot.addEventListener("click", function () {
-              show("mascotbook", false);
+              setCurrentApp("mascotbook");
+              show("content", true);
             });
           }
           var startApp = appFromUrlOrStorage();
@@ -3861,20 +4252,20 @@
             window.location.protocol +
             "//" +
             window.location.host +
-            "/card?id=" +
+            "/card.html?id=" +
             encodeURIComponent(uid) +
             "&view=pet";
           var qrApi =
             "https://quickchart.io/qr?size=320&margin=2&text=" + encodeURIComponent(petUrl);
           var nombre = "";
-          var nEl = document.getElementById("f-mascota-nombre");
+          var nEl = document.getElementById("f-pet-nombre");
           if (nEl) nombre = String(nEl.value || "").trim();
           var fotoEl = document.getElementById("preview-mascota-foto");
           var fotoSrc = "";
           if (fotoEl && fotoEl.src && fotoEl.classList && !fotoEl.classList.contains("hidden")) {
             fotoSrc = String(fotoEl.src || "").trim();
           }
-          if (!fotoSrc) fotoSrc = String((lastDoc && lastDoc.mascotaFotoUrl) || "").trim();
+          if (!fotoSrc) fotoSrc = String((lastDoc && lastDoc.pet_fotoUrl) || (lastDoc && lastDoc.mascotaFotoUrl) || "").trim();
           var vacs = readMascotaVacunasFromDom();
 
           function drawPdf(fotoData, qrData) {
@@ -4083,20 +4474,17 @@
 
           function buildPublicUrl(uid, app) {
             var a = normalizeAppMode(app || ecCurrentApp);
-            var base =
-              window.location.protocol +
-              "//" +
-              window.location.host +
-              "/card?id=" +
-              encodeURIComponent(uid);
-            if (a === "mascotbook") return base + "&view=pet";
-            return base;
+            var u = new URL("card.html", window.location.href);
+            u.searchParams.set("id", uid);
+            if (a === "mascotbook") u.searchParams.set("view", "pet");
+            else u.searchParams.delete("view");
+            return u.toString();
           }
 
           function updatePublicLinkInput(user) {
             var input = document.getElementById("input-public-url");
             if (!input) return;
-            input.value = user && user.uid ? buildPublicUrl(user.uid) : "";
+            input.value = user && user.uid ? buildPublicUrl(user.uid, ecCurrentApp) : "";
           }
 
           function fallbackExecCopyPublic(text) {
@@ -4321,6 +4709,14 @@
                 window.location.href = "admin.html";
               });
           });
+
+          var ecHelpFab = document.getElementById("ec-dash-help-fab");
+          if (ecHelpFab) {
+            ecHelpFab.addEventListener("click", function () {
+              window.location.href =
+                "mailto:soporte@elitecard.app?subject=" + encodeURIComponent("MascotBook — Ayuda");
+            });
+          }
 
           document.getElementById("file-foto").addEventListener("change", function (e) {
             var f = e.target.files && e.target.files[0];
@@ -4645,6 +5041,17 @@
               scheduleLivePreviewSync();
             });
           }
+          var simplePetEl = document.getElementById("ec-mascotbook-simple");
+          if (simplePetEl) {
+            simplePetEl.addEventListener("input", function () {
+              scheduleLivePreviewSync();
+              refreshPublishDirtyState();
+            });
+            simplePetEl.addEventListener("change", function () {
+              scheduleLivePreviewSync();
+              refreshPublishDirtyState();
+            });
+          }
           ["f-mascota-tema-visual-design", "f-mascota-color-acento-design", "f-mascota-efecto-relieve-design"].forEach(function (id) {
             var el = document.getElementById(id);
             if (!el) return;
@@ -4673,11 +5080,29 @@
               scheduleLivePreviewSync();
             });
           }
+          var tplWrap = document.getElementById("ec-template-selector");
+          if (tplWrap) {
+            tplWrap.addEventListener("click", function (e) {
+              var btn = e.target.closest("[data-template-value]");
+              if (!btn || !tplWrap.contains(btn)) return;
+              var v = String(btn.getAttribute("data-template-value") || "theme-classic").trim().toLowerCase();
+              if (["theme-classic", "theme-candy", "theme-night", "theme-organic", "theme-glass"].indexOf(v) < 0) v = "theme-classic";
+              var cur = document.getElementById("f-currentTemplate");
+              var th = document.getElementById("f-mascota-tema-visual-design");
+              currentTemplate = v;
+              if (cur) cur.value = v;
+              if (th) th.value = v;
+              syncMascotThemeControls(true);
+              scheduleLivePreviewSync();
+              refreshPublishDirtyState();
+            });
+          }
 
           document.getElementById("btn-save-personalization").addEventListener("click", function () {
             var form = document.getElementById("form-card");
             if (form) form.requestSubmit();
           });
+          syncMascotThemeControls(false);
 
           var btnDownloadQr = document.getElementById("btn-download-qr");
           if (btnDownloadQr) {
@@ -4830,9 +5255,10 @@
             }
             if (pendingMascotaFile) {
               chain = chain.then(function () {
-                return uploadToStorage(storageMascotaPath(uid), pendingMascotaFile).then(function (url) {
+                return uploadToStorage(storagePetFotoPath(uid), pendingMascotaFile).then(function (url) {
                   var u = String(url || "").trim();
                   if (!u) throw new Error("No se obtuvo downloadURL para la foto de mascota.");
+                  payload.pet_fotoUrl = u;
                   payload.mascotaFotoUrl = u;
                 });
               });

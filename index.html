@@ -2,119 +2,37 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="ec-asset-version" content="1776168903312" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
-    />
-    <title>EliteCard | Tu Identidad Digital de Élite</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>EliteCard + MascotBook | Ecosistema digital</title>
     <meta
       name="description"
-      content="Haz clic para ver mis datos de contacto actualizados."
+      content="EliteCard y MascotBook: tarjeta profesional y pasaporte digital para mascotas en una sola plataforma."
     />
-    <meta name="application-name" content="EliteCard - Tarjeta Digital" />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="EliteCard | Perfil Profesional" />
-    <meta
-      property="og:description"
-      content="Haz clic para ver mis datos de contacto actualizados."
-    />
-    <meta property="og:locale" content="es" />
-    <meta
-      property="og:image"
-      content="https://tarjeta-profesional-pedro.web.app/icons/icon-512.png"
-    />
-    <meta property="og:image:width" content="512" />
-    <meta property="og:image:height" content="512" />
-    <meta property="og:image:alt" content="EliteCard — marca dorada" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="EliteCard | Perfil Profesional" />
-    <meta
-      name="twitter:description"
-      content="Haz clic para ver mis datos de contacto actualizados."
-    />
-    <meta
-      name="twitter:image"
-      content="https://tarjeta-profesional-pedro.web.app/icons/icon-512.png"
-    />
-    <meta name="theme-color" content="#050505" media="(prefers-color-scheme: dark)" />
-    <meta name="theme-color" content="#050505" />
-    <meta name="color-scheme" content="dark" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="EliteCard" />
-    <meta name="msapplication-TileColor" content="#050505" />
-    <meta name="format-detection" content="telephone=no" />
-    <link rel="manifest" href="manifest.json" id="manifest-link" />
-    <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
-    <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png" />
+    <meta name="theme-color" content="#ffffff" />
     <script>
       (function () {
-        window.__EC_IS_PROFILE_VIEW = false;
         try {
-          // Leer ?id= de la URL
-          var params = new URLSearchParams(window.location.search);
-          var uid =
-            params.get("id") ||
-            params.get("ID") ||
-            params.get("user") ||
-            params.get("uid") ||
-            "";
+          var p = new URLSearchParams(window.location.search);
+          var uid = (p.get("id") || p.get("ID") || p.get("user") || p.get("uid") || "").trim();
           if (!uid && window.location.hash) {
             var m = window.location.hash.match(/(?:^|[?&#])id=([^&]+)/i);
             if (m && m[1]) {
               try {
                 uid = decodeURIComponent(m[1]);
-              } catch (e) {
+              } catch (e0) {
                 uid = m[1];
               }
             }
           }
-          uid = uid.trim();
-          if (!uid) return; // Sin ?id= → landing
-          window.__EC_IS_PROFILE_VIEW = true;
-
-          var origin = window.location.origin;
-
-          var view = String(params.get("view") || "").trim().toLowerCase();
-          var app = view === "pet" || view === "mascota" || view === "mascotbook" ? "mascotbook" : "elitecard";
-
-          // Usar manifest server-side por producto activo
-          var manifestUrl =
-            origin + "/manifest-user?id=" + encodeURIComponent(uid) + "&app=" + encodeURIComponent(app);
-
-          function injectManifest() {
-            var link = document.getElementById("manifest-link");
-            if (link) {
-              link.href = manifestUrl;
-            } else {
-              var newLink = document.createElement("link");
-              newLink.rel = "manifest";
-              newLink.id = "manifest-link";
-              newLink.href = manifestUrl;
-              document.head.appendChild(newLink);
-            }
-          }
-
-          if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", injectManifest);
-          } else {
-            injectManifest();
-          }
-
-          try {
-            sessionStorage.setItem("ec-profile-uid", uid);
-          } catch (e2) {}
-        } catch (e) {}
+          if (!uid) return;
+          window.location.replace("card.html" + window.location.search + window.location.hash);
+        } catch (e1) {}
       })();
     </script>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link
@@ -123,774 +41,857 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <script>
-      (function () {
-        window.__EC_PAGE_LOAD_TS = Date.now();
-        document.write(
-          '<link rel="stylesheet" href="styles.css?v=' + window.__EC_PAGE_LOAD_TS + '">'
-        );
-      })();
-    </script>
     <style>
-      .ec-landing-shell { min-height: 100dvh; background: radial-gradient(circle at 10% 8%, rgba(212,175,55,.16), transparent 36%), linear-gradient(160deg,#050505 0%,#0f172a 52%,#050505 100%); color: #e5e7eb; font-family: "Poppins", system-ui, sans-serif; }
-      .ec-landing-card { border: 1px solid rgba(255,255,255,.14); background: rgba(17,24,39,.52); backdrop-filter: blur(12px); transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
-      .ec-landing-card:hover { transform: translateY(-3px); border-color: rgba(212,175,55,.55); box-shadow: 0 18px 42px rgba(0,0,0,.28); }
-      .ec-landing-cta { border-radius: 9999px; padding: .72rem 1.2rem; font-size: .78rem; letter-spacing: .11em; text-transform: uppercase; font-weight: 600; }
-      .ec-landing-cta--gold { background: linear-gradient(135deg,#c9a132,#d4af37 55%,#e7c867); color: #111; }
-      .ec-landing-cta--ghost { border: 1px solid rgba(255,255,255,.2); color: #f9fafb; }
-      .ec-landing-create { background: linear-gradient(135deg,#f59e0b 0%,#f97316 45%,#f43f5e 100%); color: #fff; box-shadow: 0 18px 45px rgba(244,63,94,.35); }
-      .ec-demo-phone { width: min(320px, 84vw); border-radius: 28px; padding: 14px; border: 1px solid rgba(255,255,255,.18); background: rgba(2,6,23,.65); }
-      .ec-demo-screen { border-radius: 22px; padding: 16px; background: linear-gradient(145deg, var(--demo-accent,#5f6fff), #0f172a 62%); min-height: 220px; }
-      .ec-demo-chip { border-radius: 9999px; border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.12); padding: .2rem .55rem; font-size: .65rem; }
-      .ec-product-hero { min-height: 20rem; }
-      .ec-product-hero--pro:hover { border-color: rgba(212,175,55,.75); box-shadow: 0 22px 54px rgba(212,175,55,.2); }
-      .ec-product-hero--pet:hover { border-color: rgba(74,222,128,.75); box-shadow: 0 22px 54px rgba(74,222,128,.22); }
+      :root {
+        --elite-gold: #d4af37;
+        --ink: #0f172a;
+        --muted: #64748b;
+        --surface: #ffffff;
+        --page-bg: #ffffff;
+        --space-xs: 0.35rem;
+        --space-sm: 0.65rem;
+        --space-md: 1.1rem;
+        --space-lg: 1.65rem;
+        --space-xl: 2.35rem;
+        --radius-card: 1.375rem;
+        --shadow-card: 0 14px 36px rgba(15, 23, 42, 0.09);
+        --shadow-card-hover: 0 22px 52px rgba(15, 23, 42, 0.16);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Poppins", system-ui, sans-serif;
+        color: var(--ink);
+        background: var(--page-bg);
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap {
+        max-width: 1320px;
+        margin: 0 auto;
+        padding: 0 clamp(1rem, 3vw, 1.5rem);
+      }
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        background: rgba(255, 255, 255, 0.92);
+        border-bottom: 1px solid rgba(15, 23, 42, 0.07);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+      .topbar-row {
+        min-height: 72px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        font-weight: 700;
+        font-size: 1.02rem;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+        text-decoration: none;
+      }
+      .brand-name {
+        background: linear-gradient(transparent calc(100% - 5px), rgba(212, 175, 55, 0.92) 5px);
+        padding-bottom: 2px;
+      }
+      .brand-badge {
+        width: 35px;
+        height: 35px;
+        border-radius: 9px;
+        border: 1px solid rgba(212, 175, 55, 0.42);
+        color: var(--elite-gold);
+        background: linear-gradient(152deg, #fffef8, #f3e8c4);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+      .top-links {
+        display: flex;
+        align-items: center;
+        gap: clamp(0.65rem, 2vw, 1.35rem);
+        flex-wrap: wrap;
+      }
+      .top-links a {
+        text-decoration: none;
+        color: var(--ink);
+        font-size: 0.94rem;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        padding: 0.2rem 0;
+        transition: color 0.18s ease;
+      }
+      .top-links a:not(.cta-login):hover {
+        color: #1d4ed8;
+      }
+      .cta-login {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        border: 1px solid rgba(212, 175, 55, 0.55);
+        border-radius: 11px;
+        padding: 0.62rem 1.05rem;
+        margin-left: 0.15rem;
+        background: linear-gradient(148deg, #0f172a 0%, #0a0a0a 100%);
+        color: #f8fafc !important;
+        font-size: 0.88rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        box-shadow:
+          0 6px 16px rgba(15, 23, 42, 0.22),
+          inset 0 1px 0 rgba(255, 248, 220, 0.12);
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+      }
+      .cta-login::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background: linear-gradient(
+          105deg,
+          transparent 0%,
+          transparent 38%,
+          rgba(255, 236, 179, 0.5) 50%,
+          transparent 62%,
+          transparent 100%
+        );
+        background-size: 220% 100%;
+        animation: ec-cta-shine 3.2s ease-in-out infinite;
+        pointer-events: none;
+        opacity: 0.55;
+      }
+      .cta-login > span {
+        position: relative;
+        z-index: 1;
+      }
+      @keyframes ec-cta-shine {
+        0%,
+        100% {
+          background-position: 160% 0;
+        }
+        50% {
+          background-position: -160% 0;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .cta-login::after {
+          animation: none;
+          opacity: 0.2;
+        }
+      }
+      .cta-login:hover {
+        transform: translateY(-1px);
+        box-shadow:
+          0 10px 22px rgba(15, 23, 42, 0.26),
+          0 0 24px rgba(212, 175, 55, 0.22);
+      }
+
+      .hero {
+        padding: var(--space-lg) 0 var(--space-sm);
+      }
+      .hero-grid {
+        display: grid;
+        gap: var(--space-md);
+        grid-template-columns: 1fr;
+      }
+      @media (min-width: 980px) {
+        .hero-grid {
+          grid-template-columns: 1fr 1fr;
+          gap: 1.125rem;
+          align-items: stretch;
+        }
+      }
+      .card {
+        border-radius: var(--radius-card);
+        min-height: 384px;
+        padding: 1.35rem 1.4rem 1.45rem;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: var(--shadow-card);
+        transition: transform 0.22s ease, box-shadow 0.22s ease;
+      }
+      .hero-card-inner {
+        display: flex;
+        flex-direction: column;
+        gap: 1.15rem;
+        flex: 1;
+        min-height: 0;
+      }
+      @media (min-width: 640px) {
+        .hero-card-inner {
+          flex-direction: row;
+          align-items: stretch;
+          gap: 1.25rem;
+        }
+        .hero-card-copy {
+          flex: 1;
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+        }
+        .hero-phone-aside {
+          flex-shrink: 0;
+          width: 148px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+      .hero-phone-aside {
+        margin-top: 0.25rem;
+      }
+      .hero-phone {
+        width: 100%;
+        max-width: 148px;
+        margin: 0 auto;
+        border-radius: 22px;
+        border: 2.5px solid #0f172a;
+        padding: 8px;
+        background: linear-gradient(165deg, #1e293b 0%, #0f172a 100%);
+        box-shadow: 0 14px 32px rgba(15, 23, 42, 0.28);
+      }
+      .hero-phone .hero-screen {
+        border-radius: 16px;
+        min-height: 198px;
+        padding: 0.72rem 0.65rem;
+        display: flex;
+        flex-direction: column;
+        color: #fff;
+      }
+      .hero-phone.elite-phone .hero-screen {
+        background: linear-gradient(152deg, #1a1a1a 0%, #2d2d2d 100%);
+        border: 1px solid rgba(212, 175, 55, 0.35);
+      }
+      .hero-phone.mascot-phone .hero-screen {
+        background: linear-gradient(135deg, #3b82f6 0%, #93c5fd 45%, #fcd34d 100%);
+        color: #0f172a;
+      }
+      .hero-screen-k {
+        margin: 0;
+        font-size: 0.5625rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        opacity: 0.85;
+      }
+      .hero-screen-n {
+        margin: 0.28rem 0 0;
+        font-size: 1.125rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.05;
+      }
+      .hero-screen-d {
+        margin: 0.32rem 0 0;
+        font-size: 0.625rem;
+        line-height: 1.35;
+        opacity: 0.88;
+      }
+      .hero-screen-chips {
+        margin-top: auto;
+        padding-top: 0.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.28rem;
+      }
+      .hero-chip {
+        font-size: 0.5rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.15rem 0.38rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        background: rgba(0, 0, 0, 0.12);
+      }
+      .hero-phone.mascot-phone .hero-chip {
+        border-color: rgba(15, 23, 42, 0.2);
+        background: rgba(255, 255, 255, 0.45);
+      }
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-card-hover);
+      }
+      .elite {
+        color: #f8fafc;
+        border: 1.5px solid rgba(212, 175, 55, 0.48);
+        background:
+          radial-gradient(ellipse 85% 55% at 88% 8%, rgba(212, 175, 55, 0.14), transparent 52%),
+          linear-gradient(168deg, #0a0a0a 0%, #141414 48%, #1c1c1c 100%);
+      }
+      .elite .kicker {
+        color: rgba(244, 208, 127, 0.95);
+      }
+      .mascot {
+        color: var(--ink);
+        border: 1.5px solid rgba(37, 99, 235, 0.38);
+        background:
+          radial-gradient(ellipse 80% 50% at 92% 6%, rgba(255, 210, 140, 0.55), transparent 42%),
+          linear-gradient(128deg, #8ec8ff 0%, #a8d4ff 36%, #ffe0a8 100%);
+      }
+      .mascot::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.175;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='84' viewBox='0 0 84 84'%3E%3Cg fill='%231e293b' fill-opacity='0.25'%3E%3Cpath d='M31 48c-4 2-8-2-6-6 2-3 7-2 6 6zm22 0c4 2 8-2 6-6-2-3-7-2-6 6z'/%3E%3Cellipse cx='42' cy='38' rx='14' ry='12'/%3E%3C/g%3E%3C/svg%3E");
+        background-size: 76px 76px;
+      }
+      .kicker {
+        margin: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-weight: 600;
+        font-size: 0.8125rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        opacity: 0.92;
+      }
+      .kicker i {
+        font-size: 0.88em;
+        opacity: 0.9;
+      }
+      .title {
+        margin: 0.55rem 0 0;
+        line-height: 1.04;
+        font-size: clamp(1.95rem, 3.85vw, 3.15rem);
+        font-weight: 800;
+        letter-spacing: -0.028em;
+        max-width: 14ch;
+      }
+      .mascot .title {
+        font-weight: 800;
+      }
+      .feature-list {
+        margin: 1.05rem 0 0;
+        padding: 0 0 0 1.2rem;
+        display: grid;
+        gap: 0.38rem;
+        font-size: 0.96875rem;
+        font-weight: 500;
+        line-height: 1.48;
+        flex: 1;
+      }
+      .elite .feature-list {
+        color: rgba(248, 250, 252, 0.88);
+      }
+      .elite .feature-list li::marker {
+        color: var(--elite-gold);
+      }
+      .mascot .feature-list {
+        color: rgba(15, 23, 42, 0.88);
+      }
+      .mascot .feature-list li::marker {
+        color: rgba(15, 23, 42, 0.55);
+      }
+      .btn {
+        margin-top: 1.2rem;
+        border-radius: 11px;
+        padding: 0.78rem 1.12rem;
+        font-size: 0.9375rem;
+        font-weight: 700;
+        letter-spacing: 0.015em;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        max-width: 17.5rem;
+        align-self: flex-start;
+        transition: filter 0.18s ease, transform 0.18s ease;
+      }
+      .btn:hover {
+        filter: brightness(1.04);
+        transform: translateY(-1px);
+      }
+      .btn-gold {
+        color: #0a0a0a;
+        background: linear-gradient(135deg, #fcefb8 0%, #e8c547 42%, #c9a132 100%);
+        box-shadow: 0 4px 14px rgba(201, 161, 50, 0.35);
+      }
+      .btn-blue {
+        color: #f8fafc;
+        background: linear-gradient(135deg, #1e40af 0%, #2563eb 52%, #3b82f6 100%);
+        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+      }
+
+      .below {
+        display: grid;
+        gap: var(--space-lg);
+        grid-template-columns: 1fr;
+        padding: var(--space-md) 0 var(--space-xl);
+      }
+      @media (min-width: 980px) {
+        .below {
+          grid-template-columns: 1fr 1fr;
+          gap: 2rem;
+          align-items: start;
+        }
+      }
+      .section-title {
+        margin: 0 0 0.75rem;
+        font-size: clamp(1.85rem, 2.85vw, 2.75rem);
+        line-height: 1.08;
+        font-weight: 800;
+        letter-spacing: -0.026em;
+      }
+      .section-title .section-title-soft {
+        font-weight: 500;
+        color: var(--muted);
+        font-size: 0.62em;
+        letter-spacing: 0;
+      }
+      .mb-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.52rem;
+      }
+      .mb-item {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        font-size: 1.0625rem;
+        line-height: 1.35;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+      .mb-item i {
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+        border-radius: 999px;
+        background: #e8eaed;
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        color: #64748b;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.05rem;
+      }
+      .promo-col {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+      }
+      .promo-head {
+        margin: 0 0 0.15rem;
+        font-size: clamp(1.65rem, 2.4vw, 2.1rem);
+        font-weight: 800;
+        letter-spacing: -0.024em;
+        line-height: 1.12;
+      }
+      .price-card {
+        border-radius: 15px;
+        border: 1px solid rgba(15, 23, 42, 0.1);
+        padding: 1.05rem 1.15rem 1.1rem;
+        background: var(--surface);
+        box-shadow: 0 8px 28px rgba(15, 23, 42, 0.07);
+      }
+      .price-headline {
+        margin: 0;
+        font-size: clamp(1.65rem, 2.2vw, 2rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.15;
+      }
+      .price-sub {
+        margin: 0.35rem 0 0;
+        font-size: 0.9375rem;
+        font-weight: 500;
+        line-height: 1.45;
+        color: var(--muted);
+      }
+      .rescate-title {
+        margin: 0.15rem 0 0.45rem;
+        font-size: clamp(1.45rem, 2vw, 1.85rem);
+        font-weight: 800;
+        letter-spacing: -0.022em;
+        line-height: 1.12;
+      }
+      .rescate-lead {
+        margin: 0;
+        font-size: 1.02rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+      .rescate-desc {
+        margin: 0.3rem 0 0;
+        font-size: 0.9375rem;
+        line-height: 1.45;
+        color: #475569;
+      }
+      .rescate-card {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+        border-radius: 16px;
+        border: 1px solid rgba(15, 23, 42, 0.1);
+        padding: 0;
+        overflow: hidden;
+        background: var(--surface);
+        box-shadow: 0 8px 28px rgba(15, 23, 42, 0.07);
+      }
+      @media (min-width: 520px) {
+        .rescate-card {
+          flex-direction: row;
+          align-items: stretch;
+        }
+      }
+      .rescate-card-photo {
+        flex-shrink: 0;
+        width: 100%;
+        min-height: 160px;
+        background: #e2e8f0 center/cover no-repeat;
+        background-image: url("https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=400&h=300&fit=crop&q=80");
+      }
+      @media (min-width: 520px) {
+        .rescate-card-photo {
+          width: min(42%, 200px);
+          min-height: auto;
+        }
+      }
+      .rescate-card-body {
+        padding: 1rem 1.1rem 1.05rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        flex: 1;
+        min-width: 0;
+      }
+      .rescate-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-bottom: 0.15rem;
+      }
+      .rescate-badge {
+        font-size: 0.625rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 0.28rem 0.55rem;
+        border-radius: 999px;
+        border: 1px solid rgba(212, 175, 55, 0.45);
+        color: #92400e;
+        background: linear-gradient(135deg, #fffbeb, #fde68a);
+      }
+      .rescate-badge--alt {
+        border-color: rgba(37, 99, 235, 0.35);
+        color: #1e3a8a;
+        background: linear-gradient(135deg, #eff6ff, #bfdbfe);
+      }
+      .rescate-long {
+        margin: 0;
+        font-size: 0.875rem;
+        line-height: 1.55;
+        color: #475569;
+      }
+
+      .sim-wrap {
+        margin-top: 0.15rem;
+        border-radius: 17px;
+        border: 1px solid rgba(15, 23, 42, 0.09);
+        padding: 1.15rem 1.2rem 1.25rem;
+        background: linear-gradient(172deg, #fafcfe 0%, #eef3fb 52%, #f5f8ff 100%);
+        box-shadow: 0 10px 32px rgba(15, 23, 42, 0.06);
+      }
+      .sim-title {
+        margin: 0;
+        font-size: 1.22rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      .sim-lead {
+        margin: 0.35rem 0 0;
+        max-width: 42rem;
+        font-size: 0.9375rem;
+        line-height: 1.5;
+        color: #475569;
+      }
+      .sim-row {
+        margin-top: 0.85rem;
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: 1fr;
+      }
+      @media (min-width: 840px) {
+        .sim-row {
+          grid-template-columns: 1fr minmax(220px, 248px);
+          align-items: start;
+        }
+      }
+      .sim-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+      }
+      .sim-label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #334155;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        margin-bottom: 0.28rem;
+      }
+      .sim-row input[type="text"] {
+        width: 100%;
+        border-radius: 10px;
+        border: 1px solid #c5d0e0;
+        padding: 0.64rem 0.78rem;
+        font: inherit;
+        font-size: 0.9375rem;
+        background: #fff;
+        transition: border-color 0.18s ease, box-shadow 0.18s ease;
+      }
+      .sim-row input[type="text"]:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+      }
+      .sim-row input[type="color"] {
+        width: 100%;
+        max-width: 4.5rem;
+        height: 2.5rem;
+        padding: 2px;
+        border-radius: 10px;
+        border: 1px solid #c5d0e0;
+        background: #fff;
+        cursor: pointer;
+      }
+      .phone {
+        border-radius: 28px;
+        border: 2.5px solid #0f172a;
+        padding: 11px;
+        background: linear-gradient(165deg, #1e293b 0%, #0f172a 100%);
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.22);
+      }
+      .screen {
+        border-radius: 20px;
+        min-height: 258px;
+        padding: 0.95rem 0.9rem;
+        color: #fff;
+        background: linear-gradient(148deg, var(--sim-accent, #2563eb) 0%, #1e3a5f 100%);
+        display: flex;
+        flex-direction: column;
+      }
+      .screen-kicker {
+        margin: 0;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        opacity: 0.88;
+      }
+      .screen-name {
+        margin: 0.4rem 0 0;
+        font-size: 1.75rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.05;
+      }
+      .screen-desc {
+        margin: 0.35rem 0 0;
+        font-size: 0.875rem;
+        line-height: 1.45;
+        opacity: 0.92;
+        max-width: 16rem;
+      }
+      .chip-row {
+        margin-top: auto;
+        padding-top: 0.75rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+      }
+      .chip {
+        border-radius: 9999px;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        padding: 0.22rem 0.58rem;
+        display: inline-flex;
+        gap: 0.32rem;
+        align-items: center;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        background: rgba(0, 0, 0, 0.12);
+      }
+      .page-foot-spacer {
+        height: 2rem;
+      }
     </style>
   </head>
-  <!-- Visor universal: Firestore usuarios/{id}. URL ?id=IDENTIFICADOR (también ?user= / ?uid=). Sin id → perfil por defecto (FIRESTORE_DEFAULT_CARD_UID o "perfil"). -->
-  <body class="luxury-body preloader-active min-h-[100dvh] font-light antialiased">
-    <section id="ec-landing-home" class="ec-landing-shell hidden">
-      <header class="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
-        <a href="index.html" class="text-[11px] font-medium uppercase tracking-[0.28em] text-[#d4af37]">EliteCard / MascotBook</a>
-        <a href="login.html" class="ec-landing-cta ec-landing-cta--ghost">Acceso Clientes</a>
-      </header>
-      <main class="mx-auto max-w-6xl px-6 pb-12 pt-8">
-        <section class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
-          <div>
-            <h1 class="max-w-3xl text-4xl font-semibold leading-tight text-white sm:text-5xl">MascotBook: la tarjeta emocional y segura para tu mascota.</h1>
-            <p class="mt-4 max-w-2xl text-base text-white/65">Perfil social, ficha médica, GPS de ayuda y diario de aventuras en una experiencia irresistible.</p>
-            <div class="mt-6 flex flex-wrap gap-3">
-              <input id="ec-demo-pet-name" type="text" class="rounded-full border border-white/20 bg-black/40 px-4 py-2.5 text-sm text-white placeholder:text-white/35" placeholder="Escribe el nombre de tu perro" />
-              <input id="ec-demo-pet-color" type="color" value="#5f6fff" class="h-11 w-14 cursor-pointer rounded-full border border-white/20 bg-black/35 p-1" />
-            </div>
-          </div>
-          <div class="flex justify-center">
-            <div class="ec-demo-phone">
-              <div id="ec-demo-screen" class="ec-demo-screen">
-                <p class="text-xs uppercase tracking-[0.18em] text-white/80">MascotBook Preview</p>
-                <h3 id="ec-demo-name" class="mt-2 text-2xl font-semibold text-white">Luna</h3>
-                <p class="mt-2 text-sm text-white/85">Hoy fuimos al parque y corrí detrás de una pelota gigante.</p>
-                <div class="mt-4 flex flex-wrap gap-2 text-white">
-                  <span class="ec-demo-chip">GPS Ayuda</span>
-                  <span class="ec-demo-chip">Ficha Médica</span>
-                  <span class="ec-demo-chip">Historia Emocional</span>
+  <body>
+    <header class="topbar">
+      <div class="wrap topbar-row">
+        <a class="brand" href="index.html"><span class="brand-badge">EC</span><span class="brand-name">EliteCard</span></a>
+        <nav class="top-links" aria-label="Navegación principal">
+          <a href="#elitecard">EliteCard</a>
+          <a href="#mascotbook">MascotBook</a>
+          <a href="#ayuda">Ayuda</a>
+          <a class="cta-login" href="login.html"><span>Login / Crear Cuenta</span></a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="hero" aria-label="Selector de productos" id="elitecard">
+        <div class="hero-grid">
+          <article class="card elite">
+            <div class="hero-card-inner">
+              <div class="hero-card-copy">
+                <p class="kicker"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> EliteCard (Business)</p>
+                <h1 class="title">Tu Ecosistema<br />Profesional<br />Unificado</h1>
+                <ul class="feature-list">
+                  <li>Tarjeta Personal Digital (NFC/QR)</li>
+                  <li>Analíticas en Tiempo Real</li>
+                  <li>Modo Profesional Estilizado</li>
+                </ul>
+                <a class="btn btn-gold" href="login.html?app=elitecard">Comenzar Gratis</a>
+              </div>
+              <div class="hero-phone-aside" aria-hidden="true">
+                <div class="hero-phone elite-phone">
+                  <div class="hero-screen">
+                    <p class="hero-screen-k">EliteCard</p>
+                    <p class="hero-screen-n">Pedro</p>
+                    <p class="hero-screen-d">Perfil listo para compartir con un toque.</p>
+                    <div class="hero-screen-chips">
+                      <span class="hero-chip">NFC</span>
+                      <span class="hero-chip">QR</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
-        <section class="mt-12 grid gap-6">
-          <article class="ec-landing-card ec-product-hero ec-product-hero--pro rounded-3xl p-8 sm:p-10">
-            <p class="text-[11px] uppercase tracking-[0.2em] text-[#d4af37]">EliteCard</p>
-            <h2 class="mt-3 text-3xl font-semibold text-white sm:text-4xl">Tarjeta Profesional de Alto Nivel</h2>
-            <p class="mt-3 max-w-3xl text-sm text-white/65 sm:text-base">Presencia ejecutiva, firma inteligente, QR y analíticas para convertir contactos en oportunidades reales.</p>
-            <div class="mt-7 flex flex-wrap gap-3">
-              <a href="login.html" class="ec-landing-cta ec-landing-cta--ghost">Ver más</a>
-              <button type="button" class="ec-landing-cta ec-landing-cta--gold" data-create-app="elitecard">Probar ahora</button>
+          </article>
+
+          <article class="card mascot" id="mascotbook">
+            <div class="hero-card-inner">
+              <div class="hero-card-copy">
+                <p class="kicker"><i class="fa-solid fa-paw" aria-hidden="true"></i> MascotBook (Pet Welfare)</p>
+                <h2 class="title">El Pasaporte<br />Digital de tu<br />Mejor Amigo</h2>
+                <ul class="feature-list">
+                  <li>Seguridad GPS y alertas de pérdida</li>
+                  <li>Ficha médica y salud proactiva</li>
+                  <li>QR único inmutable</li>
+                  <li>Modo alegre y compartible</li>
+                </ul>
+                <a class="btn btn-blue" href="login.html?app=mascotbook">Ver Planes de Cuidado</a>
+              </div>
+              <div class="hero-phone-aside" aria-hidden="true">
+                <div class="hero-phone mascot-phone">
+                  <div class="hero-screen">
+                    <p class="hero-screen-k">MascotBook</p>
+                    <p class="hero-screen-n">Max</p>
+                    <p class="hero-screen-d">Salud, historia y contacto en un solo escaneo.</p>
+                    <div class="hero-screen-chips">
+                      <span class="hero-chip">QR</span>
+                      <span class="hero-chip">Salud</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </article>
-          <article class="ec-landing-card ec-product-hero ec-product-hero--pet rounded-3xl p-8 sm:p-10">
-            <p class="text-[11px] uppercase tracking-[0.2em] text-emerald-300">MascotBook</p>
-            <h2 class="mt-3 text-3xl font-semibold text-white sm:text-4xl">MascotBook Alegre y Emocional</h2>
-            <p class="mt-3 max-w-3xl text-sm text-white/65 sm:text-base">Ficha médica, identificación, botones de contacto, historia y personalidad en un diseño vibrante y mobile-first.</p>
-            <div class="mt-7 flex flex-wrap gap-3">
-              <a href="login.html" class="ec-landing-cta ec-landing-cta--ghost">Ver más</a>
-              <button type="button" class="ec-landing-cta ec-landing-cta--gold" data-create-app="mascotbook">Probar ahora</button>
-            </div>
-          </article>
-        </section>
-        <section class="mt-12 rounded-3xl border border-emerald-300/20 bg-emerald-900/10 p-6 sm:p-8">
-          <h3 class="text-2xl font-semibold text-white">Todo lo que incluye MascotBook</h3>
-          <div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <article class="ec-landing-card rounded-2xl p-4"><p class="text-emerald-300"><i class="fa-solid fa-shield-dog"></i> Identificación inteligente</p><p class="mt-1 text-sm text-white/65">QR dinámico y datos clave del tutor siempre actualizados.</p></article>
-            <article class="ec-landing-card rounded-2xl p-4"><p class="text-emerald-300"><i class="fa-solid fa-notes-medical"></i> Ficha médica pro</p><p class="mt-1 text-sm text-white/65">Vacunas, estudios, alertas y pase veterinario público.</p></article>
-            <article class="ec-landing-card rounded-2xl p-4"><p class="text-emerald-300"><i class="fa-solid fa-location-dot"></i> Seguridad GPS</p><p class="mt-1 text-sm text-white/65">Si se pierde, facilita envío de ubicación por WhatsApp.</p></article>
-            <article class="ec-landing-card rounded-2xl p-4"><p class="text-emerald-300"><i class="fa-solid fa-phone-volume"></i> Botones de contacto</p><p class="mt-1 text-sm text-white/65">Contacto directo con la familia desde la tarjeta.</p></article>
-            <article class="ec-landing-card rounded-2xl p-4"><p class="text-emerald-300"><i class="fa-solid fa-book-open"></i> Historia emocional</p><p class="mt-1 text-sm text-white/65">Últimas aventuras y momentos que generan conexión.</p></article>
-            <article class="ec-landing-card rounded-2xl p-4"><p class="text-emerald-300"><i class="fa-solid fa-paw"></i> Personalidad y gustos</p><p class="mt-1 text-sm text-white/65">Rasgos únicos de tu mascota en formato social.</p></article>
-          </div>
-        </section>
-        <section class="mt-12 grid gap-5 lg:grid-cols-2">
-          <article class="ec-landing-card rounded-3xl p-6 sm:p-8">
-            <p class="text-[11px] uppercase tracking-[0.2em] text-[#d4af37]">Plan Profesional</p>
-            <h4 class="mt-3 text-3xl font-semibold text-white">$19.900</h4>
-            <p class="mt-2 text-sm text-white/65">EliteCard con diseño premium, firma y analíticas.</p>
-          </article>
-          <article class="ec-landing-card rounded-3xl border-2 border-emerald-300/45 bg-emerald-900/20 p-6 sm:p-8">
-            <p class="text-[11px] uppercase tracking-[0.2em] text-emerald-300">Plan MascotBook</p>
-            <h4 class="mt-3 text-4xl font-semibold text-white">$24.900</h4>
-            <p class="mt-2 text-sm text-white/75">La opción más elegida para seguridad, salud y vínculo emocional.</p>
-          </article>
-        </section>
-        <footer class="mt-12 rounded-3xl border border-white/10 bg-black/35 p-6 sm:p-8">
-          <h3 class="text-2xl font-semibold text-white">Preguntas Frecuentes</h3>
-          <div class="mt-4 grid gap-4 md:grid-cols-2">
-            <article><p class="font-medium text-white">¿Puedo cambiar de plan después?</p><p class="text-sm text-white/65">Sí, podés migrar entre EliteCard y MascotBook cuando quieras.</p></article>
-            <article><p class="font-medium text-white">¿Funciona desde el celular?</p><p class="text-sm text-white/65">Totalmente. Está optimizado para móvil y QR.</p></article>
-            <article><p class="font-medium text-white">¿La ficha médica es privada?</p><p class="text-sm text-white/65">Vos decidís qué mostrar públicamente y qué mantener interno.</p></article>
-            <article><p class="font-medium text-white">¿Necesito app instalada?</p><p class="text-sm text-white/65">No. Funciona web y también podés instalar como acceso directo.</p></article>
-          </div>
-        </footer>
-        <div class="mt-10 flex justify-center">
-          <button type="button" class="ec-landing-cta ec-landing-create text-sm sm:text-base px-8 py-4" data-create-app="mascotbook">Crear mi MascotBook ahora</button>
-          <a href="register.html" class="ml-3 ec-landing-cta ec-landing-cta--ghost text-sm sm:text-base px-8 py-4">Crear Cuenta</a>
         </div>
-      </main>
-    </section>
-    <!-- Splash: fondo negro + marca EliteCard en 3D hasta la primera respuesta de Firestore -->
-    <div id="preloader" aria-busy="true" aria-label="Cargando EliteCard">
-      <div class="preloader-scene">
-        <div class="preloader-y-spin">
-          <div class="preloader-x-float">
-            <div class="preloader-logo-wrap">
-              <img
-                id="preloader-logo-img"
-                class="preloader-logo-img"
-                src="icons/icon-192.png"
-                alt="EliteCard"
-                width="84"
-                height="84"
-                decoding="async"
-                fetchpriority="high"
-              />
-              <span class="preloader-shine" aria-hidden="true"></span>
+      </section>
+
+      <section class="below">
+        <div>
+          <h3 class="section-title">
+            MascotBook <span class="section-title-soft">(Pet Welfare)</span>
+          </h3>
+          <div class="mb-list">
+            <div class="mb-item"><i class="fa-solid fa-syringe" aria-hidden="true"></i> Ficha médica</div>
+            <div class="mb-item"><i class="fa-solid fa-id-card" aria-hidden="true"></i> Identificación</div>
+            <div class="mb-item"><i class="fa-solid fa-comment-dots" aria-hidden="true"></i> Botones contacto</div>
+            <div class="mb-item"><i class="fa-solid fa-file-lines" aria-hidden="true"></i> Historia/Personalidad</div>
+          </div>
+        </div>
+
+        <div class="promo-col">
+          <h3 class="promo-head">MascotBook Pro:</h3>
+          <div class="price-card">
+            <p class="price-headline">$24.900/año (Renovable)</p>
+            <p class="price-sub">Plan ideal para tutores que quieren seguridad completa.</p>
+          </div>
+          <h4 class="rescate-title">Plan Rescate</h4>
+          <div class="rescate-card" id="ayuda">
+            <div class="rescate-card-photo" role="img" aria-label="Mascota feliz"></div>
+            <div class="rescate-card-body">
+              <div class="rescate-badges">
+                <span class="rescate-badge">Premium</span>
+                <span class="rescate-badge rescate-badge--alt">Best choice</span>
+              </div>
+              <p class="rescate-lead">Sponsor de la comunidad EliteCard</p>
+              <p class="rescate-long">
+                Plan Rescate une a tutores y rescatistas: tu MascotBook Pro incluye alertas, ficha médica y QR inmutable para que cada
+                mascota tenga voz cuando más importa. Activá tu trial y desbloqueá el perfil completo; parte de tu suscripción apoya
+                campañas de adopción y microchip comunitario.
+              </p>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
 
-    <!-- Perfil inexistente, enlace inválido o error explícito (solo oculta la tarjeta) -->
-    <div
-      id="profile-not-found"
-      class="fixed inset-0 z-[9990] hidden min-h-[100dvh] flex-col items-center justify-center bg-[#050505] px-8 text-center"
-      role="alert"
-      aria-live="polite"
-    >
-      <div
-        class="ec-modal-elite-panel max-w-sm rounded-[1.35rem] px-8 py-10 text-left sm:text-center"
-      >
-        <p
-          class="mb-2 font-mono text-[0.65rem] font-medium uppercase tracking-[0.35em] text-[#d4af37]/95"
-        >
-          EliteCard
+      <section class="sim-wrap" aria-label="Simulador interactivo MascotBook">
+        <h4 class="sim-title">Simulador Interactivo</h4>
+        <p class="sim-lead">
+          Escribí el nombre de tu mascota y elegí color de acento para visualizar el estilo en vivo.
         </p>
-        <h1
-          id="profile-not-found-title"
-          class="text-xl font-medium tracking-tight text-[#ebe6dc] sm:text-2xl"
-        >
-          Perfil no encontrado
-        </h1>
-        <p
-          id="profile-not-found-desc"
-          class="mt-4 text-sm font-light leading-relaxed text-[#e0e0e0]/48"
-        >
-          Este enlace no corresponde a un perfil activo.
-        </p>
-      </div>
-      <a
-        class="webelite-credit mt-14"
-        href="https://webelite-app.vercel.app/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        EliteCard™ by <span class="webelite-credit-brand">WebElite Solutions</span>
-      </a>
-    </div>
-
-    <div
-      id="app-root"
-      class="ec-card-container app-shell ec-app-shell mx-auto flex min-h-[100dvh] w-full max-w-[min(100vw,56.25dvh)] flex-col"
-    >
-      <header class="flex flex-col items-center px-5 pb-5 pt-8 text-center">
-        <div class="avatar-led-wrap reveal-item reveal-d1 mb-6">
-          <div class="avatar-led-halo" aria-hidden="true"></div>
-          <div class="avatar-gold-ring">
-            <div class="avatar-inner">
-              <img
-                id="avatar-img"
-                class="avatar-photo"
-                src=""
-                alt=""
-                width="160"
-                height="200"
-                decoding="async"
-                referrerpolicy="no-referrer"
-              />
+        <div class="sim-row">
+          <div class="sim-fields">
+            <div>
+              <label class="sim-label" for="sim-name">Nombre de tu mascota</label>
+              <input id="sim-name" type="text" placeholder="Ej: Max" autocomplete="off" />
+            </div>
+            <div>
+              <label class="sim-label" for="sim-accent">Color de acento</label>
+              <input id="sim-accent" type="color" value="#2563eb" />
+            </div>
+          </div>
+          <div class="phone">
+            <div id="sim-screen" class="screen">
+              <p class="screen-kicker">MascotBook Preview</p>
+              <p id="sim-dog-name" class="screen-name">Max</p>
+              <p class="screen-desc">Perfil social, salud y contacto en segundos.</p>
+              <div class="chip-row">
+                <span class="chip"><i class="fa-solid fa-qrcode" aria-hidden="true"></i> QR Activo</span>
+                <span class="chip"><i class="fa-solid fa-heart-pulse" aria-hidden="true"></i> Salud</span>
+              </div>
             </div>
           </div>
         </div>
-        <h1
-          id="display-name"
-          class="led-name reveal-item reveal-d2 max-w-[20rem] px-1 text-lg font-medium leading-tight sm:text-[1.35rem]"
-        ></h1>
-        <p
-          id="display-role"
-          class="led-sub reveal-item reveal-d3 mt-2.5 max-w-[19rem]"
-        ></p>
-        <p
-          id="display-cargo-detalle"
-          class="led-sub reveal-item reveal-d4 mt-1 max-w-[19rem]"
-          hidden
-        ></p>
-        <p
-          id="display-org"
-          class="led-sub reveal-item reveal-d5 mt-1 max-w-[19rem]"
-          hidden
-        ></p>
-        <p
-          id="display-bio"
-          class="led-sub reveal-item reveal-d6 mt-4 hidden max-w-sm leading-relaxed"
-        ></p>
-      </header>
-
-      <!-- MascotBook: pestañas Contacto / Ficha médica (?view=pet, si el dueño habilita salud) -->
-      <div
-        id="ec-pet-tabbar"
-        class="ec-pet-tabbar hidden w-full max-w-[min(100vw,56.25dvh)] shrink-0 px-4 pb-2 pt-0"
-        role="tablist"
-        aria-label="Secciones de la mascota"
-      >
-        <div class="ec-pet-tabbar-inner flex gap-1 rounded-2xl border border-[#d4af37]/28 bg-black/50 p-1">
-          <button
-            type="button"
-            id="ec-pet-tab-contact"
-            class="ec-pet-tab ec-pet-tab--active flex-1 rounded-xl py-2.5 text-center text-[12px] font-medium tracking-wide text-[#ebe6dc]/80 transition"
-            role="tab"
-            aria-selected="true"
-          >
-            Contacto
-          </button>
-          <button
-            type="button"
-            id="ec-pet-tab-medical"
-            class="ec-pet-tab flex-1 rounded-xl py-2.5 text-center text-[12px] font-medium tracking-wide text-[#ebe6dc]/80 transition"
-            role="tab"
-            aria-selected="false"
-          >
-            Ficha médica
-          </button>
-        </div>
-      </div>
-
-      <div id="ec-pet-views-wrap" class="flex min-h-0 flex-1 flex-col">
-        <!-- Espacio inferior: footer fijo + safe area (sin bloque de captura de leads) -->
-        <main
-          class="links-stagger flex flex-1 flex-col gap-3 px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))]"
-          id="links-container"
-        ></main>
-        <section
-          id="ec-pet-panel-medical"
-          class="ec-ficha-medica-panel hidden flex-1 flex-col gap-4 overflow-y-auto px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))]"
-          aria-label="Ficha médica"
-          role="tabpanel"
-        ></section>
-      </div>
-
-      <div
-        class="webelite-credit-outer mx-auto w-full max-w-[min(100vw,56.25dvh)] shrink-0 px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-1 text-center"
-      >
-        <a
-          class="webelite-credit"
-          href="https://webelite-app.vercel.app/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          EliteCard™ by <span class="webelite-credit-brand">WebElite Solutions</span>
-        </a>
-      </div>
-
-      <div
-        id="ec-rescue-banner-a"
-        class="ec-rescue-banner hidden"
-        role="complementary"
-        aria-label="Plan rescate EliteCard — perfil profesional"
-      >
-        <a href="register.html" class="ec-rescue-banner-link">
-          Plan rescate · Opción A — Activá tu tarjeta profesional con EliteCard
-        </a>
-      </div>
-      <div
-        id="ec-rescue-banner-c"
-        class="ec-rescue-banner ec-rescue-banner--mascota hidden"
-        role="complementary"
-        aria-label="Plan rescate MascotBook"
-      >
-        <a href="register.html" class="ec-rescue-banner-link ec-rescue-banner-link--mascota">
-          Plan rescate · Opción C — Desbloqueá MascotBook y la ficha completa de tu mascota
-        </a>
-      </div>
-    </div>
-
-    <footer
-      class="footer-bar-light footer-reveal fixed bottom-0 left-0 right-0 z-[100] flex justify-center px-2 pb-[max(0.45rem,env(safe-area-inset-bottom))] pt-1.5"
-    >
-      <div
-        class="flex w-full max-w-[min(100vw,56.25dvh)] flex-col items-stretch"
-      >
-        <div
-          id="footer-seal-wrap"
-          class="footer-seal-wrap footer-seal-reveal mb-1.5 hidden-seal flex justify-center"
-        >
-          <div class="footer-seal-ring">
-            <img
-              id="footer-institutional-logo"
-              class="footer-seal-img"
-              src=""
-              alt=""
-              width="32"
-              height="32"
-              decoding="async"
-              referrerpolicy="no-referrer"
-            />
-          </div>
-        </div>
-        <div class="flex items-stretch justify-stretch gap-0">
-          <button
-            type="button"
-            id="btn-vcard"
-            class="ec-contact-button pill-action flex flex-1 items-center justify-center gap-2 border-r border-black/12 py-2.5"
-          >
-            <img
-              id="footer-avatar"
-              src=""
-              alt=""
-              class="footer-avatar-mini shrink-0"
-              width="22"
-              height="22"
-            />
-            <span class="footer-action-label">Guardar contacto</span>
-          </button>
-          <button
-            type="button"
-            id="btn-share"
-            class="ec-contact-button pill-action flex flex-1 items-center justify-center gap-2 py-2.5"
-          >
-            <i
-              class="fa-solid fa-qrcode footer-icon-gold text-base sm:text-lg"
-              aria-hidden="true"
-            ></i>
-            <span class="footer-action-label">Compartir</span>
-          </button>
-        </div>
-      </div>
-    </footer>
-
-    <div
-      id="toast"
-      class="ec-toast-elite pointer-events-none fixed bottom-24 left-1/2 z-30 hidden -translate-x-1/2 rounded-full px-4 py-2 text-xs shadow-lg"
-      role="status"
-    ></div>
-
-    <!-- Modal WhatsApp -->
-    <div
-      id="wa-modal"
-      class="ec-modal-elite-backdrop fixed inset-0 z-50 hidden items-end justify-center p-3 sm:items-center"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="wa-modal-title"
-    >
-      <div
-        class="ec-modal-elite-panel max-h-[90dvh] w-full max-w-md overflow-y-auto rounded-[1.35rem] p-5 shadow-2xl sm:p-6"
-      >
-        <div class="mb-4 flex items-start justify-between gap-2">
-          <h2 id="wa-modal-title" class="text-lg font-medium tracking-tight text-[#ebe6dc]">
-            Contactame por WhatsApp
-          </h2>
-          <button
-            type="button"
-            id="wa-modal-close"
-            class="rounded-xl p-2 text-[#e0e0e0]/45 transition hover:bg-white/5 hover:text-[#ebe6dc]"
-            aria-label="Cerrar"
-          >
-            <i class="fa-solid fa-xmark text-lg" aria-hidden="true"></i>
-          </button>
-        </div>
-        <p class="mb-4 text-xs font-light text-[#e0e0e0]/48">
-          Completá tus datos y se abrirá WhatsApp con el mensaje listo para enviar.
-        </p>
-        <div class="flex flex-col gap-3">
-          <label class="block">
-            <span class="mb-1 block text-[11px] font-medium uppercase tracking-wider text-[#d4af37]/85"
-              >Nombre</span
-            >
-            <input
-              id="wa-nombre"
-              type="text"
-              autocomplete="given-name"
-              class="ec-input-elite w-full rounded-xl px-3 py-2.5 text-sm placeholder:text-[#e0e0e0]/28 focus:border-[#25D366] focus:shadow-[0_0_0_1px_rgba(37,211,102,0.35)]"
-              placeholder="Nombre"
-            />
-          </label>
-          <label class="block">
-            <span class="mb-1 block text-[11px] font-medium uppercase tracking-wider text-[#d4af37]/85"
-              >Apellido</span
-            >
-            <input
-              id="wa-apellido"
-              type="text"
-              autocomplete="family-name"
-              class="ec-input-elite w-full rounded-xl px-3 py-2.5 text-sm placeholder:text-[#e0e0e0]/28 focus:border-[#25D366] focus:shadow-[0_0_0_1px_rgba(37,211,102,0.35)]"
-              placeholder="Apellido"
-            />
-          </label>
-          <label class="block">
-            <span class="mb-1 block text-[11px] font-medium uppercase tracking-wider text-[#d4af37]/85"
-              >Teléfono</span
-            >
-            <input
-              id="wa-telefono"
-              type="tel"
-              autocomplete="tel"
-              inputmode="tel"
-              class="ec-input-elite w-full rounded-xl px-3 py-2.5 text-sm placeholder:text-[#e0e0e0]/28 focus:border-[#25D366] focus:shadow-[0_0_0_1px_rgba(37,211,102,0.35)]"
-              placeholder="Tu número de contacto"
-            />
-          </label>
-          <label class="block">
-            <span class="mb-1 block text-[11px] font-medium uppercase tracking-wider text-[#d4af37]/85"
-              >Comentario</span
-            >
-            <textarea
-              id="wa-comentario"
-              rows="3"
-              class="ec-input-elite w-full resize-y rounded-xl px-3 py-2.5 text-sm placeholder:text-[#e0e0e0]/28 focus:border-[#25D366] focus:shadow-[0_0_0_1px_rgba(37,211,102,0.35)]"
-              placeholder="Escribí tu mensaje o consulta"
-            ></textarea>
-          </label>
-          <button
-            type="button"
-            id="wa-iniciar"
-            class="mt-2 flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] py-3.5 text-sm font-bold text-white transition hover:bg-[#20bd5a]"
-          >
-            <i class="fa-brands fa-whatsapp text-lg" aria-hidden="true"></i>
-            Iniciar WhatsApp
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Fuerza generación de utilidades usadas solo desde JS (Tailwind CDN) -->
-    <span
-      class="hidden bg-[#25D366] bg-[#EA4335] bg-[#0A66C2] bg-[#34A853] bg-gradient-to-br from-[#f58529] via-[#dd2a7b] to-[#8134af] ring-2 ring-amber-500/40"
-      aria-hidden="true"
-    ></span>
-
-    <!-- Modal Calendly (embed) -->
-    <div
-      id="cal-modal"
-      class="ec-modal-elite-backdrop fixed inset-0 z-50 hidden items-end justify-center p-3 sm:items-center"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="cal-modal-title"
-    >
-      <div
-        class="cal-modal-panel ec-modal-elite-panel flex max-h-[92dvh] w-full max-w-lg flex-col overflow-hidden rounded-[1.35rem] shadow-2xl"
-      >
-        <div
-          class="flex shrink-0 items-center justify-between gap-2 border-b border-white/[0.08] px-4 py-3"
-        >
-          <h2 id="cal-modal-title" class="text-base font-medium tracking-tight text-[#ebe6dc]">
-            Agendar cita
-          </h2>
-          <button
-            type="button"
-            id="cal-modal-close"
-            class="rounded-xl p-2 text-[#e0e0e0]/45 transition hover:bg-white/5 hover:text-[#ebe6dc]"
-            aria-label="Cerrar"
-          >
-            <i class="fa-solid fa-xmark text-lg" aria-hidden="true"></i>
-          </button>
-        </div>
-        <div class="min-h-0 flex-1 bg-[#050505] p-2">
-          <iframe
-            id="cal-iframe"
-            src="about:blank"
-            class="h-[min(70dvh,32rem)] w-full rounded-xl border border-white/10 bg-white"
-            title="Calendly"
-            loading="lazy"
-          ></iframe>
-        </div>
-      </div>
-    </div>
-
-    <!-- Mascota perdida: ofrecer ubicación al visitante -->
-    <div
-      id="ec-lost-pet-geo-modal"
-      class="ec-modal-elite-backdrop fixed inset-0 z-[160] hidden items-end justify-center bg-black/75 p-3 backdrop-blur-sm sm:items-center"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="ec-lost-pet-geo-title"
-    >
-      <div
-        class="ec-lost-pet-geo-panel ec-modal-elite-panel flex max-w-md flex-col gap-4 rounded-[1.35rem] border border-red-500/35 bg-[#1a0a0a] p-5 shadow-2xl"
-      >
-        <div class="flex items-start justify-between gap-3">
-          <h2 id="ec-lost-pet-geo-title" class="text-base font-medium tracking-tight text-red-100">
-            ¿Ayudás a encontrar a esta mascota?
-          </h2>
-          <button
-            type="button"
-            id="ec-lost-pet-geo-close"
-            class="shrink-0 rounded-xl p-2 text-red-200/60 transition hover:bg-white/5 hover:text-red-100"
-            aria-label="Cerrar"
-          >
-            <i class="fa-solid fa-xmark text-lg" aria-hidden="true"></i>
-          </button>
-        </div>
-        <p id="ec-lost-pet-geo-sub" class="text-sm font-light leading-relaxed text-red-100/80">
-          Si aceptás, podés compartir tu ubicación aproximada con quien cuida a la mascota por WhatsApp.
-        </p>
-        <div class="flex flex-col gap-2 sm:flex-row sm:justify-end">
-          <button
-            type="button"
-            id="ec-lost-pet-geo-decline"
-            class="rounded-full border border-white/15 px-4 py-3 text-xs font-medium uppercase tracking-[0.12em] text-white/70 transition hover:bg-white/5"
-          >
-            Ahora no
-          </button>
-          <button
-            type="button"
-            id="ec-lost-pet-geo-accept"
-            class="rounded-full bg-red-600 px-4 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-red-500"
-          >
-            Compartir ubicación
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Lightbox estudios / rayos X (MascotBook) -->
-    <div
-      id="ec-pet-study-lightbox"
-      class="ec-pet-study-lightbox fixed inset-0 z-[170] hidden flex items-center justify-center bg-black/92 p-3 backdrop-blur-md"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Vista ampliada del estudio"
-    >
-      <button
-        type="button"
-        id="ec-pet-study-lightbox-close"
-        class="ec-pet-study-lightbox-close absolute right-3 top-3 z-10 rounded-xl p-3 text-[#ebe6dc]/70 transition hover:bg-white/10 hover:text-[#ebe6dc]"
-        aria-label="Cerrar"
-      >
-        <i class="fa-solid fa-xmark text-xl" aria-hidden="true"></i>
-      </button>
-      <div class="ec-pet-study-lightbox-frame max-h-[min(92dvh,92vw)] max-w-full overflow-hidden rounded-lg border border-[#d4af37]/35 shadow-[0_0_48px_rgba(212,175,55,0.12)]">
-        <img
-          id="ec-pet-study-lightbox-img"
-          src=""
-          alt="Estudio médico ampliado"
-          class="max-h-[min(92dvh,92vw)] w-auto max-w-full object-contain"
-          decoding="async"
-          referrerpolicy="no-referrer"
-        />
-      </div>
-    </div>
+      </section>
+      <div class="page-foot-spacer" aria-hidden="true"></div>
+    </main>
 
     <script>
       (function () {
-        var t = window.__EC_PAGE_LOAD_TS || Date.now();
-        document.write('<script src="firebase-config.js?v=' + t + '"><\/script>');
-        document.write('<script src="config.js?v=' + t + '"><\/script>');
-      })();
-    </script>
-    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-    <script>
-      (function () {
-        if (!window.__EC_IS_PROFILE_VIEW) return;
-        var t = window.__EC_PAGE_LOAD_TS || Date.now();
-        document.write('<script src="card-app.js?v=' + t + '"><\/script>');
-      })();
-    </script>
-    <script>
-(function() {
-  if (!window.__EC_IS_PROFILE_VIEW) return;
-  // Banner instalación PWA — Chrome Android
-  var deferredPrompt = null;
-  var installBanner = null;
-  var appMode = "elitecard";
-  try {
-    var q = new URLSearchParams(window.location.search);
-    var v = String(q.get("view") || "").toLowerCase();
-    if (v === "pet" || v === "mascota" || v === "mascotbook") appMode = "mascotbook";
-  } catch(e0) {}
-  var dismissKey = "ec-install-dismissed-" + appMode;
-
-  function createInstallBanner() {
-    if (installBanner) return;
-    installBanner = document.createElement("div");
-    installBanner.id = "pwa-install-banner";
-    installBanner.setAttribute("role", "banner");
-    installBanner.style.cssText = [
-      "position:fixed",
-      "bottom:calc(5.5rem + env(safe-area-inset-bottom))",
-      "left:50%",
-      "transform:translateX(-50%)",
-      "z-index:9999",
-      "display:flex",
-      "align-items:center",
-      "gap:10px",
-      "background:rgba(18,18,18,0.97)",
-      "border:1px solid rgba(212,175,55,0.45)",
-      "border-radius:9999px",
-      "padding:10px 18px 10px 14px",
-      "box-shadow:0 8px 32px rgba(0,0,0,0.55)",
-      "backdrop-filter:blur(16px)",
-      "-webkit-backdrop-filter:blur(16px)",
-      "cursor:pointer",
-      "user-select:none",
-      "max-width:calc(100vw - 2rem)",
-      "animation:ec-banner-in .35s cubic-bezier(.22,1,.36,1)"
-    ].join(";");
-
-    var style = document.createElement("style");
-    style.textContent = [
-      "@keyframes ec-banner-in{from{opacity:0;transform:translateX(-50%) translateY(12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}",
-      "@media(prefers-reduced-motion:reduce){#pwa-install-banner{animation:none}}"
-    ].join("");
-    document.head.appendChild(style);
-
-    var icon = document.createElement("img");
-    icon.src = appMode === "mascotbook" ? "icons/icon-512.png" : "icons/icon-192.png";
-    icon.width = 28;
-    icon.height = 28;
-    icon.style.cssText = "border-radius:6px;flex-shrink:0";
-    icon.alt = "";
-
-    var text = document.createElement("span");
-    text.style.cssText = "font-size:13px;font-weight:300;color:#e0e0e0;letter-spacing:0.02em;white-space:nowrap";
-    text.textContent = appMode === "mascotbook" ? "Instalá MascotBook" : "Instalá EliteCard";
-
-    var btn = document.createElement("span");
-    btn.style.cssText = [
-      "font-size:11px",
-      "font-weight:600",
-      "letter-spacing:0.1em",
-      "text-transform:uppercase",
-      "color:#0a0a0a",
-      "background:linear-gradient(135deg,#c9a132,#d4af37 50%,#e8c547)",
-      "border-radius:9999px",
-      "padding:5px 12px",
-      "flex-shrink:0",
-      "margin-left:4px"
-    ].join(";");
-    btn.textContent = "Instalar";
-
-    var close = document.createElement("button");
-    close.type = "button";
-    close.setAttribute("aria-label", "Cerrar");
-    close.style.cssText = "background:none;border:none;color:rgba(224,224,224,0.4);font-size:16px;line-height:1;padding:0 0 0 4px;cursor:pointer;flex-shrink:0";
-    close.textContent = "✕";
-
-    installBanner.appendChild(icon);
-    installBanner.appendChild(text);
-    installBanner.appendChild(btn);
-    installBanner.appendChild(close);
-    document.body.appendChild(installBanner);
-
-    // Click en el banner (excepto el X) → disparar prompt
-    installBanner.addEventListener("click", function(e) {
-      if (e.target === close) return;
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(function() {
-        deferredPrompt = null;
-        removeInstallBanner();
-      });
-    });
-
-    // Click en X → cerrar sin instalar
-    close.addEventListener("click", function(e) {
-      e.stopPropagation();
-      removeInstallBanner();
-      // No volvemos a mostrar en esta sesión
-      try { sessionStorage.setItem(dismissKey, "1"); } catch(e2) {}
-    });
-  }
-
-  function removeInstallBanner() {
-    if (!installBanner) return;
-    installBanner.style.opacity = "0";
-    installBanner.style.transition = "opacity .25s";
-    setTimeout(function() {
-      if (installBanner && installBanner.parentNode) {
-        installBanner.parentNode.removeChild(installBanner);
-      }
-      installBanner = null;
-    }, 280);
-  }
-
-  // No mostrar si ya fue descartado en esta sesión
-  try {
-    if (sessionStorage.getItem(dismissKey)) return;
-  } catch(e3) {}
-
-  window.addEventListener("beforeinstallprompt", function(e) {
-    e.preventDefault();
-    deferredPrompt = e;
-    // Mostrar el banner 2s después de que cargó la tarjeta
-    setTimeout(createInstallBanner, 2000);
-  });
-
-  // Ocultar si ya instaló
-  window.addEventListener("appinstalled", function() {
-    deferredPrompt = null;
-    removeInstallBanner();
-  });
-})();
-    </script>
-    <script>
-      (function () {
-        if (window.__EC_IS_PROFILE_VIEW) return;
-        document.body.classList.remove("preloader-active");
-        var ids = [
-          "preloader",
-          "profile-not-found",
-          "app-root",
-          "wa-modal",
-          "cal-modal",
-          "ec-lost-pet-geo-modal",
-          "ec-pet-study-lightbox",
-          "toast",
-        ];
-        ids.forEach(function (id) {
-          var el = document.getElementById(id);
-          if (el) el.classList.add("hidden");
-        });
-        var landing = document.getElementById("ec-landing-home");
-        if (landing) landing.classList.remove("hidden");
-        var demoNameInput = document.getElementById("ec-demo-pet-name");
-        var demoColorInput = document.getElementById("ec-demo-pet-color");
-        var demoName = document.getElementById("ec-demo-name");
-        var demoScreen = document.getElementById("ec-demo-screen");
-        function syncDemo() {
-          if (demoName) demoName.textContent = (demoNameInput && demoNameInput.value.trim()) || "Luna";
-          if (demoScreen && demoColorInput) demoScreen.style.setProperty("--demo-accent", demoColorInput.value || "#5f6fff");
+        var inputName = document.getElementById("sim-name");
+        var inputAccent = document.getElementById("sim-accent");
+        var dog = document.getElementById("sim-dog-name");
+        var screen = document.getElementById("sim-screen");
+        function sync() {
+          if (dog) dog.textContent = (inputName && inputName.value.trim()) || "Max";
+          if (screen && inputAccent) screen.style.setProperty("--sim-accent", inputAccent.value || "#2563eb");
         }
-        if (demoNameInput) demoNameInput.addEventListener("input", syncDemo);
-        if (demoColorInput) demoColorInput.addEventListener("input", syncDemo);
-        syncDemo();
-
-        var cfg = window.FIREBASE_WEB_CONFIG;
-        if (!cfg || !cfg.apiKey || String(cfg.apiKey).indexOf("REEMPLAZAR") !== -1) return;
-        try { firebase.initializeApp(cfg); } catch (e) {}
-        var auth = firebase.auth();
-        document.querySelectorAll("[data-create-app]").forEach(function (btn) {
-          btn.addEventListener("click", function () {
-            var app = btn.getAttribute("data-create-app") === "mascotbook" ? "mascotbook" : "elitecard";
-            auth.onAuthStateChanged(function (u) {
-              if (u) {
-                try { localStorage.setItem("ec_current_app", app); } catch (e1) {}
-                window.location.href = "selector-producto.html";
-                return;
-              }
-              window.location.href = "register.html?intent=create&app=" + encodeURIComponent(app);
-            });
-          });
-        });
+        if (inputName) inputName.addEventListener("input", sync);
+        if (inputAccent) inputAccent.addEventListener("input", sync);
+        sync();
       })();
     </script>
   </body>

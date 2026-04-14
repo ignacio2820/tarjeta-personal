@@ -207,6 +207,13 @@
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
     <script>
       (function () {
+        try {
+          var q = new URLSearchParams(window.location.search);
+          var ap = q.get("app");
+          var loginA = document.querySelector('a[href="login.html"]');
+          if (loginA && ap) loginA.href = "login.html?app=" + encodeURIComponent(ap);
+        } catch (eLink) {}
+
         function showErr(msg) {
           var el = document.getElementById("register-error");
           if (!el) return;
@@ -269,22 +276,34 @@
             .then(function (cred) {
               var user = cred.user;
               var col = usersCollection();
+              var initialApp = "elitecard";
+              try {
+                var q = new URLSearchParams(window.location.search);
+                var a = String(q.get("app") || "").trim().toLowerCase();
+                if (a === "mascotbook") initialApp = "mascotbook";
+              } catch (eApp) {}
+              var doc = {
+                plan_status: "trial",
+                fecha_registro: firebase.firestore.FieldValue.serverTimestamp(),
+                email: user.email || email,
+                role: "user",
+              };
+              if (initialApp === "mascotbook") {
+                doc.mascotbook_status = "trial";
+                doc.elitecard_status = "inactive";
+              } else {
+                doc.elitecard_status = "trial";
+                doc.mascotbook_status = "inactive";
+              }
               return db
                 .collection(col)
                 .doc(user.uid)
-                .set(
-                  {
-                    plan_status: "trial",
-                    elitecard_status: "trial",
-                    mascotbook_status: "trial",
-                    fecha_registro: firebase.firestore.FieldValue.serverTimestamp(),
-                    email: user.email || email,
-                    role: "user",
-                  },
-                  { merge: true }
-                )
+                .set(doc, { merge: true })
                 .then(function () {
-                  window.location.href = "selector-producto.html";
+                  try {
+                    localStorage.setItem("ec_current_app", initialApp);
+                  } catch (eLs) {}
+                  window.location.href = "admin.html";
                 })
                 .catch(function (fsErr) {
                   return auth.signOut().then(function () {

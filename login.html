@@ -44,7 +44,7 @@
       <section class="glass w-full rounded-[1.4rem] p-8">
         <p class="text-[11px] uppercase tracking-[0.28em] text-[#d4af37]">EliteCard</p>
         <h1 class="mt-3 text-3xl font-light text-white">Iniciar sesión</h1>
-        <p class="mt-2 text-sm text-white/55">Accedé a tu dashboard y elegí qué producto gestionar.</p>
+        <p class="mt-2 text-sm text-white/55">Accedé al panel Cameleon para gestionar EliteCard o MascotBook.</p>
         <form id="login-form" class="mt-6 space-y-3">
           <input id="email" type="email" class="in" placeholder="Email" required />
           <input id="password" type="password" class="in" placeholder="Contraseña" required />
@@ -59,7 +59,7 @@
         </form>
         <p class="mt-5 text-center text-sm text-white/60">
           ¿Sin cuenta?
-          <a href="register.html" class="text-[#d4af37]">Crear cuenta</a>
+          <a id="link-register" href="register.html" class="text-[#d4af37]">Crear cuenta</a>
         </p>
       </section>
     </main>
@@ -68,15 +68,47 @@
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
     <script>
       (function () {
+        function normalizeApp(a) {
+          var v = String(a || "").trim().toLowerCase();
+          return v === "mascotbook" ? "mascotbook" : "elitecard";
+        }
+        function getNextHref() {
+          try {
+            var q = new URLSearchParams(window.location.search);
+            var n = q.get("next");
+            if (n && n.indexOf("://") === -1 && n.indexOf("//") === -1) return n;
+          } catch (e) {}
+          return "admin.html";
+        }
+        function readAppHint() {
+          try {
+            var q = new URLSearchParams(window.location.search);
+            return normalizeApp(q.get("app"));
+          } catch (e2) {
+            return "elitecard";
+          }
+        }
+        var reg = document.getElementById("link-register");
+        if (reg) {
+          try {
+            var app = readAppHint();
+            reg.href = "register.html?app=" + encodeURIComponent(app);
+          } catch (e3) {}
+        }
+
         var cfg = window.FIREBASE_WEB_CONFIG;
         if (!cfg || !cfg.apiKey || String(cfg.apiKey).indexOf("REEMPLAZAR") !== -1) return;
         try {
           firebase.initializeApp(cfg);
-        } catch (e) {}
+        } catch (e4) {}
         var auth = firebase.auth();
         auth.onAuthStateChanged(function (u) {
-          if (u) window.location.replace("selector-producto.html");
+          if (u) window.location.replace(getNextHref());
         });
+        try {
+          var ah = readAppHint();
+          localStorage.setItem("ec_current_app", ah);
+        } catch (e5) {}
         var form = document.getElementById("login-form");
         var err = document.getElementById("err");
         var btn = document.getElementById("btn-login");
@@ -90,7 +122,7 @@
               document.getElementById("password").value || ""
             )
             .then(function () {
-              window.location.href = "selector-producto.html";
+              window.location.href = getNextHref();
             })
             .catch(function (ex) {
               err.textContent = (ex && ex.message) || "No se pudo iniciar sesión.";

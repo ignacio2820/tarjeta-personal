@@ -1366,6 +1366,7 @@ html:has(.ec-pet-mode) body {
   color: #ebe6dc;
 }
 
+#app-root.ec-pet-mode.theme-organic,
 #app-root.ec-pet-mode.theme-park {
   --ec-pet-card: #fffde8;
   --ec-pet-text: #123b2f;
@@ -1380,15 +1381,50 @@ html:has(.ec-pet-mode) body {
   --ec-pet-accent: #ff5fb2;
 }
 
+#app-root.ec-pet-mode.theme-night {
+  --ec-pet-card: #111a33;
+  --ec-pet-text: #dbeafe;
+  --ec-pet-muted: #a3b4d8;
+  --ec-pet-accent: #60a5fa;
+  --ec-pet-shadow: 0 16px 34px rgba(3, 7, 18, 0.52);
+}
+
+#app-root.ec-pet-mode.theme-glass {
+  --ec-pet-card: rgba(255, 255, 255, 0.68);
+  --ec-pet-text: #1f2a44;
+  --ec-pet-muted: #4d5d7a;
+  --ec-pet-accent: #5b8cff;
+}
+
+#app-root.ec-pet-mode.theme-organic .ec-pet-hero-photo-wrap,
 #app-root.ec-pet-mode.theme-park .ec-pet-hero-photo-wrap,
 #app-root.ec-pet-mode.theme-candy .ec-pet-hero-photo-wrap {
   border-radius: 1.3rem;
   border: 2px solid color-mix(in oklab, var(--ec-pet-accent), white 62%);
 }
 
+#app-root.ec-pet-mode.theme-organic .ec-pet-social-feed,
 #app-root.ec-pet-mode.theme-park .ec-pet-social-feed,
 #app-root.ec-pet-mode.theme-candy .ec-pet-social-feed {
   gap: 1rem;
+}
+
+#app-root.ec-pet-mode.theme-night .ec-pet-social-card {
+  border-color: rgba(96, 165, 250, 0.35);
+  background: rgba(15, 23, 42, 0.9);
+}
+
+#app-root.ec-pet-mode.theme-night .ec-pet-social-text,
+#app-root.ec-pet-mode.theme-night .ec-pet-care-list p,
+#app-root.ec-pet-mode.theme-night .ec-pet-care-list strong {
+  color: #dbeafe;
+}
+
+#app-root.ec-pet-mode.theme-glass .ec-pet-social-card {
+  background: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(11px);
+  -webkit-backdrop-filter: blur(11px);
+  border-color: rgba(91, 140, 255, 0.28);
 }
 
 #app-root.ec-pet-mode.pet-relief .ec-pet-social-card {
@@ -1396,4 +1432,52 @@ html:has(.ec-pet-mode) body {
     10px 10px 24px rgba(15, 23, 42, 0.12),
     -10px -10px 24px rgba(255, 255, 255, 0.75),
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* MascotBook — texturas de fondo (selector público) */
+.ec-pet-bg-toolbar .ec-pet-bg-btn.ec-pet-bg-btn--on {
+  border-color: rgba(34, 211, 238, 0.75);
+  background: rgba(255, 255, 255, 0.22);
+}
+
+#app-root.ec-pet-bg-burbujas.ec-pet-mode::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  background-image: radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.55) 0 7px, transparent 8px),
+    radial-gradient(circle at 38% 42%, rgba(255, 255, 255, 0.35) 0 5px, transparent 6px),
+    radial-gradient(circle at 72% 22%, rgba(255, 255, 255, 0.4) 0 6px, transparent 7px),
+    radial-gradient(circle at 55% 68%, rgba(255, 255, 255, 0.3) 0 4px, transparent 5px);
+  background-size: 120px 120px;
+}
+
+#app-root.ec-pet-bg-huellas.ec-pet-mode::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.22;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='%231f2937' fill-opacity='0.12'%3E%3Cpath d='M22 46c-3 2-7-2-5-5 2-2 6-2 5 5zm20 0c3 2 7-2 5-5-2-2-6-2-5 5z'/%3E%3Cellipse cx='36' cy='36' rx='11' ry='9'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 72px 72px;
+}
+
+#app-root.ec-pet-bg-glass.ec-pet-mode::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.42) 0%, transparent 42%),
+    linear-gradient(315deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+  backdrop-filter: blur(0.5px);
+}
+
+#app-root.ec-pet-mode > * {
+  position: relative;
+  z-index: 1;
 }

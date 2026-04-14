@@ -51,15 +51,17 @@
     if (!rawDoc || typeof rawDoc !== "object") return baseCfg;
     var m = rawDoc;
     var out = Object.assign({}, baseCfg);
-    var nom = String(m.mascotaNombre || "").trim();
+    var nom = String(m.pet_nombre || m.mascotaNombre || "").trim();
     if (nom) out.nombreCompleto = nom;
-    var cg = String(m.mascotaCargo || "").trim();
+    var raza = String(m.pet_raza || "").trim();
+    var colorTxt = String(m.pet_color || "").trim();
+    var cg = raza ? (colorTxt ? raza + " · " + colorTxt : raza) : String(m.mascotaCargo || "").trim();
     if (cg) out.cargo = cg;
-    var bio = String(m.mascotaBio || "").trim();
+    var bio = String(m.pet_senas || m.mascotaBio || "").trim();
     if (bio) out.bio = bio;
     var tel = String(m.mascotaTelefono || "").trim();
     out.telefono = tel;
-    out.whatsappNumero = onlyDigits(m.mascotaWhatsapp);
+    out.whatsappNumero = onlyDigits(m.pet_whatsapp || m.mascotaWhatsapp);
     out.instagram = igUrlPet(m.mascotaInstagram);
     out.email = "";
     out.emailInstitucional = "";
@@ -71,13 +73,14 @@
     out.empresa = "";
     out.cargoDetalle = "";
     out.logoUrl = "";
-    var mf = String(m.mascotaFotoUrl || "").trim();
+    var mf = String(m.pet_fotoUrl || m.mascotaFotoUrl || "").trim();
     if (mf) {
       out.fotoUrl = mf;
       out.photoURL = mf;
     }
-    out.mascotaGenero = String(m.mascotaGenero || "").trim().toLowerCase();
-    out.mascotaTemaVisual = String(m.mascotaTemaVisual || "").trim().toLowerCase();
+    out.mascotaGenero = String(m.pet_sexo || m.mascotaGenero || "").trim().toLowerCase();
+    out.currentTemplate = String(m.currentTemplate || m.mascotaTemaVisual || "").trim().toLowerCase();
+    out.mascotaTemaVisual = out.currentTemplate;
     out.mascotaColorAcento = String(m.mascotaColorAcento || "").trim();
     out.mascotaEfectoRelieve = !!m.mascotaEfectoRelieve;
     return out;
@@ -103,8 +106,8 @@
     modal.classList.remove("hidden");
     modal.classList.add("flex");
     modal.setAttribute("data-ec-geo-key", storageKey || "");
-    modal.setAttribute("data-ec-owner-wa", onlyDigits(rawData.mascotaWhatsapp));
-    var petName = String(rawData.mascotaNombre || "").trim() || "esta mascota";
+    modal.setAttribute("data-ec-owner-wa", onlyDigits(rawData.pet_whatsapp || rawData.mascotaWhatsapp));
+    var petName = String(rawData.pet_nombre || rawData.mascotaNombre || "").trim() || "esta mascota";
     var sub = document.getElementById("ec-lost-pet-geo-sub");
     if (sub) sub.textContent = "Si aceptás, enviaremos tu ubicación a quien cuida a " + petName + " por WhatsApp.";
   }
@@ -112,7 +115,7 @@
   function scheduleLostPetGeoPrompt(rawData) {
     if (!rawData || !window.__ecPublicViewPet || !rawData.mascotaPerdida) return;
     if (isPublicCardAdminPreview()) return;
-    var wa = onlyDigits(rawData.mascotaWhatsapp);
+    var wa = onlyDigits(rawData.pet_whatsapp || rawData.mascotaWhatsapp);
     if (!wa) return;
     var uid = String(window.__tarjetaPublicDocId || "");
     var key = "ec_lost_geo_dismissed_" + uid;
@@ -715,7 +718,7 @@
   }
 
   function readPetGustos(raw) {
-    var txt = String((raw && raw.mascotaGustos) || "").trim();
+    var txt = String((raw && (raw.pet_gustos || raw.mascotaGustos)) || "").trim();
     if (!txt) return [];
     return txt
       .split(",")
@@ -728,15 +731,15 @@
 
   function renderPetSocialFeed(container) {
     var raw = window.__ecPetFirestoreRaw || {};
-    var petName = String(raw.mascotaNombre || cfg.nombreCompleto || "mi mascota").trim();
-    var generoRaw = String(raw.mascotaGenero || cfg.mascotaGenero || "").trim().toLowerCase();
+    var petName = String(raw.pet_nombre || raw.mascotaNombre || cfg.nombreCompleto || "mi mascota").trim();
+    var generoRaw = String(raw.pet_sexo || raw.mascotaGenero || cfg.mascotaGenero || "").trim().toLowerCase();
     var genero = generoRaw === "hembra" ? "Hembra" : "Macho";
-    var wa = onlyDigits(raw.mascotaWhatsapp || cfg.whatsappNumero || "");
+    var wa = onlyDigits(raw.pet_whatsapp || raw.mascotaWhatsapp || cfg.whatsappNumero || "");
     var gustos = readPetGustos(raw);
     var momentos = mergeStudyUrlsForDisplay(raw).slice(0, 9);
-    var heroFoto = String(raw.mascotaFotoUrl || cfg.fotoUrl || cfg.photoURL || "").trim();
+    var heroFoto = String(raw.pet_fotoUrl || raw.mascotaFotoUrl || cfg.fotoUrl || cfg.photoURL || "").trim();
     var aventura = String(raw.mascotaUltimaAventura || "").trim();
-    var queCome = String(raw.mascotaQueCome || "").trim();
+    var queCome = String(raw.pet_que_come || raw.mascotaQueCome || "").trim();
     var caracter = String(raw.mascotaCaracter || "").trim();
     var familia = String(raw.mascotaFamilia || "").trim();
 
@@ -757,9 +760,11 @@
           "</p></section>"
       );
     }
-    if (gustos.length) {
-      cards.push(
-        '<section class="ec-pet-social-card ec-ficha-stack-card"><p class="ec-pet-social-kicker">Personalidad</p><div class="ec-pet-like-grid">' +
+    if (gustos.length || queCome) {
+      var miVidaInner = "";
+      if (gustos.length) {
+        miVidaInner +=
+          '<div class="ec-pet-like-grid">' +
           gustos
             .map(function (g) {
               return (
@@ -771,7 +776,18 @@
               );
             })
             .join("") +
-          "</div></section>"
+          "</div>";
+      }
+      if (queCome) {
+        miVidaInner +=
+          '<p class="ec-pet-mi-vida-come mt-3 flex items-start gap-2 text-[13px] text-[#374151]"><i class="fa-solid fa-bowl-food mt-0.5 text-[#fb7185]" aria-hidden="true"></i><span><strong>Qué como:</strong> ' +
+          escapeHtmlPet(queCome) +
+          "</span></p>";
+      }
+      cards.push(
+        '<section class="ec-pet-social-card ec-ficha-stack-card ec-pet-mi-vida-card"><p class="ec-pet-social-kicker">Mi vida</p>' +
+          miVidaInner +
+          "</section>"
       );
     }
     if (momentos.length) {
@@ -792,13 +808,10 @@
           "</div></section>"
       );
     }
-    if (queCome || caracter || familia) {
+    if (caracter || familia) {
       cards.push(
         '<section class="ec-pet-social-card ec-ficha-stack-card"><p class="ec-pet-social-kicker">Información de cuidado</p><div class="ec-pet-care-list">' +
           '<p><strong>Género:</strong> ' + escapeHtmlPet(genero) + "</p>" +
-          (queCome
-            ? '<p><strong>Qué como:</strong> ' + escapeHtmlPet(queCome) + "</p>"
-            : "") +
           (caracter
             ? '<p><strong>Mi carácter:</strong> ' + escapeHtmlPet(caracter) + "</p>"
             : "") +
@@ -838,6 +851,62 @@
     }
   }
 
+  function resolvePetTextureId(raw) {
+    raw = raw || {};
+    var fromDoc = String(raw.pet_texturaFondo || "huellas").trim().toLowerCase();
+    if (["burbujas", "huellas", "glass"].indexOf(fromDoc) < 0) fromDoc = "huellas";
+    var ov = "";
+    try {
+      ov = String(sessionStorage.getItem("ec_pet_texture_override") || "").trim().toLowerCase();
+    } catch (e0) {}
+    if (ov && ["burbujas", "huellas", "glass"].indexOf(ov) >= 0) return ov;
+    return fromDoc;
+  }
+
+  function applyPetTextureClasses() {
+    var app = document.getElementById("app-root");
+    if (!app || !window.__ecPublicViewPet) return;
+    var raw = window.__ecPetFirestoreRaw || {};
+    var id = resolvePetTextureId(raw);
+    app.classList.remove("ec-pet-bg-burbujas", "ec-pet-bg-huellas", "ec-pet-bg-glass");
+    if (id === "burbujas") app.classList.add("ec-pet-bg-burbujas");
+    else if (id === "glass") app.classList.add("ec-pet-bg-glass");
+    else app.classList.add("ec-pet-bg-huellas");
+  }
+
+  function wirePetBgToolbarOnce() {
+    var tb = document.getElementById("ec-pet-bg-toolbar");
+    if (!tb || tb.getAttribute("data-ec-bound") === "1") return;
+    tb.setAttribute("data-ec-bound", "1");
+    tb.querySelectorAll("[data-ec-pet-bg]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-ec-pet-bg") || "huellas";
+        try {
+          sessionStorage.setItem("ec_pet_texture_override", id);
+        } catch (e1) {}
+        applyPetTextureClasses();
+        tb.querySelectorAll("[data-ec-pet-bg]").forEach(function (b) {
+          b.classList.toggle("ec-pet-bg-btn--on", b.getAttribute("data-ec-pet-bg") === id);
+        });
+      });
+    });
+  }
+
+  function syncPetBgToolbarVisibility() {
+    var tb = document.getElementById("ec-pet-bg-toolbar");
+    if (!tb) return;
+    tb.classList.toggle("hidden", !window.__ecPublicViewPet);
+    if (window.__ecPublicViewPet) {
+      wirePetBgToolbarOnce();
+      var raw = window.__ecPetFirestoreRaw || {};
+      var id = resolvePetTextureId(raw);
+      tb.querySelectorAll("[data-ec-pet-bg]").forEach(function (b) {
+        b.classList.toggle("ec-pet-bg-btn--on", b.getAttribute("data-ec-pet-bg") === id);
+      });
+      applyPetTextureClasses();
+    }
+  }
+
   function applyCardAppearance() {
     var theme = String(cfg.cardTheme || "gold").trim().toLowerCase();
     if (["gold", "minimal", "electric"].indexOf(theme) < 0) theme = "gold";
@@ -863,13 +932,22 @@
       app.setAttribute("data-avatar-shape", avatarShape);
       app.setAttribute("data-link-layout", linkLayout);
       app.classList.toggle("ec-pet-mode", !!window.__ecPublicViewPet);
-      app.classList.remove("theme-classic", "theme-park", "theme-candy", "pet-relief");
+      app.classList.remove(
+        "theme-classic",
+        "theme-candy",
+        "theme-night",
+        "theme-organic",
+        "theme-glass",
+        "theme-park",
+        "pet-relief"
+      );
       if (window.__ecPublicViewPet) {
         var raw = window.__ecPetFirestoreRaw || {};
-        var petTheme = String(raw.mascotaTemaVisual || cfg.mascotaTemaVisual || "theme-classic")
+        var petTheme = String(raw.currentTemplate || raw.mascotaTemaVisual || cfg.currentTemplate || cfg.mascotaTemaVisual || "theme-classic")
           .trim()
           .toLowerCase();
-        if (["theme-classic", "theme-park", "theme-candy"].indexOf(petTheme) < 0) {
+        if (petTheme === "theme-park") petTheme = "theme-organic";
+        if (["theme-classic", "theme-candy", "theme-night", "theme-organic", "theme-glass"].indexOf(petTheme) < 0) {
           petTheme = "theme-classic";
         }
         app.classList.add(petTheme);
@@ -880,12 +958,15 @@
         var accent = String(raw.mascotaColorAcento || cfg.mascotaColorAcento || "#5f6fff").trim();
         if (!/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(accent)) accent = "#5f6fff";
         app.style.setProperty("--ec-pet-accent", accent);
+        applyPetTextureClasses();
       } else {
         app.style.removeProperty("--ec-pet-accent");
+        app.classList.remove("ec-pet-bg-burbujas", "ec-pet-bg-huellas", "ec-pet-bg-glass");
       }
     }
     var footer = document.querySelector(".footer-bar-light");
     if (footer) footer.classList.toggle("hidden", !!window.__ecPublicViewPet);
+    syncPetBgToolbarVisibility();
   }
 
   function mergeStudyUrlsForDisplay(o) {
@@ -922,14 +1003,15 @@
   function normalizePetHealthRaw(raw) {
     if (!raw || typeof raw !== "object") return null;
     var o = raw;
+    var vacs = Array.isArray(o.pet_vacunas) ? o.pet_vacunas : Array.isArray(o.mascotaVacunas) ? o.mascotaVacunas : [];
     return {
-      mascotaNombre: String(o.mascotaNombre || o.nombreCompleto || "").trim(),
-      mascotaFotoUrl: String(o.mascotaFotoUrl || o.fotoUrl || "").trim(),
+      mascotaNombre: String(o.pet_nombre || o.mascotaNombre || o.nombreCompleto || "").trim(),
+      mascotaFotoUrl: String(o.pet_fotoUrl || o.mascotaFotoUrl || o.fotoUrl || "").trim(),
       mascotaSaludPublica: !!o.mascotaSaludPublica,
       paseVeterinarioActivo: !!o.paseVeterinarioActivo,
       mascotaAlertasSalud: String(o.mascotaAlertasSalud || "").trim(),
-      mascotaHistorialClinico: String(o.mascotaHistorialClinico || "").trim(),
-      mascotaVacunas: Array.isArray(o.mascotaVacunas) ? o.mascotaVacunas : [],
+      mascotaHistorialClinico: String(o.pet_historia || o.mascotaHistorialClinico || "").trim(),
+      mascotaVacunas: vacs,
       mascotaEstudiosUrls: mergeStudyUrlsForDisplay(o),
     };
   }
@@ -1669,6 +1751,12 @@
               window.__ecPetFirestoreRaw = Object.assign({}, msg.patch, {
                 mascotaNombre: msg.patch.nombreCompleto,
                 mascotaFotoUrl: msg.patch.fotoUrl,
+                currentTemplate: msg.patch.currentTemplate || msg.patch.mascotaTemaVisual,
+                pet_nombre: msg.patch.pet_nombre || msg.patch.nombreCompleto,
+                pet_fotoUrl: msg.patch.pet_fotoUrl || msg.patch.fotoUrl,
+                pet_whatsapp: msg.patch.pet_whatsapp || msg.patch.whatsappNumero,
+                pet_texturaFondo: msg.patch.pet_texturaFondo,
+                pet_vacunas: msg.patch.pet_vacunas || msg.patch.mascotaVacunas,
               });
             } else {
               window.__ecPetFirestoreRaw = null;
