@@ -133,11 +133,18 @@
     </script>
     <style>
       .ec-landing-shell { min-height: 100dvh; background: radial-gradient(circle at 10% 8%, rgba(212,175,55,.16), transparent 36%), linear-gradient(160deg,#050505 0%,#0f172a 52%,#050505 100%); color: #e5e7eb; font-family: "Poppins", system-ui, sans-serif; }
-      .ec-landing-card { border: 1px solid rgba(255,255,255,.14); background: rgba(17,24,39,.52); backdrop-filter: blur(12px); transition: transform .25s ease, border-color .25s ease; }
-      .ec-landing-card:hover { transform: translateY(-3px); border-color: rgba(212,175,55,.55); }
+      .ec-landing-card { border: 1px solid rgba(255,255,255,.14); background: rgba(17,24,39,.52); backdrop-filter: blur(12px); transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
+      .ec-landing-card:hover { transform: translateY(-3px); border-color: rgba(212,175,55,.55); box-shadow: 0 18px 42px rgba(0,0,0,.28); }
       .ec-landing-cta { border-radius: 9999px; padding: .72rem 1.2rem; font-size: .78rem; letter-spacing: .11em; text-transform: uppercase; font-weight: 600; }
       .ec-landing-cta--gold { background: linear-gradient(135deg,#c9a132,#d4af37 55%,#e7c867); color: #111; }
       .ec-landing-cta--ghost { border: 1px solid rgba(255,255,255,.2); color: #f9fafb; }
+      .ec-landing-create { background: linear-gradient(135deg,#f59e0b 0%,#f97316 45%,#f43f5e 100%); color: #fff; box-shadow: 0 18px 45px rgba(244,63,94,.35); }
+      .ec-demo-phone { width: min(320px, 84vw); border-radius: 28px; padding: 14px; border: 1px solid rgba(255,255,255,.18); background: rgba(2,6,23,.65); }
+      .ec-demo-screen { border-radius: 22px; padding: 16px; background: linear-gradient(145deg, var(--demo-accent,#5f6fff), #0f172a 62%); min-height: 220px; }
+      .ec-demo-chip { border-radius: 9999px; border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.12); padding: .2rem .55rem; font-size: .65rem; }
+      .ec-product-hero { min-height: 20rem; }
+      .ec-product-hero--pro:hover { border-color: rgba(212,175,55,.75); box-shadow: 0 22px 54px rgba(212,175,55,.2); }
+      .ec-product-hero--pet:hover { border-color: rgba(74,222,128,.75); box-shadow: 0 22px 54px rgba(74,222,128,.22); }
     </style>
   </head>
   <!-- Visor universal: Firestore usuarios/{id}. URL ?id=IDENTIFICADOR (también ?user= / ?uid=). Sin id → perfil por defecto (FIRESTORE_DEFAULT_CARD_UID o "perfil"). -->
@@ -148,28 +155,86 @@
         <a href="login.html" class="ec-landing-cta ec-landing-cta--ghost">Acceso Clientes</a>
       </header>
       <main class="mx-auto max-w-6xl px-6 pb-12 pt-8">
-        <h1 class="max-w-3xl text-4xl font-semibold leading-tight text-white sm:text-5xl">Dos productos premium, un solo ecosistema.</h1>
-        <p class="mt-4 max-w-2xl text-base text-white/65">Diseña tu identidad profesional con EliteCard o crea un perfil social inolvidable para tu mascota con MascotBook.</p>
-        <section class="mt-10 grid gap-6 md:grid-cols-2">
-          <article class="ec-landing-card rounded-3xl p-7">
+        <section class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+          <div>
+            <h1 class="max-w-3xl text-4xl font-semibold leading-tight text-white sm:text-5xl">MascotBook: la tarjeta emocional y segura para tu mascota.</h1>
+            <p class="mt-4 max-w-2xl text-base text-white/65">Perfil social, ficha médica, GPS de ayuda y diario de aventuras en una experiencia irresistible.</p>
+            <div class="mt-6 flex flex-wrap gap-3">
+              <input id="ec-demo-pet-name" type="text" class="rounded-full border border-white/20 bg-black/40 px-4 py-2.5 text-sm text-white placeholder:text-white/35" placeholder="Escribe el nombre de tu perro" />
+              <input id="ec-demo-pet-color" type="color" value="#5f6fff" class="h-11 w-14 cursor-pointer rounded-full border border-white/20 bg-black/35 p-1" />
+            </div>
+          </div>
+          <div class="flex justify-center">
+            <div class="ec-demo-phone">
+              <div id="ec-demo-screen" class="ec-demo-screen">
+                <p class="text-xs uppercase tracking-[0.18em] text-white/80">MascotBook Preview</p>
+                <h3 id="ec-demo-name" class="mt-2 text-2xl font-semibold text-white">Luna</h3>
+                <p class="mt-2 text-sm text-white/85">Hoy fuimos al parque y corrí detrás de una pelota gigante.</p>
+                <div class="mt-4 flex flex-wrap gap-2 text-white">
+                  <span class="ec-demo-chip">GPS Ayuda</span>
+                  <span class="ec-demo-chip">Ficha Médica</span>
+                  <span class="ec-demo-chip">Historia Emocional</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="mt-12 grid gap-6">
+          <article class="ec-landing-card ec-product-hero ec-product-hero--pro rounded-3xl p-8 sm:p-10">
             <p class="text-[11px] uppercase tracking-[0.2em] text-[#d4af37]">EliteCard</p>
-            <h2 class="mt-3 text-3xl font-semibold text-white">Tarjeta Profesional</h2>
-            <p class="mt-3 text-sm text-white/65">Comparte tu perfil, firma de email y datos siempre actualizados.</p>
+            <h2 class="mt-3 text-3xl font-semibold text-white sm:text-4xl">Tarjeta Profesional de Alto Nivel</h2>
+            <p class="mt-3 max-w-3xl text-sm text-white/65 sm:text-base">Presencia ejecutiva, firma inteligente, QR y analíticas para convertir contactos en oportunidades reales.</p>
             <div class="mt-7 flex flex-wrap gap-3">
               <a href="login.html" class="ec-landing-cta ec-landing-cta--ghost">Ver más</a>
               <button type="button" class="ec-landing-cta ec-landing-cta--gold" data-create-app="elitecard">Probar ahora</button>
             </div>
           </article>
-          <article class="ec-landing-card rounded-3xl p-7">
+          <article class="ec-landing-card ec-product-hero ec-product-hero--pet rounded-3xl p-8 sm:p-10">
             <p class="text-[11px] uppercase tracking-[0.2em] text-emerald-300">MascotBook</p>
-            <h2 class="mt-3 text-3xl font-semibold text-white">Perfil Social de Mascota</h2>
-            <p class="mt-3 text-sm text-white/65">Momentos, personalidad, salud y contacto familiar en una sola tarjeta.</p>
+            <h2 class="mt-3 text-3xl font-semibold text-white sm:text-4xl">MascotBook Alegre y Emocional</h2>
+            <p class="mt-3 max-w-3xl text-sm text-white/65 sm:text-base">Ficha médica, identificación, botones de contacto, historia y personalidad en un diseño vibrante y mobile-first.</p>
             <div class="mt-7 flex flex-wrap gap-3">
               <a href="login.html" class="ec-landing-cta ec-landing-cta--ghost">Ver más</a>
               <button type="button" class="ec-landing-cta ec-landing-cta--gold" data-create-app="mascotbook">Probar ahora</button>
             </div>
           </article>
         </section>
+        <section class="mt-12 rounded-3xl border border-emerald-300/20 bg-emerald-900/10 p-6 sm:p-8">
+          <h3 class="text-2xl font-semibold text-white">Todo lo que incluye MascotBook</h3>
+          <div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <article class="ec-landing-card rounded-2xl p-4"><p class="text-emerald-300"><i class="fa-solid fa-shield-dog"></i> Identificación inteligente</p><p class="mt-1 text-sm text-white/65">QR dinámico y datos clave del tutor siempre actualizados.</p></article>
+            <article class="ec-landing-card rounded-2xl p-4"><p class="text-emerald-300"><i class="fa-solid fa-notes-medical"></i> Ficha médica pro</p><p class="mt-1 text-sm text-white/65">Vacunas, estudios, alertas y pase veterinario público.</p></article>
+            <article class="ec-landing-card rounded-2xl p-4"><p class="text-emerald-300"><i class="fa-solid fa-location-dot"></i> Seguridad GPS</p><p class="mt-1 text-sm text-white/65">Si se pierde, facilita envío de ubicación por WhatsApp.</p></article>
+            <article class="ec-landing-card rounded-2xl p-4"><p class="text-emerald-300"><i class="fa-solid fa-phone-volume"></i> Botones de contacto</p><p class="mt-1 text-sm text-white/65">Contacto directo con la familia desde la tarjeta.</p></article>
+            <article class="ec-landing-card rounded-2xl p-4"><p class="text-emerald-300"><i class="fa-solid fa-book-open"></i> Historia emocional</p><p class="mt-1 text-sm text-white/65">Últimas aventuras y momentos que generan conexión.</p></article>
+            <article class="ec-landing-card rounded-2xl p-4"><p class="text-emerald-300"><i class="fa-solid fa-paw"></i> Personalidad y gustos</p><p class="mt-1 text-sm text-white/65">Rasgos únicos de tu mascota en formato social.</p></article>
+          </div>
+        </section>
+        <section class="mt-12 grid gap-5 lg:grid-cols-2">
+          <article class="ec-landing-card rounded-3xl p-6 sm:p-8">
+            <p class="text-[11px] uppercase tracking-[0.2em] text-[#d4af37]">Plan Profesional</p>
+            <h4 class="mt-3 text-3xl font-semibold text-white">$19.900</h4>
+            <p class="mt-2 text-sm text-white/65">EliteCard con diseño premium, firma y analíticas.</p>
+          </article>
+          <article class="ec-landing-card rounded-3xl border-2 border-emerald-300/45 bg-emerald-900/20 p-6 sm:p-8">
+            <p class="text-[11px] uppercase tracking-[0.2em] text-emerald-300">Plan MascotBook</p>
+            <h4 class="mt-3 text-4xl font-semibold text-white">$24.900</h4>
+            <p class="mt-2 text-sm text-white/75">La opción más elegida para seguridad, salud y vínculo emocional.</p>
+          </article>
+        </section>
+        <footer class="mt-12 rounded-3xl border border-white/10 bg-black/35 p-6 sm:p-8">
+          <h3 class="text-2xl font-semibold text-white">Preguntas Frecuentes</h3>
+          <div class="mt-4 grid gap-4 md:grid-cols-2">
+            <article><p class="font-medium text-white">¿Puedo cambiar de plan después?</p><p class="text-sm text-white/65">Sí, podés migrar entre EliteCard y MascotBook cuando quieras.</p></article>
+            <article><p class="font-medium text-white">¿Funciona desde el celular?</p><p class="text-sm text-white/65">Totalmente. Está optimizado para móvil y QR.</p></article>
+            <article><p class="font-medium text-white">¿La ficha médica es privada?</p><p class="text-sm text-white/65">Vos decidís qué mostrar públicamente y qué mantener interno.</p></article>
+            <article><p class="font-medium text-white">¿Necesito app instalada?</p><p class="text-sm text-white/65">No. Funciona web y también podés instalar como acceso directo.</p></article>
+          </div>
+        </footer>
+        <div class="mt-10 flex justify-center">
+          <button type="button" class="ec-landing-cta ec-landing-create text-sm sm:text-base px-8 py-4" data-create-app="mascotbook">Crear mi MascotBook ahora</button>
+          <a href="register.html" class="ml-3 ec-landing-cta ec-landing-cta--ghost text-sm sm:text-base px-8 py-4">Crear Cuenta</a>
+        </div>
       </main>
     </section>
     <!-- Splash: fondo negro + marca EliteCard en 3D hasta la primera respuesta de Firestore -->
@@ -797,6 +862,17 @@
         });
         var landing = document.getElementById("ec-landing-home");
         if (landing) landing.classList.remove("hidden");
+        var demoNameInput = document.getElementById("ec-demo-pet-name");
+        var demoColorInput = document.getElementById("ec-demo-pet-color");
+        var demoName = document.getElementById("ec-demo-name");
+        var demoScreen = document.getElementById("ec-demo-screen");
+        function syncDemo() {
+          if (demoName) demoName.textContent = (demoNameInput && demoNameInput.value.trim()) || "Luna";
+          if (demoScreen && demoColorInput) demoScreen.style.setProperty("--demo-accent", demoColorInput.value || "#5f6fff");
+        }
+        if (demoNameInput) demoNameInput.addEventListener("input", syncDemo);
+        if (demoColorInput) demoColorInput.addEventListener("input", syncDemo);
+        syncDemo();
 
         var cfg = window.FIREBASE_WEB_CONFIG;
         if (!cfg || !cfg.apiKey || String(cfg.apiKey).indexOf("REEMPLAZAR") !== -1) return;

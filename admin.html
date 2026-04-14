@@ -1007,6 +1007,20 @@
         background: rgba(40, 20, 20, 0.96);
         color: #fecaca;
       }
+      #view-login.ec-login-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 260;
+        background: rgba(5, 5, 5, 0.76);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+      #view-panel.ec-guest-mode .ec-dash-stage,
+      #view-panel.ec-guest-mode #ec-dash-sidebar {
+        pointer-events: none;
+        user-select: none;
+        filter: blur(2px) saturate(0.8);
+      }
       /* Modo MascotBook: visual más orgánico y con patrón de huellas */
       #view-panel.ec-app-mascotbook .elite-grid {
         opacity: 0.18;
@@ -1021,6 +1035,15 @@
         border-radius: 2rem;
         border-color: rgba(134, 239, 172, 0.38);
         box-shadow: 0 0 0 1px rgba(134, 239, 172, 0.15), 0 20px 70px -24px rgba(17, 94, 89, 0.42);
+      }
+      #view-panel.ec-app-mascotbook {
+        font-family: "Poppins", "Trebuchet MS", sans-serif;
+        background: radial-gradient(circle at 10% 10%, rgba(74, 222, 128, 0.16), transparent 38%),
+          linear-gradient(165deg, #04231b 0%, #052e24 45%, #031813 100%);
+      }
+      #view-panel.ec-app-elitecard {
+        font-family: "Poppins", system-ui, sans-serif;
+        background: linear-gradient(168deg, #050505 0%, #101010 42%, #0c0c0c 100%);
       }
       #view-panel.ec-app-mascotbook .ec-sidebar-brand-text {
         color: #bbf7d0;
@@ -1081,11 +1104,25 @@
         </form>
         <p class="mt-8 text-center text-[13px] font-light text-elite-mist/50">
           ¿No tenés cuenta?
-          <a href="register.html" class="text-elite-gold/85 transition hover:text-elite-gold">Crear cuenta</a>
+          <button type="button" id="btn-toggle-register-inline" class="text-elite-gold/85 transition hover:text-elite-gold">Crear cuenta aquí</button>
         </p>
+        <form id="form-register-inline" class="mt-6 hidden space-y-3.5">
+          <input id="register-email-inline" type="email" class="apple-input" placeholder="Email" required />
+          <input id="register-password-inline" type="password" class="apple-input" placeholder="Contraseña (mín. 6)" required />
+          <input id="register-password2-inline" type="password" class="apple-input" placeholder="Repetir contraseña" required />
+          <p id="register-inline-error" class="hidden pt-1 text-[13px] font-light text-red-400/95" role="alert"></p>
+          <button type="submit" class="apple-submit mt-2 w-full rounded-full py-3.5 text-[15px]">
+            Crear cuenta y entrar
+          </button>
+        </form>
         <p class="mt-4 text-center text-[12px] font-light text-elite-mist/40">
           <a href="index.html" class="transition hover:text-elite-gold/90">Ver tarjeta pública</a>
         </p>
+        <div class="mt-5 text-center">
+          <a href="register.html?intent=create&app=mascotbook" class="inline-flex rounded-full border border-emerald-300/45 bg-emerald-500/15 px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-200 transition hover:bg-emerald-500/25">
+            Crear Cuenta Premium
+          </a>
+        </div>
       </div>
     </section>
 
@@ -1127,17 +1164,14 @@
             type="button"
             role="tab"
             class="ec-sidebar-btn portal-tab portal-tab-active"
-            data-dashboard-tab="design"
+            data-dashboard-tab="hub"
             aria-selected="true"
-            title="Diseño"
+            title="Hub de selección"
           >
             <svg class="ec-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-              <rect x="3" y="3" width="7" height="9" rx="1" stroke-width="1.75" />
-              <rect x="14" y="3" width="7" height="5" rx="1" stroke-width="1.75" />
-              <rect x="14" y="12" width="7" height="9" rx="1" stroke-width="1.75" />
-              <rect x="3" y="16" width="7" height="5" rx="1" stroke-width="1.75" />
+              <path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" stroke-width="1.75" />
             </svg>
-            <span class="ec-sidebar-label">Diseño</span>
+            <span class="ec-sidebar-label">Hub</span>
           </button>
           <button
             type="button"
@@ -1159,7 +1193,7 @@
             </svg>
             <span class="ec-sidebar-label">MascotBook</span>
           </button>
-          <button type="button" role="tab" class="ec-sidebar-btn portal-tab" data-dashboard-tab="content" aria-selected="false" title="Contenido">
+          <button type="button" role="tab" class="ec-sidebar-btn portal-tab" data-dashboard-tab="content" aria-selected="false" title="Tarjeta personal digital">
             <svg class="ec-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
               <path
                 stroke-linecap="round"
@@ -1169,7 +1203,7 @@
               />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
             </svg>
-            <span class="ec-sidebar-label">Contenido</span>
+            <span class="ec-sidebar-label">Tarjeta personal digital</span>
           </button>
           <button type="button" role="tab" class="ec-sidebar-btn portal-tab" data-dashboard-tab="analytics" aria-selected="false" title="Analíticas">
             <svg class="ec-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
@@ -1268,18 +1302,24 @@
           </div>
         </header>
 
-        <div class="ec-reveal ec-reveal-d2 elite-card p-7 sm:p-9">
-          <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-elite-gold/80">Tu marca, en primer plano</p>
-          <h2 class="ec-dash-hero-title mt-3 max-w-2xl">
-            Potenciá tu marca personal con una tarjeta que cierra reuniones.
-          </h2>
+        <div id="ec-hub-selector" class="ec-reveal ec-reveal-d2 elite-card hidden p-7 sm:p-9" data-dashboard-panel="hub">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-elite-gold/80">Hub de selección</p>
+          <h2 class="ec-dash-hero-title mt-3 max-w-2xl">Elegí qué proyecto querés potenciar hoy.</h2>
           <p class="mt-4 text-lg font-light text-elite-mist sm:text-xl">
             Hola, <span id="panel-hola-name" class="font-medium text-white">Cliente</span>
           </p>
-          <p class="mt-4 max-w-2xl text-[15px] font-light leading-relaxed text-elite-mist/55">
-            Cada edición te acerca a un perfil impecable: publicá cuando quieras y compartí un enlace que transmite confianza al
-            instante. Quien te busque ve la versión más reciente de tu EliteCard.
-          </p>
+          <div class="mt-6 grid gap-4 sm:grid-cols-2">
+            <button type="button" id="btn-hub-elitecard" class="rounded-2xl border border-elite-gold/35 bg-black/35 p-5 text-left transition hover:border-elite-gold/70 hover:bg-elite-gold/10">
+              <p class="text-xs uppercase tracking-[0.16em] text-elite-gold">Producto</p>
+              <h3 class="mt-2 text-xl font-medium text-white">Gestionar Tarjeta Personal</h3>
+              <p class="mt-2 text-sm text-elite-mist/60">Perfil corporativo, firma y analíticas.</p>
+            </button>
+            <button type="button" id="btn-hub-mascotbook" class="rounded-2xl border border-emerald-400/35 bg-emerald-900/15 p-5 text-left transition hover:border-emerald-300/75 hover:bg-emerald-500/10">
+              <p class="text-xs uppercase tracking-[0.16em] text-emerald-300">MascotBook</p>
+              <h3 class="mt-2 text-xl font-medium text-white">Gestionar MascotBook</h3>
+              <p class="mt-2 text-sm text-elite-mist/60">Huellas, aventuras, salud y emociones.</p>
+            </button>
+          </div>
           <p
             id="panel-uid-hint"
             class="mt-5 hidden max-w-2xl rounded-xl border border-white/[0.06] bg-black/30 px-3 py-2 font-mono text-[0.62rem] font-light leading-relaxed text-elite-mist/40"
@@ -1338,7 +1378,7 @@
         <div
           id="ec-personalization-card"
           class="ec-reveal ec-reveal-d4 elite-card p-7 sm:p-9"
-          data-dashboard-panel="design"
+          data-dashboard-panel="content"
           data-ec-style-panel="true"
         >
           <p class="ec-label mb-2 block text-elite-gold/90">Estética de tu tarjeta</p>
@@ -1422,6 +1462,28 @@
                   </button>
                 </div>
               </div>
+
+              <div class="rounded-2xl border border-emerald-400/25 bg-emerald-900/10 p-4">
+                <p class="ec-label mb-2 block text-emerald-200/90">Diseño y Temas (MascotBook)</p>
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <label>
+                    <span class="ec-label mb-2 block">Familia visual</span>
+                    <select id="f-mascota-tema-visual-design" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm">
+                      <option value="theme-classic">Classic (Gold/Dark)</option>
+                      <option value="theme-park">Park (verdes orgánicos)</option>
+                      <option value="theme-candy">Candy (pastel suave)</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span class="ec-label mb-2 block">Color de acento</span>
+                    <input id="f-mascota-color-acento-design" type="color" value="#5f6fff" class="h-12 w-full cursor-pointer rounded-xl border border-white/20 bg-black/40 p-1" />
+                  </label>
+                </div>
+                <label class="mt-4 flex items-center gap-3 rounded-xl border border-white/10 bg-black/25 px-4 py-3">
+                  <input id="f-mascota-efecto-relieve-design" type="checkbox" class="h-5 w-5 rounded border-white/20 bg-black/50 text-elite-gold" />
+                  <span class="text-sm text-elite-mist/75">Efecto Relieve (Neumorphic / Glass)</span>
+                </label>
+              </div>
             </div>
           </div>
 
@@ -1487,8 +1549,8 @@
               <span class="ec-label mb-2 block">Tema visual</span>
               <select id="f-mascota-tema-visual" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm">
                 <option value="theme-classic">Classic (Gold/Dark)</option>
-                <option value="theme-playful">Playful (vivo)</option>
-                <option value="theme-soft">Soft (pastel)</option>
+                <option value="theme-park">Park (verdes orgánicos)</option>
+                <option value="theme-candy">Candy (pastel suave)</option>
               </select>
             </label>
             <label class="sm:col-span-2">
@@ -1499,6 +1561,10 @@
                 value="#5f6fff"
                 class="h-12 w-full cursor-pointer rounded-xl border border-white/20 bg-black/40 p-1"
               />
+            </label>
+            <label class="sm:col-span-2 flex items-center gap-3 rounded-xl border border-white/10 bg-black/25 px-4 py-3">
+              <input id="f-mascota-efecto-relieve" type="checkbox" class="h-5 w-5 rounded border-white/20 bg-black/50 text-elite-gold" />
+              <span class="text-sm text-elite-mist/75">Efecto relieve (neumórfico / glass) en la tarjeta pública</span>
             </label>
             <label class="sm:col-span-2">
               <span class="ec-label mb-2 block">Historia corta</span>
@@ -2340,8 +2406,8 @@
     <script>
       (function () {
         var lastDoc = {};
-        var ecCurrentApp = "elitecard";
-        var ecActiveDashboardTab = "design";
+        var ecCurrentApp = "mascotbook";
+        var ecActiveDashboardTab = "hub";
         var ecLastPublishedFingerprint = "";
         var ecPushPreviewTimer = null;
         var ecDirtyDebounceTimer = null;
@@ -2608,6 +2674,7 @@
           var perdidaEl = document.getElementById("f-mascota-perdida");
           var pubEl = document.getElementById("f-mascota-salud-publica");
           var pvetEl = document.getElementById("f-mascota-pase-vet-activo");
+          var relieveEl = document.getElementById("f-mascota-efecto-relieve");
           return {
             mascotaNombre: val("f-mascota-nombre"),
             mascotaCargo: val("f-mascota-cargo"),
@@ -2618,6 +2685,7 @@
             mascotaGenero: val("f-mascota-genero") || "macho",
             mascotaTemaVisual: val("f-mascota-tema-visual") || "theme-classic",
             mascotaColorAcento: val("f-mascota-color-acento") || "#5f6fff",
+            mascotaEfectoRelieve: !!(relieveEl && relieveEl.checked),
             mascotaGustos: val("f-mascota-gustos"),
             mascotaQueCome: val("f-mascota-que-come"),
             mascotaCaracter: val("f-mascota-caracter"),
@@ -2661,6 +2729,7 @@
             mascotaGenero: m.mascotaGenero || "macho",
             mascotaTemaVisual: m.mascotaTemaVisual || "theme-classic",
             mascotaColorAcento: m.mascotaColorAcento || "#5f6fff",
+            mascotaEfectoRelieve: !!m.mascotaEfectoRelieve,
             mascotaGustos: m.mascotaGustos,
             mascotaQueCome: m.mascotaQueCome,
             mascotaCaracter: m.mascotaCaracter,
@@ -2700,8 +2769,9 @@
         function pushLivePreviewToIframe() {
           var f = document.getElementById("ec-live-preview");
           if (!f || !f.contentWindow) return;
+          var petCtx = ecActiveDashboardTab === "mascotbook" || (ecActiveDashboardTab === "content" && ecCurrentApp === "mascotbook");
           var patch =
-            ecActiveDashboardTab === "mascotbook" ? buildMascotLivePreviewPatch() : buildPersonalLivePreviewPatch();
+            petCtx ? buildMascotLivePreviewPatch() : buildPersonalLivePreviewPatch();
           try {
             f.contentWindow.postMessage(
               { type: "EC_ELITE_LIVE_PREVIEW", patch: patch },
@@ -2826,7 +2896,7 @@
           try {
             return normalizeAppMode(localStorage.getItem("ec_current_app"));
           } catch (e2) {}
-          return "elitecard";
+          return "mascotbook";
         }
 
         function setCurrentApp(app) {
@@ -2948,14 +3018,17 @@
           var panelEl = document.getElementById("view-panel");
           if (user) {
             loginEl.classList.add("hidden");
+            loginEl.classList.remove("ec-login-overlay");
             panelEl.classList.remove("hidden");
+            panelEl.classList.remove("ec-guest-mode");
             panelEl.classList.remove("ec-dashboard-mounted");
             void panelEl.offsetWidth;
             panelEl.classList.add("ec-dashboard-mounted");
           } else {
-            panelEl.classList.remove("ec-dashboard-mounted");
-            panelEl.classList.add("hidden");
+            panelEl.classList.remove("hidden");
+            panelEl.classList.add("ec-guest-mode");
             loginEl.classList.remove("hidden");
+            loginEl.classList.add("ec-login-overlay");
           }
         }
 
@@ -2986,6 +3059,18 @@
               btn.setAttribute("aria-pressed", on ? "true" : "false");
             });
           });
+        }
+
+        function syncMascotThemeControls(fromDesign) {
+          var srcTheme = document.getElementById(fromDesign ? "f-mascota-tema-visual-design" : "f-mascota-tema-visual");
+          var srcColor = document.getElementById(fromDesign ? "f-mascota-color-acento-design" : "f-mascota-color-acento");
+          var srcRelieve = document.getElementById(fromDesign ? "f-mascota-efecto-relieve-design" : "f-mascota-efecto-relieve");
+          var dstTheme = document.getElementById(fromDesign ? "f-mascota-tema-visual" : "f-mascota-tema-visual-design");
+          var dstColor = document.getElementById(fromDesign ? "f-mascota-color-acento" : "f-mascota-color-acento-design");
+          var dstRelieve = document.getElementById(fromDesign ? "f-mascota-efecto-relieve" : "f-mascota-efecto-relieve-design");
+          if (srcTheme && dstTheme) dstTheme.value = srcTheme.value;
+          if (srcColor && dstColor) dstColor.value = srcColor.value;
+          if (srcRelieve && dstRelieve) dstRelieve.checked = !!srcRelieve.checked;
         }
 
         function syncPreviewAppearance() {
@@ -3115,6 +3200,7 @@
             mascotaGenero: String(d.mascotaGenero || "macho"),
             mascotaTemaVisual: String(d.mascotaTemaVisual || "theme-classic"),
             mascotaColorAcento: String(d.mascotaColorAcento || "#5f6fff"),
+            mascotaEfectoRelieve: !!d.mascotaEfectoRelieve,
             mascotaGustos: String(d.mascotaGustos || ""),
             mascotaQueCome: String(d.mascotaQueCome || ""),
             mascotaCaracter: String(d.mascotaCaracter || ""),
@@ -3135,8 +3221,9 @@
         function pushCloudSnapshotToIframe() {
           var f = document.getElementById("ec-live-preview");
           if (!f || !f.contentWindow) return;
+          var petCtx = ecActiveDashboardTab === "mascotbook" || (ecActiveDashboardTab === "content" && ecCurrentApp === "mascotbook");
           var patch =
-            ecActiveDashboardTab === "mascotbook" ? publishedMascotaCardPatch() : publishedPersonalCardPatch();
+            petCtx ? publishedMascotaCardPatch() : publishedPersonalCardPatch();
           try {
             f.contentWindow.postMessage(
               { type: "EC_ELITE_LIVE_PREVIEW", patch: patch },
@@ -3153,7 +3240,8 @@
           var url = new URL("card.html", window.location.href);
           url.searchParams.set("id", uid);
           url.searchParams.set("ec_admin_preview", "1");
-          if (ecActiveDashboardTab === "mascotbook") url.searchParams.set("view", "pet");
+          var petCtx = ecActiveDashboardTab === "mascotbook" || (ecActiveDashboardTab === "content" && ecCurrentApp === "mascotbook");
+          if (petCtx) url.searchParams.set("view", "pet");
           else url.searchParams.delete("view");
           var urlStr = url.toString();
           f.onload = function () {
@@ -3210,6 +3298,9 @@
             });
             var mp = document.getElementById("f-mascota-perdida");
             if (mp) mp.checked = !!base.mascotaPerdida;
+            var mre = document.getElementById("f-mascota-efecto-relieve");
+            if (mre) mre.checked = !!base.mascotaEfectoRelieve;
+            syncMascotThemeControls(false);
             var msp = document.getElementById("f-mascota-salud-publica");
             if (msp) msp.checked = !!base.mascotaSaludPublica;
             var mpa = document.getElementById("f-mascota-pase-vet-activo");
@@ -3640,8 +3731,12 @@
           if (!tabs.length || !panels.length) return;
           function show(which, force) {
             var appMode = ecCurrentApp;
+            var panelTarget = which;
             if (which === "mascotbook") appMode = "mascotbook";
-            if (which === "design" || which === "content" || which === "email-signature") appMode = "elitecard";
+            if (which === "content" || which === "email-signature") appMode = "elitecard";
+            if (which === "content") {
+              panelTarget = appMode === "mascotbook" ? "mascotbook" : "content";
+            }
             if (!force && subs && subs.isTrialPeriodExpired(lastDoc, appMode) && which !== "subscription") {
               setTrialExpiredModalVisible(true);
               return;
@@ -3654,7 +3749,7 @@
               btn.setAttribute("aria-selected", on ? "true" : "false");
             });
             panels.forEach(function (panel) {
-              panel.classList.toggle("hidden", panel.getAttribute("data-dashboard-panel") !== which);
+              panel.classList.toggle("hidden", panel.getAttribute("data-dashboard-panel") !== panelTarget);
             });
             if (subs && subs.isTrialPeriodExpired(lastDoc, appMode) && which === "subscription") {
               setTrialExpiredModalVisible(false);
@@ -3677,8 +3772,21 @@
               show(btn.getAttribute("data-dashboard-tab"), false);
             });
           });
+          var hubElite = document.getElementById("btn-hub-elitecard");
+          var hubMascot = document.getElementById("btn-hub-mascotbook");
+          if (hubElite) {
+            hubElite.addEventListener("click", function () {
+              show("content", false);
+            });
+          }
+          if (hubMascot) {
+            hubMascot.addEventListener("click", function () {
+              show("mascotbook", false);
+            });
+          }
           var startApp = appFromUrlOrStorage();
-          show(startApp === "mascotbook" ? "mascotbook" : "design", true);
+          setCurrentApp(startApp);
+          show("hub", true);
         }
 
         function setPreview(imgId, url) {
@@ -4068,7 +4176,7 @@
 
           auth.onAuthStateChanged(function (user) {
             if (!user) {
-              window.location.replace("login.html");
+              viewsForUser(null);
               return;
             }
             viewsForUser(user);
@@ -4149,15 +4257,68 @@
             });
           });
 
+          var btnToggleRegister = document.getElementById("btn-toggle-register-inline");
+          var registerFormInline = document.getElementById("form-register-inline");
+          if (btnToggleRegister && registerFormInline) {
+            btnToggleRegister.addEventListener("click", function () {
+              registerFormInline.classList.toggle("hidden");
+            });
+          }
+          if (registerFormInline) {
+            registerFormInline.addEventListener("submit", function (e) {
+              e.preventDefault();
+              var errEl = document.getElementById("register-inline-error");
+              if (errEl) {
+                errEl.classList.add("hidden");
+                errEl.textContent = "";
+              }
+              var email = String(document.getElementById("register-email-inline").value || "").trim();
+              var p1 = String(document.getElementById("register-password-inline").value || "");
+              var p2 = String(document.getElementById("register-password2-inline").value || "");
+              if (p1.length < 6 || p1 !== p2) {
+                if (errEl) {
+                  errEl.textContent = "Verificá las contraseñas (mínimo 6 caracteres y deben coincidir).";
+                  errEl.classList.remove("hidden");
+                }
+                return;
+              }
+              auth
+                .createUserWithEmailAndPassword(email, p1)
+                .then(function (cred) {
+                  var col = usersCollection();
+                  return db
+                    .collection(col)
+                    .doc(cred.user.uid)
+                    .set(
+                      {
+                        plan_status: "trial",
+                        elitecard_status: "trial",
+                        mascotbook_status: "trial",
+                        fecha_registro: firebase.firestore.FieldValue.serverTimestamp(),
+                        email: cred.user.email || email,
+                        role: "user",
+                      },
+                      { merge: true }
+                    );
+                })
+                .catch(function (err) {
+                  if (errEl) {
+                    errEl.textContent = (err && err.message) || "No se pudo crear la cuenta.";
+                    errEl.classList.remove("hidden");
+                  }
+                });
+            });
+          }
+
           document.getElementById("btn-logout").addEventListener("click", function () {
             clearPendingFiles();
             auth
               .signOut()
               .then(function () {
-                window.location.href = "login.html";
+                window.location.href = "admin.html";
               })
               .catch(function () {
-                window.location.href = "login.html";
+                window.location.href = "admin.html";
               });
           });
 
@@ -4480,9 +4641,22 @@
           var mascotCardEl = document.getElementById("ec-card-mascotbook");
           if (mascotCardEl) {
             mascotCardEl.addEventListener("input", function () {
+              syncMascotThemeControls(false);
               scheduleLivePreviewSync();
             });
           }
+          ["f-mascota-tema-visual-design", "f-mascota-color-acento-design", "f-mascota-efecto-relieve-design"].forEach(function (id) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener("input", function () {
+              syncMascotThemeControls(true);
+              scheduleLivePreviewSync();
+            });
+            el.addEventListener("change", function () {
+              syncMascotThemeControls(true);
+              scheduleLivePreviewSync();
+            });
+          });
 
           var stylePanel = document.getElementById("ec-personalization-card");
           if (stylePanel) {

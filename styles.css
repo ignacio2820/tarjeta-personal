@@ -1366,16 +1366,34 @@ html:has(.ec-pet-mode) body {
   color: #ebe6dc;
 }
 
-#app-root.ec-pet-mode.theme-playful {
-  --ec-pet-card: #ffffff;
-  --ec-pet-text: #1f2937;
-  --ec-pet-muted: #667085;
-  --ec-pet-accent: #5f6fff;
+#app-root.ec-pet-mode.theme-park {
+  --ec-pet-card: #fffde8;
+  --ec-pet-text: #123b2f;
+  --ec-pet-muted: #3a6b5b;
+  --ec-pet-accent: #1fbf75;
 }
 
-#app-root.ec-pet-mode.theme-soft {
-  --ec-pet-card: #fff9fb;
-  --ec-pet-text: #574e63;
-  --ec-pet-muted: #8a8195;
-  --ec-pet-accent: #c084fc;
+#app-root.ec-pet-mode.theme-candy {
+  --ec-pet-card: #fff7fe;
+  --ec-pet-text: #4b3f5e;
+  --ec-pet-muted: #7d6d96;
+  --ec-pet-accent: #ff5fb2;
+}
+
+#app-root.ec-pet-mode.theme-park .ec-pet-hero-photo-wrap,
+#app-root.ec-pet-mode.theme-candy .ec-pet-hero-photo-wrap {
+  border-radius: 1.3rem;
+  border: 2px solid color-mix(in oklab, var(--ec-pet-accent), white 62%);
+}
+
+#app-root.ec-pet-mode.theme-park .ec-pet-social-feed,
+#app-root.ec-pet-mode.theme-candy .ec-pet-social-feed {
+  gap: 1rem;
+}
+
+#app-root.ec-pet-mode.pet-relief .ec-pet-social-card {
+  box-shadow:
+    10px 10px 24px rgba(15, 23, 42, 0.12),
+    -10px -10px 24px rgba(255, 255, 255, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }

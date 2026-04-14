@@ -79,6 +79,7 @@
     out.mascotaGenero = String(m.mascotaGenero || "").trim().toLowerCase();
     out.mascotaTemaVisual = String(m.mascotaTemaVisual || "").trim().toLowerCase();
     out.mascotaColorAcento = String(m.mascotaColorAcento || "").trim();
+    out.mascotaEfectoRelieve = !!m.mascotaEfectoRelieve;
     return out;
   }
 
@@ -862,16 +863,19 @@
       app.setAttribute("data-avatar-shape", avatarShape);
       app.setAttribute("data-link-layout", linkLayout);
       app.classList.toggle("ec-pet-mode", !!window.__ecPublicViewPet);
-      app.classList.remove("theme-classic", "theme-playful", "theme-soft");
+      app.classList.remove("theme-classic", "theme-park", "theme-candy", "pet-relief");
       if (window.__ecPublicViewPet) {
         var raw = window.__ecPetFirestoreRaw || {};
         var petTheme = String(raw.mascotaTemaVisual || cfg.mascotaTemaVisual || "theme-classic")
           .trim()
           .toLowerCase();
-        if (["theme-classic", "theme-playful", "theme-soft"].indexOf(petTheme) < 0) {
+        if (["theme-classic", "theme-park", "theme-candy"].indexOf(petTheme) < 0) {
           petTheme = "theme-classic";
         }
         app.classList.add(petTheme);
+        if (raw.mascotaEfectoRelieve || cfg.mascotaEfectoRelieve) {
+          app.classList.add("pet-relief");
+        }
 
         var accent = String(raw.mascotaColorAcento || cfg.mascotaColorAcento || "#5f6fff").trim();
         if (!/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(accent)) accent = "#5f6fff";

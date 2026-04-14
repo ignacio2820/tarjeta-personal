@@ -74,6 +74,7 @@
     mascotaGenero: "macho",
     mascotaTemaVisual: "theme-classic",
     mascotaColorAcento: "#5f6fff",
+    mascotaEfectoRelieve: false,
     /** Rasgos sociales MascotBook */
     mascotaGustos: "",
     mascotaQueCome: "",
