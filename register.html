@@ -191,7 +191,7 @@
         </form>
         <p class="mt-8 text-center text-[13px] font-light text-elite-mist/50">
           ¿Ya tenés cuenta?
-          <a href="login.html" class="text-elite-gold/85 transition hover:text-elite-gold">Iniciar sesión</a>
+          <a id="link-login" href="login.html" class="text-elite-gold/85 transition hover:text-elite-gold">Iniciar sesión</a>
         </p>
       </div>
     </section>
@@ -207,12 +207,28 @@
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
     <script>
       (function () {
-        try {
-          var q = new URLSearchParams(window.location.search);
-          var ap = q.get("app");
-          var loginA = document.querySelector('a[href="login.html"]');
-          if (loginA && ap) loginA.href = "login.html?app=" + encodeURIComponent(ap);
-        } catch (eLink) {}
+        function initAuthLinks() {
+          try {
+            var q = new URLSearchParams(window.location.search);
+            var apRaw = String(q.get("app") || "").trim().toLowerCase();
+            var next = q.get("next");
+            var loginA = document.getElementById("link-login");
+            if (!loginA) return;
+            var qs = [];
+            if (apRaw === "mascotbook") qs.push("app=mascotbook");
+            else if (apRaw === "elitecard" || apRaw === "personal") qs.push("app=elitecard");
+            if (
+              next &&
+              next.indexOf("://") === -1 &&
+              next.indexOf("//") === -1 &&
+              String(next).trim()
+            ) {
+              qs.push("next=" + encodeURIComponent(String(next).trim()));
+            }
+            loginA.href = qs.length ? "login.html?" + qs.join("&") : "login.html";
+          } catch (eLink) {}
+        }
+        initAuthLinks();
 
         function showErr(msg) {
           var el = document.getElementById("register-error");
@@ -302,8 +318,28 @@
                 .then(function () {
                   try {
                     localStorage.setItem("ec_current_app", initialApp);
+                    localStorage.setItem(
+                      "ec_view_mode",
+                      initialApp === "mascotbook" ? "mascot" : "personal"
+                    );
                   } catch (eLs) {}
-                  window.location.href = "admin.html";
+                  var redirect =
+                    "admin.html?viewMode=" +
+                    (initialApp === "mascotbook" ? "mascot" : "personal") +
+                    "&panel=contenido";
+                  try {
+                    var qn = new URLSearchParams(window.location.search);
+                    var nx = qn.get("next");
+                    if (
+                      nx &&
+                      nx.indexOf("://") === -1 &&
+                      nx.indexOf("//") === -1 &&
+                      String(nx).trim()
+                    ) {
+                      redirect = String(nx).trim();
+                    }
+                  } catch (eNx) {}
+                  window.location.href = redirect;
                 })
                 .catch(function (fsErr) {
                   return auth.signOut().then(function () {

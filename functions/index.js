@@ -20,6 +20,114 @@ function escHtml(str) {
     .replace(/>/g, "&gt;");
 }
 
+const SILO_PROFILE = "profile";
+
+/**
+ * Lee silo Firestore (personal_card | mascot_card) y hace fallback al doc raíz legacy usuarios/{uid}.
+ */
+async function readDisplayForManifest(uid, appMode) {
+  const db = getAdmin().firestore();
+  const userRef = db.collection("usuarios").doc(uid);
+  const isPet = appMode === "mascotbook";
+
+  const siloSnap = await (isPet
+    ? userRef.collection("mascot_card").doc(SILO_PROFILE).get()
+    : userRef.collection("personal_card").doc(SILO_PROFILE).get());
+
+  if (siloSnap.exists) {
+    const s = siloSnap.data() || {};
+    if (isPet) {
+      return {
+        nombre: String(s.nombre || "").trim(),
+        subtitulo: String(s.raza || "").trim(),
+        foto: String(s.fotoPerfilUrl || "").trim(),
+        logo: "",
+        bio: String(s.muro || s.historia || "").trim(),
+      };
+    }
+    return {
+      nombre: String(s.user_nombre || s.nombreCompleto || "").trim(),
+      subtitulo: String(s.user_cargo || s.cargo || "").trim(),
+      foto: String(s.fotoUrl || "").trim(),
+      logo: String(s.logoUrl || "").trim(),
+      bio: String(s.bio || "").trim(),
+    };
+  }
+
+  const rootSnap = await userRef.get();
+  if (!rootSnap.exists) {
+    return { nombre: "", subtitulo: "", foto: "", logo: "", bio: "" };
+  }
+  const d = rootSnap.data() || {};
+  if (isPet) {
+    return {
+      nombre: String(d.mascotaNombre || "").trim(),
+      subtitulo: String(d.mascotaCargo || "").trim(),
+      foto: String(d.mascotaFotoUrl || "").trim(),
+      logo: "",
+      bio: String(d.mascotaBio || "").trim(),
+    };
+  }
+  return {
+    nombre: String(d.nombreCompleto || "").trim(),
+    subtitulo: String(d.cargo || "").trim(),
+    foto: String(d.fotoUrl || d.photoURL || "").trim(),
+    logo: String(d.logoUrl || "").trim(),
+    bio: String(d.bio || "").trim(),
+  };
+}
+
+async function readDisplayForOg(uid, isMascotView) {
+  const db = getAdmin().firestore();
+  const userRef = db.collection("usuarios").doc(uid);
+
+  const siloSnap = await (isMascotView
+    ? userRef.collection("mascot_card").doc(SILO_PROFILE).get()
+    : userRef.collection("personal_card").doc(SILO_PROFILE).get());
+
+  if (siloSnap.exists) {
+    const s = siloSnap.data() || {};
+    if (isMascotView) {
+      return {
+        nombre: String(s.nombre || "").trim(),
+        cargo: String(s.raza || "").trim(),
+        bio: String(s.muro || s.historia || "").trim(),
+        foto: String(s.fotoPerfilUrl || "").trim(),
+        logo: "",
+      };
+    }
+    return {
+      nombre: String(s.user_nombre || s.nombreCompleto || "").trim(),
+      cargo: String(s.user_cargo || s.cargo || "").trim(),
+      bio: String(s.user_bio || s.bio || "").trim(),
+      foto: String(s.fotoUrl || "").trim(),
+      logo: String(s.logoUrl || "").trim(),
+    };
+  }
+
+  const rootSnap = await userRef.get();
+  if (!rootSnap.exists) {
+    return { nombre: "", cargo: "", bio: "", foto: "", logo: "" };
+  }
+  const d = rootSnap.data() || {};
+  if (isMascotView) {
+    return {
+      nombre: String(d.mascotaNombre || "").trim(),
+      cargo: String(d.mascotaCargo || "").trim(),
+      bio: String(d.mascotaBio || "").trim(),
+      foto: String(d.mascotaFotoUrl || "").trim(),
+      logo: "",
+    };
+  }
+  return {
+    nombre: String(d.nombreCompleto || "").trim(),
+    cargo: String(d.cargo || "").trim(),
+    bio: String(d.bio || "").trim(),
+    foto: String(d.fotoUrl || d.photoURL || "").trim(),
+    logo: String(d.logoUrl || "").trim(),
+  };
+}
+
 /**
  * GET /manifest-user?id=UID
  */
@@ -42,11 +150,7 @@ exports.manifest = functions
         : "elitecard";
 
     try {
-      const snap = await getAdmin()
-        .firestore()
-        .collection("usuarios")
-        .doc(uid)
-        .get();
+      const disp = await readDisplayForManifest(uid, appMode);
 
       let name = appMode === "mascotbook" ? "MascotBook" : "EliteCard";
       let shortName = appMode === "mascotbook" ? "MascotBook" : "EliteCard";
@@ -54,35 +158,15 @@ exports.manifest = functions
       let icon512 = origin + "/icons/icon-512.png";
       let icon512m = origin + "/icons/icon-512-maskable.png";
 
-      if (snap.exists) {
-        const d = snap.data();
-        const nombreCompleto =
-          appMode === "mascotbook"
-            ? String(d.mascotaNombre || "").trim()
-            : String(d.nombreCompleto || "").trim();
-        const cargo =
-          appMode === "mascotbook"
-            ? String(d.mascotaCargo || "").trim()
-            : String(d.cargo || "").trim();
-        const logoUrl = String(d.logoUrl || "").trim();
-        const fotoUrl =
-          appMode === "mascotbook"
-            ? String(d.mascotaFotoUrl || "").trim()
-            : String(d.fotoUrl || d.photoURL || "").trim();
-
-        if (nombreCompleto) {
-          name = cargo
-            ? nombreCompleto + " — " + cargo
-            : nombreCompleto;
-          shortName = nombreCompleto.length > 12
-            ? nombreCompleto.split(" ")[0]
-            : nombreCompleto;
-        }
-        if (logoUrl) iconSrc = logoUrl;
-        else if (fotoUrl) iconSrc = fotoUrl;
-        icon512 = iconSrc;
-        icon512m = iconSrc;
+      if (disp.nombre) {
+        name = disp.subtitulo ? disp.nombre + " — " + disp.subtitulo : disp.nombre;
+        shortName =
+          disp.nombre.length > 12 ? disp.nombre.split(" ")[0] : disp.nombre;
       }
+      if (disp.logo) iconSrc = disp.logo;
+      else if (disp.foto) iconSrc = disp.foto;
+      icon512 = iconSrc;
+      icon512m = iconSrc;
 
       const startUrl =
         origin +
@@ -145,39 +229,41 @@ exports.card = functions
     }
 
     try {
-      const snap = await getAdmin()
-        .firestore()
-        .collection("usuarios")
-        .doc(uid)
-        .get();
-
       let ogTitle = "EliteCard | Tarjeta Profesional Digital";
       let ogDesc = "Hacé clic para ver mis datos de contacto.";
       let ogImage = origin + "/icons/icon-512.png";
       const viewQ = String(req.query.view || "").trim();
-      const viewPart =
-        viewQ && /^(pet|mascota|mascotbook)$/i.test(viewQ) ? "&view=" + encodeURIComponent(viewQ.toLowerCase()) : "";
+      const isMascot =
+        viewQ && /^(pet|mascota|mascotbook)$/i.test(viewQ);
+      const viewPart = isMascot
+        ? "&view=" + encodeURIComponent(viewQ.toLowerCase())
+        : "";
       const cardUrl = origin + "/card.html?id=" + encodeURIComponent(uid) + viewPart;
 
-      if (snap.exists) {
-        const d = snap.data();
-        const nombre = String(d.nombreCompleto || "").trim();
-        const cargo = String(d.cargo || "").trim();
-        const bio = String(d.bio || "").trim();
-        const foto = String(d.fotoUrl || d.photoURL || "").trim();
-        const logo = String(d.logoUrl || "").trim();
-
-        if (nombre) {
-          ogTitle = cargo
-            ? nombre + " — " + cargo + " | EliteCard"
-            : nombre + " | EliteCard";
+      const row = await readDisplayForOg(uid, !!isMascot);
+      if (row.nombre) {
+        if (isMascot) {
+          ogTitle = row.cargo
+            ? row.nombre + " — " + row.cargo + " | MascotBook"
+            : row.nombre + " | MascotBook";
+          ogDesc =
+            row.bio ||
+            (row.nombre && row.cargo
+              ? row.nombre + ", " + row.cargo + ". Perfil social mascota."
+              : ogDesc);
+        } else {
+          ogTitle = row.cargo
+            ? row.nombre + " — " + row.cargo + " | EliteCard"
+            : row.nombre + " | EliteCard";
+          ogDesc =
+            row.bio ||
+            (row.nombre && row.cargo
+              ? row.nombre + ", " + row.cargo + ". Tarjeta digital profesional."
+              : ogDesc);
         }
-        ogDesc = bio || (nombre && cargo
-          ? nombre + ", " + cargo + ". Tarjeta digital profesional."
-          : ogDesc);
-        if (foto) ogImage = foto;
-        else if (logo) ogImage = logo;
       }
+      if (row.foto) ogImage = row.foto;
+      else if (row.logo) ogImage = row.logo;
 
       const html = `<!DOCTYPE html>
 <html lang="es">

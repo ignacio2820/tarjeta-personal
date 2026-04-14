@@ -2,57 +2,13 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="ec-asset-version" content="1776168903312" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
-    />
-    <title>EliteCard | Tu Identidad Digital de Élite</title>
-    <meta
-      name="description"
-      content="Haz clic para ver mis datos de contacto actualizados."
-    />
-    <meta name="application-name" content="EliteCard - Tarjeta Digital" />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="EliteCard | Perfil Profesional" />
-    <meta
-      property="og:description"
-      content="Haz clic para ver mis datos de contacto actualizados."
-    />
-    <meta property="og:locale" content="es" />
-    <meta
-      property="og:image"
-      content="https://tarjeta-profesional-pedro.web.app/icons/icon-512.png"
-    />
-    <meta property="og:image:width" content="512" />
-    <meta property="og:image:height" content="512" />
-    <meta property="og:image:alt" content="EliteCard — marca dorada" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="EliteCard | Perfil Profesional" />
-    <meta
-      name="twitter:description"
-      content="Haz clic para ver mis datos de contacto actualizados."
-    />
-    <meta
-      name="twitter:image"
-      content="https://tarjeta-profesional-pedro.web.app/icons/icon-512.png"
-    />
-    <meta name="theme-color" content="#050505" media="(prefers-color-scheme: dark)" />
-    <meta name="theme-color" content="#050505" />
-    <meta name="color-scheme" content="dark" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="EliteCard" />
-    <meta name="msapplication-TileColor" content="#050505" />
-    <meta name="format-detection" content="telephone=no" />
-    <link rel="manifest" href="manifest.json" id="manifest-link" />
-    <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
-    <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>EliteCard · MascotBook</title>
+    <meta name="description" content="Tarjeta digital profesional o perfil social de mascota." />
+    <meta name="theme-color" content="#0a0a0a" />
     <script>
+      window.__EC_PAGE_LOAD_TS = Date.now();
       (function () {
-        window.__EC_IS_PROFILE_VIEW = true;
         try {
           var params = new URLSearchParams(window.location.search);
           var uid =
@@ -76,13 +32,18 @@
             window.location.replace("index.html");
             return;
           }
-
           var origin = window.location.origin;
           var view = String(params.get("view") || "").trim().toLowerCase();
-          var app = view === "pet" || view === "mascota" || view === "mascotbook" ? "mascotbook" : "elitecard";
+          var app =
+            view === "pet" || view === "mascota" || view === "mascotbook"
+              ? "mascotbook"
+              : "elitecard";
           var manifestUrl =
-            origin + "/manifest-user?id=" + encodeURIComponent(uid) + "&app=" + encodeURIComponent(app);
-
+            origin +
+            "/manifest-user?id=" +
+            encodeURIComponent(uid) +
+            "&app=" +
+            encodeURIComponent(app);
           function injectManifest() {
             var link = document.getElementById("manifest-link");
             if (link) link.href = manifestUrl;
@@ -96,20 +57,15 @@
           }
           if (document.readyState === "loading") {
             document.addEventListener("DOMContentLoaded", injectManifest);
-          } else {
-            injectManifest();
-          }
-          try {
-            sessionStorage.setItem("ec-profile-uid", uid);
-          } catch (e2) {}
-        } catch (e) {}
+          } else injectManifest();
+        } catch (e2) {}
       })();
     </script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="manifest" href="manifest.json" id="manifest-link" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link
@@ -118,496 +74,179 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <script>
-      (function () {
-        window.__EC_PAGE_LOAD_TS = Date.now();
-        document.write(
-          '<link rel="stylesheet" href="styles.css?v=' + window.__EC_PAGE_LOAD_TS + '">'
-        );
-      })();
-    </script>
+    <link rel="stylesheet" href="card-elite.css?v=6" />
+    <link rel="stylesheet" href="mascot-themes.css?v=1" />
+    <link rel="stylesheet" href="mascot-social.css?v=1" />
+    <style>
+      .hidden {
+        display: none !important;
+      }
+      body {
+        margin: 0;
+        min-height: 100dvh;
+      }
+      #card-loading {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #0a0a0a;
+        color: #d4af37;
+        font-family: "Poppins", system-ui, sans-serif;
+      }
+      #card-loading.hidden {
+        display: none;
+      }
+      .card-spinner {
+        width: 2.5rem;
+        height: 2.5rem;
+        border: 3px solid rgba(212, 175, 55, 0.2);
+        border-top-color: #d4af37;
+        border-radius: 50%;
+        animation: card-spin 0.7s linear infinite;
+      }
+      @keyframes card-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      #card-not-found {
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #0a0a0a;
+        color: #ebe6dc;
+        font-family: "Poppins", system-ui, sans-serif;
+        padding: 1.5rem;
+        text-align: center;
+      }
+      #card-empty {
+        min-height: 100dvh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #0a0a0a;
+        color: rgba(235, 230, 220, 0.55);
+        font-family: "Poppins", system-ui, sans-serif;
+        padding: 1.5rem;
+        text-align: center;
+      }
+    </style>
   </head>
-  <!-- Visor público: card.html?id=… (también ?user= / ?uid=). Sin id → redirección a la landing. -->
-  <body class="luxury-body preloader-active min-h-[100dvh] font-light antialiased">
-    <!-- Splash: fondo negro + marca EliteCard en 3D hasta la primera respuesta de Firestore -->
-    <div id="preloader" aria-busy="true" aria-label="Cargando EliteCard">
-      <div class="preloader-scene">
-        <div class="preloader-y-spin">
-          <div class="preloader-x-float">
-            <div class="preloader-logo-wrap">
-              <img
-                id="preloader-logo-img"
-                class="preloader-logo-img"
-                src="icons/icon-192.png"
-                alt="EliteCard"
-                width="84"
-                height="84"
-                decoding="async"
-                fetchpriority="high"
-              />
-              <span class="preloader-shine" aria-hidden="true"></span>
+  <body>
+    <div id="card-loading" aria-busy="true">
+      <div class="card-spinner" aria-hidden="true"></div>
+    </div>
+
+    <div id="card-not-found" class="hidden" role="alert">
+      <p style="color: #d4af37; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase">
+        Perfil
+      </p>
+      <h1 style="margin: 0.5rem 0 0; font-weight: 500">No encontramos esta tarjeta</h1>
+      <p style="max-width: 22rem; line-height: 1.5; margin-top: 0.75rem">
+        El enlace puede ser incorrecto o el perfil aún no está publicado.
+      </p>
+      <a href="index.html" style="margin-top: 1.5rem; color: #d4af37">Volver al inicio</a>
+    </div>
+
+    <div id="card-empty" class="hidden">
+      <p>Aún no hay datos públicos en este perfil.</p>
+    </div>
+
+    <!-- EliteCard -->
+    <div id="layout-elite" class="elite-shell elite-ghost hidden">
+      <div class="ec-wrap">
+        <header class="ec-head">
+          <div class="ec-photo-ring">
+            <img id="elite-photo" class="ec-photo hidden" src="" alt="" width="140" height="210" />
+          </div>
+          <h1 id="elite-name" class="ec-name"></h1>
+          <p id="elite-role" class="ec-role"></p>
+          <p id="elite-co" class="ec-co"></p>
+        </header>
+        <div id="elite-stack" class="ec-action-stack">
+          <div id="elite-actions" class="ec-actions"></div>
+        </div>
+        <section id="elite-mail-sig" class="ec-mail-sig hidden" aria-label="Firma de correo">
+          <h3 class="ec-mail-sig-title">Firma para correo</h3>
+          <div id="elite-mail-sig-preview" class="ec-mail-sig-preview"></div>
+          <div class="ec-mail-sig-actions">
+            <button type="button" id="elite-mail-sig-copy-text" class="ec-mail-sig-btn">Copiar texto</button>
+            <button type="button" id="elite-mail-sig-copy-html" class="ec-mail-sig-btn">Copiar HTML</button>
+          </div>
+        </section>
+      </div>
+      <footer class="ec-footer">
+        <button type="button" id="elite-footer-vcf" class="ec-foot-btn">
+          <span class="ec-foot-avatar-wrap" aria-hidden="true">
+            <img id="elite-footer-thumb" class="ec-foot-thumb hidden" src="" alt="" width="28" height="28" />
+            <span class="ec-foot-plus">+</span>
+          </span>
+          Guardar contacto
+        </button>
+        <button type="button" id="elite-footer-share" class="ec-foot-btn">
+          <i class="fa-solid fa-qrcode ec-foot-qr" aria-hidden="true"></i>
+          Compartir
+        </button>
+      </footer>
+      <div id="elite-logo-footer" class="ec-logo-footer-float hidden" aria-hidden="true">
+        <img id="elite-logo-footer-img" class="ec-logo-footer-img" src="" alt="" width="72" height="72" />
+      </div>
+      <div id="elite-qr-overlay" class="ec-qr-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="elite-qr-title">
+        <div class="ec-qr-panel">
+          <button type="button" id="elite-qr-close" class="ec-qr-close" aria-label="Cerrar">×</button>
+          <p id="elite-qr-title" class="ec-qr-title">Compartir tarjeta</p>
+          <img id="elite-qr-img" class="ec-qr-img" src="" alt="Código QR de la tarjeta" width="200" height="200" />
+          <button type="button" id="elite-qr-copy" class="ec-qr-copy">Copiar enlace</button>
+          <button type="button" id="elite-qr-share-native" class="ec-qr-native hidden">Compartir con el sistema…</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MascotBook — perfil tipo red social -->
+    <div id="layout-mascot" class="hidden">
+      <div id="mascot-shell" class="mb-social texture-elite">
+        <div class="mb-ig-topbar">MascotBook</div>
+        <div class="mb-ig-cover" aria-hidden="true"></div>
+        <div class="mb-ig-profile">
+          <div class="mb-ig-avatar-wrap">
+            <img id="mascot-avatar" class="mb-ig-avatar hidden" src="" alt="" width="120" height="120" />
+          </div>
+          <div class="mb-ig-stats">
+            <div>
+              <strong id="mascot-stat-posts">0</strong>
+              <span>publicaciones</span>
+            </div>
+            <div>
+              <strong id="mascot-stat-followers">—</strong>
+              <span>seguidores</span>
+            </div>
+            <div>
+              <strong id="mascot-stat-following">—</strong>
+              <span>siguiendo</span>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Perfil inexistente, enlace inválido o error explícito (solo oculta la tarjeta) -->
-    <div
-      id="profile-not-found"
-      class="fixed inset-0 z-[9990] hidden min-h-[100dvh] flex-col items-center justify-center bg-[#050505] px-8 text-center"
-      role="alert"
-      aria-live="polite"
-    >
-      <div
-        class="ec-modal-elite-panel max-w-sm rounded-[1.35rem] px-8 py-10 text-left sm:text-center"
-      >
-        <p
-          class="mb-2 font-mono text-[0.65rem] font-medium uppercase tracking-[0.35em] text-[#d4af37]/95"
-        >
-          EliteCard
-        </p>
-        <h1
-          id="profile-not-found-title"
-          class="text-xl font-medium tracking-tight text-[#ebe6dc] sm:text-2xl"
-        >
-          Perfil no encontrado
-        </h1>
-        <p
-          id="profile-not-found-desc"
-          class="mt-4 text-sm font-light leading-relaxed text-[#e0e0e0]/48"
-        >
-          Este enlace no corresponde a un perfil activo.
-        </p>
-      </div>
-      <a
-        class="webelite-credit mt-14"
-        href="https://webelite-app.vercel.app/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        EliteCard™ by <span class="webelite-credit-brand">WebElite Solutions</span>
-      </a>
-    </div>
-
-    <div
-      id="app-root"
-      class="ec-card-container app-shell ec-app-shell mx-auto flex min-h-[100dvh] w-full max-w-[min(100vw,56.25dvh)] flex-col"
-    >
-      <div
-        id="ec-pet-bg-toolbar"
-        class="ec-pet-bg-toolbar hidden w-full shrink-0 px-4 pb-2 pt-3"
-        role="toolbar"
-        aria-label="Textura de fondo MascotBook"
-      >
-        <p class="mb-2 text-center text-[10px] font-medium uppercase tracking-[0.18em] text-white/55">Fondo</p>
-        <div class="flex flex-wrap justify-center gap-2">
-          <button
-            type="button"
-            class="ec-pet-bg-btn rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-medium text-white/90 backdrop-blur-sm transition hover:border-cyan-300/60 hover:bg-white/15"
-            data-ec-pet-bg="burbujas"
-          >
-            Burbujas
-          </button>
-          <button
-            type="button"
-            class="ec-pet-bg-btn rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-medium text-white/90 backdrop-blur-sm transition hover:border-cyan-300/60 hover:bg-white/15"
-            data-ec-pet-bg="huellas"
-          >
-            Huellas
-          </button>
-          <button
-            type="button"
-            class="ec-pet-bg-btn rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-medium text-white/90 backdrop-blur-sm transition hover:border-cyan-300/60 hover:bg-white/15"
-            data-ec-pet-bg="glass"
-          >
-            Relieve Glassmorphism
-          </button>
-        </div>
-      </div>
-      <header class="flex flex-col items-center px-5 pb-5 pt-8 text-center">
-        <div class="avatar-led-wrap reveal-item reveal-d1 mb-6">
-          <div class="avatar-led-halo" aria-hidden="true"></div>
-          <div class="avatar-gold-ring">
-            <div class="avatar-inner">
-              <img
-                id="avatar-img"
-                class="avatar-photo"
-                src=""
-                alt=""
-                width="160"
-                height="200"
-                decoding="async"
-                referrerpolicy="no-referrer"
-              />
-            </div>
+        <div class="mb-ig-body">
+          <h1 id="mascot-name" class="mb-ig-name"></h1>
+          <p id="mascot-sub" class="mb-ig-sub"></p>
+          <p id="mascot-bio" class="mb-ig-bio"></p>
+          <div id="mascot-pills" class="mb-ig-pills"></div>
+          <div class="mb-ig-tabs" aria-hidden="true">
+            <span class="active">▦</span>
+            <span>▶</span>
+            <span>◎</span>
+          </div>
+          <div id="mascot-gallery" class="mb-ig-grid"></div>
+          <div id="mascot-health-section" class="mb-ig-health hidden">
+            <h2>Ficha y salud</h2>
+            <div id="mascot-health"></div>
           </div>
         </div>
-        <h1
-          id="display-name"
-          class="led-name reveal-item reveal-d2 max-w-[20rem] px-1 text-lg font-medium leading-tight sm:text-[1.35rem]"
-        ></h1>
-        <p
-          id="display-role"
-          class="led-sub reveal-item reveal-d3 mt-2.5 max-w-[19rem]"
-        ></p>
-        <p
-          id="display-cargo-detalle"
-          class="led-sub reveal-item reveal-d4 mt-1 max-w-[19rem]"
-          hidden
-        ></p>
-        <p
-          id="display-org"
-          class="led-sub reveal-item reveal-d5 mt-1 max-w-[19rem]"
-          hidden
-        ></p>
-        <p
-          id="display-bio"
-          class="led-sub reveal-item reveal-d6 mt-4 hidden max-w-sm leading-relaxed"
-        ></p>
-      </header>
-
-      <!-- MascotBook: pestañas Contacto / Ficha médica (?view=pet, si el dueño habilita salud) -->
-      <div
-        id="ec-pet-tabbar"
-        class="ec-pet-tabbar hidden w-full max-w-[min(100vw,56.25dvh)] shrink-0 px-4 pb-2 pt-0"
-        role="tablist"
-        aria-label="Secciones de la mascota"
-      >
-        <div class="ec-pet-tabbar-inner flex gap-1 rounded-2xl border border-[#d4af37]/28 bg-black/50 p-1">
-          <button
-            type="button"
-            id="ec-pet-tab-contact"
-            class="ec-pet-tab ec-pet-tab--active flex-1 rounded-xl py-2.5 text-center text-[12px] font-medium tracking-wide text-[#ebe6dc]/80 transition"
-            role="tab"
-            aria-selected="true"
-          >
-            Contacto
-          </button>
-          <button
-            type="button"
-            id="ec-pet-tab-medical"
-            class="ec-pet-tab flex-1 rounded-xl py-2.5 text-center text-[12px] font-medium tracking-wide text-[#ebe6dc]/80 transition"
-            role="tab"
-            aria-selected="false"
-          >
-            Ficha médica
-          </button>
-        </div>
-      </div>
-
-      <div id="ec-pet-views-wrap" class="flex min-h-0 flex-1 flex-col">
-        <!-- Espacio inferior: footer fijo + safe area (sin bloque de captura de leads) -->
-        <main
-          class="links-stagger flex flex-1 flex-col gap-3 px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))]"
-          id="links-container"
-        ></main>
-        <section
-          id="ec-pet-panel-medical"
-          class="ec-ficha-medica-panel hidden flex-1 flex-col gap-4 overflow-y-auto px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))]"
-          aria-label="Ficha médica"
-          role="tabpanel"
-        ></section>
-      </div>
-
-      <div
-        class="webelite-credit-outer mx-auto w-full max-w-[min(100vw,56.25dvh)] shrink-0 px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-1 text-center"
-      >
-        <a
-          class="webelite-credit"
-          href="https://webelite-app.vercel.app/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          EliteCard™ by <span class="webelite-credit-brand">WebElite Solutions</span>
-        </a>
-      </div>
-
-      <div
-        id="ec-rescue-banner-a"
-        class="ec-rescue-banner hidden"
-        role="complementary"
-        aria-label="Plan rescate EliteCard — perfil profesional"
-      >
-        <a href="register.html" class="ec-rescue-banner-link">
-          Plan rescate · Opción A — Activá tu tarjeta profesional con EliteCard
-        </a>
-      </div>
-      <div
-        id="ec-rescue-banner-c"
-        class="ec-rescue-banner ec-rescue-banner--mascota hidden"
-        role="complementary"
-        aria-label="Plan rescate MascotBook"
-      >
-        <a href="register.html" class="ec-rescue-banner-link ec-rescue-banner-link--mascota">
-          Plan rescate · Opción C — Desbloqueá MascotBook y la ficha completa de tu mascota
-        </a>
-      </div>
-    </div>
-
-    <footer
-      class="footer-bar-light footer-reveal fixed bottom-0 left-0 right-0 z-[100] flex justify-center px-2 pb-[max(0.45rem,env(safe-area-inset-bottom))] pt-1.5"
-    >
-      <div
-        class="flex w-full max-w-[min(100vw,56.25dvh)] flex-col items-stretch"
-      >
-        <div
-          id="footer-seal-wrap"
-          class="footer-seal-wrap footer-seal-reveal mb-1.5 hidden-seal flex justify-center"
-        >
-          <div class="footer-seal-ring">
-            <img
-              id="footer-institutional-logo"
-              class="footer-seal-img"
-              src=""
-              alt=""
-              width="32"
-              height="32"
-              decoding="async"
-              referrerpolicy="no-referrer"
-            />
-          </div>
-        </div>
-        <div class="flex items-stretch justify-stretch gap-0">
-          <button
-            type="button"
-            id="btn-vcard"
-            class="ec-contact-button pill-action flex flex-1 items-center justify-center gap-2 border-r border-black/12 py-2.5"
-          >
-            <img
-              id="footer-avatar"
-              src=""
-              alt=""
-              class="footer-avatar-mini shrink-0"
-              width="22"
-              height="22"
-            />
-            <span class="footer-action-label">Guardar contacto</span>
-          </button>
-          <button
-            type="button"
-            id="btn-share"
-            class="ec-contact-button pill-action flex flex-1 items-center justify-center gap-2 py-2.5"
-          >
-            <i
-              class="fa-solid fa-qrcode footer-icon-gold text-base sm:text-lg"
-              aria-hidden="true"
-            ></i>
-            <span class="footer-action-label">Compartir</span>
-          </button>
-        </div>
-      </div>
-    </footer>
-
-    <div
-      id="toast"
-      class="ec-toast-elite pointer-events-none fixed bottom-24 left-1/2 z-30 hidden -translate-x-1/2 rounded-full px-4 py-2 text-xs shadow-lg"
-      role="status"
-    ></div>
-
-    <!-- Modal WhatsApp -->
-    <div
-      id="wa-modal"
-      class="ec-modal-elite-backdrop fixed inset-0 z-50 hidden items-end justify-center p-3 sm:items-center"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="wa-modal-title"
-    >
-      <div
-        class="ec-modal-elite-panel max-h-[90dvh] w-full max-w-md overflow-y-auto rounded-[1.35rem] p-5 shadow-2xl sm:p-6"
-      >
-        <div class="mb-4 flex items-start justify-between gap-2">
-          <h2 id="wa-modal-title" class="text-lg font-medium tracking-tight text-[#ebe6dc]">
-            Contactame por WhatsApp
-          </h2>
-          <button
-            type="button"
-            id="wa-modal-close"
-            class="rounded-xl p-2 text-[#e0e0e0]/45 transition hover:bg-white/5 hover:text-[#ebe6dc]"
-            aria-label="Cerrar"
-          >
-            <i class="fa-solid fa-xmark text-lg" aria-hidden="true"></i>
-          </button>
-        </div>
-        <p class="mb-4 text-xs font-light text-[#e0e0e0]/48">
-          Completá tus datos y se abrirá WhatsApp con el mensaje listo para enviar.
-        </p>
-        <div class="flex flex-col gap-3">
-          <label class="block">
-            <span class="mb-1 block text-[11px] font-medium uppercase tracking-wider text-[#d4af37]/85"
-              >Nombre</span
-            >
-            <input
-              id="wa-nombre"
-              type="text"
-              autocomplete="given-name"
-              class="ec-input-elite w-full rounded-xl px-3 py-2.5 text-sm placeholder:text-[#e0e0e0]/28 focus:border-[#25D366] focus:shadow-[0_0_0_1px_rgba(37,211,102,0.35)]"
-              placeholder="Nombre"
-            />
-          </label>
-          <label class="block">
-            <span class="mb-1 block text-[11px] font-medium uppercase tracking-wider text-[#d4af37]/85"
-              >Apellido</span
-            >
-            <input
-              id="wa-apellido"
-              type="text"
-              autocomplete="family-name"
-              class="ec-input-elite w-full rounded-xl px-3 py-2.5 text-sm placeholder:text-[#e0e0e0]/28 focus:border-[#25D366] focus:shadow-[0_0_0_1px_rgba(37,211,102,0.35)]"
-              placeholder="Apellido"
-            />
-          </label>
-          <label class="block">
-            <span class="mb-1 block text-[11px] font-medium uppercase tracking-wider text-[#d4af37]/85"
-              >Teléfono</span
-            >
-            <input
-              id="wa-telefono"
-              type="tel"
-              autocomplete="tel"
-              inputmode="tel"
-              class="ec-input-elite w-full rounded-xl px-3 py-2.5 text-sm placeholder:text-[#e0e0e0]/28 focus:border-[#25D366] focus:shadow-[0_0_0_1px_rgba(37,211,102,0.35)]"
-              placeholder="Tu número de contacto"
-            />
-          </label>
-          <label class="block">
-            <span class="mb-1 block text-[11px] font-medium uppercase tracking-wider text-[#d4af37]/85"
-              >Comentario</span
-            >
-            <textarea
-              id="wa-comentario"
-              rows="3"
-              class="ec-input-elite w-full resize-y rounded-xl px-3 py-2.5 text-sm placeholder:text-[#e0e0e0]/28 focus:border-[#25D366] focus:shadow-[0_0_0_1px_rgba(37,211,102,0.35)]"
-              placeholder="Escribí tu mensaje o consulta"
-            ></textarea>
-          </label>
-          <button
-            type="button"
-            id="wa-iniciar"
-            class="mt-2 flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] py-3.5 text-sm font-bold text-white transition hover:bg-[#20bd5a]"
-          >
-            <i class="fa-brands fa-whatsapp text-lg" aria-hidden="true"></i>
-            Iniciar WhatsApp
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Fuerza generación de utilidades usadas solo desde JS (Tailwind CDN) -->
-    <span
-      class="hidden bg-[#25D366] bg-[#EA4335] bg-[#0A66C2] bg-[#34A853] bg-gradient-to-br from-[#f58529] via-[#dd2a7b] to-[#8134af] ring-2 ring-amber-500/40"
-      aria-hidden="true"
-    ></span>
-
-    <!-- Modal Calendly (embed) -->
-    <div
-      id="cal-modal"
-      class="ec-modal-elite-backdrop fixed inset-0 z-50 hidden items-end justify-center p-3 sm:items-center"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="cal-modal-title"
-    >
-      <div
-        class="cal-modal-panel ec-modal-elite-panel flex max-h-[92dvh] w-full max-w-lg flex-col overflow-hidden rounded-[1.35rem] shadow-2xl"
-      >
-        <div
-          class="flex shrink-0 items-center justify-between gap-2 border-b border-white/[0.08] px-4 py-3"
-        >
-          <h2 id="cal-modal-title" class="text-base font-medium tracking-tight text-[#ebe6dc]">
-            Agendar cita
-          </h2>
-          <button
-            type="button"
-            id="cal-modal-close"
-            class="rounded-xl p-2 text-[#e0e0e0]/45 transition hover:bg-white/5 hover:text-[#ebe6dc]"
-            aria-label="Cerrar"
-          >
-            <i class="fa-solid fa-xmark text-lg" aria-hidden="true"></i>
-          </button>
-        </div>
-        <div class="min-h-0 flex-1 bg-[#050505] p-2">
-          <iframe
-            id="cal-iframe"
-            src="about:blank"
-            class="h-[min(70dvh,32rem)] w-full rounded-xl border border-white/10 bg-white"
-            title="Calendly"
-            loading="lazy"
-          ></iframe>
-        </div>
-      </div>
-    </div>
-
-    <!-- Mascota perdida: ofrecer ubicación al visitante -->
-    <div
-      id="ec-lost-pet-geo-modal"
-      class="ec-modal-elite-backdrop fixed inset-0 z-[160] hidden items-end justify-center bg-black/75 p-3 backdrop-blur-sm sm:items-center"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="ec-lost-pet-geo-title"
-    >
-      <div
-        class="ec-lost-pet-geo-panel ec-modal-elite-panel flex max-w-md flex-col gap-4 rounded-[1.35rem] border border-red-500/35 bg-[#1a0a0a] p-5 shadow-2xl"
-      >
-        <div class="flex items-start justify-between gap-3">
-          <h2 id="ec-lost-pet-geo-title" class="text-base font-medium tracking-tight text-red-100">
-            ¿Ayudás a encontrar a esta mascota?
-          </h2>
-          <button
-            type="button"
-            id="ec-lost-pet-geo-close"
-            class="shrink-0 rounded-xl p-2 text-red-200/60 transition hover:bg-white/5 hover:text-red-100"
-            aria-label="Cerrar"
-          >
-            <i class="fa-solid fa-xmark text-lg" aria-hidden="true"></i>
-          </button>
-        </div>
-        <p id="ec-lost-pet-geo-sub" class="text-sm font-light leading-relaxed text-red-100/80">
-          Si aceptás, podés compartir tu ubicación aproximada con quien cuida a la mascota por WhatsApp.
-        </p>
-        <div class="flex flex-col gap-2 sm:flex-row sm:justify-end">
-          <button
-            type="button"
-            id="ec-lost-pet-geo-decline"
-            class="rounded-full border border-white/15 px-4 py-3 text-xs font-medium uppercase tracking-[0.12em] text-white/70 transition hover:bg-white/5"
-          >
-            Ahora no
-          </button>
-          <button
-            type="button"
-            id="ec-lost-pet-geo-accept"
-            class="rounded-full bg-red-600 px-4 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-red-500"
-          >
-            Compartir ubicación
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Lightbox estudios / rayos X (MascotBook) -->
-    <div
-      id="ec-pet-study-lightbox"
-      class="ec-pet-study-lightbox fixed inset-0 z-[170] hidden flex items-center justify-center bg-black/92 p-3 backdrop-blur-md"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Vista ampliada del estudio"
-    >
-      <button
-        type="button"
-        id="ec-pet-study-lightbox-close"
-        class="ec-pet-study-lightbox-close absolute right-3 top-3 z-10 rounded-xl p-3 text-[#ebe6dc]/70 transition hover:bg-white/10 hover:text-[#ebe6dc]"
-        aria-label="Cerrar"
-      >
-        <i class="fa-solid fa-xmark text-xl" aria-hidden="true"></i>
-      </button>
-      <div class="ec-pet-study-lightbox-frame max-h-[min(92dvh,92vw)] max-w-full overflow-hidden rounded-lg border border-[#d4af37]/35 shadow-[0_0_48px_rgba(212,175,55,0.12)]">
-        <img
-          id="ec-pet-study-lightbox-img"
-          src=""
-          alt="Estudio médico ampliado"
-          class="max-h-[min(92dvh,92vw)] w-auto max-w-full object-contain"
-          decoding="async"
-          referrerpolicy="no-referrer"
-        />
       </div>
     </div>
 
@@ -616,152 +255,14 @@
         var t = window.__EC_PAGE_LOAD_TS || Date.now();
         document.write('<script src="firebase-config.js?v=' + t + '"><\/script>');
         document.write('<script src="config.js?v=' + t + '"><\/script>');
+        document.write('<script src="ec-silos.js?v=' + t + '"><\/script>');
+        document.write('<script src="admin.js?v=' + t + '"><\/script>');
+        document.write('<script src="elite-mail-sig.js?v=' + t + '"><\/script>');
       })();
     </script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-    <script>
-      (function () {
-        var t = window.__EC_PAGE_LOAD_TS || Date.now();
-        document.write('<script src="card-app.js?v=' + t + '"><\/script>');
-      })();
-    </script>
-    <script>
-(function() {
-  // Banner instalación PWA — Chrome Android
-  var deferredPrompt = null;
-  var installBanner = null;
-  var appMode = "elitecard";
-  try {
-    var q = new URLSearchParams(window.location.search);
-    var v = String(q.get("view") || "").toLowerCase();
-    if (v === "pet" || v === "mascota" || v === "mascotbook") appMode = "mascotbook";
-  } catch(e0) {}
-  var dismissKey = "ec-install-dismissed-" + appMode;
-
-  function createInstallBanner() {
-    if (installBanner) return;
-    installBanner = document.createElement("div");
-    installBanner.id = "pwa-install-banner";
-    installBanner.setAttribute("role", "banner");
-    installBanner.style.cssText = [
-      "position:fixed",
-      "bottom:calc(5.5rem + env(safe-area-inset-bottom))",
-      "left:50%",
-      "transform:translateX(-50%)",
-      "z-index:9999",
-      "display:flex",
-      "align-items:center",
-      "gap:10px",
-      "background:rgba(18,18,18,0.97)",
-      "border:1px solid rgba(212,175,55,0.45)",
-      "border-radius:9999px",
-      "padding:10px 18px 10px 14px",
-      "box-shadow:0 8px 32px rgba(0,0,0,0.55)",
-      "backdrop-filter:blur(16px)",
-      "-webkit-backdrop-filter:blur(16px)",
-      "cursor:pointer",
-      "user-select:none",
-      "max-width:calc(100vw - 2rem)",
-      "animation:ec-banner-in .35s cubic-bezier(.22,1,.36,1)"
-    ].join(";");
-
-    var style = document.createElement("style");
-    style.textContent = [
-      "@keyframes ec-banner-in{from{opacity:0;transform:translateX(-50%) translateY(12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}",
-      "@media(prefers-reduced-motion:reduce){#pwa-install-banner{animation:none}}"
-    ].join("");
-    document.head.appendChild(style);
-
-    var icon = document.createElement("img");
-    icon.src = appMode === "mascotbook" ? "icons/icon-512.png" : "icons/icon-192.png";
-    icon.width = 28;
-    icon.height = 28;
-    icon.style.cssText = "border-radius:6px;flex-shrink:0";
-    icon.alt = "";
-
-    var text = document.createElement("span");
-    text.style.cssText = "font-size:13px;font-weight:300;color:#e0e0e0;letter-spacing:0.02em;white-space:nowrap";
-    text.textContent = appMode === "mascotbook" ? "Instalá MascotBook" : "Instalá EliteCard";
-
-    var btn = document.createElement("span");
-    btn.style.cssText = [
-      "font-size:11px",
-      "font-weight:600",
-      "letter-spacing:0.1em",
-      "text-transform:uppercase",
-      "color:#0a0a0a",
-      "background:linear-gradient(135deg,#c9a132,#d4af37 50%,#e8c547)",
-      "border-radius:9999px",
-      "padding:5px 12px",
-      "flex-shrink:0",
-      "margin-left:4px"
-    ].join(";");
-    btn.textContent = "Instalar";
-
-    var close = document.createElement("button");
-    close.type = "button";
-    close.setAttribute("aria-label", "Cerrar");
-    close.style.cssText = "background:none;border:none;color:rgba(224,224,224,0.4);font-size:16px;line-height:1;padding:0 0 0 4px;cursor:pointer;flex-shrink:0";
-    close.textContent = "✕";
-
-    installBanner.appendChild(icon);
-    installBanner.appendChild(text);
-    installBanner.appendChild(btn);
-    installBanner.appendChild(close);
-    document.body.appendChild(installBanner);
-
-    // Click en el banner (excepto el X) → disparar prompt
-    installBanner.addEventListener("click", function(e) {
-      if (e.target === close) return;
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(function() {
-        deferredPrompt = null;
-        removeInstallBanner();
-      });
-    });
-
-    // Click en X → cerrar sin instalar
-    close.addEventListener("click", function(e) {
-      e.stopPropagation();
-      removeInstallBanner();
-      // No volvemos a mostrar en esta sesión
-      try { sessionStorage.setItem(dismissKey, "1"); } catch(e2) {}
-    });
-  }
-
-  function removeInstallBanner() {
-    if (!installBanner) return;
-    installBanner.style.opacity = "0";
-    installBanner.style.transition = "opacity .25s";
-    setTimeout(function() {
-      if (installBanner && installBanner.parentNode) {
-        installBanner.parentNode.removeChild(installBanner);
-      }
-      installBanner = null;
-    }, 280);
-  }
-
-  // No mostrar si ya fue descartado en esta sesión
-  try {
-    if (sessionStorage.getItem(dismissKey)) return;
-  } catch(e3) {}
-
-  window.addEventListener("beforeinstallprompt", function(e) {
-    e.preventDefault();
-    deferredPrompt = e;
-    // Mostrar el banner 2s después de que cargó la tarjeta
-    setTimeout(createInstallBanner, 2000);
-  });
-
-  // Ocultar si ya instaló
-  window.addEventListener("appinstalled", function() {
-    deferredPrompt = null;
-    removeInstallBanner();
-  });
-})();
-    </script>
+    <script src="card-public.js?v=3"></script>
   </body>
 </html>

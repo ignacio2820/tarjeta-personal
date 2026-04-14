@@ -1,0 +1,237 @@
+/**
+ * MascotBook — perfil estilo red social + texturas Park / Candy / Elite.
+ * Variables: --mb-accent (color acento desde Firestore)
+ */
+.mb-social {
+  --mb-accent: #ec4899;
+  min-height: 100dvh;
+  font-family: "Inter", "Poppins", system-ui, sans-serif;
+  background: #0a0a0a;
+  color: #fafafa;
+}
+
+.mb-social.texture-park {
+  background-color: #0f1a12;
+  background-image: radial-gradient(circle at 20% 10%, color-mix(in srgb, var(--mb-accent) 22%, transparent), transparent 42%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cpath fill='%23ffffff' fill-opacity='0.04' d='M20 45c2-6 8-10 15-10 4 0 8 2 10 5 3-8 12-14 21-12 6 1 11 5 13 11 2-1 4-2 6-2 7 0 12 5 12 12 0 3-1 6-3 8h-74c-2-4-3-8 0-12z'/%3E%3Ccircle cx='18' cy='22' r='3' fill='%23ffffff' fill-opacity='0.05'/%3E%3Ccircle cx='62' cy='58' r='4' fill='%23ffffff' fill-opacity='0.04'/%3E%3C/svg%3E");
+  background-size: auto, 72px 72px;
+}
+
+.mb-social.texture-candy {
+  background: linear-gradient(165deg, #fff1f8 0%, #e0f4ff 45%, #fef9c3 100%);
+  color: #1e1b4b;
+}
+
+.mb-social.texture-elite {
+  background: radial-gradient(ellipse 90% 55% at 50% -15%, rgba(212, 175, 55, 0.2), transparent),
+    linear-gradient(180deg, #050505, #0f0f0f 55%, #080808);
+  color: #f5f0e6;
+}
+
+.mb-ig-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 0.75rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: -0.02em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  background: rgba(10, 10, 10, 0.65);
+}
+
+.mb-social.texture-candy .mb-ig-topbar {
+  background: rgba(255, 255, 255, 0.72);
+  border-bottom-color: rgba(30, 27, 75, 0.08);
+  color: #1e1b4b;
+}
+
+.mb-ig-cover {
+  height: 6.5rem;
+  background: linear-gradient(120deg, var(--mb-accent), color-mix(in srgb, var(--mb-accent) 40%, #6366f1));
+  opacity: 0.95;
+}
+
+.mb-social.texture-candy .mb-ig-cover {
+  background: linear-gradient(120deg, #f472b6, #38bdf8);
+}
+
+.mb-ig-profile {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0 1rem;
+  margin-top: -2.6rem;
+}
+
+.mb-ig-avatar-wrap {
+  flex-shrink: 0;
+  padding: 3px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--mb-accent), #fbbf24);
+}
+
+.mb-social.texture-candy .mb-ig-avatar-wrap {
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+}
+
+.mb-ig-avatar {
+  width: 5.5rem;
+  height: 5.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  border: 3px solid #0a0a0a;
+}
+
+.mb-social.texture-candy .mb-ig-avatar {
+  border-color: #fff;
+}
+
+.mb-ig-stats {
+  display: flex;
+  gap: 1rem;
+  padding-bottom: 0.35rem;
+  font-size: 0.78rem;
+  text-align: center;
+  color: rgba(250, 250, 250, 0.75);
+}
+
+.mb-social.texture-candy .mb-ig-stats {
+  color: rgba(30, 27, 75, 0.65);
+}
+
+.mb-ig-stats strong {
+  display: block;
+  font-size: 1rem;
+  color: #fff;
+}
+
+.mb-social.texture-candy .mb-ig-stats strong {
+  color: #1e1b4b;
+}
+
+.mb-ig-stats span {
+  display: block;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.mb-ig-body {
+  padding: 0.85rem 1rem 2.5rem;
+  max-width: 28rem;
+  margin: 0 auto;
+}
+
+.mb-ig-name {
+  margin: 0.35rem 0 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.mb-ig-sub {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  color: rgba(250, 250, 250, 0.55);
+}
+
+.mb-social.texture-candy .mb-ig-sub {
+  color: rgba(30, 27, 75, 0.6);
+}
+
+.mb-ig-bio {
+  margin: 0.65rem 0 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: rgba(250, 250, 250, 0.82);
+  white-space: pre-wrap;
+}
+
+.mb-social.texture-candy .mb-ig-bio {
+  color: rgba(30, 27, 75, 0.85);
+}
+
+.mb-ig-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.65rem;
+}
+
+.mb-ig-pill {
+  font-size: 0.68rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--mb-accent) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--mb-accent) 45%, transparent);
+}
+
+.mb-social.texture-candy .mb-ig-pill {
+  background: rgba(236, 72, 153, 0.12);
+  border-color: rgba(236, 72, 153, 0.35);
+}
+
+.mb-ig-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  margin-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 1.1rem;
+  text-align: center;
+  padding: 0.45rem 0;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.mb-social.texture-candy .mb-ig-tabs {
+  border-top-color: rgba(30, 27, 75, 0.1);
+  color: rgba(30, 27, 75, 0.45);
+}
+
+.mb-ig-tabs .active {
+  color: var(--mb-accent);
+}
+
+.mb-ig-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin-top: 0;
+}
+
+.mb-ig-grid img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+}
+
+.mb-ig-health {
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.mb-social.texture-candy .mb-ig-health {
+  background: rgba(255, 255, 255, 0.65);
+  border-color: rgba(30, 27, 75, 0.08);
+  color: #1e1b4b;
+}
+
+.mb-ig-health h2 {
+  margin: 0 0 0.35rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.7;
+}

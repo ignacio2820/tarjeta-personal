@@ -1,9 +1,18 @@
 /**
- * Valores por defecto (Firestore los sobrescribe en vivo).
- * Campos planos para que coincidan con admin.html / Firestore.
+ * Valores por defecto — silos Firestore: personal_card/profile y mascot_card/profile.
+ * DEFAULT_TARJETA_RAW se mantiene por compatibilidad con código legacy no usado en card/admin nuevos.
  */
 (function () {
   "use strict";
+
+  /** Emails en minúsculas: acceso perpetuo panel (dueño Agencia WebElite). Rellenar con tu correo. */
+  window.EC_AGENCY_OWNER_EMAILS = [];
+
+  /** UIDs con acceso perpetuo (opcional). */
+  window.EC_PERPETUAL_UIDS = [];
+
+  /** Logo del dashboard; vacío = marca SVG inline en admin. */
+  window.EC_BRAND_LOGO_URL = "";
 
   function onlyDigits(s) {
     return String(s || "").replace(/\D/g, "");
@@ -24,14 +33,78 @@
     return "https://linkedin.com/in/" + s.replace(/^\/+/, "");
   }
 
+  /** EliteCard — documento usuarios/{uid}/personal_card/profile */
+  window.DEFAULT_PERSONAL_CARD = {
+    user_nombre: "",
+    user_cargo: "",
+    user_empresa: "",
+    user_bio: "",
+    redes: {
+      instagram: "",
+      linkedin: "",
+      sitioWeb: "",
+      whatsappNumero: "",
+    },
+    email: "",
+    telefono: "",
+    whatsappNumero: "",
+    fotoUrl: "",
+    logoUrl: "",
+    vcardNombres: "",
+    vcardApellidos: "",
+    vcardOrganizacion: "",
+    vcardTitulo: "",
+    bio: "",
+    sitioWeb: "",
+    instagram: "",
+    linkedin: "",
+    mapsUrl: "",
+    calendlyUrl: "",
+    emailInstitucional: "",
+    user_avatarShape: "rect",
+    user_buttonLayout: "list",
+    user_bgColor: "#000000",
+    user_bgPreset: "matte",
+  };
+
+  /** MascotBook — documento usuarios/{uid}/mascot_card/profile */
+  window.DEFAULT_MASCOT_CARD = {
+    nombre: "",
+    raza: "",
+    sexo: "",
+    salud: "",
+    historia: "",
+    personalidad: "",
+    themeId: "classic",
+    textureId: "elite",
+    accentColor: "#ec4899",
+    fotoPerfilUrl: "",
+    galeria: [],
+    muro: "",
+  };
+
+  var THEME_IDS = ["classic", "candy", "night", "organic", "glass"];
+  var TEXTURE_IDS = ["park", "candy", "elite"];
+
+  function themeIdFromTexture(tex) {
+    var t = String(tex || "elite").toLowerCase();
+    if (t === "candy") return "candy";
+    if (t === "park") return "organic";
+    return "classic";
+  }
+
+  window.mascotThemeIdToClass = function (id) {
+    var k = String(id || "classic").trim().toLowerCase();
+    if (THEME_IDS.indexOf(k) < 0) k = "classic";
+    return "theme-" + k;
+  };
+
   /**
-   * Plantilla base (vacía): la tarjeta toma los datos reales desde Firestore.
-   * Sin `fotoUrl` / `photoURL` en el documento → no se usa imagen local fantasma.
+   * Plantilla legacy (documento plano usuarios/{uid}); no usar en silos nuevos.
    */
   window.DEFAULT_TARJETA_RAW = {
     nombreCompleto: "",
     cargo: "",
-    /** Alias legacy en Firestore: director_up7 */
     cargoDetalle: "",
     empresa: "",
     telefono: "",
@@ -49,20 +122,13 @@
     vcardApellidos: "",
     vcardOrganizacion: "",
     vcardTitulo: "",
-    /** Si tiene valor, "Agendar cita" abre modal con Calendly en lugar de WhatsApp */
     calendlyUrl: "",
-    mensajeCitaWhatsapp:
-      "Hola, me gustaría agendar una reunión con usted.",
-    /** gold | minimal | electric — ver styles.css html.ec-theme-* */
+    mensajeCitaWhatsapp: "Hola, me gustaría agendar una reunión con usted.",
     cardTheme: "gold",
-    /** circle | rect — rect = retrato actual; circle = avatar circular */
     avatarShape: "rect",
-    /** pills | icons — botones largos o solo íconos en grilla */
     buttonLayout: "pills",
-    /** true muestra formulario de captura en la tarjeta pública */
     leadCaptureEnabled: false,
     bio: "",
-    /** MascotBook — tarjeta de mascota (misma UI pública, otros datos) */
     mascotaNombre: "",
     mascotaCargo: "",
     mascotaBio: "",
@@ -75,30 +141,20 @@
     mascotaTemaVisual: "theme-classic",
     mascotaColorAcento: "#5f6fff",
     mascotaEfectoRelieve: false,
-    /** Rasgos sociales MascotBook */
     mascotaGustos: "",
     mascotaQueCome: "",
     mascotaCaracter: "",
     mascotaFamilia: "",
     mascotaUltimaAventura: "",
-    /** [{ nombre, fechaAplicacion?, fechaVencimiento?, fechaProxima? (legacy = vencimiento) }] */
     mascotaVacunas: [],
     mascotaHistorialClinico: "",
-    /** Alertas médicas y alergias (texto destacado en ficha pública) */
     mascotaAlertasSalud: "",
-    /** true: la sección Ficha médica es visible en la tarjeta pública ?view=pet */
     mascotaSaludPublica: false,
-    /** true: equivalente a “pase veterinario” permanente en tarjeta pública (profesionales) */
     paseVeterinarioActivo: false,
-    /** Imágenes subidas a Storage bajo usuarios/{uid}/salud/ */
     mascotaEstudiosSaludUrls: [],
-    /** URLs de radiografías / estudios (manual; se unen a estudios en la vista pública) */
     mascotaGaleriaUrls: [],
   };
 
-  /**
-   * Fusiona con defaults y devuelve el objeto `cfg` que usa index.html (URLs normalizadas).
-   */
   window.normalizeTarjetaData = function (patch) {
     var o = Object.assign({}, window.DEFAULT_TARJETA_RAW, patch || {});
     var w = onlyDigits(o.whatsappNumero);
@@ -137,14 +193,102 @@
       vcardTitulo: String(o.vcardTitulo || o.cargo || "").trim(),
       calendlyUrl: String(o.calendlyUrl || "").trim(),
       mensajeCitaWhatsapp: String(
-        o.mensajeCitaWhatsapp ||
-          window.DEFAULT_TARJETA_RAW.mensajeCitaWhatsapp ||
-          ""
+        o.mensajeCitaWhatsapp || window.DEFAULT_TARJETA_RAW.mensajeCitaWhatsapp || ""
       ).trim(),
       cardTheme: theme,
       avatarShape: avatarShape,
       buttonLayout: buttonLayout,
       leadCaptureEnabled: leadCaptureEnabled,
+    };
+  };
+
+  window.normalizePersonalCard = function (patch) {
+    var d = Object.assign({}, window.DEFAULT_PERSONAL_CARD, patch || {});
+    var redes = d.redes && typeof d.redes === "object" ? d.redes : {};
+    var avatarShape = String(d.user_avatarShape || d.avatarShape || "rect").trim().toLowerCase();
+    if (avatarShape !== "round" && avatarShape !== "rect" && avatarShape !== "circle") avatarShape = "rect";
+    if (avatarShape === "circle") avatarShape = "round";
+    var buttonLayout = String(d.user_buttonLayout || d.buttonLayout || "list").trim().toLowerCase();
+    if (buttonLayout !== "grid" && buttonLayout !== "list" && buttonLayout !== "icons") buttonLayout = "list";
+    if (buttonLayout === "icons") buttonLayout = "grid";
+    var bg = String(d.user_bgColor || "#000000").trim();
+    if (!/^#[0-9a-f]{6}$/i.test(bg) && !/^#[0-9a-f]{3}$/i.test(bg)) bg = "#000000";
+    var preset = String(d.user_bgPreset || "").trim().toLowerCase();
+    if (["matte", "white", "blue", "custom"].indexOf(preset) < 0) {
+      preset = "matte";
+      if (bg.toLowerCase() === "#ffffff" || bg.toLowerCase() === "#fff") preset = "white";
+      else if (bg.toLowerCase() === "#0f1728" || bg.toLowerCase() === "#0f172a" || bg.toLowerCase() === "#1e3a5f") {
+        preset = "blue";
+      }
+    }
+    return {
+      user_nombre: String(d.user_nombre || d.nombreCompleto || "").trim(),
+      user_cargo: String(d.user_cargo || d.cargo || "").trim(),
+      user_empresa: String(d.user_empresa || d.empresa || "").trim(),
+      user_bio: String(d.user_bio || d.bio || "").trim(),
+      nombreCompleto: String(d.user_nombre || d.nombreCompleto || "").trim(),
+      cargo: String(d.user_cargo || d.cargo || "").trim(),
+      empresa: String(d.user_empresa || d.empresa || "").trim(),
+      redes: {
+        instagram: igUrl(redes.instagram != null ? redes.instagram : d.instagram),
+        linkedin: liUrl(redes.linkedin != null ? redes.linkedin : d.linkedin),
+        sitioWeb: String(redes.sitioWeb != null ? redes.sitioWeb : d.sitioWeb || "").trim(),
+        whatsappNumero: onlyDigits(redes.whatsappNumero != null ? redes.whatsappNumero : d.whatsappNumero),
+      },
+      email: String(d.email || "").trim(),
+      telefono: String(d.telefono || "").trim(),
+      whatsappNumero: onlyDigits(d.whatsappNumero),
+      fotoUrl: String(d.fotoUrl || "").trim(),
+      logoUrl: String(d.logoUrl || "").trim(),
+      vcardNombres: String(d.vcardNombres || "").trim(),
+      vcardApellidos: String(d.vcardApellidos || "").trim(),
+      vcardOrganizacion: String(d.vcardOrganizacion || d.user_empresa || d.empresa || "").trim(),
+      vcardTitulo: String(d.vcardTitulo || d.user_cargo || d.cargo || "").trim(),
+      bio: String(d.user_bio || d.bio || "").trim(),
+      sitioWeb: String(d.sitioWeb || "").trim(),
+      instagram: igUrl(d.instagram),
+      linkedin: liUrl(d.linkedin),
+      mapsUrl: String(d.mapsUrl || "").trim(),
+      calendlyUrl: String(d.calendlyUrl || "").trim(),
+      emailInstitucional: String(d.emailInstitucional || "").trim(),
+      user_avatarShape: avatarShape,
+      user_buttonLayout: buttonLayout,
+      user_bgColor: bg,
+      user_bgPreset: preset,
+    };
+  };
+
+  window.normalizeMascotCard = function (patch) {
+    var d = Object.assign({}, window.DEFAULT_MASCOT_CARD, patch || {});
+    var tid = String(d.themeId || "classic").trim().toLowerCase();
+    if (THEME_IDS.indexOf(tid) < 0) tid = "classic";
+    var tex = String(d.textureId || "").trim().toLowerCase();
+    if (TEXTURE_IDS.indexOf(tex) < 0) {
+      if (tid === "candy") tex = "candy";
+      else if (tid === "organic" || tid === "glass") tex = "park";
+      else tex = "elite";
+    }
+    var accent = String(d.accentColor || "").trim();
+    if (!/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(accent)) accent = "#ec4899";
+    tid = themeIdFromTexture(tex);
+    var gal = d.galeria;
+    if (!Array.isArray(gal)) gal = [];
+    gal = gal.map(function (u) {
+      return String(u || "").trim();
+    }).filter(Boolean);
+    return {
+      nombre: String(d.nombre || "").trim(),
+      raza: String(d.raza || "").trim(),
+      sexo: String(d.sexo || "").trim(),
+      salud: String(d.salud || "").trim(),
+      historia: String(d.historia || "").trim(),
+      personalidad: String(d.personalidad || "").trim(),
+      themeId: tid,
+      textureId: tex,
+      accentColor: accent,
+      fotoPerfilUrl: String(d.fotoPerfilUrl || "").trim(),
+      galeria: gal,
+      muro: String(d.muro || "").trim(),
     };
   };
 

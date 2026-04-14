@@ -76,9 +76,18 @@
           try {
             var q = new URLSearchParams(window.location.search);
             var n = q.get("next");
-            if (n && n.indexOf("://") === -1 && n.indexOf("//") === -1) return n;
+            if (n && n.indexOf("://") === -1 && n.indexOf("//") === -1) {
+              if (n.indexOf("viewMode=") >= 0) return n;
+              var sep = n.indexOf("?") >= 0 ? "&" : "?";
+              var app = normalizeApp(q.get("app"));
+              return (
+                n + sep + "viewMode=" + (app === "mascotbook" ? "mascot" : "personal")
+              );
+            }
           } catch (e) {}
-          return "admin.html";
+          var q2 = new URLSearchParams(window.location.search);
+          var appD = normalizeApp(q2.get("app"));
+          return "admin.html?viewMode=" + (appD === "mascotbook" ? "mascot" : "personal");
         }
         function readAppHint() {
           try {
@@ -92,7 +101,11 @@
         if (reg) {
           try {
             var app = readAppHint();
-            reg.href = "register.html?app=" + encodeURIComponent(app);
+            var qsReg = new URLSearchParams(window.location.search);
+            var nextParam = qsReg.get("next");
+            var rh = "register.html?app=" + encodeURIComponent(app);
+            if (nextParam) rh += "&next=" + encodeURIComponent(nextParam);
+            reg.href = rh;
           } catch (e3) {}
         }
 

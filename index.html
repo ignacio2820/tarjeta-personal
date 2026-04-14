@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>EliteCard + MascotBook | Ecosistema digital</title>
+    <title>EliteCard · MascotBook</title>
     <meta
       name="description"
-      content="EliteCard y MascotBook: tarjeta profesional y pasaporte digital para mascotas en una sola plataforma."
+      content="EliteCard para tu identidad profesional y MascotBook para el perfil social de tu mascota. Entrá con tu cuenta para editar."
     />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#0a0a0a" />
     <script>
       (function () {
         try {
@@ -32,7 +32,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link
@@ -43,856 +43,230 @@
     />
     <style>
       :root {
-        --elite-gold: #d4af37;
-        --ink: #0f172a;
-        --muted: #64748b;
-        --surface: #ffffff;
-        --page-bg: #ffffff;
-        --space-xs: 0.35rem;
-        --space-sm: 0.65rem;
-        --space-md: 1.1rem;
-        --space-lg: 1.65rem;
-        --space-xl: 2.35rem;
-        --radius-card: 1.375rem;
-        --shadow-card: 0 14px 36px rgba(15, 23, 42, 0.09);
-        --shadow-card-hover: 0 22px 52px rgba(15, 23, 42, 0.16);
+        --gold: #d4af37;
       }
-      * { box-sizing: border-box; }
+      * {
+        box-sizing: border-box;
+      }
       body {
         margin: 0;
-        font-family: "Poppins", system-ui, sans-serif;
-        color: var(--ink);
-        background: var(--page-bg);
-        -webkit-font-smoothing: antialiased;
+        min-height: 100dvh;
+        font-family: "Inter", "Poppins", system-ui, sans-serif;
+        background: #030303;
+        color: #f4f4f5;
       }
-      .wrap {
-        max-width: 1320px;
-        margin: 0 auto;
-        padding: 0 clamp(1rem, 3vw, 1.5rem);
-      }
-      .topbar {
+      .top {
         position: sticky;
         top: 0;
-        z-index: 30;
-        background: rgba(255, 255, 255, 0.92);
-        border-bottom: 1px solid rgba(15, 23, 42, 0.07);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-      }
-      .topbar-row {
-        min-height: 72px;
+        z-index: 20;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 0.75rem;
-        flex-wrap: wrap;
+        padding: 0.85rem 1.25rem;
+        background: rgba(8, 8, 8, 0.9);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       }
       .brand {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.55rem;
         font-weight: 700;
-        font-size: 1.02rem;
-        letter-spacing: -0.01em;
-        color: var(--ink);
+        font-size: 0.95rem;
+        color: #f5f5f5;
+        letter-spacing: -0.02em;
+      }
+      .brand span {
+        color: var(--gold);
+      }
+      .nav-auth a {
         text-decoration: none;
-      }
-      .brand-name {
-        background: linear-gradient(transparent calc(100% - 5px), rgba(212, 175, 55, 0.92) 5px);
-        padding-bottom: 2px;
-      }
-      .brand-badge {
-        width: 35px;
-        height: 35px;
-        border-radius: 9px;
-        border: 1px solid rgba(212, 175, 55, 0.42);
-        color: var(--elite-gold);
-        background: linear-gradient(152deg, #fffef8, #f3e8c4);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.78rem;
-        font-weight: 700;
-      }
-      .top-links {
-        display: flex;
-        align-items: center;
-        gap: clamp(0.65rem, 2vw, 1.35rem);
-        flex-wrap: wrap;
-      }
-      .top-links a {
-        text-decoration: none;
-        color: var(--ink);
-        font-size: 0.94rem;
-        font-weight: 500;
-        letter-spacing: 0.01em;
-        padding: 0.2rem 0;
-        transition: color 0.18s ease;
-      }
-      .top-links a:not(.cta-login):hover {
-        color: #1d4ed8;
-      }
-      .cta-login {
-        position: relative;
-        isolation: isolate;
-        overflow: hidden;
-        border: 1px solid rgba(212, 175, 55, 0.55);
-        border-radius: 11px;
-        padding: 0.62rem 1.05rem;
-        margin-left: 0.15rem;
-        background: linear-gradient(148deg, #0f172a 0%, #0a0a0a 100%);
-        color: #f8fafc !important;
-        font-size: 0.88rem;
+        font-size: 0.8rem;
         font-weight: 600;
-        letter-spacing: 0.02em;
-        box-shadow:
-          0 6px 16px rgba(15, 23, 42, 0.22),
-          inset 0 1px 0 rgba(255, 248, 220, 0.12);
-        transition: transform 0.18s ease, box-shadow 0.18s ease;
+        padding: 0.5rem 1.1rem;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #c9a132, var(--gold));
+        color: #0a0a0a;
+        border: 1px solid rgba(212, 175, 55, 0.5);
+        display: inline-block;
       }
-      .cta-login::after {
+      .nav-auth a:hover {
+        filter: brightness(1.06);
+      }
+      .split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-height: calc(100dvh - 58px);
+        gap: 0;
+      }
+      @media (max-width: 900px) {
+        .split {
+          grid-template-columns: 1fr;
+        }
+      }
+      .hub-tile {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: clamp(2rem, 4vw, 3rem) 1.35rem 2.5rem;
+        text-align: center;
+        overflow: hidden;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+      }
+      .hub-tile:hover {
+        transform: translateY(-6px);
+        z-index: 2;
+        box-shadow: 0 28px 60px rgba(0, 0, 0, 0.55);
+      }
+      .hub-tile--elite {
+        background: radial-gradient(ellipse 85% 55% at 50% -5%, rgba(212, 175, 55, 0.22), transparent),
+          linear-gradient(185deg, #050505, #121212 55%, #080808);
+        color: #f5f0e6;
+        border-right: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      @media (max-width: 900px) {
+        .hub-tile--elite {
+          border-right: none;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+      }
+      .hub-tile--mascot {
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cpath fill='%23ffffff' fill-opacity='0.07' d='M12 48c2-7 10-12 18-12 4 0 8 2 11 6 3-8 14-14 24-12 6 1 12 6 14 13h-67z'/%3E%3Ccircle cx='20' cy='22' r='4' fill='%23ffffff' fill-opacity='0.06'/%3E%3Ccircle cx='58' cy='58' r='5' fill='%23ffffff' fill-opacity='0.05'/%3E%3C/svg%3E"),
+          radial-gradient(circle at 15% 20%, rgba(244, 114, 182, 0.35), transparent 42%),
+          radial-gradient(circle at 85% 30%, rgba(125, 211, 252, 0.35), transparent 45%),
+          linear-gradient(160deg, #fff8fc 0%, #fce7f3 30%, #e0f2fe 65%, #d1fae5 100%);
+        color: #1e1b4b;
+      }
+      .hub-tile--mascot::before {
         content: "";
         position: absolute;
         inset: 0;
-        z-index: 0;
-        background: linear-gradient(
-          105deg,
-          transparent 0%,
-          transparent 38%,
-          rgba(255, 236, 179, 0.5) 50%,
-          transparent 62%,
-          transparent 100%
-        );
-        background-size: 220% 100%;
-        animation: ec-cta-shine 3.2s ease-in-out infinite;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.35), transparent 40%);
         pointer-events: none;
-        opacity: 0.55;
       }
-      .cta-login > span {
+      .hub-tile--mascot > * {
         position: relative;
         z-index: 1;
       }
-      @keyframes ec-cta-shine {
-        0%,
-        100% {
-          background-position: 160% 0;
-        }
-        50% {
-          background-position: -160% 0;
-        }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .cta-login::after {
-          animation: none;
-          opacity: 0.2;
-        }
-      }
-      .cta-login:hover {
-        transform: translateY(-1px);
-        box-shadow:
-          0 10px 22px rgba(15, 23, 42, 0.26),
-          0 0 24px rgba(212, 175, 55, 0.22);
-      }
-
-      .hero {
-        padding: var(--space-lg) 0 var(--space-sm);
-      }
-      .hero-grid {
-        display: grid;
-        gap: var(--space-md);
-        grid-template-columns: 1fr;
-      }
-      @media (min-width: 980px) {
-        .hero-grid {
-          grid-template-columns: 1fr 1fr;
-          gap: 1.125rem;
-          align-items: stretch;
-        }
-      }
-      .card {
-        border-radius: var(--radius-card);
-        min-height: 384px;
-        padding: 1.35rem 1.4rem 1.45rem;
-        position: relative;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        box-shadow: var(--shadow-card);
-        transition: transform 0.22s ease, box-shadow 0.22s ease;
-      }
-      .hero-card-inner {
-        display: flex;
-        flex-direction: column;
-        gap: 1.15rem;
-        flex: 1;
-        min-height: 0;
-      }
-      @media (min-width: 640px) {
-        .hero-card-inner {
-          flex-direction: row;
-          align-items: stretch;
-          gap: 1.25rem;
-        }
-        .hero-card-copy {
-          flex: 1;
-          min-width: 0;
-          display: flex;
-          flex-direction: column;
-        }
-        .hero-phone-aside {
-          flex-shrink: 0;
-          width: 148px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-      }
-      .hero-phone-aside {
-        margin-top: 0.25rem;
-      }
-      .hero-phone {
-        width: 100%;
-        max-width: 148px;
-        margin: 0 auto;
-        border-radius: 22px;
-        border: 2.5px solid #0f172a;
-        padding: 8px;
-        background: linear-gradient(165deg, #1e293b 0%, #0f172a 100%);
-        box-shadow: 0 14px 32px rgba(15, 23, 42, 0.28);
-      }
-      .hero-phone .hero-screen {
-        border-radius: 16px;
-        min-height: 198px;
-        padding: 0.72rem 0.65rem;
-        display: flex;
-        flex-direction: column;
-        color: #fff;
-      }
-      .hero-phone.elite-phone .hero-screen {
-        background: linear-gradient(152deg, #1a1a1a 0%, #2d2d2d 100%);
-        border: 1px solid rgba(212, 175, 55, 0.35);
-      }
-      .hero-phone.mascot-phone .hero-screen {
-        background: linear-gradient(135deg, #3b82f6 0%, #93c5fd 45%, #fcd34d 100%);
-        color: #0f172a;
-      }
-      .hero-screen-k {
-        margin: 0;
-        font-size: 0.5625rem;
-        font-weight: 700;
-        letter-spacing: 0.12em;
+      .badge {
+        font-size: 0.65rem;
         text-transform: uppercase;
-        opacity: 0.85;
-      }
-      .hero-screen-n {
-        margin: 0.28rem 0 0;
-        font-size: 1.125rem;
-        font-weight: 800;
-        letter-spacing: -0.03em;
-        line-height: 1.05;
-      }
-      .hero-screen-d {
-        margin: 0.32rem 0 0;
-        font-size: 0.625rem;
-        line-height: 1.35;
-        opacity: 0.88;
-      }
-      .hero-screen-chips {
-        margin-top: auto;
-        padding-top: 0.5rem;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.28rem;
-      }
-      .hero-chip {
-        font-size: 0.5rem;
-        font-weight: 700;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        padding: 0.15rem 0.38rem;
-        border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.35);
-        background: rgba(0, 0, 0, 0.12);
-      }
-      .hero-phone.mascot-phone .hero-chip {
-        border-color: rgba(15, 23, 42, 0.2);
-        background: rgba(255, 255, 255, 0.45);
-      }
-      .card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--shadow-card-hover);
-      }
-      .elite {
-        color: #f8fafc;
-        border: 1.5px solid rgba(212, 175, 55, 0.48);
-        background:
-          radial-gradient(ellipse 85% 55% at 88% 8%, rgba(212, 175, 55, 0.14), transparent 52%),
-          linear-gradient(168deg, #0a0a0a 0%, #141414 48%, #1c1c1c 100%);
-      }
-      .elite .kicker {
-        color: rgba(244, 208, 127, 0.95);
-      }
-      .mascot {
-        color: var(--ink);
-        border: 1.5px solid rgba(37, 99, 235, 0.38);
-        background:
-          radial-gradient(ellipse 80% 50% at 92% 6%, rgba(255, 210, 140, 0.55), transparent 42%),
-          linear-gradient(128deg, #8ec8ff 0%, #a8d4ff 36%, #ffe0a8 100%);
-      }
-      .mascot::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        opacity: 0.175;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='84' viewBox='0 0 84 84'%3E%3Cg fill='%231e293b' fill-opacity='0.25'%3E%3Cpath d='M31 48c-4 2-8-2-6-6 2-3 7-2 6 6zm22 0c4 2 8-2 6-6-2-3-7-2-6 6z'/%3E%3Cellipse cx='42' cy='38' rx='14' ry='12'/%3E%3C/g%3E%3C/svg%3E");
-        background-size: 76px 76px;
-      }
-      .kicker {
-        margin: 0;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.45rem;
-        font-weight: 600;
-        font-size: 0.8125rem;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        opacity: 0.92;
-      }
-      .kicker i {
-        font-size: 0.88em;
+        letter-spacing: 0.22em;
+        margin-bottom: 0.65rem;
         opacity: 0.9;
       }
-      .title {
-        margin: 0.55rem 0 0;
-        line-height: 1.04;
-        font-size: clamp(1.95rem, 3.85vw, 3.15rem);
-        font-weight: 800;
-        letter-spacing: -0.028em;
-        max-width: 14ch;
+      .hub-tile h2 {
+        font-size: clamp(1.35rem, 3.2vw, 1.9rem);
+        font-weight: 700;
+        margin: 0 0 0.65rem;
+        letter-spacing: -0.03em;
       }
-      .mascot .title {
-        font-weight: 800;
+      .hub-tile .lead {
+        margin: 0 0 1.25rem;
+        max-width: 24rem;
+        line-height: 1.55;
+        font-size: 0.92rem;
+      }
+      .hub-tile--elite .lead {
+        color: rgba(245, 240, 230, 0.66);
+      }
+      .hub-tile--mascot .lead {
+        color: rgba(30, 27, 75, 0.78);
+        font-weight: 500;
       }
       .feature-list {
-        margin: 1.05rem 0 0;
-        padding: 0 0 0 1.2rem;
-        display: grid;
-        gap: 0.38rem;
-        font-size: 0.96875rem;
-        font-weight: 500;
-        line-height: 1.48;
-        flex: 1;
-      }
-      .elite .feature-list {
-        color: rgba(248, 250, 252, 0.88);
-      }
-      .elite .feature-list li::marker {
-        color: var(--elite-gold);
-      }
-      .mascot .feature-list {
-        color: rgba(15, 23, 42, 0.88);
-      }
-      .mascot .feature-list li::marker {
-        color: rgba(15, 23, 42, 0.55);
-      }
-      .btn {
-        margin-top: 1.2rem;
-        border-radius: 11px;
-        padding: 0.78rem 1.12rem;
-        font-size: 0.9375rem;
-        font-weight: 700;
-        letter-spacing: 0.015em;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        max-width: 17.5rem;
-        align-self: flex-start;
-        transition: filter 0.18s ease, transform 0.18s ease;
-      }
-      .btn:hover {
-        filter: brightness(1.04);
-        transform: translateY(-1px);
-      }
-      .btn-gold {
-        color: #0a0a0a;
-        background: linear-gradient(135deg, #fcefb8 0%, #e8c547 42%, #c9a132 100%);
-        box-shadow: 0 4px 14px rgba(201, 161, 50, 0.35);
-      }
-      .btn-blue {
-        color: #f8fafc;
-        background: linear-gradient(135deg, #1e40af 0%, #2563eb 52%, #3b82f6 100%);
-        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
-      }
-
-      .below {
-        display: grid;
-        gap: var(--space-lg);
-        grid-template-columns: 1fr;
-        padding: var(--space-md) 0 var(--space-xl);
-      }
-      @media (min-width: 980px) {
-        .below {
-          grid-template-columns: 1fr 1fr;
-          gap: 2rem;
-          align-items: start;
-        }
-      }
-      .section-title {
-        margin: 0 0 0.75rem;
-        font-size: clamp(1.85rem, 2.85vw, 2.75rem);
-        line-height: 1.08;
-        font-weight: 800;
-        letter-spacing: -0.026em;
-      }
-      .section-title .section-title-soft {
-        font-weight: 500;
-        color: var(--muted);
-        font-size: 0.62em;
-        letter-spacing: 0;
-      }
-      .mb-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0.52rem;
-      }
-      .mb-item {
-        display: flex;
-        align-items: center;
-        gap: 0.7rem;
-        font-size: 1.0625rem;
-        line-height: 1.35;
-        font-weight: 600;
-        letter-spacing: -0.01em;
-      }
-      .mb-item i {
-        width: 44px;
-        height: 44px;
-        flex-shrink: 0;
-        border-radius: 999px;
-        background: #e8eaed;
-        border: 1px solid rgba(15, 23, 42, 0.08);
-        color: #64748b;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.05rem;
-      }
-      .promo-col {
-        display: flex;
-        flex-direction: column;
-        gap: 0.85rem;
-      }
-      .promo-head {
-        margin: 0 0 0.15rem;
-        font-size: clamp(1.65rem, 2.4vw, 2.1rem);
-        font-weight: 800;
-        letter-spacing: -0.024em;
-        line-height: 1.12;
-      }
-      .price-card {
-        border-radius: 15px;
-        border: 1px solid rgba(15, 23, 42, 0.1);
-        padding: 1.05rem 1.15rem 1.1rem;
-        background: var(--surface);
-        box-shadow: 0 8px 28px rgba(15, 23, 42, 0.07);
-      }
-      .price-headline {
-        margin: 0;
-        font-size: clamp(1.65rem, 2.2vw, 2rem);
-        font-weight: 800;
-        letter-spacing: -0.03em;
-        line-height: 1.15;
-      }
-      .price-sub {
-        margin: 0.35rem 0 0;
-        font-size: 0.9375rem;
-        font-weight: 500;
-        line-height: 1.45;
-        color: var(--muted);
-      }
-      .rescate-title {
-        margin: 0.15rem 0 0.45rem;
-        font-size: clamp(1.45rem, 2vw, 1.85rem);
-        font-weight: 800;
-        letter-spacing: -0.022em;
-        line-height: 1.12;
-      }
-      .rescate-lead {
-        margin: 0;
-        font-size: 1.02rem;
-        font-weight: 600;
-        letter-spacing: -0.01em;
-      }
-      .rescate-desc {
-        margin: 0.3rem 0 0;
-        font-size: 0.9375rem;
-        line-height: 1.45;
-        color: #475569;
-      }
-      .rescate-card {
-        display: flex;
-        flex-direction: column;
-        gap: 0.85rem;
-        border-radius: 16px;
-        border: 1px solid rgba(15, 23, 42, 0.1);
+        list-style: none;
         padding: 0;
-        overflow: hidden;
-        background: var(--surface);
-        box-shadow: 0 8px 28px rgba(15, 23, 42, 0.07);
-      }
-      @media (min-width: 520px) {
-        .rescate-card {
-          flex-direction: row;
-          align-items: stretch;
-        }
-      }
-      .rescate-card-photo {
-        flex-shrink: 0;
+        margin: 0 0 1.5rem;
         width: 100%;
-        min-height: 160px;
-        background: #e2e8f0 center/cover no-repeat;
-        background-image: url("https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=400&h=300&fit=crop&q=80");
+        max-width: 22rem;
+        text-align: left;
       }
-      @media (min-width: 520px) {
-        .rescate-card-photo {
-          width: min(42%, 200px);
-          min-height: auto;
-        }
-      }
-      .rescate-card-body {
-        padding: 1rem 1.1rem 1.05rem;
+      .feature-list li {
         display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        flex: 1;
-        min-width: 0;
+        align-items: flex-start;
+        gap: 0.65rem;
+        font-size: 0.82rem;
+        margin-bottom: 0.55rem;
+        line-height: 1.4;
       }
-      .rescate-badges {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.4rem;
-        margin-bottom: 0.15rem;
+      .feature-list li i {
+        margin-top: 0.12rem;
+        width: 1.25rem;
+        text-align: center;
+        color: #db2777;
       }
-      .rescate-badge {
-        font-size: 0.625rem;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        padding: 0.28rem 0.55rem;
-        border-radius: 999px;
-        border: 1px solid rgba(212, 175, 55, 0.45);
-        color: #92400e;
-        background: linear-gradient(135deg, #fffbeb, #fde68a);
+      .hub-tile--elite .feature-list li i {
+        color: var(--gold);
       }
-      .rescate-badge--alt {
-        border-color: rgba(37, 99, 235, 0.35);
-        color: #1e3a8a;
-        background: linear-gradient(135deg, #eff6ff, #bfdbfe);
+      .hub-tile--mascot .feature-list li {
+        color: rgba(30, 27, 75, 0.88);
       }
-      .rescate-long {
-        margin: 0;
-        font-size: 0.875rem;
-        line-height: 1.55;
-        color: #475569;
-      }
-
-      .sim-wrap {
-        margin-top: 0.15rem;
-        border-radius: 17px;
-        border: 1px solid rgba(15, 23, 42, 0.09);
-        padding: 1.15rem 1.2rem 1.25rem;
-        background: linear-gradient(172deg, #fafcfe 0%, #eef3fb 52%, #f5f8ff 100%);
-        box-shadow: 0 10px 32px rgba(15, 23, 42, 0.06);
-      }
-      .sim-title {
-        margin: 0;
-        font-size: 1.22rem;
-        font-weight: 800;
-        letter-spacing: -0.02em;
-      }
-      .sim-lead {
-        margin: 0.35rem 0 0;
-        max-width: 42rem;
-        font-size: 0.9375rem;
-        line-height: 1.5;
-        color: #475569;
-      }
-      .sim-row {
-        margin-top: 0.85rem;
-        display: grid;
-        gap: 1rem;
-        grid-template-columns: 1fr;
-      }
-      @media (min-width: 840px) {
-        .sim-row {
-          grid-template-columns: 1fr minmax(220px, 248px);
-          align-items: start;
-        }
-      }
-      .sim-fields {
-        display: flex;
-        flex-direction: column;
-        gap: 0.55rem;
-      }
-      .sim-label {
-        display: block;
-        font-size: 0.78rem;
-        font-weight: 600;
-        color: #334155;
-        letter-spacing: 0.03em;
-        text-transform: uppercase;
-        margin-bottom: 0.28rem;
-      }
-      .sim-row input[type="text"] {
-        width: 100%;
-        border-radius: 10px;
-        border: 1px solid #c5d0e0;
-        padding: 0.64rem 0.78rem;
-        font: inherit;
-        font-size: 0.9375rem;
-        background: #fff;
-        transition: border-color 0.18s ease, box-shadow 0.18s ease;
-      }
-      .sim-row input[type="text"]:focus {
-        outline: none;
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
-      }
-      .sim-row input[type="color"] {
-        width: 100%;
-        max-width: 4.5rem;
-        height: 2.5rem;
-        padding: 2px;
-        border-radius: 10px;
-        border: 1px solid #c5d0e0;
-        background: #fff;
-        cursor: pointer;
-      }
-      .phone {
-        border-radius: 28px;
-        border: 2.5px solid #0f172a;
-        padding: 11px;
-        background: linear-gradient(165deg, #1e293b 0%, #0f172a 100%);
-        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.22);
-      }
-      .screen {
-        border-radius: 20px;
-        min-height: 258px;
-        padding: 0.95rem 0.9rem;
-        color: #fff;
-        background: linear-gradient(148deg, var(--sim-accent, #2563eb) 0%, #1e3a5f 100%);
-        display: flex;
-        flex-direction: column;
-      }
-      .screen-kicker {
-        margin: 0;
-        font-size: 0.6875rem;
-        font-weight: 600;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        opacity: 0.88;
-      }
-      .screen-name {
-        margin: 0.4rem 0 0;
-        font-size: 1.75rem;
-        font-weight: 800;
-        letter-spacing: -0.03em;
-        line-height: 1.05;
-      }
-      .screen-desc {
-        margin: 0.35rem 0 0;
-        font-size: 0.875rem;
-        line-height: 1.45;
-        opacity: 0.92;
-        max-width: 16rem;
-      }
-      .chip-row {
-        margin-top: auto;
-        padding-top: 0.75rem;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.4rem;
-      }
-      .chip {
-        border-radius: 9999px;
-        border: 1px solid rgba(255, 255, 255, 0.35);
-        padding: 0.22rem 0.58rem;
+      .hub-cta {
         display: inline-flex;
-        gap: 0.32rem;
         align-items: center;
-        font-size: 0.6875rem;
-        font-weight: 600;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        background: rgba(0, 0, 0, 0.12);
+        justify-content: center;
+        padding: 0.82rem 1.35rem;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 0.78rem;
+        text-decoration: none;
+        margin-top: auto;
       }
-      .page-foot-spacer {
-        height: 2rem;
+      .hub-tile--elite .hub-cta {
+        background: linear-gradient(135deg, #c9a132, var(--gold));
+        color: #0a0a0a;
+      }
+      .hub-tile--mascot .hub-cta {
+        background: linear-gradient(90deg, #ec4899, #8b5cf6);
+        color: #fff;
+        box-shadow: 0 12px 32px rgba(236, 72, 153, 0.35);
+      }
+      .hub-cta:hover {
+        filter: brightness(1.05);
       }
     </style>
   </head>
   <body>
-    <header class="topbar">
-      <div class="wrap topbar-row">
-        <a class="brand" href="index.html"><span class="brand-badge">EC</span><span class="brand-name">EliteCard</span></a>
-        <nav class="top-links" aria-label="Navegación principal">
-          <a href="#elitecard">EliteCard</a>
-          <a href="#mascotbook">MascotBook</a>
-          <a href="#ayuda">Ayuda</a>
-          <a class="cta-login" href="login.html"><span>Login / Crear Cuenta</span></a>
-        </nav>
-      </div>
+    <header class="top">
+      <div class="brand">Elite<span>Card</span> · MascotBook</div>
+      <nav class="nav-auth" aria-label="Acceso">
+        <a href="login.html">Login / Crear cuenta</a>
+      </nav>
     </header>
 
-    <main class="wrap">
-      <section class="hero" aria-label="Selector de productos" id="elitecard">
-        <div class="hero-grid">
-          <article class="card elite">
-            <div class="hero-card-inner">
-              <div class="hero-card-copy">
-                <p class="kicker"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> EliteCard (Business)</p>
-                <h1 class="title">Tu Ecosistema<br />Profesional<br />Unificado</h1>
-                <ul class="feature-list">
-                  <li>Tarjeta Personal Digital (NFC/QR)</li>
-                  <li>Analíticas en Tiempo Real</li>
-                  <li>Modo Profesional Estilizado</li>
-                </ul>
-                <a class="btn btn-gold" href="login.html?app=elitecard">Comenzar Gratis</a>
-              </div>
-              <div class="hero-phone-aside" aria-hidden="true">
-                <div class="hero-phone elite-phone">
-                  <div class="hero-screen">
-                    <p class="hero-screen-k">EliteCard</p>
-                    <p class="hero-screen-n">Pedro</p>
-                    <p class="hero-screen-d">Perfil listo para compartir con un toque.</p>
-                    <div class="hero-screen-chips">
-                      <span class="hero-chip">NFC</span>
-                      <span class="hero-chip">QR</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <article class="card mascot" id="mascotbook">
-            <div class="hero-card-inner">
-              <div class="hero-card-copy">
-                <p class="kicker"><i class="fa-solid fa-paw" aria-hidden="true"></i> MascotBook (Pet Welfare)</p>
-                <h2 class="title">El Pasaporte<br />Digital de tu<br />Mejor Amigo</h2>
-                <ul class="feature-list">
-                  <li>Seguridad GPS y alertas de pérdida</li>
-                  <li>Ficha médica y salud proactiva</li>
-                  <li>QR único inmutable</li>
-                  <li>Modo alegre y compartible</li>
-                </ul>
-                <a class="btn btn-blue" href="login.html?app=mascotbook">Ver Planes de Cuidado</a>
-              </div>
-              <div class="hero-phone-aside" aria-hidden="true">
-                <div class="hero-phone mascot-phone">
-                  <div class="hero-screen">
-                    <p class="hero-screen-k">MascotBook</p>
-                    <p class="hero-screen-n">Max</p>
-                    <p class="hero-screen-d">Salud, historia y contacto en un solo escaneo.</p>
-                    <div class="hero-screen-chips">
-                      <span class="hero-chip">QR</span>
-                      <span class="hero-chip">Salud</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </article>
-        </div>
+    <main class="split" aria-label="Selector de producto">
+      <section class="hub-tile hub-tile--elite" aria-label="EliteCard">
+        <p class="badge" style="color: var(--gold)">Profesional</p>
+        <h2>EliteCard</h2>
+        <p class="lead">Tarjeta digital premium: contacto inmediato, identidad clara y archivo VCF para que te guarden con un toque.</p>
+        <ul class="feature-list">
+          <li><i class="fa-solid fa-id-card-clip" aria-hidden="true"></i>Presentación con foto, cargo y organización alineados a tu marca.</li>
+          <li><i class="fa-solid fa-address-book" aria-hidden="true"></i>Guardar contacto y compartir enlace o QR sin fricción.</li>
+          <li><i class="fa-solid fa-palette" aria-hidden="true"></i>Fondo y disposición de botones adaptables a tu estilo.</li>
+        </ul>
+        <a
+          class="hub-cta"
+          href="login.html?next=admin.html%3FviewMode%3Dpersonal%26panel%3Dcontenido"
+          >Ir al panel EliteCard</a
+        >
       </section>
 
-      <section class="below">
-        <div>
-          <h3 class="section-title">
-            MascotBook <span class="section-title-soft">(Pet Welfare)</span>
-          </h3>
-          <div class="mb-list">
-            <div class="mb-item"><i class="fa-solid fa-syringe" aria-hidden="true"></i> Ficha médica</div>
-            <div class="mb-item"><i class="fa-solid fa-id-card" aria-hidden="true"></i> Identificación</div>
-            <div class="mb-item"><i class="fa-solid fa-comment-dots" aria-hidden="true"></i> Botones contacto</div>
-            <div class="mb-item"><i class="fa-solid fa-file-lines" aria-hidden="true"></i> Historia/Personalidad</div>
-          </div>
-        </div>
-
-        <div class="promo-col">
-          <h3 class="promo-head">MascotBook Pro:</h3>
-          <div class="price-card">
-            <p class="price-headline">$24.900/año (Renovable)</p>
-            <p class="price-sub">Plan ideal para tutores que quieren seguridad completa.</p>
-          </div>
-          <h4 class="rescate-title">Plan Rescate</h4>
-          <div class="rescate-card" id="ayuda">
-            <div class="rescate-card-photo" role="img" aria-label="Mascota feliz"></div>
-            <div class="rescate-card-body">
-              <div class="rescate-badges">
-                <span class="rescate-badge">Premium</span>
-                <span class="rescate-badge rescate-badge--alt">Best choice</span>
-              </div>
-              <p class="rescate-lead">Sponsor de la comunidad EliteCard</p>
-              <p class="rescate-long">
-                Plan Rescate une a tutores y rescatistas: tu MascotBook Pro incluye alertas, ficha médica y QR inmutable para que cada
-                mascota tenga voz cuando más importa. Activá tu trial y desbloqueá el perfil completo; parte de tu suscripción apoya
-                campañas de adopción y microchip comunitario.
-              </p>
-            </div>
-          </div>
-        </div>
+      <section class="hub-tile hub-tile--mascot" aria-label="MascotBook">
+        <p class="badge" style="color: #be185d">MascotBook</p>
+        <h2>La red social de tu mascota</h2>
+        <p class="lead">Colores vivos, texturas con relieve y huellas: un perfil público tan expresivo como tu compañero.</p>
+        <ul class="feature-list">
+          <li><i class="fa-solid fa-camera-retro" aria-hidden="true"></i>Galería en rejilla estilo Instagram para sus mejores fotos.</li>
+          <li><i class="fa-solid fa-scroll" aria-hidden="true"></i>Muro y biografía para contar su historia y personalidad.</li>
+          <li><i class="fa-solid fa-heart-pulse" aria-hidden="true"></i>Bloque de ficha y salud visible cuando lo necesites.</li>
+          <li><i class="fa-solid fa-shirt" aria-hidden="true"></i>Tres texturas de fondo —Park, Candy, Elite— y color de acento a tu gusto.</li>
+        </ul>
+        <a
+          class="hub-cta"
+          href="login.html?next=admin.html%3FviewMode%3Dmascot%26panel%3Dcontenido"
+          >Ir al panel MascotBook</a
+        >
       </section>
-
-      <section class="sim-wrap" aria-label="Simulador interactivo MascotBook">
-        <h4 class="sim-title">Simulador Interactivo</h4>
-        <p class="sim-lead">
-          Escribí el nombre de tu mascota y elegí color de acento para visualizar el estilo en vivo.
-        </p>
-        <div class="sim-row">
-          <div class="sim-fields">
-            <div>
-              <label class="sim-label" for="sim-name">Nombre de tu mascota</label>
-              <input id="sim-name" type="text" placeholder="Ej: Max" autocomplete="off" />
-            </div>
-            <div>
-              <label class="sim-label" for="sim-accent">Color de acento</label>
-              <input id="sim-accent" type="color" value="#2563eb" />
-            </div>
-          </div>
-          <div class="phone">
-            <div id="sim-screen" class="screen">
-              <p class="screen-kicker">MascotBook Preview</p>
-              <p id="sim-dog-name" class="screen-name">Max</p>
-              <p class="screen-desc">Perfil social, salud y contacto en segundos.</p>
-              <div class="chip-row">
-                <span class="chip"><i class="fa-solid fa-qrcode" aria-hidden="true"></i> QR Activo</span>
-                <span class="chip"><i class="fa-solid fa-heart-pulse" aria-hidden="true"></i> Salud</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      <div class="page-foot-spacer" aria-hidden="true"></div>
     </main>
-
-    <script>
-      (function () {
-        var inputName = document.getElementById("sim-name");
-        var inputAccent = document.getElementById("sim-accent");
-        var dog = document.getElementById("sim-dog-name");
-        var screen = document.getElementById("sim-screen");
-        function sync() {
-          if (dog) dog.textContent = (inputName && inputName.value.trim()) || "Max";
-          if (screen && inputAccent) screen.style.setProperty("--sim-accent", inputAccent.value || "#2563eb");
-        }
-        if (inputName) inputName.addEventListener("input", sync);
-        if (inputAccent) inputAccent.addEventListener("input", sync);
-        sync();
-      })();
-    </script>
   </body>
 </html>

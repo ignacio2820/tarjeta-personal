@@ -1,0 +1,294 @@
+/**
+ * MascotBook — 5 plantillas (relieves y tokens por tema).
+ * El contenedor debe tener: .mascot-shell.theme-{classic|candy|night|organic|glass}
+ */
+
+.mascot-shell {
+  --mb-radius: 1.25rem;
+  --mb-font: "Poppins", system-ui, sans-serif;
+  min-height: 100%;
+  font-family: var(--mb-font);
+  transition: background 0.35s ease, color 0.25s ease;
+}
+
+/* --- Classic: dorado y negro, elegante --- */
+.theme-classic.mascot-shell {
+  --mb-accent: #d4af37;
+  --mb-accent-dim: rgba(212, 175, 55, 0.35);
+  --mb-bg0: #0a0a0a;
+  --mb-bg1: #141210;
+  --mb-text: #f5f0e6;
+  --mb-muted: rgba(245, 240, 230, 0.55);
+  --mb-card-bg: rgba(20, 18, 16, 0.92);
+  --mb-border: rgba(212, 175, 55, 0.45);
+  --mb-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+  background: radial-gradient(ellipse 120% 80% at 50% -20%, rgba(212, 175, 55, 0.12), transparent),
+    linear-gradient(180deg, var(--mb-bg0), var(--mb-bg1));
+  color: var(--mb-text);
+}
+
+.theme-classic.mascot-shell .mb-card {
+  border: 1px solid var(--mb-border);
+  box-shadow: var(--mb-shadow), inset 0 1px 0 rgba(212, 175, 55, 0.08);
+  background: var(--mb-card-bg);
+  border-radius: var(--mb-radius);
+}
+
+.theme-classic.mascot-shell .mb-avatar {
+  border: 3px solid var(--mb-accent);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.4), 0 12px 40px rgba(212, 175, 55, 0.15);
+}
+
+.theme-classic.mascot-shell .mb-title {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  letter-spacing: 0.02em;
+}
+
+.theme-classic.mascot-shell .mb-pill {
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid var(--mb-accent-dim);
+  color: var(--mb-accent);
+}
+
+/* --- Candy: pasteles, burbujas, muy redondeado --- */
+.theme-candy.mascot-shell {
+  --mb-accent: #f472b6;
+  --mb-accent2: #7dd3fc;
+  --mb-bg0: #fff5fb;
+  --mb-bg1: #e0f4ff;
+  --mb-text: #4a1942;
+  --mb-muted: rgba(74, 25, 66, 0.55);
+  --mb-card-bg: rgba(255, 255, 255, 0.88);
+  --mb-border: rgba(244, 114, 182, 0.35);
+  --mb-radius: 2rem;
+  background-color: #fff0f8;
+  background-image: radial-gradient(circle at 15% 25%, rgba(244, 114, 182, 0.35) 0%, transparent 42%),
+    radial-gradient(circle at 85% 10%, rgba(125, 211, 252, 0.45) 0%, transparent 38%),
+    radial-gradient(circle at 50% 90%, rgba(253, 224, 231, 0.9) 0%, transparent 45%),
+    radial-gradient(circle at 70% 60%, rgba(186, 230, 253, 0.5) 0%, transparent 35%),
+    linear-gradient(165deg, var(--mb-bg0), var(--mb-bg1));
+  color: var(--mb-text);
+}
+
+.theme-candy.mascot-shell .mb-card {
+  border: 2px solid var(--mb-border);
+  border-radius: var(--mb-radius);
+  background: var(--mb-card-bg);
+  box-shadow: 0 16px 40px rgba(244, 114, 182, 0.18);
+}
+
+.theme-candy.mascot-shell .mb-avatar {
+  border-radius: 2rem;
+  border: 4px solid white;
+  box-shadow: 0 8px 28px rgba(125, 211, 252, 0.45);
+}
+
+.theme-candy.mascot-shell .mb-pill {
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(244, 114, 182, 0.2), rgba(125, 211, 252, 0.25));
+  border: 1px solid rgba(244, 114, 182, 0.35);
+}
+
+.theme-candy.mascot-shell .mb-gallery img {
+  border-radius: 1.35rem;
+}
+
+/* --- Night: oscuro, neón cian, tech --- */
+.theme-night.mascot-shell {
+  --mb-accent: #22d3ee;
+  --mb-accent-glow: rgba(34, 211, 238, 0.45);
+  --mb-bg0: #030712;
+  --mb-bg1: #0c1220;
+  --mb-text: #ecfeff;
+  --mb-muted: rgba(236, 254, 255, 0.5);
+  --mb-card-bg: rgba(12, 18, 32, 0.75);
+  --mb-border: rgba(34, 211, 238, 0.55);
+  background: linear-gradient(180deg, var(--mb-bg0), var(--mb-bg1));
+  color: var(--mb-text);
+}
+
+.theme-night.mascot-shell .mb-card {
+  border: 1px solid var(--mb-border);
+  border-radius: var(--mb-radius);
+  background: var(--mb-card-bg);
+  box-shadow: 0 0 24px var(--mb-accent-glow), inset 0 0 32px rgba(34, 211, 238, 0.06);
+}
+
+.theme-night.mascot-shell .mb-avatar {
+  border: 2px solid var(--mb-accent);
+  box-shadow: 0 0 20px var(--mb-accent-glow);
+}
+
+.theme-night.mascot-shell .mb-pill {
+  border: 1px solid var(--mb-border);
+  background: rgba(34, 211, 238, 0.08);
+  color: var(--mb-accent);
+  box-shadow: 0 0 12px rgba(34, 211, 238, 0.2);
+}
+
+.theme-night.mascot-shell .mb-gallery img {
+  border: 1px solid rgba(34, 211, 238, 0.35);
+}
+
+/* --- Organic: verdes, naturaleza --- */
+.theme-organic.mascot-shell {
+  --mb-accent: #4ade80;
+  --mb-accent2: #a3e635;
+  --mb-bg0: #14200c;
+  --mb-bg1: #1a2e12;
+  --mb-text: #ecfccb;
+  --mb-muted: rgba(236, 252, 203, 0.55);
+  --mb-card-bg: rgba(26, 46, 18, 0.82);
+  --mb-border: rgba(74, 222, 128, 0.35);
+  background-color: var(--mb-bg0);
+  background-image: radial-gradient(ellipse 100% 60% at 50% 0%, rgba(163, 230, 53, 0.12), transparent),
+    repeating-linear-gradient(
+      -12deg,
+      transparent,
+      transparent 3px,
+      rgba(74, 222, 128, 0.03) 3px,
+      rgba(74, 222, 128, 0.03) 6px
+    ),
+    linear-gradient(180deg, var(--mb-bg0), var(--mb-bg1));
+  color: var(--mb-text);
+}
+
+.theme-organic.mascot-shell .mb-card {
+  border: 1px solid var(--mb-border);
+  border-radius: var(--mb-radius);
+  background: var(--mb-card-bg);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+.theme-organic.mascot-shell .mb-avatar {
+  border: 3px solid rgba(74, 222, 128, 0.6);
+  box-shadow: 0 10px 30px rgba(20, 40, 10, 0.5);
+}
+
+.theme-organic.mascot-shell .mb-pill {
+  background: rgba(74, 222, 128, 0.15);
+  border: 1px solid var(--mb-border);
+  color: var(--mb-accent2);
+}
+
+/* --- Glass: glassmorphism --- */
+.theme-glass.mascot-shell {
+  --mb-accent: rgba(255, 255, 255, 0.95);
+  --mb-text: #0f172a;
+  --mb-muted: rgba(15, 23, 42, 0.55);
+  --mb-radius: 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 45%, #f093fb 100%);
+   color: var(--mb-text);
+  min-height: 100%;
+}
+
+.theme-glass.mascot-shell .mb-card {
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: var(--mb-radius);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.15);
+}
+
+.theme-glass.mascot-shell .mb-avatar {
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.theme-glass.mascot-shell .mb-pill {
+  background: rgba(255, 255, 255, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+}
+
+.theme-glass.mascot-shell .mb-muted {
+  color: rgba(15, 23, 42, 0.6);
+}
+
+/* --- Componentes compartidos MascotBook --- */
+.mascot-shell .mb-wrap {
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 2.5rem;
+}
+
+.mascot-shell .mb-header {
+  text-align: center;
+  padding: 1.5rem 0 1rem;
+}
+
+.mascot-shell .mb-avatar {
+  width: 7.5rem;
+  height: 7.5rem;
+  object-fit: cover;
+  border-radius: 1.25rem;
+  margin: 0 auto;
+  display: block;
+}
+
+.mascot-shell .mb-title {
+  font-size: 1.65rem;
+  font-weight: 700;
+  margin: 1rem 0 0.25rem;
+  line-height: 1.15;
+}
+
+.mascot-shell .mb-sub {
+  font-size: 0.95rem;
+  color: var(--mb-muted);
+  margin: 0;
+}
+
+.mascot-shell .mb-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 0.75rem;
+}
+
+.mascot-shell .mb-pill {
+  font-size: 0.75rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.mascot-shell .mb-section {
+  margin-top: 1.25rem;
+}
+
+.mascot-shell .mb-section h2 {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin: 0 0 0.5rem;
+  color: var(--mb-muted);
+}
+
+.mascot-shell .mb-wall {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.mascot-shell .mb-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.45rem;
+}
+
+.mascot-shell .mb-gallery img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 0.75rem;
+}
+
+.mascot-shell .mb-health {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}

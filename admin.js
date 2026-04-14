@@ -1,5 +1,5 @@
 /**
- * EliteCard / MascotBook — validación de suscripción por producto.
+ * EliteCard / MascotBook — suscripción, trial y acceso perpetuo.
  */
 (function (global) {
   "use strict";
@@ -12,10 +12,42 @@
       : "elitecard";
   }
 
+  function normalizeEmail(e) {
+    return String(e || "")
+      .trim()
+      .toLowerCase();
+  }
+
+  function isAgencyOwnerEmail(email) {
+    var em = normalizeEmail(email);
+    if (!em) return false;
+    var list = global.EC_AGENCY_OWNER_EMAILS;
+    if (!Array.isArray(list)) return false;
+    for (var i = 0; i < list.length; i++) {
+      if (normalizeEmail(list[i]) === em) return true;
+    }
+    return false;
+  }
+
+  function isPerpetualUid(uid) {
+    var u = String(uid || "").trim();
+    if (!u) return false;
+    var list = global.EC_PERPETUAL_UIDS;
+    if (!Array.isArray(list)) return false;
+    return list.indexOf(u) >= 0;
+  }
+
   function isDocAdmin(docData) {
     return String((docData && docData.role) || "")
       .trim()
       .toLowerCase() === "admin";
+  }
+
+  function isPerpetualAccess(uid, email, docData) {
+    if (isAgencyOwnerEmail(email)) return true;
+    if (isPerpetualUid(uid)) return true;
+    if (isDocAdmin(docData)) return true;
+    return false;
   }
 
   function resolveStatusField(docData, app) {
@@ -51,16 +83,16 @@
     return null;
   }
 
-  function isTrialPeriodExpired(docData, app) {
-    if (isDocAdmin(docData)) return false;
+  function isTrialPeriodExpired(docData, app, uid, email) {
+    if (isPerpetualAccess(uid, email, docData)) return false;
     if (getPlanStatusFromDoc(docData, app) !== "trial") return false;
     var ms = getFechaRegistroMs(docData);
     if (ms == null) return false;
     return Date.now() - ms > EC_TRIAL_DAYS * 24 * 60 * 60 * 1000;
   }
 
-  function isEmailSignatureLocked(docData, app) {
-    if (isDocAdmin(docData)) return false;
+  function isEmailSignatureLocked(docData, app, uid, email) {
+    if (isPerpetualAccess(uid, email, docData)) return false;
     if (normalizeApp(app) === "mascotbook") return true;
     return getPlanStatusFromDoc(docData, "elitecard") === "trial";
   }
@@ -69,6 +101,9 @@
     EC_TRIAL_DAYS: EC_TRIAL_DAYS,
     normalizeApp: normalizeApp,
     isDocAdmin: isDocAdmin,
+    isAgencyOwnerEmail: isAgencyOwnerEmail,
+    isPerpetualUid: isPerpetualUid,
+    isPerpetualAccess: isPerpetualAccess,
     getPlanStatusFromDoc: getPlanStatusFromDoc,
     getFechaRegistroMs: getFechaRegistroMs,
     isTrialPeriodExpired: isTrialPeriodExpired,

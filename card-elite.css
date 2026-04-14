@@ -1,0 +1,551 @@
+/**
+ * EliteCard — réplica Lead2Team (avatar rect 2:3, logo flotante en footer, QR, firma).
+ */
+.elite-shell {
+  position: relative;
+  min-height: 100dvh;
+  background: var(--ec-user-bg, #000000);
+  color: #ffffff;
+  font-family: "Inter", "Montserrat", "Poppins", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.elite-shell .ec-wrap {
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 1.35rem 0.95rem calc(7.25rem + env(safe-area-inset-bottom, 0px));
+}
+
+.elite-shell .ec-head {
+  text-align: center;
+  padding: 0.85rem 0 0.5rem;
+}
+
+.elite-shell .ec-photo-ring {
+  display: inline-block;
+}
+
+.elite-shell:not(.ec-avatar-round) .ec-photo-ring {
+  padding: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.elite-shell.ec-avatar-round .ec-photo-ring {
+  padding: 4px;
+  border-radius: 999px;
+  background: linear-gradient(145deg, #e8c547, #8b6914 45%, #d4af37);
+  box-shadow: 0 0 0 2px #000000, 0 0 0 4px rgba(212, 175, 55, 0.85), 0 0 0 6px rgba(0, 0, 0, 0.9),
+    0 0 0 7px rgba(201, 164, 74, 0.55);
+}
+
+.elite-shell:not(.ec-avatar-round) .ec-photo {
+  width: 8.75rem;
+  max-width: min(88vw, 11rem);
+  height: auto;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 2px solid rgba(212, 175, 55, 0.9);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  display: block;
+}
+
+.elite-shell.ec-avatar-round .ec-photo {
+  width: 7.75rem;
+  height: 7.75rem;
+  max-width: none;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid rgba(10, 10, 10, 0.65);
+  box-shadow: none;
+  display: block;
+}
+
+.elite-shell .ec-name {
+  margin: 1.15rem 0 0;
+  padding: 0 0.35rem;
+  font-size: clamp(1.28rem, 4.6vw, 1.78rem);
+  line-height: 1.12;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.elite-shell .ec-role {
+  margin: 0.55rem 0 0;
+  padding: 0 0.5rem;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.82);
+  font-weight: 400;
+}
+
+.elite-shell .ec-co {
+  margin: 0.22rem 0 0;
+  padding: 0 0.5rem;
+  font-size: 0.94rem;
+  color: rgba(255, 255, 255, 0.65);
+  font-weight: 400;
+}
+
+.elite-shell .ec-action-stack {
+  margin-top: 1.45rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.58rem;
+}
+
+.elite-shell .ec-actions {
+  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.58rem;
+}
+
+.elite-shell.ec-buttons-grid .ec-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+/* Logo institucional: mismo eje horizontal que el footer, centrado entre los dos botones, por encima de la barra */
+.elite-shell .ec-logo-footer-float {
+  position: fixed;
+  left: 50%;
+  bottom: env(safe-area-inset-bottom, 0px);
+  transform: translateX(-50%);
+  z-index: 60;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 5.25rem;
+  height: 4.1rem;
+}
+
+.elite-shell .ec-logo-footer-img {
+  width: 4.6rem;
+  height: 4.6rem;
+  margin-top: -1.4rem;
+  object-fit: contain;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  background: transparent;
+  box-sizing: border-box;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Superficies claras / azul */
+.elite-shell.ec-surface-light {
+  color: #111827;
+}
+
+.elite-shell.ec-surface-light .ec-name,
+.elite-shell.ec-surface-light .ec-role,
+.elite-shell.ec-surface-light .ec-co {
+  color: #111827;
+}
+
+.elite-shell.ec-surface-light .ec-role {
+  color: rgba(17, 24, 39, 0.78);
+}
+
+.elite-shell.ec-surface-light .ec-co {
+  color: rgba(17, 24, 39, 0.62);
+}
+
+.elite-shell.ec-surface-light.elite-ghost .ec-btn {
+  border-color: rgba(17, 24, 39, 0.55);
+  color: #111827;
+}
+
+.elite-shell.ec-surface-light.elite-ghost .ec-btn:hover {
+  background: rgba(17, 24, 39, 0.06);
+}
+
+.elite-shell.ec-surface-light .ec-logo-footer-img {
+  box-shadow: 0 6px 22px rgba(15, 23, 42, 0.12);
+}
+
+.elite-shell.ec-surface-blue {
+  color: #f1f5f9;
+}
+
+.elite-shell.ec-surface-blue .ec-name,
+.elite-shell.ec-surface-blue .ec-role,
+.elite-shell.ec-surface-blue .ec-co {
+  color: #f8fafc;
+}
+
+.elite-shell.ec-surface-blue .ec-role {
+  color: rgba(248, 250, 252, 0.82);
+}
+
+.elite-shell.ec-surface-blue .ec-co {
+  color: rgba(248, 250, 252, 0.65);
+}
+
+.elite-shell.ec-surface-blue.elite-ghost .ec-btn {
+  border-color: rgba(255, 255, 255, 0.88);
+  color: #f8fafc;
+}
+
+.elite-shell.ec-surface-blue.elite-ghost .ec-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.elite-shell.ec-surface-blue .ec-logo-footer-img {
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35);
+}
+
+.elite-shell.elite-ghost .ec-btn {
+  min-height: 3.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  background: transparent;
+  color: #ffffff;
+  text-decoration: none;
+  padding: 0.45rem 0.85rem 0.45rem 0.5rem;
+  font-size: 0.95rem;
+  box-shadow: none;
+}
+
+.elite-shell.elite-ghost .ec-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.elite-shell .ec-btn .ec-btn-icon {
+  width: 2.15rem;
+  height: 2.15rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+  font-size: 0.95rem;
+}
+
+.elite-shell .ec-btn .ec-btn-text {
+  flex: 1;
+  text-align: center;
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  padding-right: 0.1rem;
+}
+
+.elite-shell.ec-buttons-grid .ec-btn {
+  border-radius: 1rem;
+  min-height: 4.5rem;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.5rem 0.25rem;
+}
+
+.elite-shell.ec-buttons-grid .ec-btn .ec-btn-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1.05rem;
+}
+
+.elite-shell.ec-buttons-grid .ec-btn .ec-btn-text {
+  flex: 0 1 auto;
+  font-size: 0.65rem;
+  padding-right: 0;
+}
+
+.elite-shell .ec-btn.ec-call .ec-btn-icon {
+  background: #2563eb;
+}
+.elite-shell .ec-btn.ec-wa .ec-btn-icon {
+  background: #25d366;
+}
+.elite-shell .ec-btn.ec-mail .ec-btn-icon,
+.elite-shell .ec-btn.ec-mail-inst .ec-btn-icon {
+  background: #38bdf8;
+  color: #0f172a;
+}
+.elite-shell .ec-btn.ec-ig .ec-btn-icon {
+  background: linear-gradient(135deg, #f58529, #dd2a7b 55%, #8134af);
+}
+.elite-shell .ec-btn.ec-li .ec-btn-icon {
+  background: #0a66c2;
+}
+.elite-shell .ec-btn.ec-web .ec-btn-icon {
+  background: #0ea5e9;
+}
+.elite-shell .ec-btn.ec-map .ec-btn-icon {
+  background: #ffffff;
+  color: #ea4335;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.elite-shell .ec-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #d1d1d1;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  z-index: 40;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.elite-shell .ec-foot-btn {
+  min-height: 4.1rem;
+  border: none;
+  background: transparent;
+  color: #374151;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.elite-shell .ec-foot-btn + .ec-foot-btn {
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.elite-shell .ec-foot-avatar-wrap {
+  position: relative;
+  width: 2.1rem;
+  height: 2.1rem;
+}
+
+.elite-shell .ec-foot-thumb {
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 1px solid rgba(55, 65, 81, 0.25);
+  display: block;
+}
+
+.elite-shell .ec-foot-plus {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  width: 15px;
+  height: 15px;
+  border-radius: 999px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 11px;
+  line-height: 15px;
+  text-align: center;
+  border: 2px solid #d1d1d1;
+  font-weight: 700;
+}
+
+.elite-shell .ec-foot-qr {
+  font-size: 1.45rem;
+  color: #1f2937;
+}
+
+/* Firma de correo */
+.elite-shell .ec-mail-sig {
+  margin-top: 1.35rem;
+  padding: 1rem 0.85rem 0.25rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.elite-shell .ec-mail-sig-title {
+  margin: 0 0 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.elite-shell .ec-mail-sig-preview {
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.92);
+  text-align: left;
+}
+
+.elite-shell .ec-mail-sig-preview .ec-mail-sig-inner a {
+  color: #e8c547;
+}
+
+.elite-shell .ec-mail-sig-preview .ec-mail-sig-role {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.82rem;
+}
+
+.elite-shell .ec-mail-sig-preview .ec-mail-sig-line {
+  font-size: 0.82rem;
+}
+
+.elite-shell .ec-mail-sig-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.elite-shell .ec-mail-sig-btn {
+  flex: 1;
+  min-width: 8rem;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  background: rgba(212, 175, 55, 0.12);
+  color: #f8e6a8;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.55rem 0.85rem;
+  cursor: pointer;
+}
+
+.elite-shell.ec-surface-light .ec-mail-sig {
+  border-color: rgba(17, 24, 39, 0.12);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.elite-shell.ec-surface-light .ec-mail-sig-title {
+  color: rgba(17, 24, 39, 0.5);
+}
+
+.elite-shell.ec-surface-light .ec-mail-sig-preview {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.elite-shell.ec-surface-light .ec-mail-sig-preview .ec-mail-sig-inner a {
+  color: #92400e;
+}
+
+.elite-shell.ec-surface-light .ec-mail-sig-preview .ec-mail-sig-role {
+  color: rgba(17, 24, 39, 0.65);
+}
+
+.elite-shell.ec-surface-light .ec-mail-sig-btn {
+  border-color: rgba(17, 24, 39, 0.2);
+  background: #fff;
+  color: #111827;
+}
+
+.elite-shell.ec-surface-blue .ec-mail-sig {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.elite-shell.ec-surface-blue .ec-mail-sig-preview .ec-mail-sig-inner a {
+  color: #fde68a;
+}
+
+/* Overlay QR compartir */
+.elite-shell .ec-qr-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.elite-shell .ec-qr-panel {
+  position: relative;
+  width: 100%;
+  max-width: 20rem;
+  border-radius: 1.15rem;
+  padding: 1.35rem 1.15rem 1.15rem;
+  background: #f9fafb;
+  color: #111827;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+.elite-shell .ec-qr-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.55rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: none;
+  border-radius: 999px;
+  background: rgba(17, 24, 39, 0.06);
+  color: #374151;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.elite-shell .ec-qr-title {
+  margin: 0 0 0.85rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.elite-shell .ec-qr-img {
+  width: 220px;
+  max-width: 100%;
+  aspect-ratio: 1;
+  height: auto;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+}
+
+.elite-shell .ec-qr-copy,
+.elite-shell .ec-qr-native {
+  display: block;
+  width: 100%;
+  margin-top: 0.65rem;
+  padding: 0.65rem 1rem;
+  border-radius: 999px;
+  border: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.elite-shell .ec-qr-copy {
+  background: linear-gradient(135deg, #c9a132, #d4af37);
+  color: #0a0a0a;
+}
+
+.elite-shell .ec-qr-native {
+  background: #111827;
+  color: #f9fafb;
+}
+
+/* Vista previa admin: botones más táctiles */
+.elite-shell.ec-admin-preview.elite-ghost .ec-btn {
+  min-height: 3.85rem;
+  padding: 0.55rem 1rem 0.55rem 0.55rem;
+  font-size: 1rem;
+}
+
+.elite-shell.ec-admin-preview .ec-btn .ec-btn-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1.05rem;
+}
+
+.elite-shell.ec-admin-preview .ec-btn .ec-btn-text {
+  font-size: 0.95rem;
+}
