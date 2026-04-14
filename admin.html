@@ -1485,6 +1485,36 @@
                 placeholder="Una línea que enamore en la tarjeta pública…"
               ></textarea>
             </label>
+            <label class="sm:col-span-2">
+              <span class="ec-label mb-2 block">Lo que me gusta (separado por comas)</span>
+              <input
+                id="f-mascota-gustos"
+                type="text"
+                class="elite-input w-full rounded-xl px-4 py-3.5 text-sm"
+                placeholder="pelota, dormir al sol, premios, correr en el parque"
+              />
+            </label>
+            <label>
+              <span class="ec-label mb-2 block">Qué como</span>
+              <input id="f-mascota-que-come" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" placeholder="Balanceado + pollo hervido" />
+            </label>
+            <label>
+              <span class="ec-label mb-2 block">Mi carácter</span>
+              <input id="f-mascota-caracter" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" placeholder="Juguetón, sociable y curioso" />
+            </label>
+            <label class="sm:col-span-2">
+              <span class="ec-label mb-2 block">Mi dueño es...</span>
+              <input id="f-mascota-familia" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" placeholder="Muy cuidadoso y me lleva al parque todos los días" />
+            </label>
+            <label class="sm:col-span-2">
+              <span class="ec-label mb-2 block">Última aventura</span>
+              <textarea
+                id="f-mascota-ultima-aventura"
+                rows="2"
+                class="elite-input w-full rounded-xl px-4 py-3.5 text-sm"
+                placeholder="Hoy fuimos al río y terminé empapado."
+              ></textarea>
+            </label>
             <div class="sm:col-span-2">
               <span class="ec-label mb-2 block">Foto de la mascota</span>
               <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
@@ -2561,6 +2591,11 @@
             mascotaTelefono: val("f-mascota-telefono"),
             mascotaWhatsapp: onlyDigits(val("f-mascota-whatsapp")),
             mascotaInstagram: val("f-mascota-instagram"),
+            mascotaGustos: val("f-mascota-gustos"),
+            mascotaQueCome: val("f-mascota-que-come"),
+            mascotaCaracter: val("f-mascota-caracter"),
+            mascotaFamilia: val("f-mascota-familia"),
+            mascotaUltimaAventura: val("f-mascota-ultima-aventura"),
             mascotaPerdida: !!(perdidaEl && perdidaEl.checked),
             mascotaVacunas: readMascotaVacunasFromDom(),
             mascotaHistorialClinico: val("f-mascota-historial"),
@@ -2596,6 +2631,11 @@
             buttonLayout: st.buttonLayout,
             fotoUrl: String((lastDoc && lastDoc.mascotaFotoUrl) || "").trim(),
             mascotaPerdida: !!m.mascotaPerdida,
+            mascotaGustos: m.mascotaGustos,
+            mascotaQueCome: m.mascotaQueCome,
+            mascotaCaracter: m.mascotaCaracter,
+            mascotaFamilia: m.mascotaFamilia,
+            mascotaUltimaAventura: m.mascotaUltimaAventura,
             mascotaVacunas: m.mascotaVacunas,
             mascotaAlertasSalud: m.mascotaAlertasSalud,
             mascotaSaludPublica: !!m.mascotaSaludPublica,
@@ -3042,6 +3082,11 @@
             avatarShape: av,
             buttonLayout: bl,
             mascotaPerdida: !!d.mascotaPerdida,
+            mascotaGustos: String(d.mascotaGustos || ""),
+            mascotaQueCome: String(d.mascotaQueCome || ""),
+            mascotaCaracter: String(d.mascotaCaracter || ""),
+            mascotaFamilia: String(d.mascotaFamilia || ""),
+            mascotaUltimaAventura: String(d.mascotaUltimaAventura || ""),
             mascotaSaludPublica: !!d.mascotaSaludPublica,
             paseVeterinarioActivo: !!d.paseVeterinarioActivo,
             mascotaVacunas: Array.isArray(d.mascotaVacunas) ? d.mascotaVacunas : [],
@@ -3117,6 +3162,11 @@
               ["f-mascota-telefono", "mascotaTelefono"],
               ["f-mascota-whatsapp", "mascotaWhatsapp"],
               ["f-mascota-instagram", "mascotaInstagram"],
+              ["f-mascota-gustos", "mascotaGustos"],
+              ["f-mascota-que-come", "mascotaQueCome"],
+              ["f-mascota-caracter", "mascotaCaracter"],
+              ["f-mascota-familia", "mascotaFamilia"],
+              ["f-mascota-ultima-aventura", "mascotaUltimaAventura"],
             ];
             mm.forEach(function (pair) {
               var el = document.getElementById(pair[0]);

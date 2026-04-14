@@ -71,6 +71,12 @@
     mascotaInstagram: "",
     mascotaFotoUrl: "",
     mascotaPerdida: false,
+    /** Rasgos sociales MascotBook */
+    mascotaGustos: "",
+    mascotaQueCome: "",
+    mascotaCaracter: "",
+    mascotaFamilia: "",
+    mascotaUltimaAventura: "",
     /** [{ nombre, fechaAplicacion?, fechaVencimiento?, fechaProxima? (legacy = vencimiento) }] */
     mascotaVacunas: [],
     mascotaHistorialClinico: "",

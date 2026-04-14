@@ -460,15 +460,21 @@
   }
 
   function initMeta() {
-    if (cfg.tituloPagina) {
+    var isPetMode = !!window.__ecPublicViewPet;
+    if (cfg.tituloPagina && !isPetMode) {
       document.title = cfg.tituloPagina;
     } else {
       var n = String(cfg.nombreCompleto || cfg.nombre || "").trim();
-      if (n) document.title = n + " — EliteCard";
+      if (n) document.title = n + (isPetMode ? " — MascotBook" : " — EliteCard");
     }
     var meta = document.querySelector('meta[name="description"]');
-    if (meta && cfg.metaDescription) {
-      meta.setAttribute("content", cfg.metaDescription);
+    if (meta) {
+      if (cfg.metaDescription && !isPetMode) {
+        meta.setAttribute("content", cfg.metaDescription);
+      } else if (isPetMode) {
+        var petDesc = String(cfg.bio || "").trim() || "Perfil social de mascota en MascotBook.";
+        meta.setAttribute("content", petDesc);
+      }
     }
   }
 
@@ -589,6 +595,10 @@
     if (!container) return;
     container.innerHTML = "";
     var isPetMode = !!window.__ecPublicViewPet;
+    if (isPetMode) {
+      renderPetSocialFeed(container);
+      return;
+    }
 
     if (cfg.telefono) {
       var telHref = "tel:" + cfg.telefono.replace(/\s/g, "");
@@ -689,9 +699,134 @@
         )
       );
     }
-    if (isPetMode) {
-      Array.prototype.forEach.call(container.children, function (el) {
-        el.classList.add("ec-ficha-stack-card");
+  }
+
+  function mapPetLikeIcon(raw) {
+    var s = String(raw || "").toLowerCase();
+    if (/pelota|jugar|parque|correr/.test(s)) return "fa-solid fa-baseball";
+    if (/comida|snack|premio|comer/.test(s)) return "fa-solid fa-bone";
+    if (/dormir|siesta/.test(s)) return "fa-solid fa-bed";
+    if (/agua|rio|río|playa/.test(s)) return "fa-solid fa-water";
+    return "fa-solid fa-paw";
+  }
+
+  function readPetGustos(raw) {
+    var txt = String((raw && raw.mascotaGustos) || "").trim();
+    if (!txt) return [];
+    return txt
+      .split(",")
+      .map(function (x) {
+        return x.trim();
+      })
+      .filter(Boolean)
+      .slice(0, 6);
+  }
+
+  function renderPetSocialFeed(container) {
+    var raw = window.__ecPetFirestoreRaw || {};
+    var petName = String(raw.mascotaNombre || cfg.nombreCompleto || "mi mascota").trim();
+    var wa = onlyDigits(raw.mascotaWhatsapp || cfg.whatsappNumero || "");
+    var gustos = readPetGustos(raw);
+    var momentos = mergeStudyUrlsForDisplay(raw).slice(0, 9);
+    var heroFoto = String(raw.mascotaFotoUrl || cfg.fotoUrl || cfg.photoURL || "").trim();
+    var aventura = String(raw.mascotaUltimaAventura || "").trim();
+    var queCome = String(raw.mascotaQueCome || "").trim();
+    var caracter = String(raw.mascotaCaracter || "").trim();
+    var familia = String(raw.mascotaFamilia || "").trim();
+
+    var cards = [];
+    if (heroFoto) {
+      cards.push(
+        '<section class="ec-pet-social-card ec-pet-hero-card"><p class="ec-pet-social-kicker">Mi perfil social</p><div class="ec-pet-hero-photo-wrap"><img class="ec-pet-hero-photo" src="' +
+          escapeAttrPet(heroFoto) +
+          '" alt="Foto destacada de ' +
+          escapeAttrPet(petName || "mascota") +
+          '" loading="eager" referrerpolicy="no-referrer"/></div></section>'
+      );
+    }
+    if (aventura) {
+      cards.push(
+        '<section class="ec-pet-social-card ec-ficha-stack-card"><p class="ec-pet-social-kicker">Última aventura</p><p class="ec-pet-social-text">' +
+          escapeHtmlPet(aventura) +
+          "</p></section>"
+      );
+    }
+    if (gustos.length) {
+      cards.push(
+        '<section class="ec-pet-social-card ec-ficha-stack-card"><p class="ec-pet-social-kicker">Personalidad</p><div class="ec-pet-like-grid">' +
+          gustos
+            .map(function (g) {
+              return (
+                '<div class="ec-pet-like-chip"><i class="' +
+                mapPetLikeIcon(g) +
+                '" aria-hidden="true"></i><span>' +
+                escapeHtmlPet(g) +
+                "</span></div>"
+              );
+            })
+            .join("") +
+          "</div></section>"
+      );
+    }
+    if (momentos.length) {
+      cards.push(
+        '<section class="ec-pet-social-card ec-ficha-stack-card"><p class="ec-pet-social-kicker">Galería de momentos</p><div class="ec-pet-moment-grid">' +
+          momentos
+            .map(function (u) {
+              var su = escapeAttrPet(u);
+              return (
+                '<button type="button" class="ec-pet-moment-btn" data-ec-study-url="' +
+                su +
+                '"><img class="ec-pet-moment-img" src="' +
+                su +
+                '" alt="Momento de mascota" loading="lazy" referrerpolicy="no-referrer"/></button>'
+              );
+            })
+            .join("") +
+          "</div></section>"
+      );
+    }
+    if (queCome || caracter || familia) {
+      cards.push(
+        '<section class="ec-pet-social-card ec-ficha-stack-card"><p class="ec-pet-social-kicker">Información de cuidado</p><div class="ec-pet-care-list">' +
+          (queCome
+            ? '<p><strong>Qué como:</strong> ' + escapeHtmlPet(queCome) + "</p>"
+            : "") +
+          (caracter
+            ? '<p><strong>Mi carácter:</strong> ' + escapeHtmlPet(caracter) + "</p>"
+            : "") +
+          (familia
+            ? '<p><strong>Mi dueño es:</strong> ' + escapeHtmlPet(familia) + "</p>"
+            : "") +
+          "</div></section>"
+      );
+    }
+    var cta = "";
+    if (wa) {
+      cta =
+        '<button type="button" id="ec-pet-family-wa" class="ec-pet-family-btn"><i class="fa-solid fa-house-chimney"></i> Contactar a mi familia</button>';
+    }
+    container.innerHTML =
+      '<div class="ec-pet-social-feed">' +
+      cards.join("") +
+      cta +
+      "</div>";
+
+    container.querySelectorAll("[data-ec-study-url]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var u = btn.getAttribute("data-ec-study-url");
+        if (u) openPetStudyLightbox(u);
+      });
+    });
+    var waBtn = document.getElementById("ec-pet-family-wa");
+    if (waBtn) {
+      waBtn.addEventListener("click", function () {
+        var msg = "¡Hola! Escaneé el QR de " + (petName || "la mascota");
+        window.open(
+          "https://wa.me/" + wa + "?text=" + encodeURIComponent(msg),
+          "_blank",
+          "noopener,noreferrer"
+        );
       });
     }
   }
@@ -707,9 +842,11 @@
     var root = document.documentElement;
     root.classList.remove("ec-theme-gold", "ec-theme-minimal", "ec-theme-electric");
     root.classList.add("ec-theme-" + theme);
+    root.classList.toggle("ec-pet-mode", !!window.__ecPublicViewPet);
     if (document.body) {
       document.body.classList.remove("ec-theme-gold", "ec-theme-minimal", "ec-theme-electric");
       document.body.classList.add("ec-theme-" + theme);
+      document.body.classList.toggle("ec-pet-mode", !!window.__ecPublicViewPet);
     }
 
     var app = document.getElementById("app-root");
@@ -720,6 +857,8 @@
       app.setAttribute("data-link-layout", linkLayout);
       app.classList.toggle("ec-pet-mode", !!window.__ecPublicViewPet);
     }
+    var footer = document.querySelector(".footer-bar-light");
+    if (footer) footer.classList.toggle("hidden", !!window.__ecPublicViewPet);
   }
 
   function mergeStudyUrlsForDisplay(o) {
@@ -1013,11 +1152,18 @@
         var twDesc = document.querySelector('meta[name="twitter:description"]');
         var twImage = document.querySelector('meta[name="twitter:image"]');
 
-        var titleText = nombre
-          ? nombre + (cargo ? " — " + cargo : "") + " | EliteCard"
-          : "EliteCard | Perfil Profesional";
-        var descText = bio
-          || (nombre && cargo
+        var isPetMode = !!window.__ecPublicViewPet;
+        var titleText = isPetMode
+          ? nombre
+            ? nombre + " | MascotBook"
+            : "MascotBook | Perfil social de mascota"
+          : nombre
+            ? nombre + (cargo ? " — " + cargo : "") + " | EliteCard"
+            : "EliteCard | Perfil Profesional";
+        var descText = isPetMode
+          ? bio || "Conocé mis momentos, mi personalidad y cómo cuidarme."
+          : bio ||
+            (nombre && cargo
               ? nombre + ", " + cargo + ". Tarjeta digital profesional."
               : "Haz clic para ver mis datos de contacto actualizados.");
 

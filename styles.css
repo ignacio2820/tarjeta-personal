@@ -1173,3 +1173,176 @@ html.ec-mascota-alerta .ec-contact-button.link-pill {
     transform: scale(1);
   }
 }
+
+/* ===== MascotBook: Social-Pet Redesign ===== */
+.ec-pet-mode {
+  --ec-pet-bg-a: #ff6b6b;
+  --ec-pet-bg-b: #5f6fff;
+  --ec-pet-bg-c: #36d399;
+  --ec-pet-card: #ffffff;
+  --ec-pet-text: #1f2937;
+  --ec-pet-muted: #6b7280;
+  --ec-pet-shadow: 0 14px 36px rgba(17, 24, 39, 0.12);
+}
+
+html.ec-pet-mode,
+html.ec-pet-mode body,
+html:has(.ec-pet-mode),
+html:has(.ec-pet-mode) body {
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255, 107, 107, 0.38), transparent 42%),
+    radial-gradient(circle at 82% 8%, rgba(95, 111, 255, 0.4), transparent 46%),
+    linear-gradient(180deg, #f7fbff 0%, #eef3ff 52%, #f6fdf8 100%) !important;
+}
+
+.ec-pet-mode .avatar-led-halo {
+  background: radial-gradient(ellipse at center, rgba(95, 111, 255, 0.26) 0%, transparent 72%);
+}
+
+.ec-pet-mode .avatar-gold-ring {
+  padding: 3px;
+  border-radius: 1.75rem;
+  background: linear-gradient(135deg, #ff6b6b 0%, #5f6fff 54%, #36d399 100%);
+  box-shadow: 0 12px 32px rgba(95, 111, 255, 0.24);
+}
+
+.ec-pet-mode .avatar-inner {
+  width: min(11rem, 82vw);
+  border-radius: 1.6rem;
+  box-shadow: 0 14px 34px rgba(17, 24, 39, 0.2);
+}
+
+.ec-pet-mode .led-name {
+  color: #1f2937 !important;
+  font-weight: 600;
+  text-shadow: none;
+}
+
+.ec-pet-mode .led-sub,
+.ec-pet-mode #display-org,
+.ec-pet-mode #display-cargo-detalle,
+.ec-pet-mode #display-bio {
+  color: #6b7280 !important;
+  text-shadow: none !important;
+}
+
+.ec-pet-social-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding-bottom: 0.4rem;
+}
+
+.ec-pet-social-card {
+  border-radius: 1.15rem;
+  border: 1px solid rgba(95, 111, 255, 0.14);
+  background: var(--ec-pet-card);
+  box-shadow: var(--ec-pet-shadow);
+  padding: 0.95rem;
+}
+
+.ec-pet-social-kicker {
+  margin: 0 0 0.55rem;
+  font-size: 0.71rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #5f6fff;
+}
+
+.ec-pet-social-text {
+  margin: 0;
+  color: var(--ec-pet-text);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.ec-pet-hero-photo-wrap {
+  overflow: hidden;
+  border-radius: 0.95rem;
+}
+
+.ec-pet-hero-photo {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  display: block;
+  object-fit: cover;
+  opacity: 0;
+  animation: ec-study-fade 0.55s ease forwards;
+}
+
+.ec-pet-like-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.ec-pet-like-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, rgba(95, 111, 255, 0.12), rgba(54, 211, 153, 0.13));
+  color: #283046;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.ec-pet-like-chip i {
+  color: #5f6fff;
+}
+
+.ec-pet-moment-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.ec-pet-moment-btn {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  border-radius: 0.7rem;
+  overflow: hidden;
+  cursor: pointer;
+  background: #dbe6ff;
+}
+
+.ec-pet-moment-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: block;
+  object-fit: cover;
+  opacity: 0;
+  animation: ec-study-fade 0.5s ease forwards;
+}
+
+.ec-pet-care-list p {
+  margin: 0.28rem 0;
+  color: var(--ec-pet-text);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.ec-pet-care-list strong {
+  color: #374151;
+}
+
+.ec-pet-family-btn {
+  border: 0;
+  border-radius: 9999px;
+  padding: 0.8rem 1rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(135deg, #36d399 0%, #10b981 100%);
+  box-shadow: 0 12px 24px rgba(16, 185, 129, 0.25);
+  cursor: pointer;
+  transition: transform 0.18s ease, filter 0.18s ease;
+}
+
+.ec-pet-family-btn:hover {
+  filter: brightness(1.04);
+  transform: translateY(-1px);
+}
