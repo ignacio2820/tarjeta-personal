@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Crear cuenta | EliteCard</title>
+    <meta name="theme-color" content="#050505" />
+    <script>
+      (function () {
+        window.__EC_PAGE_LOAD_TS = Date.now();
+      })();
+    </script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              elite: {
+                void: "#050505",
+                gold: "#D4AF37",
+                mist: "#E0E0E0",
+              },
+            },
+            fontFamily: {
+              sans: ["Poppins", "system-ui", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ec-bg-a: #050505;
+        --ec-bg-b: #101010;
+        --ec-gold: #d4af37;
+        --ec-text: #e0e0e0;
+      }
+      body.ec-register-body {
+        font-family: "Poppins", system-ui, sans-serif;
+        color: var(--ec-text);
+        background: linear-gradient(168deg, var(--ec-bg-a) 0%, var(--ec-bg-b) 42%, #0c0c0c 100%);
+        min-height: 100dvh;
+      }
+      .elite-noise {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.035;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+      .elite-grid {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        background-image: linear-gradient(rgba(212, 175, 55, 0.028) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(212, 175, 55, 0.028) 1px, transparent 1px);
+        background-size: 72px 72px;
+        mask-image: radial-gradient(ellipse 75% 55% at 50% 0%, black, transparent);
+      }
+      .elite-glow {
+        position: fixed;
+        width: 130vw;
+        height: 65vh;
+        top: -18%;
+        left: 50%;
+        transform: translateX(-50%);
+        pointer-events: none;
+        z-index: 0;
+        background: radial-gradient(ellipse closest-side, rgba(212, 175, 55, 0.09), transparent 72%);
+      }
+      .apple-login {
+        font-family: "Poppins", system-ui, sans-serif;
+        background: transparent;
+      }
+      .ec-login-glass {
+        background: rgba(24, 24, 24, 0.42);
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
+        border: 1px solid rgba(212, 175, 55, 0.22);
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      }
+      .apple-input {
+        width: 100%;
+        border-radius: 14px;
+        border: 1px solid rgba(224, 224, 224, 0.12);
+        background: rgba(5, 5, 5, 0.55);
+        padding: 14px 16px;
+        font-size: 16px;
+        font-weight: 300;
+        line-height: 1.35;
+        color: var(--ec-text);
+        transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+      }
+      .apple-input::placeholder {
+        color: rgba(224, 224, 224, 0.3);
+      }
+      .apple-input:focus {
+        outline: none;
+        border-color: var(--ec-gold);
+        background: rgba(8, 8, 8, 0.7);
+        box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.3), 0 0 22px rgba(212, 175, 55, 0.14);
+      }
+      .apple-submit {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, #c9a132, #d4af37 50%, #e0bc4a);
+        color: #0a0a0a;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        transition: filter 0.2s, transform 0.15s;
+      }
+      .apple-submit:hover {
+        filter: brightness(1.06);
+      }
+      .apple-submit:active {
+        transform: scale(0.99);
+      }
+      .apple-submit:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        transform: none;
+      }
+    </style>
+  </head>
+  <body class="ec-register-body min-h-[100dvh] text-elite-mist antialiased font-light">
+    <div class="elite-noise" aria-hidden="true"></div>
+    <div class="elite-grid" aria-hidden="true"></div>
+    <div class="elite-glow" aria-hidden="true"></div>
+
+    <section class="apple-login relative z-10 flex min-h-[100dvh] flex-col justify-center px-5 py-14 sm:px-8">
+      <div class="ec-login-glass mx-auto w-full max-w-[420px] rounded-[1.75rem] px-7 py-10 sm:px-10 sm:py-12">
+        <div class="mb-10 text-center">
+          <p class="text-[11px] font-medium uppercase tracking-[0.28em] text-elite-gold/90">EliteCard</p>
+          <h1 class="mt-3 text-[1.65rem] font-light leading-tight tracking-tight text-white sm:text-[1.85rem]">
+            Crear cuenta
+          </h1>
+          <p class="mt-3 text-[14px] font-light text-elite-mist/55">Registrate y entrá al panel para diseñar tu tarjeta.</p>
+        </div>
+        <form id="form-register" class="space-y-3.5" autocomplete="on">
+          <div>
+            <label class="sr-only" for="reg-email">Email</label>
+            <input
+              id="reg-email"
+              type="email"
+              name="email"
+              autocomplete="email"
+              required
+              class="apple-input"
+              placeholder="Email"
+            />
+          </div>
+          <div>
+            <label class="sr-only" for="reg-password">Contraseña</label>
+            <input
+              id="reg-password"
+              type="password"
+              name="password"
+              autocomplete="new-password"
+              required
+              minlength="6"
+              class="apple-input"
+              placeholder="Contraseña (mín. 6 caracteres)"
+            />
+          </div>
+          <div>
+            <label class="sr-only" for="reg-password2">Repetir contraseña</label>
+            <input
+              id="reg-password2"
+              type="password"
+              name="password2"
+              autocomplete="new-password"
+              required
+              minlength="6"
+              class="apple-input"
+              placeholder="Repetir contraseña"
+            />
+          </div>
+          <p id="register-error" class="hidden pt-1 text-[13px] font-light text-red-400/95" role="alert"></p>
+          <button type="submit" id="btn-register" class="apple-submit mt-6 w-full rounded-full py-3.5 text-[15px]">
+            Crear cuenta y entrar
+          </button>
+        </form>
+        <p class="mt-8 text-center text-[13px] font-light text-elite-mist/50">
+          ¿Ya tenés cuenta?
+          <a href="admin.html" class="text-elite-gold/85 transition hover:text-elite-gold">Iniciar sesión</a>
+        </p>
+      </div>
+    </section>
+
+    <script>
+      (function () {
+        var t = window.__EC_PAGE_LOAD_TS || Date.now();
+        document.write('<script src="firebase-config.js?v=' + t + '"><\/script>');
+      })();
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+    <script>
+      (function () {
+        function showErr(msg) {
+          var el = document.getElementById("register-error");
+          if (!el) return;
+          el.textContent = msg || "";
+          el.classList.toggle("hidden", !msg);
+        }
+
+        function usersCollection() {
+          return (window.FIRESTORE_USERS_COLLECTION || "usuarios").trim() || "usuarios";
+        }
+
+        var fbCfg = window.FIREBASE_WEB_CONFIG;
+        var fbReady =
+          fbCfg &&
+          fbCfg.apiKey &&
+          String(fbCfg.apiKey).indexOf("REEMPLAZAR") === -1 &&
+          String(fbCfg.appId || "").indexOf("REEMPLAZAR") === -1;
+
+        if (!fbReady) {
+          showErr("Configurá firebase-config.js con los datos de tu app web.");
+          var btn = document.getElementById("btn-register");
+          if (btn) btn.disabled = true;
+          return;
+        }
+
+        try {
+          firebase.initializeApp(fbCfg);
+        } catch (e) {
+          if (e.code !== "app/duplicate-app") {
+            showErr("No se pudo inicializar Firebase.");
+            return;
+          }
+        }
+
+        var auth = firebase.auth();
+        var db = firebase.firestore();
+
+        document.getElementById("form-register").addEventListener("submit", function (e) {
+          e.preventDefault();
+          showErr("");
+          var email = String(document.getElementById("reg-email").value || "").trim();
+          var p1 = document.getElementById("reg-password").value;
+          var p2 = document.getElementById("reg-password2").value;
+          if (p1 !== p2) {
+            showErr("Las contraseñas no coinciden.");
+            return;
+          }
+          if (p1.length < 6) {
+            showErr("La contraseña debe tener al menos 6 caracteres.");
+            return;
+          }
+          var btn = document.getElementById("btn-register");
+          if (btn) {
+            btn.disabled = true;
+            btn.textContent = "Creando cuenta…";
+          }
+
+          auth
+            .createUserWithEmailAndPassword(email, p1)
+            .then(function (cred) {
+              var user = cred.user;
+              var col = usersCollection();
+              return db
+                .collection(col)
+                .doc(user.uid)
+                .set(
+                  {
+                    plan_status: "trial",
+                    fecha_registro: firebase.firestore.FieldValue.serverTimestamp(),
+                    email: user.email || email,
+                    role: "user",
+                  },
+                  { merge: true }
+                )
+                .then(function () {
+                  window.location.href = "admin.html";
+                })
+                .catch(function (fsErr) {
+                  return auth.signOut().then(function () {
+                    throw fsErr;
+                  });
+                });
+            })
+            .catch(function (err) {
+              var map = {
+                "auth/email-already-in-use": "Ese correo ya está registrado. Probá iniciar sesión.",
+                "auth/invalid-email": "Correo no válido.",
+                "auth/weak-password": "Contraseña demasiado débil.",
+                "auth/operation-not-allowed": "Registro con email/contraseña no habilitado en Firebase.",
+              };
+              showErr(
+                map[err.code] ||
+                  (err && err.message) ||
+                  "No se pudo crear la cuenta o guardar el perfil en Firestore."
+              );
+              if (btn) {
+                btn.disabled = false;
+                btn.textContent = "Crear cuenta y entrar";
+              }
+            });
+        });
+      })();
+    </script>
+  </body>
+</html>

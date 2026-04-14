@@ -8,6 +8,126 @@
     return String(s || "").replace(/\D/g, "");
   }
 
+  function igUrlPet(v) {
+    var s = String(v || "").trim();
+    if (!s) return "";
+    if (/^https?:\/\//i.test(s)) return s;
+    var u = s.replace(/^@/, "");
+    return "https://instagram.com/" + u;
+  }
+
+  function detectPublicViewPet() {
+    function fromParams(params) {
+      if (!params) return false;
+      var v = String(params.get("view") || "")
+        .trim()
+        .toLowerCase();
+      if (v === "pet" || v === "mascota" || v === "mascotbook") return true;
+      var p1 = String(params.get("pet") || "").trim();
+      if (p1 === "1" || p1.toLowerCase() === "true") return true;
+      return false;
+    }
+    try {
+      if (fromParams(new URLSearchParams(window.location.search))) return true;
+      var h = window.location.hash || "";
+      if (h) {
+        var q = h.indexOf("?");
+        if (q >= 0 && fromParams(new URLSearchParams(h.slice(q)))) return true;
+        if (/[?&#](view=pet|view=mascota|view=mascotbook|pet=1)(?:&|$)/i.test(h)) return true;
+      }
+    } catch (e) {}
+    return false;
+  }
+
+  function isPublicCardAdminPreview() {
+    try {
+      return new URLSearchParams(window.location.search).get("ec_admin_preview") === "1";
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function mergePetProfileCfg(baseCfg, rawDoc) {
+    if (!rawDoc || typeof rawDoc !== "object") return baseCfg;
+    var m = rawDoc;
+    var out = Object.assign({}, baseCfg);
+    var nom = String(m.mascotaNombre || "").trim();
+    if (nom) out.nombreCompleto = nom;
+    var cg = String(m.mascotaCargo || "").trim();
+    if (cg) out.cargo = cg;
+    var bio = String(m.mascotaBio || "").trim();
+    if (bio) out.bio = bio;
+    var tel = String(m.mascotaTelefono || "").trim();
+    out.telefono = tel;
+    out.whatsappNumero = onlyDigits(m.mascotaWhatsapp);
+    out.instagram = igUrlPet(m.mascotaInstagram);
+    out.email = "";
+    out.emailInstitucional = "";
+    out.linkedin = "";
+    out.sitioWeb = "";
+    out.mapsUrl = "";
+    out.calendlyUrl = "";
+    out.leadCaptureEnabled = false;
+    out.empresa = "";
+    out.cargoDetalle = "";
+    out.logoUrl = "";
+    var mf = String(m.mascotaFotoUrl || "").trim();
+    if (mf) {
+      out.fotoUrl = mf;
+      out.photoURL = mf;
+    }
+    return out;
+  }
+
+  function applyMascotaAlertClasses(on) {
+    var app = document.getElementById("app-root");
+    var html = document.documentElement;
+    if (app) app.classList.toggle("ec-mascota-alerta", !!on);
+    if (html) html.classList.toggle("ec-mascota-alerta", !!on);
+  }
+
+  function closeLostPetGeoModal() {
+    var modal = document.getElementById("ec-lost-pet-geo-modal");
+    if (!modal) return;
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+  }
+
+  function openLostPetGeoModal(rawData, storageKey) {
+    var modal = document.getElementById("ec-lost-pet-geo-modal");
+    if (!modal || !rawData) return;
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    modal.setAttribute("data-ec-geo-key", storageKey || "");
+    modal.setAttribute("data-ec-owner-wa", onlyDigits(rawData.mascotaWhatsapp));
+    var petName = String(rawData.mascotaNombre || "").trim() || "esta mascota";
+    var sub = document.getElementById("ec-lost-pet-geo-sub");
+    if (sub) sub.textContent = "Si aceptás, enviaremos tu ubicación a quien cuida a " + petName + " por WhatsApp.";
+  }
+
+  function scheduleLostPetGeoPrompt(rawData) {
+    if (!rawData || !window.__ecPublicViewPet || !rawData.mascotaPerdida) return;
+    if (isPublicCardAdminPreview()) return;
+    var wa = onlyDigits(rawData.mascotaWhatsapp);
+    if (!wa) return;
+    var uid = String(window.__tarjetaPublicDocId || "");
+    var key = "ec_lost_geo_dismissed_" + uid;
+    try {
+      if (sessionStorage.getItem(key) === "1") return;
+    } catch (e) {}
+    setTimeout(function () {
+      openLostPetGeoModal(rawData, key);
+    }, 700);
+  }
+
+  /** Fuera de Firestore (p. ej. demo local): oculta banners de plan rescate. */
+  function hideRescueBannersDom() {
+    ["ec-rescue-banner-a", "ec-rescue-banner-c", "ec-rescue-banner"].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.add("hidden");
+    });
+  }
+
   function buildVCard(c) {
     var full = (c.nombreCompleto || c.nombre || "").trim();
     var family;
@@ -595,11 +715,281 @@
     }
   }
 
+  function mergeStudyUrlsForDisplay(o) {
+    if (!o || typeof o !== "object") return [];
+    function clean(arr) {
+      return (Array.isArray(arr) ? arr : [])
+        .map(function (u) {
+          return String(u || "").trim();
+        })
+        .filter(function (u) {
+          return /^https?:\/\//i.test(u);
+        });
+    }
+    var a = clean(o.mascotaEstudiosSaludUrls);
+    var b = clean(o.mascotaGaleriaUrls);
+    var seen = {};
+    var out = [];
+    a.concat(b).forEach(function (u) {
+      if (u && !seen[u]) {
+        seen[u] = 1;
+        out.push(u);
+      }
+    });
+    return out;
+  }
+
+  function daysUntilIsoDatePet(isoYmd) {
+    if (!isoYmd) return null;
+    var t = new Date(String(isoYmd) + "T12:00:00");
+    if (isNaN(t.getTime())) return null;
+    return Math.ceil((t.getTime() - Date.now()) / 86400000);
+  }
+
+  function normalizePetHealthRaw(raw) {
+    if (!raw || typeof raw !== "object") return null;
+    var o = raw;
+    return {
+      mascotaNombre: String(o.mascotaNombre || o.nombreCompleto || "").trim(),
+      mascotaFotoUrl: String(o.mascotaFotoUrl || o.fotoUrl || "").trim(),
+      mascotaSaludPublica: !!o.mascotaSaludPublica,
+      paseVeterinarioActivo: !!o.paseVeterinarioActivo,
+      mascotaAlertasSalud: String(o.mascotaAlertasSalud || "").trim(),
+      mascotaHistorialClinico: String(o.mascotaHistorialClinico || "").trim(),
+      mascotaVacunas: Array.isArray(o.mascotaVacunas) ? o.mascotaVacunas : [],
+      mascotaEstudiosUrls: mergeStudyUrlsForDisplay(o),
+    };
+  }
+
+  function openPetStudyLightbox(url) {
+    var modal = document.getElementById("ec-pet-study-lightbox");
+    var img = document.getElementById("ec-pet-study-lightbox-img");
+    if (!modal || !img) return;
+    img.setAttribute("src", url || "");
+    modal.classList.remove("hidden");
+  }
+
+  function closePetStudyLightbox() {
+    var modal = document.getElementById("ec-pet-study-lightbox");
+    var img = document.getElementById("ec-pet-study-lightbox-img");
+    if (modal) modal.classList.add("hidden");
+    if (img) img.removeAttribute("src");
+  }
+
+  function wirePetStudyLightboxOnce() {
+    var modal = document.getElementById("ec-pet-study-lightbox");
+    if (!modal || modal.getAttribute("data-ec-bound") === "1") return;
+    modal.setAttribute("data-ec-bound", "1");
+    var closeBtn = document.getElementById("ec-pet-study-lightbox-close");
+    if (closeBtn) closeBtn.addEventListener("click", closePetStudyLightbox);
+    modal.addEventListener("click", function (e) {
+      if (e.target === modal) closePetStudyLightbox();
+    });
+  }
+
+  function renderPetMedicalPanel(n) {
+    var panel = document.getElementById("ec-pet-panel-medical");
+    if (!panel || !n) return;
+    var alertHtml = "";
+    if (n.mascotaAlertasSalud) {
+      alertHtml =
+        '<div class="ec-ficha-inner ec-ficha-alerta-glow mx-1 mb-2 rounded-xl p-4">' +
+        '<p class="mb-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-200/90">Alertas médicas y alergias</p>' +
+        '<p class="whitespace-pre-wrap text-[13px] font-light leading-relaxed text-[#fde8e8]/95">' +
+        escapeHtmlPet(n.mascotaAlertasSalud) +
+        "</p></div>";
+    }
+    var vacs = n.mascotaVacunas || [];
+    var vacHtml = "";
+    if (!vacs.length) {
+      vacHtml =
+        '<p class="px-2 py-3 text-center text-[13px] text-[#ebe6dc]/45">No hay vacunas registradas.</p>';
+    } else {
+      vacHtml = vacs
+        .map(function (v) {
+          var nombre = v && v.nombre ? String(v.nombre) : "Vacuna";
+          var apl = v && v.fechaAplicacion ? String(v.fechaAplicacion) : "—";
+          var venRaw = v && (v.fechaVencimiento || v.fechaProxima) ? String(v.fechaVencimiento || v.fechaProxima) : "";
+          var venDisp = venRaw || "—";
+          var dLeft = daysUntilIsoDatePet(venRaw);
+          var warn =
+            dLeft != null && dLeft >= 0 && dLeft < 15
+              ? '<i class="fa-solid fa-triangle-exclamation ec-vacuna-warn-icon ml-1.5 text-sm" aria-hidden="true" title="Vence en menos de 15 días"></i>'
+              : dLeft != null && dLeft < 0
+                ? '<i class="fa-solid fa-circle-exclamation ml-1.5 text-amber-400/90" aria-hidden="true" title="Vencida o atrasada"></i>'
+                : "";
+          return (
+            '<div class="ec-vacuna-timeline-item pb-4 pl-1">' +
+            '<p class="text-[13px] font-medium text-[#f5efd8]">' +
+            escapeHtmlPet(nombre) +
+            warn +
+            "</p>" +
+            '<p class="mt-1 text-[11px] text-[#ebe6dc]/50">Aplicación: <span class="text-[#ebe6dc]/75">' +
+            escapeHtmlPet(apl) +
+            '</span> · Vencimiento: <span class="text-[#ebe6dc]/75">' +
+            escapeHtmlPet(venDisp) +
+            "</span></p>" +
+            "</div>"
+          );
+        })
+        .join("");
+    }
+    var studies = n.mascotaEstudiosUrls || [];
+    var galHtml = "";
+    if (!studies.length) {
+      galHtml =
+        '<p class="py-2 text-center text-[12px] text-[#ebe6dc]/40">Sin estudios o radiografías cargados.</p>';
+    } else {
+      galHtml =
+        '<div class="grid grid-cols-2 gap-2 sm:grid-cols-3">' +
+        studies
+          .map(function (u) {
+            var uq = escapeAttrPet(u);
+            return (
+              '<button type="button" class="ec-pet-study-thumb" data-ec-study-url="' +
+              uq +
+              '"><img src="' +
+              uq +
+              '" alt="Estudio" loading="lazy" referrerpolicy="no-referrer"/></button>'
+            );
+          })
+          .join("") +
+        "</div>";
+    }
+    var histBlock = "";
+    if (n.mascotaHistorialClinico) {
+      histBlock =
+        '<div class="ec-ficha-inner mx-1 mt-4 rounded-xl p-4">' +
+        '<p class="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#d4af37]/85">Historial clínico</p>' +
+        '<p class="whitespace-pre-wrap text-[12px] font-light leading-relaxed text-[#ebe6dc]/55">' +
+        escapeHtmlPet(n.mascotaHistorialClinico) +
+        "</p></div>";
+    }
+    panel.innerHTML =
+      '<div class="ec-ficha-medica-inner px-1 pt-1">' +
+      '<p class="mb-3 text-center text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d4af37]/90">Ficha médica</p>' +
+      alertHtml +
+      '<div class="ec-ficha-inner mx-1 mb-3 rounded-xl p-4">' +
+      '<p class="mb-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#d4af37]/80">Vacunas</p>' +
+      vacHtml +
+      "</div>" +
+      '<div class="ec-ficha-inner mx-1 rounded-xl p-4">' +
+      '<p class="mb-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#d4af37]/80">Estudios y rayos X</p>' +
+      galHtml +
+      "</div>" +
+      histBlock +
+      "</div>";
+    panel.querySelectorAll("[data-ec-study-url]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var u = btn.getAttribute("data-ec-study-url");
+        if (u) openPetStudyLightbox(u);
+      });
+    });
+  }
+
+  function escapeHtmlPet(s) {
+    return String(s || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function escapeAttrPet(s) {
+    return escapeHtmlPet(s).replace(/'/g, "&#39;");
+  }
+
+  function teardownPetHealthUI() {
+    var bar = document.getElementById("ec-pet-tabbar");
+    var med = document.getElementById("ec-pet-panel-medical");
+    var main = document.getElementById("links-container");
+    if (bar) bar.classList.add("hidden");
+    if (med) {
+      med.classList.add("hidden");
+      med.innerHTML = "";
+    }
+    if (main) {
+      main.classList.remove("hidden");
+    }
+    var tc = document.getElementById("ec-pet-tab-contact");
+    var tm = document.getElementById("ec-pet-tab-medical");
+    if (tc) {
+      tc.classList.add("ec-pet-tab--active");
+      tc.setAttribute("aria-selected", "true");
+    }
+    if (tm) {
+      tm.classList.remove("ec-pet-tab--active");
+      tm.setAttribute("aria-selected", "false");
+    }
+    closePetStudyLightbox();
+  }
+
+  function selectPetTab(which) {
+    var main = document.getElementById("links-container");
+    var med = document.getElementById("ec-pet-panel-medical");
+    var c = document.getElementById("ec-pet-tab-contact");
+    var m = document.getElementById("ec-pet-tab-medical");
+    var onContact = which === "contact";
+    if (main) main.classList.toggle("hidden", !onContact);
+    if (med) med.classList.toggle("hidden", onContact);
+    if (c) {
+      c.classList.toggle("ec-pet-tab--active", onContact);
+      c.setAttribute("aria-selected", onContact ? "true" : "false");
+    }
+    if (m) {
+      m.classList.toggle("ec-pet-tab--active", !onContact);
+      m.setAttribute("aria-selected", onContact ? "false" : "true");
+    }
+  }
+
+  function setupPetTabsOnce() {
+    var c = document.getElementById("ec-pet-tab-contact");
+    var m = document.getElementById("ec-pet-tab-medical");
+    if (c && !c.getAttribute("data-ec-bound")) {
+      c.setAttribute("data-ec-bound", "1");
+      c.addEventListener("click", function () {
+        selectPetTab("contact");
+      });
+    }
+    if (m && !m.getAttribute("data-ec-bound")) {
+      m.setAttribute("data-ec-bound", "1");
+      m.addEventListener("click", function () {
+        selectPetTab("medical");
+      });
+    }
+  }
+
+  function initPetHealthUI() {
+    wirePetStudyLightboxOnce();
+    if (!window.__ecPublicViewPet) {
+      teardownPetHealthUI();
+      return;
+    }
+    var raw = window.__ecPetFirestoreRaw;
+    var n = normalizePetHealthRaw(raw);
+    if (!n) {
+      teardownPetHealthUI();
+      return;
+    }
+    var allowed = n.mascotaSaludPublica || n.paseVeterinarioActivo;
+    var bar = document.getElementById("ec-pet-tabbar");
+    if (!allowed) {
+      teardownPetHealthUI();
+      if (bar) bar.classList.add("hidden");
+      return;
+    }
+    setupPetTabsOnce();
+    if (bar) bar.classList.remove("hidden");
+    renderPetMedicalPanel(n);
+    selectPetTab("contact");
+  }
+
   function applyCardUI() {
     applyCardAppearance();
     initMeta();
     initHeader();
     initLinks();
+    initPetHealthUI();
 
     // Actualizar Open Graph dinámico para preview de WhatsApp/redes
     (function updateOgMeta() {
@@ -838,6 +1228,11 @@
     var auth = firebase.auth();
     var urlProf = getUrlProfileExplicitId();
     var urlExplicit = !!urlProf.id;
+    try {
+      window.__ecPublicViewPet = detectPublicViewPet();
+    } catch (ePv0) {
+      window.__ecPublicViewPet = false;
+    }
 
     if (urlProf.invalid) {
       showPublicProfileMessage(
@@ -870,6 +1265,55 @@
       );
     }
 
+    var EC_PUBLIC_TRIAL_DAYS = 7;
+
+    function getRawDocFechaRegistroMs(d) {
+      if (!d || d.fecha_registro == null) return null;
+      var f = d.fecha_registro;
+      if (typeof f === "number" && isFinite(f)) return f;
+      if (f && typeof f.toMillis === "function") return f.toMillis();
+      if (f && typeof f.seconds === "number") return f.seconds * 1000;
+      return null;
+    }
+
+    function isPaidPlanRaw(raw) {
+      var s = String((raw && raw.plan_status) || "trial")
+        .trim()
+        .toLowerCase();
+      return s === "active" || s === "pro" || s === "paid";
+    }
+
+    function shouldShowPlanRescueBanner(raw) {
+      if (!raw || typeof raw !== "object") return false;
+      if (isPaidPlanRaw(raw)) return false;
+      var st = String(raw.plan_status || "trial")
+        .trim()
+        .toLowerCase();
+      if (st !== "trial") return false;
+      var ms = getRawDocFechaRegistroMs(raw);
+      if (ms == null) return false;
+      return Date.now() - ms > EC_PUBLIC_TRIAL_DAYS * 24 * 60 * 60 * 1000;
+    }
+
+    function setBothRescueBannersHidden() {
+      ["ec-rescue-banner-a", "ec-rescue-banner-c", "ec-rescue-banner"].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.classList.add("hidden");
+      });
+    }
+
+    function updatePlanRescueBannerFromRaw(raw) {
+      var show = shouldShowPlanRescueBanner(raw);
+      var pet = !!window.__ecPublicViewPet;
+      var a = document.getElementById("ec-rescue-banner-a");
+      var c = document.getElementById("ec-rescue-banner-c");
+      var legacy = document.getElementById("ec-rescue-banner");
+      if (a) a.classList.toggle("hidden", !(show && !pet));
+      if (c) c.classList.toggle("hidden", !(show && pet));
+      if (legacy && !a && !c) legacy.classList.toggle("hidden", !show);
+      else if (legacy) legacy.classList.add("hidden");
+    }
+
     function logMediaUrlsFromFirestore(raw) {
       var d = raw && typeof raw === "object" ? raw : {};
       var fotoRaw = String(d.fotoUrl != null ? d.fotoUrl : d.photoURL != null ? d.photoURL : "").trim();
@@ -892,20 +1336,36 @@
           "Perfil no encontrado",
           "No hay un perfil publicado con este identificador. Puede haber sido movido o el enlace es incorrecto."
         );
+        setBothRescueBannersHidden();
         applyRemoteAndMaybeDismissSplash();
         return;
       }
 
       hidePublicProfileMessage();
+      var rawForRescue = null;
       if (snap && snap.exists) {
         var data = snap.data();
+        rawForRescue = data;
+        try {
+          if (window.__ecPublicViewPet) {
+            window.__ecPetFirestoreRaw = data;
+          } else {
+            window.__ecPetFirestoreRaw = null;
+          }
+        } catch (ePetRaw) {}
         logMediaUrlsFromFirestore(data);
         cfg = window.normalizeTarjetaData(
           Object.assign({}, window.DEFAULT_TARJETA_RAW, data)
         );
+        if (window.__ecPublicViewPet) {
+          cfg = mergePetProfileCfg(cfg, data);
+        }
       } else {
         console.log("[EliteCard] Sin documento Firestore; fotoUrl/logoUrl no aplicables.");
         cfg = window.normalizeTarjetaData({});
+        try {
+          window.__ecPetFirestoreRaw = null;
+        } catch (ePetRaw2) {}
       }
       // Actualizar logo del preloader con el logo institucional del usuario
       (function updatePreloaderLogo() {
@@ -926,7 +1386,12 @@
           tmpImg.src = logo;
         } catch (e) {}
       })();
+      var alertOn =
+        !!window.__ecPublicViewPet && !!(rawForRescue && rawForRescue.mascotaPerdida);
+      applyMascotaAlertClasses(alertOn);
       applyCardUI();
+      updatePlanRescueBannerFromRaw(rawForRescue);
+      if (rawForRescue) scheduleLostPetGeoPrompt(rawForRescue);
       applyRemoteAndMaybeDismissSplash();
     }
 
@@ -1009,8 +1474,48 @@
         });
     }
 
+    function wireEcAdminLivePreview() {
+      splashDismissed = true;
+      window.addEventListener("message", function (ev) {
+        if (!ev || ev.origin !== window.location.origin) return;
+        var msg = ev.data;
+        if (!msg || msg.type !== "EC_ELITE_LIVE_PREVIEW" || !msg.patch || typeof msg.patch !== "object") return;
+        try {
+          cfg = window.normalizeTarjetaData(
+            Object.assign({}, window.DEFAULT_TARJETA_RAW, msg.patch)
+          );
+          try {
+            if (window.__ecPublicViewPet) {
+              window.__ecPetFirestoreRaw = Object.assign({}, msg.patch, {
+                mascotaNombre: msg.patch.nombreCompleto,
+                mascotaFotoUrl: msg.patch.fotoUrl,
+              });
+            } else {
+              window.__ecPetFirestoreRaw = null;
+            }
+          } catch (ePvRaw) {}
+          applyMascotaAlertClasses(!!msg.patch.mascotaPerdida);
+          applyCardUI();
+          setBothRescueBannersHidden();
+          hidePublicProfileMessage();
+        } catch (errPv) {
+          console.warn("[EliteCard] Vista previa admin:", errPv);
+        }
+      });
+      cfg = window.normalizeTarjetaData({});
+      applyMascotaAlertClasses(false);
+      applyCardUI();
+      setBothRescueBannersHidden();
+      hidePublicProfileMessage();
+      dismissPreloader(0);
+    }
+
     if (urlProf.id) {
-      subscribeToProfileDoc(urlProf.id, true);
+      if (isPublicCardAdminPreview()) {
+        wireEcAdminLivePreview();
+      } else {
+        subscribeToProfileDoc(urlProf.id, true);
+      }
     } else {
       auth.onAuthStateChanged(function (user) {
         var id = user ? user.uid : defaultPublicDocId();
@@ -1030,6 +1535,7 @@
       } catch (eFb) {}
       cfg = window.normalizeTarjetaData({});
       applyCardUI();
+      setBothRescueBannersHidden();
       dismissPreloader(0);
     }, 3000);
 
@@ -1041,9 +1547,11 @@
           "No se pudo cargar el perfil",
           "La solicitud tardó demasiado. Comprobá tu conexión e intentá de nuevo."
         );
+        setBothRescueBannersHidden();
       } else {
         cfg = window.normalizeTarjetaData({});
         applyCardUI();
+        setBothRescueBannersHidden();
       }
       dismissPreloader(450);
     }, 12000);
@@ -1072,6 +1580,7 @@
         /* Splash hasta primera respuesta de Firestore; UI se pinta en el snapshot. */
       } else {
         applyCardUI();
+        hideRescueBannersDom();
         initPreloaderFallbackOnLoad();
       }
 
@@ -1117,10 +1626,92 @@
         });
       }
 
+      var lostGeoModal = document.getElementById("ec-lost-pet-geo-modal");
+      var lostGeoPanel = lostGeoModal && lostGeoModal.querySelector(".ec-lost-pet-geo-panel");
+      var lostGeoAccept = document.getElementById("ec-lost-pet-geo-accept");
+      var lostGeoDecline = document.getElementById("ec-lost-pet-geo-decline");
+      var lostGeoClose = document.getElementById("ec-lost-pet-geo-close");
+      function dismissLostGeoRemember() {
+        var modal = document.getElementById("ec-lost-pet-geo-modal");
+        var key = modal && modal.getAttribute("data-ec-geo-key");
+        try {
+          if (key) sessionStorage.setItem(key, "1");
+        } catch (eK) {}
+      }
+      if (lostGeoAccept) {
+        lostGeoAccept.addEventListener("click", function () {
+          var modal = document.getElementById("ec-lost-pet-geo-modal");
+          var wa = modal && modal.getAttribute("data-ec-owner-wa");
+          if (!wa) {
+            closeLostPetGeoModal();
+            return;
+          }
+          if (!navigator.geolocation) {
+            showToast("Tu navegador no permite compartir ubicación");
+            dismissLostGeoRemember();
+            closeLostPetGeoModal();
+            return;
+          }
+          navigator.geolocation.getCurrentPosition(
+            function (pos) {
+              var lat = pos.coords.latitude;
+              var lng = pos.coords.longitude;
+              var maps =
+                "https://www.google.com/maps?q=" + encodeURIComponent(String(lat) + "," + String(lng));
+              var petName = String(cfg.nombreCompleto || "esta mascota").trim();
+              var msg =
+                "Hola, quiero ayudar a encontrar a " +
+                petName +
+                ". Mi ubicación aproximada: " +
+                maps;
+              window.open(
+                "https://wa.me/" + wa + "?text=" + encodeURIComponent(msg),
+                "_blank",
+                "noopener,noreferrer"
+              );
+              dismissLostGeoRemember();
+              closeLostPetGeoModal();
+            },
+            function () {
+              showToast("No se pudo obtener la ubicación. Podés intentar de nuevo más tarde.");
+              closeLostPetGeoModal();
+            },
+            { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
+          );
+        });
+      }
+      if (lostGeoDecline) {
+        lostGeoDecline.addEventListener("click", function () {
+          dismissLostGeoRemember();
+          closeLostPetGeoModal();
+        });
+      }
+      if (lostGeoClose) {
+        lostGeoClose.addEventListener("click", function () {
+          closeLostPetGeoModal();
+        });
+      }
+      if (lostGeoModal) {
+        lostGeoModal.addEventListener("click", function (e) {
+          if (e.target === lostGeoModal) closeLostPetGeoModal();
+        });
+      }
+      if (lostGeoPanel) {
+        lostGeoPanel.addEventListener("click", function (e) {
+          e.stopPropagation();
+        });
+      }
+
       document.addEventListener("keydown", function (e) {
         if (e.key !== "Escape") return;
+        var lb = document.getElementById("ec-pet-study-lightbox");
+        if (lb && !lb.classList.contains("hidden")) {
+          closePetStudyLightbox();
+          return;
+        }
         if (waModal && !waModal.classList.contains("hidden")) closeWaModal();
         if (calModal && !calModal.classList.contains("hidden")) closeCalendlyModal();
+        if (lostGeoModal && !lostGeoModal.classList.contains("hidden")) closeLostPetGeoModal();
       });
     } catch (fatalErr) {
       console.error("[EliteCard] Error fatal en init:", fatalErr);

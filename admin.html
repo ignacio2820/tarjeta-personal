@@ -2,7 +2,7 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="ec-asset-version" content="1776101887490" />
+    <meta name="ec-asset-version" content="1776140202063" />
     <script>
       (function () {
         window.__EC_PAGE_LOAD_TS = Date.now();
@@ -35,6 +35,17 @@
       };
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -581,21 +592,83 @@
         backdrop-filter: blur(24px);
         -webkit-backdrop-filter: blur(24px);
       }
-      @media (min-width: 1280px) {
+      @media (min-width: 1024px) {
         .ec-dash-preview-col {
           display: flex;
         }
       }
+      .ec-unpublished-hint,
+      .ec-unpublished-hint-footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        border-radius: 0.65rem;
+        font-size: 0.65rem;
+        font-weight: 500;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: rgba(252, 165, 165, 0.95);
+        background: rgba(248, 113, 113, 0.07);
+        border: 1px solid rgba(248, 113, 113, 0.28);
+        opacity: 0;
+        max-height: 0;
+        margin: 0;
+        padding: 0 0.65rem;
+        overflow: hidden;
+        pointer-events: none;
+        transition:
+          opacity 0.28s ease,
+          max-height 0.28s ease,
+          padding 0.28s ease,
+          margin 0.28s ease;
+      }
+      #view-panel.ec-has-unpublished-changes .ec-unpublished-hint {
+        opacity: 1;
+        max-height: 3rem;
+        margin-bottom: 0.75rem;
+        padding: 0.45rem 0.65rem;
+      }
+      #view-panel.ec-has-unpublished-changes .ec-unpublished-hint-footer {
+        opacity: 1;
+        max-height: 3rem;
+        margin-bottom: 0.85rem;
+        padding: 0.45rem 0.65rem;
+      }
+      .ec-unpublished-dot {
+        width: 0.45rem;
+        height: 0.45rem;
+        border-radius: 9999px;
+        background: #f87171;
+        box-shadow: 0 0 10px rgba(248, 113, 113, 0.55);
+        flex-shrink: 0;
+        animation: ec-unpub-pulse 2s ease-in-out infinite;
+      }
+      @keyframes ec-unpub-pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.45;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .ec-unpublished-dot {
+          animation: none;
+        }
+      }
       .ec-phone-device {
         position: relative;
-        padding: 0.65rem;
-        border-radius: 2.25rem;
-        background: linear-gradient(145deg, #2a2a2a 0%, #0a0a0a 40%, #151515 100%);
-        border: 2px solid rgba(212, 175, 55, 0.25);
+        padding: 0.7rem;
+        border-radius: 2.35rem;
+        background: linear-gradient(160deg, #080808 0%, #000000 42%, #101010 100%);
+        border: 2px solid rgba(212, 175, 55, 0.38);
         box-shadow:
-          0 0 0 1px rgba(212, 175, 55, 0.08),
-          0 24px 64px rgba(0, 0, 0, 0.65),
-          inset 0 1px 0 rgba(255, 255, 255, 0.06);
+          0 0 0 1px rgba(0, 0, 0, 0.75),
+          0 28px 80px rgba(0, 0, 0, 0.88),
+          0 0 48px rgba(212, 175, 55, 0.06),
+          inset 0 1px 0 rgba(255, 255, 255, 0.035);
       }
       .ec-phone-device::before {
         content: "";
@@ -611,12 +684,15 @@
         z-index: 2;
       }
       .ec-dash-preview-col .ec-preview-shell {
+        min-height: 420px;
         max-height: min(520px, 72dvh);
         max-width: 260px;
         margin-top: 0.5rem;
         border-radius: 1.35rem;
-        border: 1px solid rgba(212, 175, 55, 0.28);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(212, 175, 55, 0.32);
+        box-shadow:
+          0 16px 48px rgba(0, 0, 0, 0.65),
+          inset 0 0 0 1px rgba(212, 175, 55, 0.08);
       }
       .ec-dash-center .elite-input,
       .ec-dash-center select.elite-input {
@@ -981,7 +1057,11 @@
             Entrar
           </button>
         </form>
-        <p class="mt-10 text-center text-[12px] font-light text-elite-mist/40">
+        <p class="mt-8 text-center text-[13px] font-light text-elite-mist/50">
+          ¿No tenés cuenta?
+          <a href="register.html" class="text-elite-gold/85 transition hover:text-elite-gold">Crear cuenta</a>
+        </p>
+        <p class="mt-4 text-center text-[12px] font-light text-elite-mist/40">
           <a href="index.html" class="transition hover:text-elite-gold/90">Ver tarjeta pública</a>
         </p>
       </div>
@@ -996,6 +1076,14 @@
         aria-live="polite"
       >
         <span id="ec-trial-urgency-text"></span>
+      </div>
+      <div
+        id="ec-dashboard-mascota-health-alert"
+        class="hidden border-b border-amber-500/35 bg-amber-500/12 px-4 py-3 text-center text-[13px] font-light text-amber-100/95"
+        role="status"
+        aria-live="polite"
+      >
+        <span id="ec-dashboard-mascota-health-alert-text"></span>
       </div>
       <aside
         id="ec-dash-sidebar"
@@ -1028,6 +1116,26 @@
               <rect x="3" y="16" width="7" height="5" rx="1" stroke-width="1.75" />
             </svg>
             <span class="ec-sidebar-label">Diseño</span>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            class="ec-sidebar-btn portal-tab"
+            data-dashboard-tab="mascotbook"
+            aria-selected="false"
+            title="MascotBook — tarjeta de mascota"
+          >
+            <svg class="ec-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.75"
+                d="M12 11c-2.5 0-4.5-1.6-4.5-3.8C7.5 5.5 9 4 12 4s4.5 1.5 4.5 3.2c0 2.2-2 3.8-4.5 3.8zM5.5 13.5c-.8 0-1.5.7-1.5 1.6 0 1.4 1.2 2.6 2.7 2.6.5 0 1-.1 1.4-.4M18.5 13.5c.8 0 1.5.7 1.5 1.6 0 1.4-1.2 2.6-2.7 2.6-.5 0-1-.1-1.4-.4M8.2 17.2c.9 1.8 2.5 2.8 3.8 2.8s2.9-1 3.8-2.8"
+              />
+              <circle cx="6" cy="10" r="1.35" fill="currentColor" stroke="none" />
+              <circle cx="18" cy="10" r="1.35" fill="currentColor" stroke="none" />
+            </svg>
+            <span class="ec-sidebar-label">MascotBook</span>
           </button>
           <button type="button" role="tab" class="ec-sidebar-btn portal-tab" data-dashboard-tab="content" aria-selected="false" title="Contenido">
             <svg class="ec-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
@@ -1207,8 +1315,8 @@
           <p class="ec-label mb-2 block text-elite-gold/90">Estética de tu tarjeta</p>
           <h3 class="mt-1 text-xl font-light tracking-tight text-white sm:text-2xl">Diseño que refleja tu nivel</h3>
           <p class="mb-8 mt-3 max-w-2xl text-[15px] font-light leading-relaxed text-elite-mist/50">
-            Definí forma del avatar, disposición de botones y paleta. La vista previa a la derecha (en pantallas grandes) se
-            actualiza en tiempo real. Cuando termines, guardá el estilo o publicá todo el perfil desde abajo.
+            Definí forma del avatar, disposición de botones y paleta. La miniatura del teléfono a la derecha refleja tema y
+            disposición al instante (junto con tus datos en la vista previa en vivo). Publicá abajo para llevar todo a la nube.
           </p>
 
           <input type="hidden" id="f-cardTheme" value="gold" />
@@ -1297,6 +1405,291 @@
               <span>Guardar estilo</span>
             </button>
           </div>
+        </div>
+
+        <div id="ec-card-mascotbook" class="ec-reveal ec-reveal-d4 elite-card hidden p-7 sm:p-9" data-dashboard-panel="mascotbook">
+          <p class="ec-label mb-2 block text-elite-gold/90">MascotBook</p>
+          <h3 class="mt-1 text-xl font-light tracking-tight text-white sm:text-2xl">La tarjeta de tu mascota</h3>
+          <p class="mb-8 mt-3 max-w-2xl text-[15px] font-light leading-relaxed text-elite-mist/50">
+            Misma experiencia EliteCard, datos pensados para tu compañero: la vista previa del teléfono a la derecha muestra esta
+            tarjeta mientras editás. El diseño (tema, forma del avatar y botones) usa lo que definís en la pestaña Diseño.
+          </p>
+          <div class="mb-8 flex max-w-2xl flex-col gap-3 rounded-2xl border border-red-500/30 bg-red-950/25 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-red-300/90">Modo emergencia</p>
+              <p class="mt-1 text-[13px] font-light text-elite-mist/60">
+                Activá si tu mascota se perdió: la tarjeta pública con <span class="text-white/80">?view=pet</span> pasará a modo alerta y pedirá ubicación a quien quiera ayudar.
+              </p>
+            </div>
+            <label class="flex cursor-pointer items-center gap-3 shrink-0">
+              <input id="f-mascota-perdida" type="checkbox" class="h-5 w-5 rounded border-white/20 bg-black/50 text-red-500" />
+              <span class="text-sm font-medium text-red-100/90">Reportar mascota perdida</span>
+            </label>
+          </div>
+          <div class="grid max-w-2xl grid-cols-1 gap-6 sm:grid-cols-2">
+            <label class="sm:col-span-2">
+              <span class="ec-label mb-2 block">Nombre de la mascota</span>
+              <input id="f-mascota-nombre" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" placeholder="Ej: Luna" />
+            </label>
+            <label>
+              <span class="ec-label mb-2 block">Rol o raza</span>
+              <input id="f-mascota-cargo" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" placeholder="Ej: Golden · 3 años" />
+            </label>
+            <label>
+              <span class="ec-label mb-2 block">Teléfono (humano)</span>
+              <input id="f-mascota-telefono" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" inputmode="tel" />
+            </label>
+            <label>
+              <span class="ec-label mb-2 block">WhatsApp</span>
+              <input id="f-mascota-whatsapp" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" inputmode="numeric" placeholder="54911…" />
+            </label>
+            <label>
+              <span class="ec-label mb-2 block">Instagram</span>
+              <input id="f-mascota-instagram" type="text" class="elite-input w-full rounded-xl px-4 py-3.5 text-sm" placeholder="@cuenta" />
+            </label>
+            <label class="sm:col-span-2">
+              <span class="ec-label mb-2 block">Historia corta</span>
+              <textarea
+                id="f-mascota-bio"
+                rows="3"
+                class="elite-input w-full rounded-xl px-4 py-3.5 text-sm"
+                placeholder="Una línea que enamore en la tarjeta pública…"
+              ></textarea>
+            </label>
+            <div class="sm:col-span-2">
+              <span class="ec-label mb-2 block">Foto de la mascota</span>
+              <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+                <div
+                  class="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-black/40"
+                >
+                  <img id="preview-mascota-foto" class="hidden h-full w-full object-cover" alt="" />
+                </div>
+                <div>
+                  <input id="file-mascota-foto" type="file" accept="image/*" class="hidden" />
+                  <button
+                    type="button"
+                    id="btn-pick-mascota-foto"
+                    class="rounded-xl border border-elite-gold/35 px-4 py-2.5 text-[11px] font-medium uppercase tracking-[0.14em] text-elite-gold transition hover:bg-elite-gold/12"
+                  >
+                    Elegir imagen
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-10 max-w-3xl rounded-2xl border border-elite-gold/25 bg-gradient-to-b from-black/45 to-black/25 p-6 sm:p-8">
+            <p class="ec-label mb-1 block text-elite-gold/90">Historial de salud</p>
+            <p class="mb-6 text-[13px] font-light text-elite-mist/50">
+              Vacunas con fechas de aplicación y vencimiento, alertas para el veterinario, estudios en Storage
+              (<span class="font-mono text-[11px] text-elite-mist/40">usuarios/tu_uid/salud/</span>) y un PDF resumido para
+              viajes o hotel canino.
+            </p>
+
+            <div class="mb-6 flex flex-col gap-3 rounded-xl border border-white/[0.08] bg-black/30 p-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+              <label class="flex cursor-pointer items-start gap-3 sm:max-w-[48%]">
+                <input
+                  id="f-mascota-salud-publica"
+                  type="checkbox"
+                  class="mt-0.5 h-5 w-5 shrink-0 rounded border-white/20 bg-black/50 text-elite-gold"
+                />
+                <span class="text-[13px] font-light text-elite-mist/75">
+                  <span class="font-medium text-elite-gold/90">Hacer pública la salud</span>
+                  · La pestaña «Ficha médica» aparece en la tarjeta pública de la mascota.
+                </span>
+              </label>
+              <label class="flex cursor-pointer items-start gap-3 sm:max-w-[48%]">
+                <input
+                  id="f-mascota-pase-vet-activo"
+                  type="checkbox"
+                  class="mt-0.5 h-5 w-5 shrink-0 rounded border-white/20 bg-black/50 text-emerald-500"
+                />
+                <span class="text-[13px] font-light text-elite-mist/75">
+                  <span class="font-medium text-emerald-300/90">Pase veterinario (tarjeta pública)</span>
+                  · Activa la ficha médica para profesionales aunque no esté «pública» para todos.
+                </span>
+              </label>
+            </div>
+
+            <p class="ec-label mb-2 block text-elite-gold/80">Calendario de vacunación</p>
+            <p class="mb-4 text-[12px] font-light text-elite-mist/45">
+              En la tarjeta pública, las dosis que vencen en menos de 15 días muestran un aviso animado.
+            </p>
+            <div class="overflow-x-auto rounded-xl border border-white/10">
+              <table class="w-full min-w-[480px] text-left text-[13px] text-elite-mist/80">
+                <thead class="border-b border-white/10 bg-black/40 text-[11px] uppercase tracking-wider text-elite-mist/45">
+                  <tr>
+                    <th class="px-3 py-2.5 font-medium">Vacuna</th>
+                    <th class="px-3 py-2.5 font-medium whitespace-nowrap">Fecha aplicación</th>
+                    <th class="px-3 py-2.5 font-medium whitespace-nowrap">Fecha vencimiento</th>
+                    <th class="px-3 py-2.5 font-medium w-24"></th>
+                  </tr>
+                </thead>
+                <tbody id="mascota-vacunas-tbody"></tbody>
+              </table>
+            </div>
+            <button
+              type="button"
+              id="btn-mascota-vacuna-add"
+              class="mt-3 rounded-xl border border-elite-gold/30 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.12em] text-elite-gold transition hover:bg-elite-gold/10"
+            >
+              + Añadir vacuna
+            </button>
+
+            <label class="ec-ficha-admin-alertas mt-8 block rounded-2xl border border-amber-500/35 bg-amber-950/20 p-4 ring-1 ring-amber-500/15">
+              <span class="ec-label mb-2 block text-amber-200/90">Alertas médicas y alergias</span>
+              <textarea
+                id="f-mascota-alertas-salud"
+                rows="4"
+                class="elite-input w-full rounded-xl border border-amber-500/25 bg-black/40 px-4 py-3.5 text-sm"
+                placeholder="Ej: Alergia a la penicilina, epilepsia controlada, restricción dietética…"
+              ></textarea>
+            </label>
+
+            <label class="mt-6 block">
+              <span class="ec-label mb-2 block">Historial clínico (texto libre)</span>
+              <textarea
+                id="f-mascota-historial"
+                rows="4"
+                class="elite-input w-full rounded-xl px-4 py-3.5 text-sm font-mono"
+                placeholder="Consultas, diagnósticos, tratamientos… (visible en pase veterinario y ficha si está habilitada)"
+              ></textarea>
+            </label>
+
+            <div class="mt-6">
+              <span class="ec-label mb-2 block">Estudios y rayos X</span>
+              <p class="mb-3 text-[12px] font-light text-elite-mist/45">
+                Subí imágenes (JPG, PNG, WebP). Se guardan en Firebase Storage bajo la carpeta
+                <span class="font-mono text-elite-mist/55">salud/</span> de tu usuario.
+              </p>
+              <div class="flex flex-wrap items-center gap-3">
+                <input id="file-mascota-salud-estudios" type="file" accept="image/*" multiple class="hidden" />
+                <button
+                  type="button"
+                  id="btn-mascota-salud-estudios-pick"
+                  class="rounded-xl border border-elite-gold/35 px-4 py-2.5 text-[11px] font-medium uppercase tracking-[0.12em] text-elite-gold transition hover:bg-elite-gold/10"
+                >
+                  Subir imágenes
+                </button>
+                <span id="mascota-salud-estudios-hint" class="text-[11px] text-elite-mist/40"></span>
+              </div>
+              <div
+                id="mascota-salud-estudios-list"
+                class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4"
+              ></div>
+            </div>
+
+            <label class="mt-6 block">
+              <span class="ec-label mb-2 block text-elite-mist/55">URLs adicionales (opcional)</span>
+              <textarea
+                id="f-mascota-galeria-urls"
+                rows="2"
+                class="elite-input w-full rounded-xl px-4 py-3 text-[12px] font-mono text-elite-mist/70"
+                placeholder="Un enlace por línea — se muestran junto a los estudios subidos"
+              ></textarea>
+            </label>
+
+            <div class="mt-8 flex flex-wrap gap-3 border-t border-white/[0.06] pt-6">
+              <button
+                type="button"
+                id="btn-mascota-pdf-sanitario"
+                class="rounded-xl border border-elite-gold/45 bg-elite-gold/10 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-elite-gold transition hover:bg-elite-gold/18"
+              >
+                Descargar PDF sanitario
+              </button>
+              <p class="max-w-md text-[11px] font-light leading-relaxed text-elite-mist/45">
+                Incluye foto, QR al perfil mascota y tabla de vacunas. Útil para fronteras o certificados impresos.
+              </p>
+            </div>
+          </div>
+
+          <div class="mt-10 max-w-3xl rounded-2xl border border-white/10 bg-black/30 p-6">
+            <p class="ec-label mb-2 block text-elite-gold/90">Pase veterinario temporal</p>
+            <p class="mb-4 text-[13px] font-light text-elite-mist/50">
+              Generá un enlace único válido 48 horas. Quien lo abra verá historial y galería clínica sin datos de contacto del
+              dueño.
+            </p>
+            <div class="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                id="btn-generar-pase-vet"
+                class="rounded-xl border border-elite-gold/40 bg-elite-gold/12 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-elite-gold transition hover:bg-elite-gold/20"
+              >
+                Generar pase veterinario
+              </button>
+            </div>
+            <p id="pase-vet-url-out" class="mt-4 hidden break-all font-mono text-[12px] text-emerald-300/90"></p>
+            <p id="pase-vet-error" class="mt-2 hidden text-[12px] text-red-300/90"></p>
+          </div>
+
+          <div class="mt-10 max-w-3xl">
+            <p class="ec-label mb-2 block text-elite-gold/90">Mapa de comunidad</p>
+            <p class="mb-4 text-[13px] font-light text-elite-mist/50">
+              Sumá veterinarias 24 h, parques o bares pet-friendly. Los puntos son visibles para todos los usuarios del mapa.
+            </p>
+            <div
+              id="mascota-community-map"
+              class="h-[280px] w-full overflow-hidden rounded-xl border border-white/10 bg-black/40"
+            ></div>
+            <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <label class="sm:col-span-2">
+                <span class="ec-label mb-1 block text-[11px]">Nombre del lugar</span>
+                <input
+                  id="f-pet-place-nombre"
+                  type="text"
+                  class="elite-input w-full rounded-xl px-3 py-2.5 text-sm"
+                  placeholder="Ej: Vet Central / Parque Las Heras"
+                />
+              </label>
+              <label>
+                <span class="ec-label mb-1 block text-[11px]">Tipo</span>
+                <select id="f-pet-place-tipo" class="elite-input w-full rounded-xl px-3 py-2.5 text-sm">
+                  <option value="vet24">Veterinaria 24 h</option>
+                  <option value="parque">Parque</option>
+                  <option value="bar">Bar pet-friendly</option>
+                </select>
+              </label>
+              <div class="flex flex-col gap-2">
+                <span class="ec-label text-[11px]">Coordenadas</span>
+                <div class="flex gap-2">
+                  <input
+                    id="f-pet-place-lat"
+                    type="text"
+                    inputmode="decimal"
+                    class="elite-input w-full rounded-xl px-3 py-2.5 text-sm"
+                    placeholder="Lat"
+                  />
+                  <input
+                    id="f-pet-place-lng"
+                    type="text"
+                    inputmode="decimal"
+                    class="elite-input w-full rounded-xl px-3 py-2.5 text-sm"
+                    placeholder="Lng"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <button
+                type="button"
+                id="btn-pet-place-my-loc"
+                class="rounded-xl border border-white/15 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.1em] text-elite-mist/80 transition hover:bg-white/5"
+              >
+                Usar mi ubicación
+              </button>
+              <button
+                type="button"
+                id="btn-pet-place-add"
+                class="rounded-xl border border-elite-gold/35 bg-elite-gold/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-elite-gold transition hover:bg-elite-gold/18"
+              >
+                Publicar punto
+              </button>
+            </div>
+          </div>
+
+          <p class="mt-8 text-center text-[12px] font-light text-elite-mist/40">
+            Publicá los cambios para guardar MascotBook en la nube junto con tu perfil.
+          </p>
         </div>
 
         <div id="ec-card-analytics" class="ec-reveal ec-reveal-d5 elite-card hidden p-7 sm:p-9" data-dashboard-panel="analytics">
@@ -1664,6 +2057,10 @@
               Un clic y tu identidad queda en la nube lista para impresionar: datos, imágenes y estilo viajan juntos. Tu enlace
               público muestra siempre lo que acabás de publicar.
             </p>
+            <div id="ec-unpublished-hint-footer" class="ec-unpublished-hint-footer" role="status" aria-live="polite">
+              <span class="ec-unpublished-dot" aria-hidden="true"></span>
+              <span>Tienes cambios sin publicar</span>
+            </div>
             <button type="submit" id="btn-publish-footer" class="elite-btn-gold ec-gradient-action" form="form-card">
               <span>Publicar cambios</span>
             </button>
@@ -1671,19 +2068,16 @@
         </footer>
         </div>
 
-        <aside class="ec-dash-preview-col ec-reveal ec-reveal-d2" aria-label="Vista previa de tarjeta pública">
-          <p class="mb-1 text-center text-[10px] font-semibold uppercase tracking-[0.22em] text-elite-gold/75">Vista en vivo</p>
-          <p class="mb-4 max-w-[13rem] text-center text-[11px] font-light leading-snug text-elite-mist/50">
-            El estilo se actualiza al instante. Los textos e imágenes reflejan lo último que publicaste: recargá la vista para verlos
-            en el teléfono.
+        <aside class="ec-dash-preview-col ec-reveal ec-reveal-d2" aria-label="Vista previa de tarjeta en el teléfono">
+          <p class="mb-1 text-center text-[10px] font-semibold uppercase tracking-[0.22em] text-elite-gold/75">Live preview</p>
+          <p class="mb-3 max-w-[14rem] text-center text-[11px] font-light leading-snug text-elite-mist/52">
+            Editá y mirá el resultado al instante: nombre, colores, botones y MascotBook se sincronizan sin guardar. Lo público sigue
+            siendo lo último que publicaste.
           </p>
-          <button
-            type="button"
-            id="btn-ec-refresh-preview"
-            class="mb-5 w-full rounded-xl border border-elite-gold/30 bg-elite-gold/8 px-3 py-2.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-elite-gold transition hover:border-elite-gold/50 hover:bg-elite-gold/14"
-          >
-            Recargar vista previa
-          </button>
+          <div id="ec-unpublished-hint-preview" class="ec-unpublished-hint" role="status" aria-live="polite">
+            <span class="ec-unpublished-dot" aria-hidden="true"></span>
+            <span>Tienes cambios sin publicar</span>
+          </div>
           <div class="ec-phone-device">
             <div
               id="live-preview-container"
@@ -1695,11 +2089,26 @@
               <iframe
                 id="ec-live-preview"
                 class="ec-preview-iframe"
-                title="Vista previa de la tarjeta pública en tiempo real"
+                title="Vista previa en vivo (card.html)"
                 loading="lazy"
               ></iframe>
             </div>
           </div>
+          <button
+            type="submit"
+            id="btn-publish-preview-col"
+            class="ec-gradient-action mt-5 w-full rounded-xl py-3.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#0a0a0a] shadow-lg shadow-black/40"
+            form="form-card"
+          >
+            Publicar cambios
+          </button>
+          <button
+            type="button"
+            id="btn-ec-refresh-preview"
+            class="mt-3 w-full rounded-xl border border-white/[0.1] px-3 py-2 text-[10px] font-medium uppercase tracking-[0.16em] text-elite-mist/55 transition hover:border-elite-gold/35 hover:text-elite-gold/85"
+          >
+            Sincronizar con la nube
+          </button>
         </aside>
       </div>
     </section>
@@ -1836,50 +2245,34 @@
         var t = window.__EC_PAGE_LOAD_TS || Date.now();
         document.write('<script src="firebase-config.js?v=' + t + '"><\/script>');
         document.write('<script src="config.js?v=' + t + '"><\/script>');
+        document.write('<script src="admin.js?v=' + t + '"><\/script>');
       })();
     </script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous"></script>
     <script>
       (function () {
         var lastDoc = {};
+        var ecActiveDashboardTab = "design";
+        var ecLastPublishedFingerprint = "";
+        var ecPushPreviewTimer = null;
+        var ecDirtyDebounceTimer = null;
         var pendingFotoFile = null;
         var pendingLogoFile = null;
+        var pendingMascotaFile = null;
+        var pendingSaludStudyFiles = [];
+        var saludEstudiosUrlsDraft = [];
         var docRef = null;
         var analyticsUnsub = null;
-        var ecLivePreviewRaf = null;
         var ecToastHideTimer = null;
         var selectDashboardTab = null;
-        var EC_TRIAL_DAYS = 7;
 
-        function getPlanStatusFromDoc(docData) {
-          var s = String((docData && docData.plan_status) || "trial")
-            .trim()
-            .toLowerCase();
-          if (s === "active" || s === "pro" || s === "paid") return "active";
-          return "trial";
-        }
-
-        function getFechaRegistroMs(docData) {
-          if (!docData || docData.fecha_registro == null) return null;
-          var f = docData.fecha_registro;
-          if (typeof f === "number" && isFinite(f)) return f;
-          if (f && typeof f.toMillis === "function") return f.toMillis();
-          if (f && typeof f.seconds === "number") return f.seconds * 1000;
-          return null;
-        }
-
-        function isTrialPeriodExpired(docData) {
-          if (getPlanStatusFromDoc(docData) !== "trial") return false;
-          var ms = getFechaRegistroMs(docData);
-          if (ms == null) return false;
-          return Date.now() - ms > EC_TRIAL_DAYS * 24 * 60 * 60 * 1000;
-        }
-
-        function isEmailSignatureLocked(docData) {
-          return getPlanStatusFromDoc(docData) === "trial";
+        var subs = window.EliteCardAdminSubscription;
+        if (!subs) {
+          console.error("[EliteCard] Falta admin.js (EliteCardAdminSubscription).");
         }
 
         function setTrialExpiredModalVisible(visible) {
@@ -1893,7 +2286,8 @@
 
         function applySubscriptionUI(docData) {
           var d = docData || {};
-          var lockSig = isEmailSignatureLocked(d);
+          /* role: 'admin' → bypass trial (ver admin.js). */
+          var lockSig = !subs ? true : subs.isDocAdmin(d) ? false : subs.isEmailSignatureLocked(d);
           var proInner = document.getElementById("email-signature-pro-inner");
           var locked = document.getElementById("email-signature-locked");
           if (proInner && locked) {
@@ -1910,7 +2304,7 @@
         }
 
         function syncTrialExpiredModal(docData) {
-          setTrialExpiredModalVisible(isTrialPeriodExpired(docData));
+          setTrialExpiredModalVisible(subs ? subs.isTrialPeriodExpired(docData) : false);
         }
 
         function updateTrialUrgencyBar(docData) {
@@ -1918,14 +2312,23 @@
           var panel = document.getElementById("view-panel");
           var textEl = document.getElementById("ec-trial-urgency-text");
           if (!bar || !panel) return;
-          var trialOn = getPlanStatusFromDoc(docData) === "trial" && !isTrialPeriodExpired(docData);
-          var ms = getFechaRegistroMs(docData);
+          if (!subs) {
+            bar.classList.add("hidden");
+            return;
+          }
+          if (subs.isDocAdmin(docData)) {
+            bar.classList.add("hidden");
+            panel.classList.remove("ec-trial-banner-visible");
+            return;
+          }
+          var trialOn = subs.getPlanStatusFromDoc(docData) === "trial" && !subs.isTrialPeriodExpired(docData);
+          var ms = subs.getFechaRegistroMs(docData);
           if (!trialOn || ms == null) {
             bar.classList.add("hidden");
             panel.classList.remove("ec-trial-banner-visible");
             return;
           }
-          var end = ms + EC_TRIAL_DAYS * 24 * 60 * 60 * 1000;
+          var end = ms + subs.EC_TRIAL_DAYS * 24 * 60 * 60 * 1000;
           var msLeft = end - Date.now();
           if (msLeft <= 0) {
             bar.classList.add("hidden");
@@ -1989,14 +2392,308 @@
           shell.setAttribute("data-preview-leads", lead);
         }
 
-        function scheduleLivePreviewSync() {
-          if (ecLivePreviewRaf) cancelAnimationFrame(ecLivePreviewRaf);
-          ecLivePreviewRaf = requestAnimationFrame(function () {
-            ecLivePreviewRaf = requestAnimationFrame(function () {
-              ecLivePreviewRaf = null;
-              syncPreviewAppearance();
-            });
+        function readMascotaVacunasFromDom() {
+          var tb = document.getElementById("mascota-vacunas-tbody");
+          if (!tb) return [];
+          var rows = tb.querySelectorAll("tr.mascota-vacuna-row");
+          var out = [];
+          rows.forEach(function (tr) {
+            var n = tr.querySelector(".mv-nombre");
+            var a = tr.querySelector(".mv-aplicacion");
+            var v = tr.querySelector(".mv-vencimiento");
+            var nombre = n ? String(n.value || "").trim() : "";
+            var aplic = a ? String(a.value || "").trim() : "";
+            var venc = v ? String(v.value || "").trim() : "";
+            if (nombre || aplic || venc) {
+              out.push({
+                nombre: nombre,
+                fechaAplicacion: aplic,
+                fechaVencimiento: venc,
+              });
+            }
           });
+          return out;
+        }
+
+        function renderMascotaVacunasTable(arr) {
+          var tb = document.getElementById("mascota-vacunas-tbody");
+          if (!tb) return;
+          tb.innerHTML = "";
+          var list = Array.isArray(arr) ? arr : [];
+          if (!list.length) {
+            addMascotaVacunaRow({ nombre: "", fechaProxima: "" });
+            return;
+          }
+          list.forEach(function (row) {
+            addMascotaVacunaRow(row || {});
+          });
+        }
+
+        function addMascotaVacunaRow(row) {
+          var tb = document.getElementById("mascota-vacunas-tbody");
+          if (!tb) return;
+          var r = row || {};
+          var venc =
+            r.fechaVencimiento != null && String(r.fechaVencimiento).trim() !== ""
+              ? String(r.fechaVencimiento)
+              : r.fechaProxima != null
+                ? String(r.fechaProxima)
+                : "";
+          var aplic = r.fechaAplicacion != null ? String(r.fechaAplicacion) : "";
+          var tr = document.createElement("tr");
+          tr.className =
+            "mascota-vacuna-row border-b border-white/[0.06] bg-black/20 last:border-b-0";
+          tr.innerHTML =
+            '<td class="px-3 py-2 align-middle"><input type="text" class="mv-nombre elite-input w-full rounded-lg border border-white/10 bg-black/30 px-2 py-2 text-[13px]" placeholder="Ej: Rabia" /></td>' +
+            '<td class="px-3 py-2 align-middle"><input type="date" class="mv-aplicacion elite-input w-full min-w-[9.5rem] rounded-lg border border-white/10 bg-black/30 px-2 py-2 text-[13px]" /></td>' +
+            '<td class="px-3 py-2 align-middle"><input type="date" class="mv-vencimiento elite-input w-full min-w-[9.5rem] rounded-lg border border-white/10 bg-black/30 px-2 py-2 text-[13px]" /></td>' +
+            '<td class="px-3 py-2 align-middle"><button type="button" class="mv-remove rounded-lg border border-red-400/30 px-2 py-1.5 text-[10px] font-medium uppercase tracking-wider text-red-300/90 transition hover:bg-red-500/15">Quitar</button></td>';
+          var inN = tr.querySelector(".mv-nombre");
+          var inA = tr.querySelector(".mv-aplicacion");
+          var inV = tr.querySelector(".mv-vencimiento");
+          if (inN) inN.value = r.nombre != null ? String(r.nombre) : "";
+          if (inA) inA.value = aplic;
+          if (inV) inV.value = venc;
+          tr.querySelector(".mv-remove").addEventListener("click", function () {
+            tr.remove();
+            if (!tb.querySelector("tr.mascota-vacuna-row")) addMascotaVacunaRow({});
+            scheduleLivePreviewSync();
+            refreshPublishDirtyState();
+          });
+          [inN, inA, inV].forEach(function (inp) {
+            if (inp)
+              inp.addEventListener("input", function () {
+                scheduleLivePreviewSync();
+                refreshPublishDirtyState();
+              });
+          });
+          tb.appendChild(tr);
+        }
+
+        function readMascotaGaleriaUrlsFromTextarea() {
+          var el = document.getElementById("f-mascota-galeria-urls");
+          if (!el) return [];
+          return String(el.value || "")
+            .split(/\r?\n/)
+            .map(function (s) {
+              return s.trim();
+            })
+            .filter(Boolean);
+        }
+
+        function renderSaludEstudiosDraft() {
+          var wrap = document.getElementById("mascota-salud-estudios-list");
+          if (!wrap) return;
+          wrap.innerHTML = "";
+          saludEstudiosUrlsDraft.forEach(function (url) {
+            var u = String(url || "").trim();
+            if (!u) return;
+            var card = document.createElement("div");
+            card.className =
+              "relative overflow-hidden rounded-xl border border-white/10 bg-black/40";
+            card.innerHTML =
+              '<img class="h-28 w-full object-cover" alt="" />' +
+              '<button type="button" class="salud-estudio-del absolute right-1 top-1 rounded-lg border border-red-400/40 bg-black/70 px-2 py-1 text-[9px] font-semibold uppercase tracking-wider text-red-200">Quitar</button>';
+            var img = card.querySelector("img");
+            if (img) img.src = u;
+            card.querySelector(".salud-estudio-del").addEventListener("click", function () {
+              saludEstudiosUrlsDraft = saludEstudiosUrlsDraft.filter(function (x) {
+                return String(x || "").trim() !== u;
+              });
+              renderSaludEstudiosDraft();
+              scheduleLivePreviewSync();
+              refreshPublishDirtyState();
+            });
+            wrap.appendChild(card);
+          });
+        }
+
+        function readMascotBookForPayload() {
+          function val(id) {
+            var el = document.getElementById(id);
+            return el ? String(el.value || "").trim() : "";
+          }
+          var perdidaEl = document.getElementById("f-mascota-perdida");
+          var pubEl = document.getElementById("f-mascota-salud-publica");
+          var pvetEl = document.getElementById("f-mascota-pase-vet-activo");
+          return {
+            mascotaNombre: val("f-mascota-nombre"),
+            mascotaCargo: val("f-mascota-cargo"),
+            mascotaBio: val("f-mascota-bio"),
+            mascotaTelefono: val("f-mascota-telefono"),
+            mascotaWhatsapp: onlyDigits(val("f-mascota-whatsapp")),
+            mascotaInstagram: val("f-mascota-instagram"),
+            mascotaPerdida: !!(perdidaEl && perdidaEl.checked),
+            mascotaVacunas: readMascotaVacunasFromDom(),
+            mascotaHistorialClinico: val("f-mascota-historial"),
+            mascotaAlertasSalud: val("f-mascota-alertas-salud"),
+            mascotaSaludPublica: !!(pubEl && pubEl.checked),
+            paseVeterinarioActivo: !!(pvetEl && pvetEl.checked),
+            mascotaEstudiosSaludUrls: saludEstudiosUrlsDraft.slice(),
+            mascotaGaleriaUrls: readMascotaGaleriaUrlsFromTextarea(),
+          };
+        }
+
+        function buildMascotLivePreviewPatch() {
+          var st = readFormObject();
+          var m = readMascotBookForPayload();
+          var patch = {
+            nombreCompleto: m.mascotaNombre,
+            cargo: m.mascotaCargo,
+            bio: m.mascotaBio,
+            empresa: "",
+            telefono: m.mascotaTelefono,
+            whatsappNumero: m.mascotaWhatsapp,
+            instagram: m.mascotaInstagram,
+            email: "",
+            emailInstitucional: "",
+            linkedin: "",
+            sitioWeb: "",
+            mapsUrl: "",
+            logoUrl: "",
+            calendlyUrl: "",
+            leadCaptureEnabled: false,
+            cardTheme: st.cardTheme,
+            avatarShape: st.avatarShape,
+            buttonLayout: st.buttonLayout,
+            fotoUrl: String((lastDoc && lastDoc.mascotaFotoUrl) || "").trim(),
+            mascotaPerdida: !!m.mascotaPerdida,
+            mascotaVacunas: m.mascotaVacunas,
+            mascotaAlertasSalud: m.mascotaAlertasSalud,
+            mascotaSaludPublica: !!m.mascotaSaludPublica,
+            paseVeterinarioActivo: !!m.paseVeterinarioActivo,
+            mascotaEstudiosSaludUrls: m.mascotaEstudiosSaludUrls,
+            mascotaGaleriaUrls: m.mascotaGaleriaUrls,
+            mascotaHistorialClinico: m.mascotaHistorialClinico,
+          };
+          var pm = document.getElementById("preview-mascota-foto");
+          if (pm && pm.src && (pm.src.indexOf("blob:") === 0 || pm.src.indexOf("data:") === 0)) {
+            patch.fotoUrl = pm.src;
+          }
+          return patch;
+        }
+
+        function buildPersonalLivePreviewPatch() {
+          var patch = Object.assign({}, readFormObject());
+          if (patch.signatureConfig) delete patch.signatureConfig;
+          var pf = document.getElementById("preview-foto");
+          if (pendingFotoFile && pf && pf.src) patch.fotoUrl = pf.src;
+          else if (pf && pf.src && (pf.src.indexOf("data:") === 0 || pf.src.indexOf("blob:") === 0))
+            patch.fotoUrl = pf.src;
+          else patch.fotoUrl = String((lastDoc && lastDoc.fotoUrl) || "").trim();
+          var pl = document.getElementById("preview-logo");
+          if (pendingLogoFile && pl && pl.src) patch.logoUrl = pl.src;
+          else if (pl && pl.src && (pl.src.indexOf("data:") === 0 || pl.src.indexOf("blob:") === 0))
+            patch.logoUrl = pl.src;
+          else patch.logoUrl = String((lastDoc && lastDoc.logoUrl) || "").trim();
+          return patch;
+        }
+
+        function pushLivePreviewToIframe() {
+          var f = document.getElementById("ec-live-preview");
+          if (!f || !f.contentWindow) return;
+          var patch =
+            ecActiveDashboardTab === "mascotbook" ? buildMascotLivePreviewPatch() : buildPersonalLivePreviewPatch();
+          try {
+            f.contentWindow.postMessage(
+              { type: "EC_ELITE_LIVE_PREVIEW", patch: patch },
+              window.location.origin
+            );
+          } catch (ePost) {}
+          syncLivePreviewChrome();
+        }
+
+        function computeDraftFingerprint() {
+          var d = readFormObject();
+          if (d.signatureConfig) delete d.signatureConfig;
+          var mb = readMascotBookForPayload();
+          return JSON.stringify({
+            personal: d,
+            mascota: mb,
+            fotoUrl: String((lastDoc && lastDoc.fotoUrl) || "").trim(),
+            logoUrl: String((lastDoc && lastDoc.logoUrl) || "").trim(),
+            mascotaFotoUrl: String((lastDoc && lastDoc.mascotaFotoUrl) || "").trim(),
+            pendingFoto: !!pendingFotoFile,
+            pendingLogo: !!pendingLogoFile,
+            pendingMascota: !!pendingMascotaFile,
+            saludEstudiosDraft: saludEstudiosUrlsDraft.slice(),
+            pendingSaludStudies: pendingSaludStudyFiles.length,
+          });
+        }
+
+        function daysUntilIsoDate(isoYmd) {
+          if (!isoYmd) return null;
+          var t = new Date(String(isoYmd) + "T12:00:00");
+          if (isNaN(t.getTime())) return null;
+          var now = new Date();
+          return Math.ceil((t.getTime() - now.getTime()) / 86400000);
+        }
+
+        function updateDashboardMascotaHealthAlert(data) {
+          var bar = document.getElementById("ec-dashboard-mascota-health-alert");
+          var text = document.getElementById("ec-dashboard-mascota-health-alert-text");
+          if (!bar || !text) return;
+          var vacs = data && Array.isArray(data.mascotaVacunas) ? data.mascotaVacunas : [];
+          var minDays = null;
+          var soonName = "";
+          vacs.forEach(function (v) {
+            var fv = v && (v.fechaVencimiento || v.fechaProxima);
+            var d = daysUntilIsoDate(fv);
+            if (d == null) return;
+            if (d < 15 && (minDays === null || d < minDays)) {
+              minDays = d;
+              soonName = (v && v.nombre) || "Vacuna";
+            }
+          });
+          if (minDays !== null) {
+            if (minDays < 0) {
+              text.textContent =
+                "Pasaporte sanitario: la dosis «" +
+                soonName +
+                "» está vencida o atrasada (" +
+                Math.abs(minDays) +
+                (Math.abs(minDays) === 1 ? " día" : " días") +
+                "). Revisá MascotBook.";
+            } else {
+              text.textContent =
+                "Pasaporte sanitario: en " +
+                minDays +
+                (minDays === 1 ? " día" : " días") +
+                " vence o corresponde la dosis de «" +
+                soonName +
+                "». Revisá el calendario en MascotBook.";
+            }
+            bar.classList.remove("hidden");
+          } else {
+            bar.classList.add("hidden");
+          }
+        }
+
+        function refreshPublishDirtyState() {
+          var panel = document.getElementById("view-panel");
+          if (!panel) return;
+          if (!ecLastPublishedFingerprint) {
+            panel.classList.remove("ec-has-unpublished-changes");
+            return;
+          }
+          var dirty = ecLastPublishedFingerprint !== computeDraftFingerprint();
+          panel.classList.toggle("ec-has-unpublished-changes", !!dirty);
+        }
+
+        function scheduleLivePreviewSync() {
+          syncLivePreviewChrome();
+          if (ecPushPreviewTimer) clearTimeout(ecPushPreviewTimer);
+          ecPushPreviewTimer = setTimeout(function () {
+            ecPushPreviewTimer = null;
+            pushLivePreviewToIframe();
+            syncPreviewAppearance();
+          }, 110);
+          if (ecDirtyDebounceTimer) clearTimeout(ecDirtyDebounceTimer);
+          ecDirtyDebounceTimer = setTimeout(function () {
+            ecDirtyDebounceTimer = null;
+            refreshPublishDirtyState();
+            updateDashboardMascotaHealthAlert({ mascotaVacunas: readMascotaVacunasFromDom() });
+          }, 160);
         }
 
         function onlyDigits(s) {
@@ -2024,11 +2721,18 @@
           var hint = document.getElementById("panel-uid-hint");
           if (hint) {
             if (user) {
-              hint.textContent =
-                "ID público (compartí tu tarjeta): " +
+              var origin = String(window.location.origin || "").replace(/\/$/, "");
+              var prof = origin + "/card?id=" + encodeURIComponent(user.uid);
+              var pet = prof + "&view=pet";
+              hint.innerHTML =
+                'ID público: <span class="font-mono text-white/75">' +
                 user.uid +
-                " → /card?id=" +
-                user.uid;
+                '</span><br><span class="text-elite-mist/50">Profesional:</span> <a class="text-elite-gold/90 underline" href="' +
+                prof +
+                '" target="_blank" rel="noopener noreferrer">abrir tarjeta</a>' +
+                '<br><span class="text-elite-mist/50">MascotBook:</span> <a class="text-elite-gold/90 underline" href="' +
+                pet +
+                '" target="_blank" rel="noopener noreferrer">?view=pet</a>';
               hint.classList.remove("hidden");
             } else {
               hint.textContent = "";
@@ -2043,9 +2747,11 @@
                 if (snapA && snapA.exists) {
                   lastDoc.plan_status = d.plan_status;
                   lastDoc.fecha_registro = d.fecha_registro;
+                  lastDoc.role = d.role;
                   applySubscriptionUI(lastDoc);
                   syncTrialExpiredModal(lastDoc);
                   updateTrialUrgencyBar(lastDoc);
+                  updateDashboardMascotaHealthAlert(d);
                 }
               },
               function () {}
@@ -2178,18 +2884,121 @@
           syncLivePreviewChrome();
         }
 
+        function storageMascotaPath(uid) {
+          return "usuarios/" + uid + "/mascotaFoto";
+        }
+
+        function storageSaludStudyPath(uid, fileName) {
+          var safe = String(fileName || "estudio")
+            .replace(/[^a-zA-Z0-9._-]/g, "_")
+            .slice(0, 80);
+          return "usuarios/" + uid + "/salud/" + Date.now() + "_" + safe;
+        }
+
+        function publishedPersonalCardPatch() {
+          var d = lastDoc || {};
+          var theme = String(d.cardTheme || d.selectedTheme || "gold").trim().toLowerCase();
+          if (["gold", "minimal", "electric"].indexOf(theme) < 0) theme = "gold";
+          var av = String(d.avatarShape || "rect").trim().toLowerCase();
+          if (av !== "circle") av = "rect";
+          var bl = String(d.buttonLayout || d.buttonStyle || "pills").trim().toLowerCase();
+          if (bl !== "icons") bl = "pills";
+          return {
+            nombreCompleto: String(d.nombreCompleto || "").trim(),
+            cargo: String(d.cargo || "").trim(),
+            bio: String(d.bio || "").trim(),
+            empresa: String(d.empresa || "").trim(),
+            telefono: String(d.telefono || "").trim(),
+            whatsappNumero: onlyDigits(d.whatsappNumero),
+            email: String(d.email || "").trim(),
+            emailInstitucional: String(d.emailInstitucional || "").trim(),
+            instagram: String(d.instagram || "").trim(),
+            linkedin: String(d.linkedin || "").trim(),
+            sitioWeb: String(d.sitioWeb || "").trim(),
+            mapsUrl: String(d.mapsUrl || "").trim(),
+            fotoUrl: String(d.fotoUrl || "").trim(),
+            logoUrl: String(d.logoUrl || "").trim(),
+            calendlyUrl: String(d.calendlyUrl || "").trim(),
+            cardTheme: theme,
+            avatarShape: av,
+            buttonLayout: bl,
+            leadCaptureEnabled: !!d.leadCaptureEnabled,
+          };
+        }
+
+        function publishedMascotaCardPatch() {
+          var d = lastDoc || {};
+          var theme = String(d.cardTheme || "gold").trim().toLowerCase();
+          if (["gold", "minimal", "electric"].indexOf(theme) < 0) theme = "gold";
+          var av = String(d.avatarShape || "rect").trim().toLowerCase();
+          if (av !== "circle") av = "rect";
+          var bl = String(d.buttonLayout || "pills").trim().toLowerCase();
+          if (bl !== "icons") bl = "pills";
+          return {
+            nombreCompleto: String(d.mascotaNombre || "").trim(),
+            cargo: String(d.mascotaCargo || "").trim(),
+            bio: String(d.mascotaBio || "").trim(),
+            empresa: "",
+            telefono: String(d.mascotaTelefono || "").trim(),
+            whatsappNumero: onlyDigits(d.mascotaWhatsapp),
+            instagram: String(d.mascotaInstagram || "").trim(),
+            fotoUrl: String(d.mascotaFotoUrl || "").trim(),
+            logoUrl: "",
+            email: "",
+            emailInstitucional: "",
+            linkedin: "",
+            sitioWeb: "",
+            mapsUrl: "",
+            calendlyUrl: "",
+            leadCaptureEnabled: false,
+            cardTheme: theme,
+            avatarShape: av,
+            buttonLayout: bl,
+            mascotaPerdida: !!d.mascotaPerdida,
+            mascotaSaludPublica: !!d.mascotaSaludPublica,
+            paseVeterinarioActivo: !!d.paseVeterinarioActivo,
+            mascotaVacunas: Array.isArray(d.mascotaVacunas) ? d.mascotaVacunas : [],
+            mascotaAlertasSalud: String(d.mascotaAlertasSalud || ""),
+            mascotaEstudiosSaludUrls: Array.isArray(d.mascotaEstudiosSaludUrls)
+              ? d.mascotaEstudiosSaludUrls
+              : [],
+            mascotaGaleriaUrls: Array.isArray(d.mascotaGaleriaUrls) ? d.mascotaGaleriaUrls : [],
+            mascotaHistorialClinico: String(d.mascotaHistorialClinico || ""),
+          };
+        }
+
+        function pushCloudSnapshotToIframe() {
+          var f = document.getElementById("ec-live-preview");
+          if (!f || !f.contentWindow) return;
+          var patch =
+            ecActiveDashboardTab === "mascotbook" ? publishedMascotaCardPatch() : publishedPersonalCardPatch();
+          try {
+            f.contentWindow.postMessage(
+              { type: "EC_ELITE_LIVE_PREVIEW", patch: patch },
+              window.location.origin
+            );
+          } catch (eCloud) {}
+          syncLivePreviewChrome();
+          syncPreviewAppearance();
+        }
+
         function setupPreviewIframe(uid) {
           var f = document.getElementById("ec-live-preview");
           if (!f || !uid) return;
           var url = new URL("card.html", window.location.href);
           url.searchParams.set("id", uid);
+          url.searchParams.set("ec_admin_preview", "1");
+          if (ecActiveDashboardTab === "mascotbook") url.searchParams.set("view", "pet");
+          else url.searchParams.delete("view");
           var urlStr = url.toString();
           f.onload = function () {
+            pushLivePreviewToIframe();
             syncPreviewAppearance();
           };
           if (f.getAttribute("src") !== urlStr) {
             f.setAttribute("src", urlStr);
           } else {
+            pushLivePreviewToIframe();
             syncPreviewAppearance();
           }
         }
@@ -2212,6 +3021,61 @@
             var el = document.getElementById(pair[0]);
             if (el) el.value = base[pair[1]] != null ? String(base[pair[1]]) : "";
           });
+
+          (function fillMascotaFields() {
+            var mm = [
+              ["f-mascota-nombre", "mascotaNombre"],
+              ["f-mascota-cargo", "mascotaCargo"],
+              ["f-mascota-bio", "mascotaBio"],
+              ["f-mascota-telefono", "mascotaTelefono"],
+              ["f-mascota-whatsapp", "mascotaWhatsapp"],
+              ["f-mascota-instagram", "mascotaInstagram"],
+            ];
+            mm.forEach(function (pair) {
+              var el = document.getElementById(pair[0]);
+              if (el) el.value = base[pair[1]] != null ? String(base[pair[1]]) : "";
+            });
+            var mp = document.getElementById("f-mascota-perdida");
+            if (mp) mp.checked = !!base.mascotaPerdida;
+            var msp = document.getElementById("f-mascota-salud-publica");
+            if (msp) msp.checked = !!base.mascotaSaludPublica;
+            var mpa = document.getElementById("f-mascota-pase-vet-activo");
+            if (mpa) mpa.checked = !!base.paseVeterinarioActivo;
+            var mal = document.getElementById("f-mascota-alertas-salud");
+            if (mal) mal.value = base.mascotaAlertasSalud != null ? String(base.mascotaAlertasSalud) : "";
+            var hist = document.getElementById("f-mascota-historial");
+            if (hist) hist.value = base.mascotaHistorialClinico != null ? String(base.mascotaHistorialClinico) : "";
+            var gal = document.getElementById("f-mascota-galeria-urls");
+            if (gal) {
+              var urls = Array.isArray(base.mascotaGaleriaUrls) ? base.mascotaGaleriaUrls : [];
+              gal.value = urls
+                .map(function (u) {
+                  return String(u || "").trim();
+                })
+                .filter(Boolean)
+                .join("\n");
+            }
+            renderMascotaVacunasTable(base.mascotaVacunas);
+            saludEstudiosUrlsDraft = (
+              Array.isArray(base.mascotaEstudiosSaludUrls) ? base.mascotaEstudiosSaludUrls : []
+            )
+              .map(function (u) {
+                return String(u || "").trim();
+              })
+              .filter(Boolean);
+            pendingSaludStudyFiles = [];
+            renderSaludEstudiosDraft();
+            var mf = String(base.mascotaFotoUrl || "").trim();
+            if (mf) setPreview("preview-mascota-foto", mf);
+            else {
+              var pm = document.getElementById("preview-mascota-foto");
+              if (pm) {
+                pm.removeAttribute("src");
+                pm.classList.add("hidden");
+              }
+            }
+          })();
+          updateDashboardMascotaHealthAlert(base);
 
           (function fillStyleFields() {
             var theme = String(base.cardTheme || "gold").trim().toLowerCase();
@@ -2534,15 +3398,79 @@
           wrap.innerHTML = getEmailSignatureHtml(user);
         }
 
+        function ensurePetCommunityMap() {
+          if (window.__ecPetMapInited) {
+            setTimeout(function () {
+              try {
+                if (window.__ecPetLeafletMap) window.__ecPetLeafletMap.invalidateSize();
+              } catch (eI) {}
+            }, 250);
+            return;
+          }
+          var mapEl = document.getElementById("mascota-community-map");
+          if (!mapEl || typeof L === "undefined") return;
+          window.__ecPetMapInited = true;
+          var map = L.map(mapEl).setView([-34.6037, -58.3816], 12);
+          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution: "© OpenStreetMap",
+          }).addTo(map);
+          window.__ecPetLeafletMap = map;
+          window.__ecPetMapLayer = L.layerGroup().addTo(map);
+          setTimeout(function () {
+            try {
+              map.invalidateSize();
+            } catch (e2) {}
+          }, 300);
+          function paintMarkers(snap) {
+            if (!window.__ecPetMapLayer) return;
+            window.__ecPetMapLayer.clearLayers();
+            snap.forEach(function (doc) {
+              var p = doc.data();
+              var lat = Number(p.lat);
+              var lng = Number(p.lng);
+              if (!isFinite(lat) || !isFinite(lng)) return;
+              var color =
+                p.tipo === "vet24" ? "#b91c1c" : p.tipo === "parque" ? "#15803d" : "#1d4ed8";
+              var label =
+                p.tipo === "vet24" ? "Veterinaria 24 h" : p.tipo === "parque" ? "Parque" : "Bar pet-friendly";
+              L.circleMarker([lat, lng], {
+                radius: 9,
+                color: color,
+                fillColor: color,
+                fillOpacity: 0.35,
+                weight: 2,
+              })
+                .bindPopup("<strong>" + (p.nombre || "Lugar") + "</strong><br>" + label)
+                .addTo(window.__ecPetMapLayer);
+            });
+          }
+          if (window.__ecPetPlacesUnsub) {
+            try {
+              window.__ecPetPlacesUnsub();
+            } catch (eU) {}
+          }
+          window.__ecPetPlacesUnsub = firebase
+            .firestore()
+            .collection("petFriendlyPlaces")
+            .onSnapshot(
+              function (snap) {
+                paintMarkers(snap);
+              },
+              function () {}
+            );
+        }
+
         function initDashboardTabs() {
           var tabs = document.querySelectorAll("[data-dashboard-tab]");
           var panels = document.querySelectorAll("[data-dashboard-panel]");
           if (!tabs.length || !panels.length) return;
           function show(which, force) {
-            if (!force && isTrialPeriodExpired(lastDoc) && which !== "subscription") {
+            if (!force && subs && subs.isTrialPeriodExpired(lastDoc) && which !== "subscription") {
               setTrialExpiredModalVisible(true);
               return;
             }
+            ecActiveDashboardTab = which;
             tabs.forEach(function (btn) {
               var on = btn.getAttribute("data-dashboard-tab") === which;
               btn.classList.toggle("portal-tab-active", on);
@@ -2551,9 +3479,20 @@
             panels.forEach(function (panel) {
               panel.classList.toggle("hidden", panel.getAttribute("data-dashboard-panel") !== which);
             });
-            if (isTrialPeriodExpired(lastDoc) && which === "subscription") {
+            if (subs && subs.isTrialPeriodExpired(lastDoc) && which === "subscription") {
               setTrialExpiredModalVisible(false);
             }
+            if (which === "mascotbook") {
+              setTimeout(function () {
+                ensurePetCommunityMap();
+                if (auth.currentUser) setupPreviewIframe(auth.currentUser.uid);
+              }, 80);
+            } else if (auth.currentUser) {
+              setTimeout(function () {
+                setupPreviewIframe(auth.currentUser.uid);
+              }, 40);
+            }
+            scheduleLivePreviewSync();
           }
           selectDashboardTab = show;
           tabs.forEach(function (btn) {
@@ -2574,10 +3513,16 @@
         function clearPendingFiles() {
           pendingFotoFile = null;
           pendingLogoFile = null;
+          pendingMascotaFile = null;
+          pendingSaludStudyFiles = [];
           var ff = document.getElementById("file-foto");
           var fl = document.getElementById("file-logo");
+          var fm = document.getElementById("file-mascota-foto");
+          var fs = document.getElementById("file-mascota-salud-estudios");
           if (ff) ff.value = "";
           if (fl) fl.value = "";
+          if (fm) fm.value = "";
+          if (fs) fs.value = "";
         }
 
         function uploadToStorage(path, file) {
@@ -2589,6 +3534,162 @@
               if (!u) throw new Error("Storage no devolvió URL de descarga.");
               return u;
             });
+          });
+        }
+
+        function ecAdminImageToDataUrl(src, cb) {
+          if (!src) {
+            cb(null);
+            return;
+          }
+          var img = new Image();
+          img.crossOrigin = "anonymous";
+          img.onload = function () {
+            try {
+              var c = document.createElement("canvas");
+              c.width = img.naturalWidth;
+              c.height = img.naturalHeight;
+              c.getContext("2d").drawImage(img, 0, 0);
+              cb(c.toDataURL("image/jpeg", 0.88));
+            } catch (eC) {
+              cb(null);
+            }
+          };
+          img.onerror = function () {
+            cb(null);
+          };
+          img.src = src;
+        }
+
+        function downloadMascotaSanitaryPdf(uid) {
+          var JSPDF = window.jspdf && window.jspdf.jsPDF;
+          if (!JSPDF) {
+            showAdminToast("No se pudo cargar la librería PDF. Recargá la página.", "error");
+            return;
+          }
+          if (!uid) {
+            showAdminToast("Iniciá sesión para generar el PDF.", "error");
+            return;
+          }
+          var petUrl =
+            window.location.protocol +
+            "//" +
+            window.location.host +
+            "/card?id=" +
+            encodeURIComponent(uid) +
+            "&view=pet";
+          var qrApi =
+            "https://quickchart.io/qr?size=320&margin=2&text=" + encodeURIComponent(petUrl);
+          var nombre = "";
+          var nEl = document.getElementById("f-mascota-nombre");
+          if (nEl) nombre = String(nEl.value || "").trim();
+          var fotoEl = document.getElementById("preview-mascota-foto");
+          var fotoSrc = "";
+          if (fotoEl && fotoEl.src && fotoEl.classList && !fotoEl.classList.contains("hidden")) {
+            fotoSrc = String(fotoEl.src || "").trim();
+          }
+          if (!fotoSrc) fotoSrc = String((lastDoc && lastDoc.mascotaFotoUrl) || "").trim();
+          var vacs = readMascotaVacunasFromDom();
+
+          function drawPdf(fotoData, qrData) {
+            var doc = new JSPDF({ unit: "mm", format: "a4" });
+            var y = 16;
+            doc.setFillColor(8, 8, 10);
+            doc.rect(0, 0, 210, 297, "F");
+            doc.setFontSize(15);
+            doc.setTextColor(212, 175, 55);
+            doc.text("Ficha sanitaria resumida · MascotBook", 105, y, { align: "center" });
+            y += 10;
+            doc.setFontSize(11);
+            doc.setTextColor(235, 230, 220);
+            doc.text("Mascota: " + (nombre || "—"), 14, y);
+            y += 7;
+            doc.setFontSize(8);
+            doc.setTextColor(160, 160, 165);
+            var urlLines = doc.splitTextToSize("Perfil digital: " + petUrl, 120);
+            doc.text(urlLines, 14, y);
+            y += urlLines.length * 4 + 4;
+            var blockTop = y;
+            if (fotoData) {
+              try {
+                doc.addImage(fotoData, "JPEG", 14, blockTop, 52, 52);
+              } catch (eF) {}
+            }
+            if (qrData) {
+              try {
+                doc.addImage(qrData, "PNG", 142, blockTop, 50, 50);
+              } catch (eQ) {}
+            }
+            y = blockTop + 56;
+            doc.setFontSize(10);
+            doc.setTextColor(212, 175, 55);
+            doc.text("Calendario de vacunas", 14, y);
+            y += 6;
+            doc.setFontSize(8.5);
+            doc.setTextColor(220, 218, 210);
+            if (!vacs.length) {
+              doc.text("Sin vacunas registradas en este borrador.", 14, y);
+              y += 6;
+            } else {
+              vacs.forEach(function (v) {
+                var ven = (v && (v.fechaVencimiento || v.fechaProxima)) || "—";
+                var apl = (v && v.fechaAplicacion) || "—";
+                var line =
+                  (v && v.nombre ? String(v.nombre) : "—") +
+                  "  ·  Aplicación: " +
+                  apl +
+                  "  ·  Vencimiento: " +
+                  ven;
+                var lines = doc.splitTextToSize(line, 182);
+                lines.forEach(function (ln) {
+                  if (y > 280) {
+                    doc.addPage();
+                    doc.setFillColor(8, 8, 10);
+                    doc.rect(0, 0, 210, 297, "F");
+                    y = 16;
+                  }
+                  doc.text(ln, 14, y);
+                  y += 4.2;
+                });
+                y += 1.5;
+              });
+            }
+            y += 6;
+            if (y > 270) {
+              doc.addPage();
+              doc.setFillColor(8, 8, 10);
+              doc.rect(0, 0, 210, 297, "F");
+              y = 16;
+            }
+            doc.setFontSize(7.5);
+            doc.setTextColor(120, 118, 115);
+            doc.text(
+              "Generado con EliteCard · " + new Date().toLocaleDateString("es-AR"),
+              14,
+              y
+            );
+            doc.save("mascotbook-ficha-sanitaria.pdf");
+            showAdminToast("PDF descargado.", "ok");
+          }
+
+          var fotoData = null;
+          var qrData = null;
+          var left = 2;
+          function tick() {
+            left--;
+            if (left <= 0) drawPdf(fotoData, qrData);
+          }
+          if (fotoSrc) {
+            ecAdminImageToDataUrl(fotoSrc, function (d) {
+              fotoData = d;
+              tick();
+            });
+          } else {
+            tick();
+          }
+          ecAdminImageToDataUrl(qrApi, function (d) {
+            qrData = d;
+            tick();
           });
         }
 
@@ -2661,8 +3762,10 @@
                 syncTrialExpiredModal(lastDoc);
                 updateTrialUrgencyBar(lastDoc);
                 if (auth.currentUser) renderEmailSignaturePreview(auth.currentUser);
+                ecLastPublishedFingerprint = computeDraftFingerprint();
+                refreshPublishDirtyState();
                 if (typeof selectDashboardTab === "function") {
-                  if (isTrialPeriodExpired(lastDoc)) {
+                  if (subs && subs.isTrialPeriodExpired(lastDoc)) {
                     selectDashboardTab("subscription", true);
                   } else {
                     selectDashboardTab("design", true);
@@ -2845,8 +3948,15 @@
           });
 
           document.getElementById("btn-logout").addEventListener("click", function () {
-            auth.signOut();
             clearPendingFiles();
+            auth
+              .signOut()
+              .then(function () {
+                window.location.href = "login.html";
+              })
+              .catch(function () {
+                window.location.href = "login.html";
+              });
           });
 
           document.getElementById("file-foto").addEventListener("change", function (e) {
@@ -2874,7 +3984,13 @@
           });
 
           function setSaveButtonsDisabled(disabled) {
-            ["btn-save-datos", "btn-save-imagenes", "btn-save-personalization", "btn-publish-footer"].forEach(function (id) {
+            [
+              "btn-save-datos",
+              "btn-save-imagenes",
+              "btn-save-personalization",
+              "btn-publish-footer",
+              "btn-publish-preview-col",
+            ].forEach(function (id) {
               var b = document.getElementById(id);
               if (b) b.disabled = disabled;
             });
@@ -2907,6 +4023,193 @@
           initPortalTabs();
           initDashboardTabs();
 
+          var btnVacAdd = document.getElementById("btn-mascota-vacuna-add");
+          if (btnVacAdd) {
+            btnVacAdd.addEventListener("click", function () {
+              addMascotaVacunaRow({});
+              scheduleLivePreviewSync();
+              refreshPublishDirtyState();
+            });
+          }
+          var mpLost = document.getElementById("f-mascota-perdida");
+          if (mpLost) {
+            mpLost.addEventListener("change", function () {
+              scheduleLivePreviewSync();
+              refreshPublishDirtyState();
+            });
+          }
+          ["f-mascota-salud-publica", "f-mascota-pase-vet-activo"].forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) {
+              el.addEventListener("change", function () {
+                scheduleLivePreviewSync();
+                refreshPublishDirtyState();
+              });
+            }
+          });
+          var malerta = document.getElementById("f-mascota-alertas-salud");
+          if (malerta) {
+            malerta.addEventListener("input", function () {
+              scheduleLivePreviewSync();
+              refreshPublishDirtyState();
+            });
+          }
+          var fSalud = document.getElementById("file-mascota-salud-estudios");
+          var btnSaludPick = document.getElementById("btn-mascota-salud-estudios-pick");
+          if (btnSaludPick && fSalud) {
+            btnSaludPick.addEventListener("click", function () {
+              fSalud.click();
+            });
+            fSalud.addEventListener("change", function () {
+              var files = fSalud.files;
+              if (!files || !files.length) return;
+              var hint = document.getElementById("mascota-salud-estudios-hint");
+              for (var fi = 0; fi < files.length; fi++) {
+                var f = files[fi];
+                if (!f || !/^image\//i.test(f.type || "")) {
+                  if (hint) hint.textContent = "Solo imágenes.";
+                  continue;
+                }
+                if (f.size > 7.5 * 1024 * 1024) {
+                  if (hint) hint.textContent = "Algún archivo supera 7,5 MB.";
+                  continue;
+                }
+                pendingSaludStudyFiles.push(f);
+              }
+              if (hint && pendingSaludStudyFiles.length) {
+                hint.textContent =
+                  pendingSaludStudyFiles.length +
+                  (pendingSaludStudyFiles.length === 1 ? " archivo pendiente de publicar." : " archivos pendientes de publicar.");
+              }
+              fSalud.value = "";
+              refreshPublishDirtyState();
+            });
+          }
+          var btnPdfSan = document.getElementById("btn-mascota-pdf-sanitario");
+          if (btnPdfSan) {
+            btnPdfSan.addEventListener("click", function () {
+              var u = auth.currentUser;
+              downloadMascotaSanitaryPdf(u ? u.uid : "");
+            });
+          }
+          var btnVetPass = document.getElementById("btn-generar-pase-vet");
+          if (btnVetPass) {
+            btnVetPass.addEventListener("click", function () {
+              var out = document.getElementById("pase-vet-url-out");
+              var errEl = document.getElementById("pase-vet-error");
+              if (out) {
+                out.classList.add("hidden");
+                out.textContent = "";
+              }
+              if (errEl) {
+                errEl.classList.add("hidden");
+                errEl.textContent = "";
+              }
+              var user = auth.currentUser;
+              if (!user) {
+                if (errEl) {
+                  errEl.textContent = "Iniciá sesión para generar el pase.";
+                  errEl.classList.remove("hidden");
+                }
+                return;
+              }
+              var tokenBytes = new Uint8Array(16);
+              if (window.crypto && window.crypto.getRandomValues) window.crypto.getRandomValues(tokenBytes);
+              else for (var ri = 0; ri < tokenBytes.length; ri++) tokenBytes[ri] = Math.floor(Math.random() * 256);
+              var token = Array.from(tokenBytes)
+                .map(function (b) {
+                  return ("0" + b.toString(16)).slice(-2);
+                })
+                .join("");
+              var exp = new Date(Date.now() + 48 * 3600 * 1000);
+              firebase
+                .firestore()
+                .collection("vetPasses")
+                .doc(token)
+                .set({
+                  userId: user.uid,
+                  expiresAt: firebase.firestore.Timestamp.fromDate(exp),
+                  createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                })
+                .then(function () {
+                  var url =
+                    window.location.protocol +
+                    "//" +
+                    window.location.host +
+                    "/vet-pass.html?t=" +
+                    encodeURIComponent(token);
+                  if (out) {
+                    out.textContent = url;
+                    out.classList.remove("hidden");
+                  }
+                  showAdminToast("Pase veterinario listo (48 h). Copiá el enlace del recuadro.", "ok");
+                })
+                .catch(function (e) {
+                  if (errEl) {
+                    errEl.textContent = e.message || "No se pudo crear el pase.";
+                    errEl.classList.remove("hidden");
+                  }
+                  showAdminToast("No se pudo crear el pase. Desplegá reglas Firestore (vetPasses).", "error");
+                });
+            });
+          }
+          var btnPlaceLoc = document.getElementById("btn-pet-place-my-loc");
+          if (btnPlaceLoc) {
+            btnPlaceLoc.addEventListener("click", function () {
+              if (!navigator.geolocation) {
+                showAdminToast("Tu navegador no permite geolocalización.", "error");
+                return;
+              }
+              navigator.geolocation.getCurrentPosition(
+                function (pos) {
+                  var la = document.getElementById("f-pet-place-lat");
+                  var lo = document.getElementById("f-pet-place-lng");
+                  if (la) la.value = String(pos.coords.latitude);
+                  if (lo) lo.value = String(pos.coords.longitude);
+                },
+                function () {
+                  showAdminToast("No se pudo obtener tu ubicación.", "error");
+                }
+              );
+            });
+          }
+          var btnPlaceAdd = document.getElementById("btn-pet-place-add");
+          if (btnPlaceAdd) {
+            btnPlaceAdd.addEventListener("click", function () {
+              var user = auth.currentUser;
+              if (!user) return;
+              var nombre = String(document.getElementById("f-pet-place-nombre").value || "").trim();
+              var tipo = String(document.getElementById("f-pet-place-tipo").value || "vet24").trim();
+              var lat = Number(document.getElementById("f-pet-place-lat").value);
+              var lng = Number(document.getElementById("f-pet-place-lng").value);
+              if (!nombre) {
+                showAdminToast("Indicá el nombre del lugar.", "error");
+                return;
+              }
+              if (!isFinite(lat) || !isFinite(lng)) {
+                showAdminToast("Completá latitud y longitud (o usá «Mi ubicación»).", "error");
+                return;
+              }
+              firebase
+                .firestore()
+                .collection("petFriendlyPlaces")
+                .add({
+                  nombre: nombre,
+                  tipo: tipo,
+                  lat: lat,
+                  lng: lng,
+                  createdBy: user.uid,
+                  createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                })
+                .then(function () {
+                  showAdminToast("Punto publicado en el mapa de comunidad.", "ok");
+                })
+                .catch(function (e) {
+                  showAdminToast(e.message || "No se pudo guardar el punto.", "error");
+                });
+            });
+          }
+
           var trialGoBtn = document.getElementById("ec-trial-go-subscribe");
           if (trialGoBtn) {
             trialGoBtn.addEventListener("click", function () {
@@ -2935,17 +4238,46 @@
           var btnEcRefreshPreview = document.getElementById("btn-ec-refresh-preview");
           if (btnEcRefreshPreview) {
             btnEcRefreshPreview.addEventListener("click", function () {
-              var u = auth.currentUser;
-              if (!u) return;
-              var f = document.getElementById("ec-live-preview");
-              if (!f) return;
-              var url = new URL("card.html", window.location.href);
-              url.searchParams.set("id", u.uid);
-              url.searchParams.set("_r", String(Date.now()));
-              f.onload = function () {
-                syncPreviewAppearance();
-              };
-              f.setAttribute("src", url.toString());
+              if (!auth.currentUser) return;
+              pushCloudSnapshotToIframe();
+            });
+          }
+
+          var btnPickMascota = document.getElementById("btn-pick-mascota-foto");
+          var fileMascota = document.getElementById("file-mascota-foto");
+          if (btnPickMascota && fileMascota) {
+            btnPickMascota.addEventListener("click", function () {
+              fileMascota.click();
+            });
+          }
+          if (fileMascota) {
+            fileMascota.addEventListener("change", function (e) {
+              var f = e.target.files && e.target.files[0];
+              pendingMascotaFile = f || null;
+              if (f) {
+                var r = new FileReader();
+                r.onload = function () {
+                  setPreview("preview-mascota-foto", r.result);
+                  scheduleLivePreviewSync();
+                };
+                r.readAsDataURL(f);
+              }
+            });
+          }
+
+          var formCardEl = document.getElementById("form-card");
+          if (formCardEl) {
+            formCardEl.addEventListener("input", function () {
+              scheduleLivePreviewSync();
+            });
+            formCardEl.addEventListener("change", function () {
+              scheduleLivePreviewSync();
+            });
+          }
+          var mascotCardEl = document.getElementById("ec-card-mascotbook");
+          if (mascotCardEl) {
+            mascotCardEl.addEventListener("input", function () {
+              scheduleLivePreviewSync();
             });
           }
 
@@ -3097,7 +4429,7 @@
             setSaveOverlay(true);
             var textData = readFormObject();
             /* docRef → Firestore usuarios/{uid}; mismos campos que la tarjeta (merge conserva fotoUrl/logoUrl). */
-            var payload = Object.assign({}, lastDoc, textData);
+            var payload = Object.assign({}, lastDoc, textData, readMascotBookForPayload());
 
             var chain = Promise.resolve();
 
@@ -3119,6 +4451,33 @@
                 });
               });
             }
+            if (pendingMascotaFile) {
+              chain = chain.then(function () {
+                return uploadToStorage(storageMascotaPath(uid), pendingMascotaFile).then(function (url) {
+                  var u = String(url || "").trim();
+                  if (!u) throw new Error("No se obtuvo downloadURL para la foto de mascota.");
+                  payload.mascotaFotoUrl = u;
+                });
+              });
+            }
+            if (pendingSaludStudyFiles.length) {
+              chain = chain.then(function () {
+                var list = pendingSaludStudyFiles.slice();
+                if (!Array.isArray(payload.mascotaEstudiosSaludUrls)) {
+                  payload.mascotaEstudiosSaludUrls = [];
+                }
+                return list.reduce(function (seq, file) {
+                  return seq.then(function () {
+                    return uploadToStorage(storageSaludStudyPath(uid, file && file.name), file).then(
+                      function (url) {
+                        var u = String(url || "").trim();
+                        if (u) payload.mascotaEstudiosSaludUrls.push(u);
+                      }
+                    );
+                  });
+                }, Promise.resolve());
+              });
+            }
 
             chain
               .then(function () {
@@ -3126,7 +4485,15 @@
               })
               .then(function () {
                 lastDoc = payload;
+                saludEstudiosUrlsDraft = Array.isArray(payload.mascotaEstudiosSaludUrls)
+                  ? payload.mascotaEstudiosSaludUrls.slice()
+                  : [];
+                renderSaludEstudiosDraft();
+                var saludHint = document.getElementById("mascota-salud-estudios-hint");
+                if (saludHint) saludHint.textContent = "";
                 clearPendingFiles();
+                ecLastPublishedFingerprint = computeDraftFingerprint();
+                refreshPublishDirtyState();
                 updatePanelWelcome(auth.currentUser);
                 if (payload.fotoUrl) setPreview("preview-foto", String(payload.fotoUrl).trim());
                 else {
@@ -3146,6 +4513,7 @@
                 }
                 setStatus("Cambios guardados. La tarjeta se actualiza en vivo.");
                 updateAnalyticsCards(payload);
+                updateDashboardMascotaHealthAlert(payload);
                 if (auth.currentUser) updateQrPreview(auth.currentUser.uid);
                 if (auth.currentUser) renderEmailSignaturePreview(auth.currentUser);
                 showAdminToast("¡Tarjeta actualizada con éxito!", "ok");

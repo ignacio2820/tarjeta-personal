@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     /**
-     * WebElite — rutas `usuarios/{uid}/fotoPerfil` y `usuarios/{uid}/logoInstitucional`
+     * WebElite — rutas `usuarios/{uid}/fotoPerfil`, `logoInstitucional`, `mascotaFoto`, `salud/*`, etc.
      * - Lectura pública: las URLs de descarga de la tarjeta pública deben ser accesibles
      *   (listado sigue denegado; solo objetos bajo esta ruta con reglas de lectura).
      * - Escritura (subir / sobrescribir / borrar): solo el dueño (uid = carpeta).

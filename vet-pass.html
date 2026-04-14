@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pase veterinario | MascotBook</title>
+    <meta name="theme-color" content="#0c0a0a" />
+    <style>
+      :root {
+        --bg: #0c0a0a;
+        --card: #161212;
+        --line: rgba(212, 175, 55, 0.22);
+        --gold: #d4af37;
+        --text: #ebe6dc;
+        --muted: rgba(235, 230, 220, 0.55);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      .hidden {
+        display: none !important;
+      }
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        background: radial-gradient(ellipse 100% 80% at 50% 0%, #2a1515 0%, var(--bg) 55%);
+        color: var(--text);
+        padding: 1.25rem;
+        line-height: 1.5;
+      }
+      .wrap {
+        max-width: 40rem;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 1.35rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        margin: 0 0 0.35rem;
+      }
+      .sub {
+        font-size: 0.9rem;
+        color: var(--muted);
+        margin: 0 0 1.5rem;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 1rem;
+        padding: 1.25rem 1.35rem;
+        margin-bottom: 1rem;
+      }
+      .card h2 {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--gold);
+        margin: 0 0 0.75rem;
+        font-weight: 600;
+      }
+      .hist {
+        white-space: pre-wrap;
+        font-size: 0.9rem;
+        color: var(--muted);
+        margin: 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.5rem 0.35rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      th {
+        color: var(--muted);
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 0.65rem;
+      }
+      .gallery a {
+        display: block;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        border: 1px solid var(--line);
+      }
+      .gallery img {
+        width: 100%;
+        height: 100px;
+        object-fit: cover;
+        display: block;
+        background: #000;
+      }
+      .err {
+        color: #fca5a5;
+        font-size: 0.95rem;
+      }
+      .foot {
+        margin-top: 2rem;
+        font-size: 0.75rem;
+        color: var(--muted);
+        text-align: center;
+      }
+    </style>
+    <script src="firebase-config.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  </head>
+  <body>
+    <div class="wrap">
+      <div id="vp-state-loading">
+        <h1>Pase veterinario</h1>
+        <p class="sub">Cargando información clínica…</p>
+      </div>
+      <div id="vp-state-error" class="hidden">
+        <h1>Enlace no válido o vencido</h1>
+        <p id="vp-error-msg" class="err sub"></p>
+      </div>
+      <div id="vp-state-ok" class="hidden">
+        <h1 id="vp-pet-name"></h1>
+        <p class="sub">Vista solo clínica · sin datos de contacto del dueño</p>
+
+        <div class="card" id="vp-alertas-card">
+          <h2>Alertas médicas y alergias</h2>
+          <p id="vp-alertas" class="hist"></p>
+        </div>
+
+        <div class="card">
+          <h2>Historial clínico</h2>
+          <p id="vp-historial" class="hist"></p>
+        </div>
+
+        <div class="card">
+          <h2>Calendario de vacunación</h2>
+          <div id="vp-vacunas-wrap"></div>
+        </div>
+
+        <div class="card">
+          <h2>Estudios y radiografías</h2>
+          <div id="vp-gallery" class="gallery"></div>
+        </div>
+      </div>
+      <p class="foot">MascotBook · EliteCard</p>
+    </div>
+    <script>
+      (function () {
+        function usersCollection() {
+          return (window.FIRESTORE_USERS_COLLECTION || "usuarios").trim() || "usuarios";
+        }
+        function show(id, on) {
+          var el = document.getElementById(id);
+          if (el) el.classList.toggle("hidden", !on);
+        }
+        function tokenFromUrl() {
+          try {
+            var p = new URLSearchParams(window.location.search);
+            return String(p.get("t") || p.get("token") || "").trim();
+          } catch (e) {
+            return "";
+          }
+        }
+        var cfg = window.FIREBASE_WEB_CONFIG;
+        if (!cfg || !cfg.apiKey || String(cfg.apiKey).indexOf("REEMPLAZAR") !== -1) {
+          show("vp-state-loading", false);
+          show("vp-state-error", true);
+          var em = document.getElementById("vp-error-msg");
+          if (em) em.textContent = "Falta configurar Firebase.";
+          return;
+        }
+        try {
+          firebase.initializeApp(cfg);
+        } catch (e) {
+          if (e.code !== "app/duplicate-app") {
+            show("vp-state-loading", false);
+            show("vp-state-error", true);
+            var em2 = document.getElementById("vp-error-msg");
+            if (em2) em2.textContent = e.message || "Error de inicialización.";
+            return;
+          }
+        }
+        var db = firebase.firestore();
+        var token = tokenFromUrl();
+        if (!token || token.length < 16) {
+          show("vp-state-loading", false);
+          show("vp-state-error", true);
+          var em3 = document.getElementById("vp-error-msg");
+          if (em3) em3.textContent = "Falta el token del pase en la URL (?t=…).";
+          return;
+        }
+        db.collection("vetPasses")
+          .doc(token)
+          .get()
+          .then(function (snap) {
+            if (!snap.exists) {
+              show("vp-state-loading", false);
+              show("vp-state-error", true);
+              var em4 = document.getElementById("vp-error-msg");
+              if (em4) em4.textContent = "Este pase no existe o ya expiró (48 horas).";
+              return;
+            }
+            var pass = snap.data();
+            var uid = String(pass.userId || "").trim();
+            if (!uid) {
+              show("vp-state-loading", false);
+              show("vp-state-error", true);
+              return;
+            }
+            return db
+              .collection(usersCollection())
+              .doc(uid)
+              .get()
+              .then(function (userSnap) {
+                show("vp-state-loading", false);
+                if (!userSnap.exists) {
+                  show("vp-state-error", true);
+                  var em5 = document.getElementById("vp-error-msg");
+                  if (em5) em5.textContent = "No se encontró el perfil asociado.";
+                  return;
+                }
+                var u = userSnap.data();
+                show("vp-state-ok", true);
+                var nameEl = document.getElementById("vp-pet-name");
+                if (nameEl) nameEl.textContent = String(u.mascotaNombre || "Mascota").trim() || "Mascota";
+                var alertas = String(u.mascotaAlertasSalud || "").trim();
+                var ac = document.getElementById("vp-alertas-card");
+                var ap = document.getElementById("vp-alertas");
+                if (ac && ap) {
+                  if (alertas) {
+                    ac.style.display = "";
+                    ap.textContent = alertas;
+                  } else {
+                    ac.style.display = "none";
+                  }
+                }
+                var h = document.getElementById("vp-historial");
+                if (h) {
+                  var ht = String(u.mascotaHistorialClinico || "").trim();
+                  h.textContent = ht || "Sin historial cargado.";
+                }
+                var vw = document.getElementById("vp-vacunas-wrap");
+                var vacs = Array.isArray(u.mascotaVacunas) ? u.mascotaVacunas : [];
+                if (vw) {
+                  if (!vacs.length) {
+                    vw.innerHTML = "<p class=\"hist\" style=\"margin:0\">Sin vacunas registradas.</p>";
+                  } else {
+                    var rows = vacs
+                      .map(function (v) {
+                        var ven = v && (v.fechaVencimiento || v.fechaProxima) ? String(v.fechaVencimiento || v.fechaProxima) : "—";
+                        var apl = v && v.fechaAplicacion ? String(v.fechaAplicacion) : "—";
+                        return (
+                          "<tr><td>" +
+                          (v && v.nombre ? String(v.nombre) : "—") +
+                          "</td><td>" +
+                          apl +
+                          "</td><td>" +
+                          ven +
+                          "</td></tr>"
+                        );
+                      })
+                      .join("");
+                    vw.innerHTML =
+                      "<table><thead><tr><th>Vacuna</th><th>Aplicación</th><th>Vencimiento</th></tr></thead><tbody>" +
+                      rows +
+                      "</tbody></table>";
+                  }
+                }
+                var gal = document.getElementById("vp-gallery");
+                var urlsEst = Array.isArray(u.mascotaEstudiosSaludUrls) ? u.mascotaEstudiosSaludUrls : [];
+                var urlsGal = Array.isArray(u.mascotaGaleriaUrls) ? u.mascotaGaleriaUrls : [];
+                var seenU = {};
+                var urls = [];
+                urlsEst.concat(urlsGal).forEach(function (raw) {
+                  var x = String(raw || "").trim();
+                  if (x && !seenU[x]) {
+                    seenU[x] = 1;
+                    urls.push(x);
+                  }
+                });
+                if (gal) {
+                  gal.innerHTML = "";
+                  if (!urls.length) {
+                    gal.innerHTML = "<p class=\"hist\" style=\"margin:0;grid-column:1/-1\">Sin imágenes.</p>";
+                  } else {
+                    urls.forEach(function (raw) {
+                      var url = String(raw || "").trim();
+                      if (!url || !/^https?:\/\//i.test(url)) return;
+                      var a = document.createElement("a");
+                      a.href = url;
+                      a.target = "_blank";
+                      a.rel = "noopener noreferrer";
+                      var img = document.createElement("img");
+                      img.src = url;
+                      img.alt = "Estudio clínico";
+                      img.loading = "lazy";
+                      img.referrerPolicy = "no-referrer";
+                      a.appendChild(img);
+                      gal.appendChild(a);
+                    });
+                  }
+                }
+              });
+          })
+          .catch(function (err) {
+            show("vp-state-loading", false);
+            show("vp-state-error", true);
+            var em6 = document.getElementById("vp-error-msg");
+            if (em6) em6.textContent = (err && err.message) || "Error al cargar.";
+          });
+      })();
+    </script>
+  </body>
+</html>

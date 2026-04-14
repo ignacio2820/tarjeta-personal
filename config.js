@@ -61,6 +61,29 @@
     buttonLayout: "pills",
     /** true muestra formulario de captura en la tarjeta pública */
     leadCaptureEnabled: false,
+    bio: "",
+    /** MascotBook — tarjeta de mascota (misma UI pública, otros datos) */
+    mascotaNombre: "",
+    mascotaCargo: "",
+    mascotaBio: "",
+    mascotaTelefono: "",
+    mascotaWhatsapp: "",
+    mascotaInstagram: "",
+    mascotaFotoUrl: "",
+    mascotaPerdida: false,
+    /** [{ nombre, fechaAplicacion?, fechaVencimiento?, fechaProxima? (legacy = vencimiento) }] */
+    mascotaVacunas: [],
+    mascotaHistorialClinico: "",
+    /** Alertas médicas y alergias (texto destacado en ficha pública) */
+    mascotaAlertasSalud: "",
+    /** true: la sección Ficha médica es visible en la tarjeta pública ?view=pet */
+    mascotaSaludPublica: false,
+    /** true: equivalente a “pase veterinario” permanente en tarjeta pública (profesionales) */
+    paseVeterinarioActivo: false,
+    /** Imágenes subidas a Storage bajo usuarios/{uid}/salud/ */
+    mascotaEstudiosSaludUrls: [],
+    /** URLs de radiografías / estudios (manual; se unen a estudios en la vista pública) */
+    mascotaGaleriaUrls: [],
   };
 
   /**
@@ -84,6 +107,7 @@
     return {
       nombreCompleto: String(o.nombreCompleto || "").trim(),
       cargo: String(o.cargo || "").trim(),
+      bio: String(o.bio || "").trim(),
       cargoDetalle: String(o.cargoDetalle || o.director_up7 || "").trim(),
       empresa: String(o.empresa || "").trim(),
       telefono: String(o.telefono || "").trim(),

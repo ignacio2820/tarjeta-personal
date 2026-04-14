@@ -894,3 +894,253 @@ html.ec-theme-electric .webelite-credit {
 html.ec-theme-electric .webelite-credit:hover {
   color: rgba(103, 232, 249, 0.88);
 }
+
+/* Plan rescate: trial vencido en tarjeta pública */
+.ec-rescue-banner {
+  margin-top: 0.35rem;
+  padding: 0.65rem 1rem 0.5rem;
+  text-align: center;
+}
+
+.ec-rescue-banner-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  max-width: 100%;
+  padding: 0.55rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgba(250, 248, 242, 0.92);
+  background: linear-gradient(135deg, rgba(30, 28, 22, 0.95), rgba(12, 12, 10, 0.98));
+  border: 1px solid rgba(212, 175, 55, 0.38);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.45),
+    0 0 20px rgba(212, 175, 55, 0.08);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.ec-rescue-banner-link:hover {
+  border-color: rgba(244, 208, 63, 0.55);
+  color: #fdfbf5;
+  box-shadow:
+    0 6px 28px rgba(0, 0, 0, 0.5),
+    0 0 24px rgba(212, 175, 55, 0.14);
+}
+
+html.ec-theme-minimal .ec-rescue-banner-link {
+  color: rgba(23, 23, 23, 0.88);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(245, 245, 245, 0.98));
+  border-color: rgba(64, 64, 64, 0.22);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+html.ec-theme-electric .ec-rescue-banner-link {
+  border-color: rgba(34, 211, 238, 0.45);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 0 20px rgba(34, 211, 238, 0.1);
+}
+
+/* MascotBook — modo alerta (mascota perdida) */
+@keyframes ec-mascota-alerta-pulse {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  25% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  75% {
+    transform: translate3d(1px, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ec-mascota-alerta .ec-card-container,
+  html.ec-mascota-alerta .ec-card-container {
+    animation: none !important;
+  }
+}
+
+html.ec-mascota-alerta,
+html.ec-mascota-alerta body {
+  --ec-alert-bg: #1a0505;
+  --ec-alert-text: #fff5f5;
+}
+
+html.ec-mascota-alerta body {
+  background: radial-gradient(ellipse 120% 80% at 50% 0%, #3a0a0a 0%, #120303 45%, #050505 100%) !important;
+}
+
+html.ec-mascota-alerta .ec-card-container {
+  animation: ec-mascota-alerta-pulse 2.8s ease-in-out infinite;
+}
+
+html.ec-mascota-alerta .led-name,
+html.ec-mascota-alerta .led-sub {
+  color: #fff5f5 !important;
+  text-shadow: 0 0 20px rgba(220, 38, 38, 0.35) !important;
+}
+
+html.ec-mascota-alerta .avatar-gold-ring {
+  box-shadow:
+    0 0 0 1px rgba(220, 38, 38, 0.5),
+    0 0 32px rgba(220, 38, 38, 0.25) !important;
+}
+
+html.ec-mascota-alerta .ec-contact-button.link-pill {
+  border-color: rgba(220, 38, 38, 0.45) !important;
+  background: linear-gradient(180deg, rgba(40, 10, 10, 0.95), rgba(20, 5, 5, 0.98)) !important;
+  color: #fff5f0 !important;
+}
+
+.ec-rescue-banner--mascota {
+  margin-top: 0.25rem;
+}
+
+.ec-rescue-banner-link--mascota {
+  border-color: rgba(248, 113, 113, 0.45) !important;
+  background: linear-gradient(135deg, rgba(60, 15, 15, 0.95), rgba(25, 8, 8, 0.98)) !important;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.45),
+    0 0 20px rgba(220, 38, 38, 0.12);
+}
+
+.ec-rescue-banner-link--mascota:hover {
+  border-color: rgba(252, 165, 165, 0.55) !important;
+}
+
+/* —— MascotBook · Ficha médica pública —— */
+.ec-pet-tabbar-inner {
+  box-shadow: 0 0 24px rgba(212, 175, 55, 0.06);
+}
+
+.ec-pet-tab {
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ec-pet-tab--active {
+  color: #f5efd8 !important;
+  background: linear-gradient(180deg, rgba(212, 175, 55, 0.18), rgba(212, 175, 55, 0.06));
+  border-color: rgba(212, 175, 55, 0.35);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.12);
+}
+
+.ec-ficha-medica-panel {
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  border-radius: 1.15rem;
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+  padding-top: 0.75rem;
+  background: linear-gradient(165deg, #0a0a0c 0%, #060508 50%, #08070a 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(212, 175, 55, 0.08),
+    0 0 40px rgba(212, 175, 55, 0.04);
+}
+
+.ec-ficha-medica-panel .ec-ficha-inner {
+  border: 1px solid rgba(212, 175, 55, 0.14);
+  border-radius: 0.85rem;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.ec-ficha-alerta-glow {
+  border-color: rgba(248, 113, 113, 0.45) !important;
+  box-shadow:
+    0 0 0 1px rgba(248, 113, 113, 0.2),
+    0 0 28px rgba(248, 113, 113, 0.18),
+    0 0 48px rgba(212, 175, 55, 0.06) !important;
+  animation: ec-ficha-alerta-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes ec-ficha-alerta-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(248, 113, 113, 0.2),
+      0 0 24px rgba(248, 113, 113, 0.14),
+      0 0 40px rgba(212, 175, 55, 0.05);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(248, 113, 113, 0.35),
+      0 0 36px rgba(248, 113, 113, 0.22),
+      0 0 56px rgba(212, 175, 55, 0.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ec-ficha-alerta-glow {
+    animation: none;
+  }
+
+  .ec-vacuna-warn-icon {
+    animation: none !important;
+  }
+}
+
+.ec-vacuna-timeline-item {
+  position: relative;
+  padding-left: 1.35rem;
+  border-left: 2px solid rgba(212, 175, 55, 0.28);
+}
+
+.ec-vacuna-timeline-item:last-child {
+  border-left-color: transparent;
+}
+
+.ec-vacuna-timeline-item::before {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: 0.35rem;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--ec-gold);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.45);
+}
+
+.ec-vacuna-warn-icon {
+  color: #fbbf24;
+  animation: ec-vacuna-blink 1.1s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.55));
+}
+
+@keyframes ec-vacuna-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.ec-pet-study-thumb {
+  cursor: pointer;
+  border-radius: 0.65rem;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  overflow: hidden;
+  aspect-ratio: 1;
+  background: #000;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.ec-pet-study-thumb:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+}
+
+.ec-pet-study-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

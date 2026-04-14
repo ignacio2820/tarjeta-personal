@@ -2,7 +2,7 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="ec-asset-version" content="1776101887490" />
+    <meta name="ec-asset-version" content="1776140202063" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
@@ -236,11 +236,48 @@
         ></p>
       </header>
 
-      <!-- Espacio inferior: footer fijo + safe area (sin bloque de captura de leads) -->
-      <main
-        class="links-stagger flex flex-1 flex-col gap-3 px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))]"
-        id="links-container"
-      ></main>
+      <!-- MascotBook: pestañas Contacto / Ficha médica (?view=pet, si el dueño habilita salud) -->
+      <div
+        id="ec-pet-tabbar"
+        class="ec-pet-tabbar hidden w-full max-w-[min(100vw,56.25dvh)] shrink-0 px-4 pb-2 pt-0"
+        role="tablist"
+        aria-label="Secciones de la mascota"
+      >
+        <div class="ec-pet-tabbar-inner flex gap-1 rounded-2xl border border-[#d4af37]/28 bg-black/50 p-1">
+          <button
+            type="button"
+            id="ec-pet-tab-contact"
+            class="ec-pet-tab ec-pet-tab--active flex-1 rounded-xl py-2.5 text-center text-[12px] font-medium tracking-wide text-[#ebe6dc]/80 transition"
+            role="tab"
+            aria-selected="true"
+          >
+            Contacto
+          </button>
+          <button
+            type="button"
+            id="ec-pet-tab-medical"
+            class="ec-pet-tab flex-1 rounded-xl py-2.5 text-center text-[12px] font-medium tracking-wide text-[#ebe6dc]/80 transition"
+            role="tab"
+            aria-selected="false"
+          >
+            Ficha médica
+          </button>
+        </div>
+      </div>
+
+      <div id="ec-pet-views-wrap" class="flex min-h-0 flex-1 flex-col">
+        <!-- Espacio inferior: footer fijo + safe area (sin bloque de captura de leads) -->
+        <main
+          class="links-stagger flex flex-1 flex-col gap-3 px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))]"
+          id="links-container"
+        ></main>
+        <section
+          id="ec-pet-panel-medical"
+          class="ec-ficha-medica-panel hidden flex-1 flex-col gap-4 overflow-y-auto px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))]"
+          aria-label="Ficha médica"
+          role="tabpanel"
+        ></section>
+      </div>
 
       <div
         class="webelite-credit-outer mx-auto w-full max-w-[min(100vw,56.25dvh)] shrink-0 px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-1 text-center"
@@ -252,6 +289,27 @@
           rel="noopener noreferrer"
         >
           EliteCard™ by <span class="webelite-credit-brand">WebElite Solutions</span>
+        </a>
+      </div>
+
+      <div
+        id="ec-rescue-banner-a"
+        class="ec-rescue-banner hidden"
+        role="complementary"
+        aria-label="Plan rescate EliteCard — perfil profesional"
+      >
+        <a href="register.html" class="ec-rescue-banner-link">
+          Plan rescate · Opción A — Activá tu tarjeta profesional con EliteCard
+        </a>
+      </div>
+      <div
+        id="ec-rescue-banner-c"
+        class="ec-rescue-banner ec-rescue-banner--mascota hidden"
+        role="complementary"
+        aria-label="Plan rescate MascotBook"
+      >
+        <a href="register.html" class="ec-rescue-banner-link ec-rescue-banner-link--mascota">
+          Plan rescate · Opción C — Desbloqueá MascotBook y la ficha completa de tu mascota
         </a>
       </div>
     </div>
@@ -445,6 +503,80 @@
             loading="lazy"
           ></iframe>
         </div>
+      </div>
+    </div>
+
+    <!-- Mascota perdida: ofrecer ubicación al visitante -->
+    <div
+      id="ec-lost-pet-geo-modal"
+      class="ec-modal-elite-backdrop fixed inset-0 z-[160] hidden items-end justify-center bg-black/75 p-3 backdrop-blur-sm sm:items-center"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="ec-lost-pet-geo-title"
+    >
+      <div
+        class="ec-lost-pet-geo-panel ec-modal-elite-panel flex max-w-md flex-col gap-4 rounded-[1.35rem] border border-red-500/35 bg-[#1a0a0a] p-5 shadow-2xl"
+      >
+        <div class="flex items-start justify-between gap-3">
+          <h2 id="ec-lost-pet-geo-title" class="text-base font-medium tracking-tight text-red-100">
+            ¿Ayudás a encontrar a esta mascota?
+          </h2>
+          <button
+            type="button"
+            id="ec-lost-pet-geo-close"
+            class="shrink-0 rounded-xl p-2 text-red-200/60 transition hover:bg-white/5 hover:text-red-100"
+            aria-label="Cerrar"
+          >
+            <i class="fa-solid fa-xmark text-lg" aria-hidden="true"></i>
+          </button>
+        </div>
+        <p id="ec-lost-pet-geo-sub" class="text-sm font-light leading-relaxed text-red-100/80">
+          Si aceptás, podés compartir tu ubicación aproximada con quien cuida a la mascota por WhatsApp.
+        </p>
+        <div class="flex flex-col gap-2 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            id="ec-lost-pet-geo-decline"
+            class="rounded-full border border-white/15 px-4 py-3 text-xs font-medium uppercase tracking-[0.12em] text-white/70 transition hover:bg-white/5"
+          >
+            Ahora no
+          </button>
+          <button
+            type="button"
+            id="ec-lost-pet-geo-accept"
+            class="rounded-full bg-red-600 px-4 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-red-500"
+          >
+            Compartir ubicación
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lightbox estudios / rayos X (MascotBook) -->
+    <div
+      id="ec-pet-study-lightbox"
+      class="ec-pet-study-lightbox fixed inset-0 z-[170] hidden flex items-center justify-center bg-black/92 p-3 backdrop-blur-md"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Vista ampliada del estudio"
+    >
+      <button
+        type="button"
+        id="ec-pet-study-lightbox-close"
+        class="ec-pet-study-lightbox-close absolute right-3 top-3 z-10 rounded-xl p-3 text-[#ebe6dc]/70 transition hover:bg-white/10 hover:text-[#ebe6dc]"
+        aria-label="Cerrar"
+      >
+        <i class="fa-solid fa-xmark text-xl" aria-hidden="true"></i>
+      </button>
+      <div class="ec-pet-study-lightbox-frame max-h-[min(92dvh,92vw)] max-w-full overflow-hidden rounded-lg border border-[#d4af37]/35 shadow-[0_0_48px_rgba(212,175,55,0.12)]">
+        <img
+          id="ec-pet-study-lightbox-img"
+          src=""
+          alt="Estudio médico ampliado"
+          class="max-h-[min(92dvh,92vw)] w-auto max-w-full object-contain"
+          decoding="async"
+          referrerpolicy="no-referrer"
+        />
       </div>
     </div>
 

@@ -11,5 +11,23 @@ service cloud.firestore {
       allow read: if true;
       allow write: if request.auth != null && request.auth.uid == userId;
     }
+
+    /**
+     * Pase veterinario temporal (48 h): lectura pública solo si no expiró.
+     */
+    match /vetPasses/{token} {
+      allow read: if resource.data.expiresAt > request.time;
+      allow create: if request.auth != null
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.expiresAt is timestamp;
+      allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
+    }
+
+    /** Puntos pet-friendly recomendados (mapa comunidad). */
+    match /petFriendlyPlaces/{placeId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && resource.data.createdBy == request.auth.uid;
+    }
   }
 }
