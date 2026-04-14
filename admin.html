@@ -2,7 +2,7 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="ec-asset-version" content="1776140202063" />
+    <meta name="ec-asset-version" content="1776168903312" />
     <script>
       (function () {
         window.__EC_PAGE_LOAD_TS = Date.now();
@@ -1007,6 +1007,28 @@
         background: rgba(40, 20, 20, 0.96);
         color: #fecaca;
       }
+      /* Modo MascotBook: visual más orgánico y con patrón de huellas */
+      #view-panel.ec-app-mascotbook .elite-grid {
+        opacity: 0.18;
+        background-size: 88px 88px;
+        background-image:
+          radial-gradient(circle at 20px 20px, rgba(134, 239, 172, 0.12) 0 6px, transparent 7px),
+          radial-gradient(circle at 42px 16px, rgba(134, 239, 172, 0.1) 0 4px, transparent 5px),
+          radial-gradient(circle at 62px 20px, rgba(134, 239, 172, 0.1) 0 4px, transparent 5px),
+          radial-gradient(circle at 40px 36px, rgba(134, 239, 172, 0.11) 0 8px, transparent 9px);
+      }
+      #view-panel.ec-app-mascotbook .elite-card {
+        border-radius: 2rem;
+        border-color: rgba(134, 239, 172, 0.38);
+        box-shadow: 0 0 0 1px rgba(134, 239, 172, 0.15), 0 20px 70px -24px rgba(17, 94, 89, 0.42);
+      }
+      #view-panel.ec-app-mascotbook .ec-sidebar-brand-text {
+        color: #bbf7d0;
+      }
+      #view-panel.ec-app-mascotbook #live-preview-container {
+        border-color: rgba(134, 239, 172, 0.42) !important;
+        border-radius: 2rem !important;
+      }
     </style>
   </head>
   <body class="ec-admin-body min-h-[100dvh] text-elite-mist antialiased font-light">
@@ -1235,6 +1257,13 @@
               >
                 Ver mi tarjeta en vivo
               </a>
+              <button
+                type="button"
+                id="btn-install-active-app"
+                class="rounded-full border border-white/[0.14] bg-black/35 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-elite-mist/80 transition hover:border-elite-gold/35 hover:text-elite-gold"
+              >
+                Instalar en el celular
+              </button>
             </div>
           </div>
         </header>
@@ -1724,11 +1753,11 @@
         </div>
 
         <div id="ec-card-subscription" class="ec-reveal ec-reveal-d5 elite-card hidden p-7 sm:p-9" data-dashboard-panel="subscription">
-          <p class="ec-label mb-2 block text-elite-gold/90">Membresía EliteCard Pro</p>
-          <h3 class="mt-1 text-xl font-light text-white sm:text-2xl">Invertí en una presencia que te posiciona</h3>
+          <p class="ec-label mb-2 block text-elite-gold/90">Suscripciones por producto</p>
+          <h3 class="mt-1 text-xl font-light text-white sm:text-2xl">Pagá EliteCard, MascotBook o ambos</h3>
           <p class="mb-8 mt-3 max-w-2xl text-[15px] font-light leading-relaxed text-elite-mist/50">
-            Acceso completo a analíticas, firma de email Pro y prioridad en novedades. Elegí tu plan y pegá tu enlace de pago en
-            los botones dorados cuando tengas el checkout listo.
+            Cada producto tiene su estado independiente: podés activar solo tu tarjeta profesional, solo MascotBook, o el combo.
+            Pegá tus enlaces de checkout y actualizá el campo correspondiente en Firestore.
           </p>
           <div class="ec-plan-grid">
             <article class="ec-plan-card">
@@ -1755,8 +1784,9 @@
             </article>
           </div>
           <p class="mt-8 text-center text-xs font-light text-elite-mist/40">
-            Tras el pago, actualizá en Firestore el campo <span class="font-mono text-elite-mist/55">plan_status</span> a
-            <span class="font-mono text-elite-gold/80">active</span> (o integrá un webhook más adelante).
+            Campos recomendados: <span class="font-mono text-elite-mist/55">elitecard_status</span> y
+            <span class="font-mono text-elite-mist/55">mascotbook_status</span>, ambos a
+            <span class="font-mono text-elite-gold/80">active</span> tras pago (o webhook automático).
           </p>
         </div>
 
@@ -2256,6 +2286,7 @@
     <script>
       (function () {
         var lastDoc = {};
+        var ecCurrentApp = "elitecard";
         var ecActiveDashboardTab = "design";
         var ecLastPublishedFingerprint = "";
         var ecPushPreviewTimer = null;
@@ -2287,7 +2318,7 @@
         function applySubscriptionUI(docData) {
           var d = docData || {};
           /* role: 'admin' → bypass trial (ver admin.js). */
-          var lockSig = !subs ? true : subs.isDocAdmin(d) ? false : subs.isEmailSignatureLocked(d);
+          var lockSig = !subs ? true : subs.isDocAdmin(d) ? false : subs.isEmailSignatureLocked(d, ecCurrentApp);
           var proInner = document.getElementById("email-signature-pro-inner");
           var locked = document.getElementById("email-signature-locked");
           if (proInner && locked) {
@@ -2304,7 +2335,7 @@
         }
 
         function syncTrialExpiredModal(docData) {
-          setTrialExpiredModalVisible(subs ? subs.isTrialPeriodExpired(docData) : false);
+          setTrialExpiredModalVisible(subs ? subs.isTrialPeriodExpired(docData, ecCurrentApp) : false);
         }
 
         function updateTrialUrgencyBar(docData) {
@@ -2321,7 +2352,9 @@
             panel.classList.remove("ec-trial-banner-visible");
             return;
           }
-          var trialOn = subs.getPlanStatusFromDoc(docData) === "trial" && !subs.isTrialPeriodExpired(docData);
+          var trialOn =
+            subs.getPlanStatusFromDoc(docData, ecCurrentApp) === "trial" &&
+            !subs.isTrialPeriodExpired(docData, ecCurrentApp);
           var ms = subs.getFechaRegistroMs(docData);
           if (!trialOn || ms == null) {
             bar.classList.add("hidden");
@@ -2337,17 +2370,22 @@
           }
           var dayMs = 24 * 60 * 60 * 1000;
           var daysLeft = Math.ceil(msLeft / dayMs);
+          var appLabel =
+            ecCurrentApp === "mascotbook"
+              ? "desbloquear toda la experiencia de salud y pase veterinario"
+              : "configurar tu Firma de Email";
           var msg;
           if (msLeft < dayMs) {
-            msg =
-              "Te queda menos de un día de acceso total. ¡Aprovechá para configurar tu Firma de Email!";
+            msg = "Te queda menos de un día de acceso total. ¡Aprovechá para " + appLabel + "!";
           } else if (daysLeft === 1) {
-            msg = "Te queda 1 día de acceso total. ¡Aprovechá para configurar tu Firma de Email!";
+            msg = "Te queda 1 día de acceso total. ¡Aprovechá para " + appLabel + "!";
           } else {
             msg =
               "Te quedan " +
               daysLeft +
-              " días de acceso total. ¡Aprovechá para configurar tu Firma de Email!";
+              " días de acceso total. ¡Aprovechá para " +
+              appLabel +
+              "!";
           }
           if (textEl) textEl.textContent = msg;
           bar.classList.remove("hidden");
@@ -2704,6 +2742,53 @@
           return (window.FIRESTORE_USERS_COLLECTION || "usuarios").trim() || "usuarios";
         }
 
+        function normalizeAppMode(app) {
+          var v = String(app || "").trim().toLowerCase();
+          return v === "mascotbook" ? "mascotbook" : "elitecard";
+        }
+
+        function appFromUrlOrStorage() {
+          try {
+            var q = new URLSearchParams(window.location.search);
+            var a = normalizeAppMode(q.get("app"));
+            if (q.get("app")) return a;
+          } catch (e) {}
+          try {
+            return normalizeAppMode(localStorage.getItem("ec_current_app"));
+          } catch (e2) {}
+          return "elitecard";
+        }
+
+        function setCurrentApp(app) {
+          ecCurrentApp = normalizeAppMode(app);
+          try {
+            localStorage.setItem("ec_current_app", ecCurrentApp);
+          } catch (e3) {}
+          var panel = document.getElementById("view-panel");
+          if (panel) {
+            panel.classList.toggle("ec-app-mascotbook", ecCurrentApp === "mascotbook");
+            panel.classList.toggle("ec-app-elitecard", ecCurrentApp !== "mascotbook");
+          }
+          var vh = document.getElementById("btnVerTarjeta");
+          if (vh) {
+            vh.textContent = ecCurrentApp === "mascotbook" ? "Ver ficha MascotBook" : "Ver mi tarjeta en vivo";
+          }
+          var ib = document.getElementById("btn-install-active-app");
+          if (ib) {
+            ib.textContent =
+              ecCurrentApp === "mascotbook" ? "Instalar MascotBook" : "Instalar EliteCard";
+          }
+          try {
+            if (typeof auth !== "undefined" && auth.currentUser) {
+              updateQrPreview(auth.currentUser.uid);
+              syncPublicCardHref();
+              applySubscriptionUI(lastDoc);
+              syncTrialExpiredModal(lastDoc);
+              updateTrialUrgencyBar(lastDoc);
+            }
+          } catch (e4) {}
+        }
+
         function storageFotoPath(uid) {
           return "usuarios/" + uid + "/fotoPerfil";
         }
@@ -2746,6 +2831,8 @@
                 updateAnalyticsCards(d || {});
                 if (snapA && snapA.exists) {
                   lastDoc.plan_status = d.plan_status;
+                  lastDoc.elitecard_status = d.elitecard_status;
+                  lastDoc.mascotbook_status = d.mascotbook_status;
                   lastDoc.fecha_registro = d.fecha_registro;
                   lastDoc.role = d.role;
                   applySubscriptionUI(lastDoc);
@@ -3167,7 +3254,7 @@
         function updateQrPreview(uid) {
           var img = document.getElementById("qr-preview-img");
           if (!img || !uid) return;
-          var link = buildPublicUrl(uid);
+          var link = buildPublicUrl(uid, ecCurrentApp);
           var qrSrc =
             "https://quickchart.io/qr?size=512&margin=2&text=" +
             encodeURIComponent(link);
@@ -3466,11 +3553,15 @@
           var panels = document.querySelectorAll("[data-dashboard-panel]");
           if (!tabs.length || !panels.length) return;
           function show(which, force) {
-            if (!force && subs && subs.isTrialPeriodExpired(lastDoc) && which !== "subscription") {
+            var appMode = ecCurrentApp;
+            if (which === "mascotbook") appMode = "mascotbook";
+            if (which === "design" || which === "content" || which === "email-signature") appMode = "elitecard";
+            if (!force && subs && subs.isTrialPeriodExpired(lastDoc, appMode) && which !== "subscription") {
               setTrialExpiredModalVisible(true);
               return;
             }
             ecActiveDashboardTab = which;
+            setCurrentApp(appMode);
             tabs.forEach(function (btn) {
               var on = btn.getAttribute("data-dashboard-tab") === which;
               btn.classList.toggle("portal-tab-active", on);
@@ -3479,7 +3570,7 @@
             panels.forEach(function (panel) {
               panel.classList.toggle("hidden", panel.getAttribute("data-dashboard-panel") !== which);
             });
-            if (subs && subs.isTrialPeriodExpired(lastDoc) && which === "subscription") {
+            if (subs && subs.isTrialPeriodExpired(lastDoc, appMode) && which === "subscription") {
               setTrialExpiredModalVisible(false);
             }
             if (which === "mascotbook") {
@@ -3500,7 +3591,8 @@
               show(btn.getAttribute("data-dashboard-tab"), false);
             });
           });
-          show("design", true);
+          var startApp = appFromUrlOrStorage();
+          show(startApp === "mascotbook" ? "mascotbook" : "design", true);
         }
 
         function setPreview(imgId, url) {
@@ -3734,11 +3826,16 @@
                 var patch = {};
                 if (snap.exists) {
                   if (!data.fecha_registro) patch.fecha_registro = firebase.firestore.FieldValue.serverTimestamp();
-                  if (data.plan_status == null || String(data.plan_status).trim() === "")
-                    patch.plan_status = "trial";
+                  if (data.plan_status == null || String(data.plan_status).trim() === "") patch.plan_status = "trial";
+                  if (data.elitecard_status == null || String(data.elitecard_status).trim() === "")
+                    patch.elitecard_status = "trial";
+                  if (data.mascotbook_status == null || String(data.mascotbook_status).trim() === "")
+                    patch.mascotbook_status = "trial";
                 } else {
                   patch.fecha_registro = firebase.firestore.FieldValue.serverTimestamp();
                   patch.plan_status = "trial";
+                  patch.elitecard_status = "trial";
+                  patch.mascotbook_status = "trial";
                 }
                 if (Object.keys(patch).length) {
                   return docRef.set(patch, { merge: true }).then(function () {
@@ -3765,7 +3862,7 @@
                 ecLastPublishedFingerprint = computeDraftFingerprint();
                 refreshPublishDirtyState();
                 if (typeof selectDashboardTab === "function") {
-                  if (subs && subs.isTrialPeriodExpired(lastDoc)) {
+                  if (subs && subs.isTrialPeriodExpired(lastDoc, ecCurrentApp)) {
                     selectDashboardTab("subscription", true);
                   } else {
                     selectDashboardTab("design", true);
@@ -3784,20 +3881,22 @@
             var u = auth.currentUser;
             var origin = String(window.location.origin || "").replace(/\/$/, "");
             if (u && origin) {
-              a.href = origin + "/card?id=" + encodeURIComponent(u.uid);
+              a.href = buildPublicUrl(u.uid, ecCurrentApp);
             } else {
               a.href = "#";
             }
           }
 
-          function buildPublicUrl(uid) {
-            return (
+          function buildPublicUrl(uid, app) {
+            var a = normalizeAppMode(app || ecCurrentApp);
+            var base =
               window.location.protocol +
               "//" +
               window.location.host +
               "/card?id=" +
-              encodeURIComponent(uid)
-            );
+              encodeURIComponent(uid);
+            if (a === "mascotbook") return base + "&view=pet";
+            return base;
           }
 
           function updatePublicLinkInput(user) {
@@ -3882,6 +3981,10 @@
           }
 
           auth.onAuthStateChanged(function (user) {
+            if (!user) {
+              window.location.replace("login.html");
+              return;
+            }
             viewsForUser(user);
             bindUserDocument(db, user);
             syncPublicCardHref();
@@ -3910,13 +4013,26 @@
                 e.preventDefault();
                 return;
               }
-              var origin = String(window.location.origin || "").replace(/\/$/, "");
-              var url = origin + "/card?id=" + encodeURIComponent(u.uid);
+              var url = buildPublicUrl(u.uid, ecCurrentApp);
               e.preventDefault();
               var w = window.open(url, "_blank", "noopener,noreferrer");
               if (!w) {
                 window.location.assign(url);
               }
+            });
+          }
+          var btnInstallActive = document.getElementById("btn-install-active-app");
+          if (btnInstallActive) {
+            btnInstallActive.addEventListener("click", function () {
+              var u = auth.currentUser;
+              if (!u) return;
+              var url = buildPublicUrl(u.uid, ecCurrentApp);
+              var w = window.open(url, "_blank", "noopener,noreferrer");
+              if (!w) window.location.assign(url);
+              showAdminToast(
+                "Abrí la tarjeta y usá \"Añadir a pantalla de inicio\" del navegador.",
+                "ok"
+              );
             });
           }
 
@@ -4022,6 +4138,7 @@
           }
           initPortalTabs();
           initDashboardTabs();
+          setCurrentApp(appFromUrlOrStorage());
 
           var btnVacAdd = document.getElementById("btn-mascota-vacuna-add");
           if (btnVacAdd) {

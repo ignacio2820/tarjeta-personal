@@ -191,7 +191,7 @@
         </form>
         <p class="mt-8 text-center text-[13px] font-light text-elite-mist/50">
           ¿Ya tenés cuenta?
-          <a href="admin.html" class="text-elite-gold/85 transition hover:text-elite-gold">Iniciar sesión</a>
+          <a href="login.html" class="text-elite-gold/85 transition hover:text-elite-gold">Iniciar sesión</a>
         </p>
       </div>
     </section>
@@ -275,6 +275,8 @@
                 .set(
                   {
                     plan_status: "trial",
+                    elitecard_status: "trial",
+                    mascotbook_status: "trial",
                     fecha_registro: firebase.firestore.FieldValue.serverTimestamp(),
                     email: user.email || email,
                     role: "user",
@@ -282,7 +284,7 @@
                   { merge: true }
                 )
                 .then(function () {
-                  window.location.href = "admin.html";
+                  window.location.href = "selector-producto.html";
                 })
                 .catch(function (fsErr) {
                   return auth.signOut().then(function () {

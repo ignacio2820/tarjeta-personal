@@ -2,7 +2,7 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="ec-asset-version" content="1776140202063" />
+    <meta name="ec-asset-version" content="1776168903312" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
@@ -76,9 +76,12 @@
 
           var origin = window.location.origin;
 
-          // Usar manifest server-side que incluye nombre e ícono del usuario
+          var view = String(params.get("view") || "").trim().toLowerCase();
+          var app = view === "pet" || view === "mascota" || view === "mascotbook" ? "mascotbook" : "elitecard";
+
+          // Usar manifest server-side por producto activo
           var manifestUrl =
-            origin + "/manifest-user?id=" + encodeURIComponent(uid);
+            origin + "/manifest-user?id=" + encodeURIComponent(uid) + "&app=" + encodeURIComponent(app);
 
           function injectManifest() {
             var link = document.getElementById("manifest-link");
@@ -601,6 +604,13 @@
   // Banner instalación PWA — Chrome Android
   var deferredPrompt = null;
   var installBanner = null;
+  var appMode = "elitecard";
+  try {
+    var q = new URLSearchParams(window.location.search);
+    var v = String(q.get("view") || "").toLowerCase();
+    if (v === "pet" || v === "mascota" || v === "mascotbook") appMode = "mascotbook";
+  } catch(e0) {}
+  var dismissKey = "ec-install-dismissed-" + appMode;
 
   function createInstallBanner() {
     if (installBanner) return;
@@ -637,7 +647,7 @@
     document.head.appendChild(style);
 
     var icon = document.createElement("img");
-    icon.src = "icons/icon-192.png";
+    icon.src = appMode === "mascotbook" ? "icons/icon-512.png" : "icons/icon-192.png";
     icon.width = 28;
     icon.height = 28;
     icon.style.cssText = "border-radius:6px;flex-shrink:0";
@@ -645,7 +655,7 @@
 
     var text = document.createElement("span");
     text.style.cssText = "font-size:13px;font-weight:300;color:#e0e0e0;letter-spacing:0.02em;white-space:nowrap";
-    text.textContent = "Instalá EliteCard";
+    text.textContent = appMode === "mascotbook" ? "Instalá MascotBook" : "Instalá EliteCard";
 
     var btn = document.createElement("span");
     btn.style.cssText = [
@@ -690,7 +700,7 @@
       e.stopPropagation();
       removeInstallBanner();
       // No volvemos a mostrar en esta sesión
-      try { sessionStorage.setItem("ec-install-dismissed", "1"); } catch(e2) {}
+      try { sessionStorage.setItem(dismissKey, "1"); } catch(e2) {}
     });
   }
 
@@ -708,7 +718,7 @@
 
   // No mostrar si ya fue descartado en esta sesión
   try {
-    if (sessionStorage.getItem("ec-install-dismissed")) return;
+    if (sessionStorage.getItem(dismissKey)) return;
   } catch(e3) {}
 
   window.addEventListener("beforeinstallprompt", function(e) {

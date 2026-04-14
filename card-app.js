@@ -588,6 +588,7 @@
     var container = document.getElementById("links-container");
     if (!container) return;
     container.innerHTML = "";
+    var isPetMode = !!window.__ecPublicViewPet;
 
     if (cfg.telefono) {
       var telHref = "tel:" + cfg.telefono.replace(/\s/g, "");
@@ -600,8 +601,8 @@
     if (waNum) {
       container.appendChild(
         pillButton(
-          "Contactame por WhatsApp",
-          "fa-brands fa-whatsapp",
+          isPetMode ? "Contactar al dueño" : "Contactame por WhatsApp",
+          isPetMode ? "fa-solid fa-paw" : "fa-brands fa-whatsapp",
           "bg-[#25D366]",
           openWaModal,
           "",
@@ -688,6 +689,11 @@
         )
       );
     }
+    if (isPetMode) {
+      Array.prototype.forEach.call(container.children, function (el) {
+        el.classList.add("ec-ficha-stack-card");
+      });
+    }
   }
 
   function applyCardAppearance() {
@@ -712,6 +718,7 @@
       app.classList.add("ec-theme-" + theme);
       app.setAttribute("data-avatar-shape", avatarShape);
       app.setAttribute("data-link-layout", linkLayout);
+      app.classList.toggle("ec-pet-mode", !!window.__ecPublicViewPet);
     }
   }
 
@@ -793,7 +800,7 @@
     var alertHtml = "";
     if (n.mascotaAlertasSalud) {
       alertHtml =
-        '<div class="ec-ficha-inner ec-ficha-alerta-glow mx-1 mb-2 rounded-xl p-4">' +
+        '<div class="ec-ficha-inner ec-ficha-stack-card ec-ficha-alerta-glow mx-1 mb-2 rounded-xl p-4">' +
         '<p class="mb-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-200/90">Alertas médicas y alergias</p>' +
         '<p class="whitespace-pre-wrap text-[13px] font-light leading-relaxed text-[#fde8e8]/95">' +
         escapeHtmlPet(n.mascotaAlertasSalud) +
@@ -859,7 +866,7 @@
     var histBlock = "";
     if (n.mascotaHistorialClinico) {
       histBlock =
-        '<div class="ec-ficha-inner mx-1 mt-4 rounded-xl p-4">' +
+        '<div class="ec-ficha-inner ec-ficha-stack-card mx-1 mt-4 rounded-xl p-4">' +
         '<p class="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#d4af37]/85">Historial clínico</p>' +
         '<p class="whitespace-pre-wrap text-[12px] font-light leading-relaxed text-[#ebe6dc]/55">' +
         escapeHtmlPet(n.mascotaHistorialClinico) +
@@ -869,11 +876,11 @@
       '<div class="ec-ficha-medica-inner px-1 pt-1">' +
       '<p class="mb-3 text-center text-[10px] font-semibold uppercase tracking-[0.28em] text-[#d4af37]/90">Ficha médica</p>' +
       alertHtml +
-      '<div class="ec-ficha-inner mx-1 mb-3 rounded-xl p-4">' +
+      '<div class="ec-ficha-inner ec-ficha-stack-card mx-1 mb-3 rounded-xl p-4">' +
       '<p class="mb-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#d4af37]/80">Vacunas</p>' +
       vacHtml +
       "</div>" +
-      '<div class="ec-ficha-inner mx-1 rounded-xl p-4">' +
+      '<div class="ec-ficha-inner ec-ficha-stack-card mx-1 rounded-xl p-4">' +
       '<p class="mb-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#d4af37]/80">Estudios y rayos X</p>' +
       galHtml +
       "</div>" +

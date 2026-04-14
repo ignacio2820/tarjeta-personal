@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Selector de producto | EliteCard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <style>
+      body { font-family: "Poppins", system-ui, sans-serif; background: #050505; color: #e0e0e0; }
+      .card { background: rgba(16,16,16,.88); border: 1px solid rgba(212,175,55,.2); }
+    </style>
+  </head>
+  <body class="min-h-screen antialiased">
+    <main class="mx-auto max-w-4xl px-6 py-12">
+      <p class="text-xs uppercase tracking-[0.28em] text-[#d4af37]">Dashboard Studio</p>
+      <h1 class="mt-3 text-3xl font-light text-white">Elegí qué producto gestionar</h1>
+      <p class="mt-3 text-sm text-white/55">Podés cambiar de modo cuando quieras desde el sidebar.</p>
+      <section class="mt-8 grid gap-4 sm:grid-cols-2">
+        <button type="button" data-app="elitecard" class="card rounded-2xl p-6 text-left transition hover:border-[#d4af37]/55">
+          <p class="text-xs uppercase tracking-[0.2em] text-[#d4af37]/85">Producto</p>
+          <h2 class="mt-2 text-2xl font-light text-white">EliteCard</h2>
+          <p class="mt-2 text-sm text-white/55">Tarjeta profesional, firma de email y analíticas.</p>
+        </button>
+        <button type="button" data-app="mascotbook" class="card rounded-2xl p-6 text-left transition hover:border-[#86efac]/55">
+          <p class="text-xs uppercase tracking-[0.2em] text-[#86efac]">Producto</p>
+          <h2 class="mt-2 text-2xl font-light text-white">MascotBook</h2>
+          <p class="mt-2 text-sm text-white/55">Ficha de mascota, salud, estudios y pase veterinario.</p>
+        </button>
+      </section>
+      <p id="selector-error" class="mt-4 hidden text-sm text-red-300"></p>
+      <button id="btn-logout-selector" class="mt-8 rounded-full border border-white/15 px-4 py-2 text-xs uppercase tracking-[0.14em] text-white/70">Cerrar sesión</button>
+    </main>
+    <script src="firebase-config.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script>
+      (function () {
+        var cfg = window.FIREBASE_WEB_CONFIG;
+        if (!cfg || !cfg.apiKey || String(cfg.apiKey).indexOf("REEMPLAZAR") !== -1) return;
+        try { firebase.initializeApp(cfg); } catch (e) {}
+        var auth = firebase.auth();
+        var err = document.getElementById("selector-error");
+        auth.onAuthStateChanged(function (u) {
+          if (!u) window.location.replace("login.html");
+        });
+        document.querySelectorAll("[data-app]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var app = btn.getAttribute("data-app") === "mascotbook" ? "mascotbook" : "elitecard";
+            try { localStorage.setItem("ec_current_app", app); } catch (e) {}
+            window.location.href = "admin.html?app=" + encodeURIComponent(app);
+          });
+        });
+        document.getElementById("btn-logout-selector").addEventListener("click", function () {
+          auth.signOut().then(function () { window.location.href = "login.html"; }).catch(function (ex) {
+            if (err) { err.textContent = (ex && ex.message) || "No se pudo cerrar sesión."; err.classList.remove("hidden"); }
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

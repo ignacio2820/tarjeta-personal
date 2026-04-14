@@ -36,6 +36,10 @@ exports.manifest = functions
     }
 
     const origin = "https://tarjeta-profesional-pedro.web.app";
+    const appMode =
+      String(req.query.app || "").trim().toLowerCase() === "mascotbook"
+        ? "mascotbook"
+        : "elitecard";
 
     try {
       const snap = await getAdmin()
@@ -44,18 +48,27 @@ exports.manifest = functions
         .doc(uid)
         .get();
 
-      let name = "EliteCard";
-      let shortName = "EliteCard";
+      let name = appMode === "mascotbook" ? "MascotBook" : "EliteCard";
+      let shortName = appMode === "mascotbook" ? "MascotBook" : "EliteCard";
       let iconSrc = origin + "/icons/icon-192.png";
       let icon512 = origin + "/icons/icon-512.png";
       let icon512m = origin + "/icons/icon-512-maskable.png";
 
       if (snap.exists) {
         const d = snap.data();
-        const nombreCompleto = String(d.nombreCompleto || "").trim();
-        const cargo = String(d.cargo || "").trim();
+        const nombreCompleto =
+          appMode === "mascotbook"
+            ? String(d.mascotaNombre || "").trim()
+            : String(d.nombreCompleto || "").trim();
+        const cargo =
+          appMode === "mascotbook"
+            ? String(d.mascotaCargo || "").trim()
+            : String(d.cargo || "").trim();
         const logoUrl = String(d.logoUrl || "").trim();
-        const fotoUrl = String(d.fotoUrl || d.photoURL || "").trim();
+        const fotoUrl =
+          appMode === "mascotbook"
+            ? String(d.mascotaFotoUrl || "").trim()
+            : String(d.fotoUrl || d.photoURL || "").trim();
 
         if (nombreCompleto) {
           name = cargo
@@ -71,17 +84,28 @@ exports.manifest = functions
         icon512m = iconSrc;
       }
 
-      const startUrl = origin + "/?id=" + encodeURIComponent(uid);
+      const startUrl =
+        origin +
+        "/?id=" +
+        encodeURIComponent(uid) +
+        (appMode === "mascotbook" ? "&view=pet" : "");
 
       const manifest = {
         id: startUrl,
         name: name,
         short_name: shortName,
-        description: "Tarjeta digital profesional — EliteCard",
+        description:
+          appMode === "mascotbook"
+            ? "Ficha digital de salud y contacto para mascotas."
+            : "Tarjeta digital profesional — EliteCard",
         lang: "es",
         dir: "ltr",
         start_url: startUrl,
-        scope: origin + "/?id=" + encodeURIComponent(uid),
+        scope:
+          origin +
+          "/?id=" +
+          encodeURIComponent(uid) +
+          (appMode === "mascotbook" ? "&view=pet" : ""),
         display: "standalone",
         display_override: ["standalone", "minimal-ui"],
         orientation: "portrait-primary",
