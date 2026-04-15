@@ -19,6 +19,10 @@
         background: #f8fafc;
         min-height: 100dvh;
       }
+      .auth-shell-page {
+        opacity: 0;
+        animation: authFadeIn 0.55s ease forwards;
+      }
       .auth-split {
         min-height: 100dvh;
         display: grid;
@@ -31,9 +35,13 @@
         padding: 2rem 1.25rem;
       }
       .auth-right {
-        background:
-          radial-gradient(120% 120% at 10% 10%, rgba(212, 175, 55, 0.26), transparent 52%),
-          linear-gradient(145deg, #0f172a 0%, #1d4ed8 55%, #312e81 100%);
+        position: relative;
+        background-image:
+          linear-gradient(165deg, rgba(2, 6, 23, 0.58), rgba(30, 58, 138, 0.4)),
+          url("assets/Gemini_Generated_Image_5h8njw5h8njw5h8n-051fe15f-91d8-41cf-8362-b12e08c7a7b4.png");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
         color: #e2e8f0;
         padding: 2.75rem;
         display: flex;
@@ -128,10 +136,20 @@
           display: none;
         }
       }
+      @keyframes authFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
     </style>
   </head>
   <body class="antialiased">
-    <main class="auth-split">
+    <main class="auth-split auth-shell-page">
       <section class="auth-left">
         <div class="auth-shell">
         <div class="auth-brand">

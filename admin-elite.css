@@ -269,7 +269,7 @@ body {
 }
 
 .admin-root.view-mascot.layout {
-  grid-template-columns: minmax(220px, 260px) minmax(0, 1fr) 380px;
+  grid-template-columns: 250px minmax(0, 1fr) 360px;
 }
 
 @media (max-width: 1024px) {
@@ -299,7 +299,7 @@ body {
 
 .sidebar-nav {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 0.45rem;
   margin-bottom: 1rem;
 }
@@ -321,6 +321,12 @@ body {
   background: var(--ae-blue);
   border-color: var(--ae-blue);
   box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+}
+
+.nav-tab-passive {
+  background: #f8fafc;
+  color: #64748b;
+  cursor: default;
 }
 
 .main {
@@ -1402,8 +1408,8 @@ details.vcf-details summary {
 }
 
 #form-mascot.form-panel--mascot {
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
   width: 100%;
 }
 
@@ -1412,6 +1418,7 @@ details.vcf-details summary {
   gap: 0.55rem;
   margin: 0 0 1rem;
   padding: 0.2rem;
+  width: 100%;
 }
 
 .mb-tab-btn {
@@ -1440,12 +1447,19 @@ details.vcf-details summary {
 
 .mascot-form-workspace {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 24px;
   align-items: start;
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
   width: 100%;
+  justify-items: center;
+}
+
+.mascot-form-main,
+.mascot-security-aside {
+  width: min(100%, 1120px);
+  margin: 0 auto;
 }
 
 .mascot-security-aside {
@@ -1457,9 +1471,10 @@ details.vcf-details summary {
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  padding: 34px;
+  padding: 40px;
   margin-bottom: 24px;
   border: 1px solid #e5e7eb;
+  width: 100%;
 }
 
 .mascot-panel-card--identity {
@@ -1536,6 +1551,25 @@ details.vcf-details summary {
   justify-content: center;
 }
 
+.mascot-panel-card--security .btn-dash-lost-save,
+.mascot-panel-card--security .btn-qr {
+  width: 100%;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  justify-content: center;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+.mascot-panel-card--security .btn-qr {
+  margin-top: 20px;
+  border-color: #4f46e5;
+  color: #4338ca;
+  background: linear-gradient(180deg, #ffffff, #eef2ff);
+}
+
 .mb-inline-contact-note[aria-disabled="true"] {
   opacity: 0.75;
   pointer-events: none;
@@ -1558,7 +1592,7 @@ details.vcf-details summary {
 }
 
 .field-grid--three {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .field-grid--two {
@@ -1718,9 +1752,10 @@ details.vcf-details summary {
   border-left: 1px solid #e5e7eb;
   padding: 1.5rem clamp(0.85rem, 1.5vw, 1.5rem);
   position: sticky;
-  top: 0;
+  top: 10px;
+  right: 10px;
   align-self: start;
-  height: calc(100dvh - 56px);
+  height: calc(100dvh - 66px);
   overflow: auto;
 }
 

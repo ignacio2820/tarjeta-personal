@@ -74,6 +74,7 @@
           <div class="sidebar-nav" role="tablist" aria-label="Secciones">
             <button type="button" class="nav-tab active" data-panel="dashboard" role="tab">Dashboard</button>
             <button type="button" class="nav-tab" data-panel="contenido" role="tab">Contenido</button>
+            <button type="button" class="nav-tab nav-tab-passive" aria-disabled="true">Configuración</button>
           </div>
           <div id="theme-panel" class="theme-panel hidden">
             <div class="mascot-side-brand">
@@ -91,21 +92,6 @@
               <button type="button" class="mb-pro-pick" data-mb-pro="organic_leaf">Organic Leaf</button>
             </div>
             <p class="theme-panel-hint theme-panel-hint--accent">Color de acento: editarlo en Contenido → Identidad básica.</p>
-            <div class="mascot-side-uploads">
-              <p class="theme-panel-hint">Subida rápida de imágenes</p>
-              <button type="button" class="file-upload-box file-upload-box--compact mb-side-upload-trigger" data-target="m-foto">
-                <i class="fa-solid fa-camera" aria-hidden="true"></i>
-                <span>Foto de perfil</span>
-              </button>
-              <button type="button" class="file-upload-box file-upload-box--compact mb-side-upload-trigger" data-target="m-cabecera">
-                <i class="fa-solid fa-image" aria-hidden="true"></i>
-                <span>Banner</span>
-              </button>
-              <button type="button" class="file-upload-box file-upload-box--compact mb-side-upload-trigger" data-target="m-galeria">
-                <i class="fa-solid fa-images" aria-hidden="true"></i>
-                <span>Galería</span>
-              </button>
-            </div>
           </div>
         </aside>
 
@@ -358,7 +344,7 @@
                     <i class="fa-solid fa-id-card" aria-hidden="true"></i> Identidad básica
                   </h3>
                   <p class="mascot-panel-card__hint">Datos principales del perfil en formato compacto para escritorio.</p>
-                  <div class="field-grid field-grid--three">
+                  <div class="field-grid field-grid--two">
                     <div class="field field-upload">
                       <input id="m-foto" class="file-input-hidden" type="file" accept="image/*" />
                       <label for="m-foto" class="file-upload-box file-upload-box--compact">
@@ -480,34 +466,40 @@
                   </button>
                   <h4 class="mascot-panel-card__subtitle"><i class="fa-solid fa-stethoscope" aria-hidden="true"></i> Veterinario de cabecera</h4>
                   <p class="mascot-panel-card__hint mascot-panel-card__hint--tight">En la tarjeta pública el teléfono se muestra como botón de llamada.</p>
-                  <div class="field">
-                    <label for="m-vet-nombre">Nombre</label>
-                    <input id="m-vet-nombre" type="text" placeholder="Clínica o profesional de confianza" />
-                  </div>
-                  <div class="field">
-                    <label for="m-vet-tel">Teléfono</label>
-                    <input id="m-vet-tel" type="tel" placeholder="Código país + número, ej. +54 11 …" />
+                  <div class="field-grid field-grid--two">
+                    <div class="field">
+                      <label for="m-vet-nombre">Nombre</label>
+                      <input id="m-vet-nombre" type="text" placeholder="Clínica o profesional de confianza" />
+                    </div>
+                    <div class="field">
+                      <label for="m-vet-tel">Teléfono</label>
+                      <input id="m-vet-tel" type="tel" placeholder="Código país + número, ej. +54 11 …" />
+                    </div>
                   </div>
                   <div class="field">
                     <label for="m-vet-dir">Dirección / clínica</label>
                     <input id="m-vet-dir" type="text" placeholder="Calle, ciudad o enlace a maps en la bio si preferís" />
                   </div>
                   <h4 class="mascot-panel-card__subtitle"><i class="fa-solid fa-briefcase-medical" aria-hidden="true"></i> Ficha médica crítica</h4>
-                  <div class="field">
-                    <label for="m-fc-alergias">Alergias</label>
-                    <textarea id="m-fc-alergias" rows="2" placeholder="Medicamentos, alimentos, picaduras…"></textarea>
+                  <div class="field-grid field-grid--two">
+                    <div class="field">
+                      <label for="m-fc-alergias">Alergias</label>
+                      <textarea id="m-fc-alergias" rows="2" placeholder="Medicamentos, alimentos, picaduras…"></textarea>
+                    </div>
+                    <div class="field">
+                      <label for="m-fc-meds">Medicación diaria</label>
+                      <textarea id="m-fc-meds" rows="2" placeholder="Dosis y horario si aplica."></textarea>
+                    </div>
                   </div>
-                  <div class="field">
-                    <label for="m-fc-meds">Medicación diaria</label>
-                    <textarea id="m-fc-meds" rows="2" placeholder="Dosis y horario si aplica."></textarea>
-                  </div>
-                  <div class="field">
-                    <label for="m-fc-sangre">Tipo de sangre</label>
-                    <input id="m-fc-sangre" type="text" placeholder="DEA 1.1, desconocido o guión" />
-                  </div>
-                  <div class="field">
-                    <label for="m-fc-cuidados">Cuidados especiales</label>
-                    <textarea id="m-fc-cuidados" rows="2" placeholder="Postoperatorio, dieta, restricciones de movilidad…"></textarea>
+                  <div class="field-grid field-grid--two">
+                    <div class="field">
+                      <label for="m-fc-sangre">Tipo de sangre</label>
+                      <input id="m-fc-sangre" type="text" placeholder="DEA 1.1, desconocido o guión" />
+                    </div>
+                    <div class="field">
+                      <label for="m-fc-cuidados">Cuidados especiales</label>
+                      <textarea id="m-fc-cuidados" rows="2" placeholder="Postoperatorio, dieta, restricciones de movilidad…"></textarea>
+                    </div>
                   </div>
                   <div class="field">
                     <label for="m-salud">Notas de salud libres</label>
@@ -696,7 +688,7 @@
           var rect = col ? col.getBoundingClientRect() : { height: window.innerHeight * 0.72 };
           var availH = Math.max(200, Math.min(820, rect.height - 108));
           var s = Math.min(availW / W, availH / H, 1);
-          if (currentApp === "mascotbook") s = Math.min(s, 0.8);
+          if (currentApp === "mascotbook") s = Math.min(s, 0.85);
           wrap.style.transform = "scale(" + s + ")";
           stage.style.height = Math.ceil(H * s) + "px";
         }
@@ -1515,13 +1507,6 @@
           });
         });
 
-        document.querySelectorAll(".mb-side-upload-trigger[data-target]").forEach(function (btn) {
-          btn.addEventListener("click", function () {
-            var id = btn.getAttribute("data-target");
-            var input = id ? document.getElementById(id) : null;
-            if (input && input.click) input.click();
-          });
-        });
         setMascotTab("identidad");
 
         var goEliteContact = document.getElementById("btn-mascot-goto-elite-contact");
