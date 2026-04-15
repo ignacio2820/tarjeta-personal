@@ -27,6 +27,21 @@ html {
   background-color: var(--ec-void);
 }
 
+/* Tarjeta pública card.html (MascotBook / EliteCard): no forzar fondo luxury global */
+html[data-ec-card] {
+  height: auto;
+  min-height: 100%;
+  background: #0a0a0a;
+  background-image: none;
+}
+
+html[data-ec-admin] {
+  height: auto;
+  min-height: 100%;
+  background: #f8fafc;
+  background-image: none;
+}
+
 body.luxury-body {
   min-height: 100%;
   min-height: 100dvh;
@@ -1480,4 +1495,156 @@ html:has(.ec-pet-mode) body {
 #app-root.ec-pet-mode > * {
   position: relative;
   z-index: 1;
+}
+
+/* =============================================================================
+   MascotBook — UI pública (card.html #layout-mascot). No afecta EliteCard.
+   ============================================================================= */
+
+#layout-mascot .mb-lost-banner {
+  animation: mb-lost-pulse-red 1.5s ease-in-out infinite;
+  background: linear-gradient(90deg, #dc2626, #ef4444, #dc2626);
+  background-size: 200% 100%;
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: clamp(0.68rem, 3vw, 0.82rem);
+  padding: 0.65rem 0.75rem;
+  text-align: center;
+  box-shadow: 0 0 24px rgba(239, 68, 68, 0.55);
+}
+
+@keyframes mb-lost-pulse-red {
+  0%,
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+    background-position: 0% 50%;
+  }
+  50% {
+    opacity: 0.92;
+    filter: brightness(1.15);
+    background-position: 100% 50%;
+  }
+}
+
+#layout-mascot .mb-panic-wrap {
+  margin-top: 0.65rem;
+  width: 100%;
+}
+
+#layout-mascot .mb-panic-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+  font-family: "Poppins", system-ui, sans-serif;
+  font-weight: 900;
+  font-size: clamp(0.78rem, 3.2vw, 0.95rem);
+  line-height: 1.25;
+  text-align: center;
+  text-decoration: none;
+  color: #fff;
+  background: linear-gradient(180deg, #ef4444, #b91c1c);
+  border: 2px solid rgba(254, 202, 202, 0.85);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 12px 36px rgba(185, 28, 28, 0.45);
+  cursor: pointer;
+}
+
+#layout-mascot .mb-panic-btn[aria-disabled="true"] {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+#layout-mascot .mb-hero {
+  position: relative;
+  width: 100%;
+  min-height: 9.5rem;
+  overflow: hidden;
+}
+
+#layout-mascot .mb-hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+#layout-mascot .mb-hero-shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent 35%, rgba(0, 0, 0, 0.45) 100%);
+  opacity: 0;
+}
+
+#layout-mascot .mb-hero.mb-hero--has-img .mb-hero-shade {
+  opacity: 1;
+}
+
+#layout-mascot .mb-ig-profile {
+  position: relative;
+  z-index: 2;
+}
+
+/* Superficies pastel + relieve (sobrescriben fondos data-mb-pro cuando aplica) */
+#layout-mascot .mb-social.mb-surface--paw_blue {
+  background-color: #e8f4fc !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Cpath fill='%232563eb' fill-opacity='0.12' d='M10 24c-1-2 1-4 3-3 1 .3 1.5 1.2 1.6 2 .6-1.6 2.8-2.5 4.4-1.6 1.2.6 1.8 2 1.6 3.4-.2 1-.8 1.8-1.6 2.1-2 .9-4.5-.2-5.5-2-.5-.9-.6-2-.5-2.9z'/%3E%3Cpath fill='%232563eb' fill-opacity='0.1' d='M28 32c-.8-1.4.7-2.8 2.2-2.2.8.3 1.3 1 1.4 1.7.5-1.3 2-2 3.2-1.3 1 .5 1.5 1.6 1.4 2.7-.1.8-.5 1.4-1.2 1.7-1.4.7-3.2-.1-4-1.4-.4-.7-.5-1.5-.3-2.2z'/%3E%3C/svg%3E") !important;
+  background-size: 44px 44px !important;
+  color: #0f172a !important;
+  box-shadow: inset 0 0 80px rgba(255, 255, 255, 0.35);
+}
+
+#layout-mascot .mb-social.mb-surface--paw_pink {
+  background-color: #fff0f6 !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Cpath fill='%23db2777' fill-opacity='0.11' d='M10 24c-1-2 1-4 3-3 1 .3 1.5 1.2 1.6 2 .6-1.6 2.8-2.5 4.4-1.6 1.2.6 1.8 2 1.6 3.4-.2 1-.8 1.8-1.6 2.1-2 .9-4.5-.2-5.5-2-.5-.9-.6-2-.5-2.9z'/%3E%3Cpath fill='%23db2777' fill-opacity='0.09' d='M28 32c-.8-1.4.7-2.8 2.2-2.2.8.3 1.3 1 1.4 1.7.5-1.3 2-2 3.2-1.3 1 .5 1.5 1.6 1.4 2.7-.1.8-.5 1.4-1.2 1.7-1.4.7-3.2-.1-4-1.4-.4-.7-.5-1.5-.3-2.2z'/%3E%3C/svg%3E") !important;
+  background-size: 44px 44px !important;
+  color: #4a044e !important;
+  box-shadow: inset 0 0 80px rgba(255, 255, 255, 0.4);
+}
+
+#layout-mascot .mb-social.mb-surface--nature_mint {
+  background-color: #e6fff4 !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cpath fill='%23166534' fill-opacity='0.1' d='M6 38c6-10 18-16 30-14 4 1 8 3 10 7-14 2-28 6-40 7z'/%3E%3Cpath fill='%2378716f' fill-opacity='0.14' d='M36 10c2 1 3 3 2 5-1 2-4 2-6 1-1-2 1-5 4-6z'/%3E%3C/svg%3E") !important;
+  background-size: 56px 56px !important;
+  color: #064e3b !important;
+  box-shadow: inset 0 0 70px rgba(255, 255, 255, 0.35);
+}
+
+#layout-mascot .mb-social.mb-surface--cloud_cream {
+  background-color: #fffbeb !important;
+  background-image: radial-gradient(circle at 20% 30%, rgba(253, 224, 71, 0.2) 0, transparent 40%),
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.9) 0, transparent 35%),
+    radial-gradient(circle at 50% 80%, rgba(255, 255, 255, 0.75) 0, transparent 45%) !important;
+  color: #292524 !important;
+  box-shadow: inset 0 0 100px rgba(255, 255, 255, 0.5);
+}
+
+#layout-mascot .mb-social.mb-surface--paw_blue .mb-glass-block,
+#layout-mascot .mb-social.mb-surface--paw_pink .mb-glass-block,
+#layout-mascot .mb-social.mb-surface--nature_mint .mb-glass-block,
+#layout-mascot .mb-social.mb-surface--cloud_cream .mb-glass-block {
+  background: rgba(255, 255, 255, 0.42);
+  border-color: rgba(15, 23, 42, 0.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 10px 40px rgba(15, 23, 42, 0.08);
+}
+
+#layout-mascot .mb-social.mb-surface--paw_blue .mb-ig-topbar,
+#layout-mascot .mb-social.mb-surface--paw_pink .mb-ig-topbar,
+#layout-mascot .mb-social.mb-surface--nature_mint .mb-ig-topbar,
+#layout-mascot .mb-social.mb-surface--cloud_cream .mb-ig-topbar {
+  background: rgba(255, 255, 255, 0.35);
+  border-bottom-color: rgba(15, 23, 42, 0.08);
+  color: inherit;
 }

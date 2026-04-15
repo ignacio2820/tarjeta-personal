@@ -25,7 +25,8 @@ service cloud.firestore {
     function mascotCardKeysOk() {
       return request.resource.data.keys().hasOnly([
         'nombre', 'raza', 'sexo', 'salud', 'historia', 'personalidad',
-        'themeId', 'textureId', 'mascotProTheme', 'accentColor', 'fotoPerfilUrl', 'galeria', 'muro',
+        'themeId', 'textureId', 'mascotProTheme', 'mascotSurfaceTheme', 'accentColor',
+        'fotoPerfilUrl', 'fotoCabeceraUrl', 'galeria', 'muro',
         'vacunas', 'veterinario', 'fichaCritica', 'mascotaPerdida', 'whatsappUrgencia',
         'updatedAt'
       ]);

@@ -100,6 +100,11 @@
     var mp = qs("ec_mpt").toLowerCase();
     var ids = window.MASCOT_PRO_THEME_IDS;
     if (ids && ids.indexOf(mp) >= 0) m.mascotProTheme = mp;
+    var ms = qs("ec_ms")
+      .toLowerCase()
+      .replace(/-/g, "_");
+    var sids = window.MASCOT_SURFACE_THEME_IDS;
+    if (sids && sids.indexOf(ms) >= 0) m.mascotSurfaceTheme = ms;
   }
 
   function mascotTextureClass(m) {
@@ -189,6 +194,8 @@
       vacunas: vac,
       mascotaPerdida: !!d.mascotaPerdida,
       whatsappUrgencia: String(d.mascotaWhatsapp || "").trim(),
+      fotoCabeceraUrl: String(d.mascotaBannerUrl || "").trim(),
+      mascotSurfaceTheme: "cloud_cream",
     };
   }
 
@@ -585,7 +592,14 @@
     applyMascotPreviewOverrides(m);
     var nm = window.normalizeMascotCard ? window.normalizeMascotCard(m) : m;
     var texClass = mascotTextureClass(nm);
-    shell.className = "mb-social " + texClass;
+    var surf = String(nm.mascotSurfaceTheme || "cloud_cream")
+      .trim()
+      .toLowerCase()
+      .replace(/-/g, "_");
+    if (!window.MASCOT_SURFACE_THEME_IDS || window.MASCOT_SURFACE_THEME_IDS.indexOf(surf) < 0) {
+      surf = "cloud_cream";
+    }
+    shell.className = "mb-social " + texClass + " mb-surface--" + surf;
     var pro = String(nm.mascotProTheme || "classic_paws").trim();
     if (!window.MASCOT_PRO_THEME_IDS || window.MASCOT_PRO_THEME_IDS.indexOf(pro) < 0) {
       pro = "classic_paws";
@@ -595,6 +609,20 @@
     var accent = String(nm.accentColor || "#ec4899").trim();
     if (!/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(accent)) accent = "#ec4899";
     shell.style.setProperty("--mb-accent", accent);
+
+    var hero = document.getElementById("mascot-hero");
+    var heroImg = document.getElementById("mascot-hero-img");
+    if (hero && heroImg) {
+      if (nm.fotoCabeceraUrl) {
+        heroImg.src = nm.fotoCabeceraUrl;
+        heroImg.classList.remove("hidden");
+        hero.classList.add("mb-hero--has-img");
+      } else {
+        heroImg.removeAttribute("src");
+        heroImg.classList.add("hidden");
+        hero.classList.remove("mb-hero--has-img");
+      }
+    }
 
     var fc = nm.fichaCritica || {};
     var vet = nm.veterinario || {};
@@ -614,7 +642,9 @@
       vet.direccion ||
       fc.alergias ||
       fc.medicacionDiaria ||
-      fc.tipoSangre;
+      fc.tipoSangre ||
+      fc.cuidadosEspeciales ||
+      nm.fotoCabeceraUrl;
     if (!has && !lostOn) {
       root.classList.add("hidden");
       if (empty) empty.classList.remove("hidden");
@@ -680,14 +710,31 @@
       wrap.classList.toggle("hidden", !show);
     }
 
+    function vacunaProximaVencida(prox) {
+      var s = String(prox || "").trim();
+      if (!s || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+      var t = new Date();
+      var y = t.getFullYear();
+      var m = String(t.getMonth() + 1);
+      if (m.length < 2) m = "0" + m;
+      var d = String(t.getDate());
+      if (d.length < 2) d = "0" + d;
+      return s < y + "-" + m + "-" + d;
+    }
+
     var vacHtml = vacs
       .map(function (r) {
         var bits = [r.vacuna, r.fecha, r.proximaDosis].filter(Boolean);
         if (!bits.length) return "";
+        var overdue = vacunaProximaVencida(r.proximaDosis);
         return (
-          "<div class=\"mb-vac-line\"><strong>" +
+          "<div class=\"mb-vac-line" +
+          (overdue ? " mb-vac-line--overdue" : "") +
+          "\"><strong>" +
           escapeHtml(r.vacuna || "Vacuna") +
-          "</strong><br>" +
+          "</strong>" +
+          (overdue ? " <span class=\"mb-vac-badge\">Próxima vencida</span>" : "") +
+          "<br>" +
           (r.fecha ? "<span class=\"mb-health-label\">Fecha</span> " + escapeHtml(r.fecha) + " · " : "") +
           (r.proximaDosis
             ? "<span class=\"mb-health-label\">Próxima</span> " + escapeHtml(r.proximaDosis)
@@ -705,6 +752,15 @@
       vetHtml += vet.direccion
         ? "<div class=\"mb-health-row\"><span class=\"mb-health-label\">Dirección</span>" + escapeHtml(vet.direccion) + "</div>"
         : "";
+      if (vet.direccion) {
+        var mq = encodeURIComponent(
+          [vet.direccion, vet.nombre].filter(Boolean).join(" · ")
+        );
+        vetHtml +=
+          "<a class=\"mb-vet-map\" rel=\"noopener noreferrer\" target=\"_blank\" href=\"https://www.google.com/maps/search/?api=1&query=" +
+          mq +
+          "\"><i class=\"fa-solid fa-map-location-dot\" aria-hidden=\"true\"></i> Abrir en mapa</a>";
+      }
       if (vet.telefono) {
         var tel = String(vet.telefono).replace(/\D/g, "");
         if (tel) {
@@ -734,6 +790,12 @@
         escapeHtml(fc.tipoSangre) +
         "</div>";
     }
+    if (fc.cuidadosEspeciales) {
+      critHtml +=
+        "<div class=\"mb-health-row\"><span class=\"mb-health-label\">Cuidados especiales</span>" +
+        escapeHtml(fc.cuidadosEspeciales).replace(/\n/g, "<br>") +
+        "</div>";
+    }
     setBlock("mascot-block-critica", "mascot-critica", !!critHtml, critHtml);
 
     var leg = String(nm.salud || "").trim();
@@ -755,14 +817,14 @@
   function hideMascotLostUi() {
     var b = document.getElementById("mascot-lost-banner");
     var wrap = document.getElementById("mascot-lost-actions");
-    var wa = document.getElementById("mascot-lost-wa");
+    var panic = document.getElementById("mascot-panic-btn");
     var msg = document.getElementById("mascot-lost-msg");
     if (b) b.classList.add("hidden");
     if (wrap) wrap.classList.add("hidden");
-    if (wa) {
-      wa.classList.add("hidden");
-      wa.removeAttribute("href");
-      wa.removeAttribute("aria-disabled");
+    if (panic) {
+      panic.classList.add("hidden");
+      panic.removeAttribute("href");
+      panic.setAttribute("aria-disabled", "true");
     }
     if (msg) {
       msg.classList.add("hidden");
@@ -771,20 +833,34 @@
     var locBtn = document.getElementById("mascot-lost-share-loc");
     if (locBtn) {
       locBtn.disabled = false;
-      locBtn.textContent = "";
       locBtn.innerHTML =
         '<i class="fa-solid fa-location-dot" aria-hidden="true"></i> Compartir mi ubicación con el dueño';
     }
+  }
+
+  function pushLostScanLocation(ownerUid, pos, silent) {
+    if (!ownerUid || !window.EC_SILO || !window.EC_SILO.mascotLostScansRef) return Promise.resolve();
+    var db = firebase.firestore();
+    var ref = window.EC_SILO.mascotLostScansRef(db, ownerUid);
+    var row = {
+      lat: pos.coords.latitude,
+      lng: pos.coords.longitude,
+      at: firebase.firestore.FieldValue.serverTimestamp(),
+    };
+    if (typeof pos.coords.accuracy === "number" && !isNaN(pos.coords.accuracy)) {
+      row.accuracy = pos.coords.accuracy;
+    }
+    return ref.add(row);
   }
 
   function setupMascotLostMode(nm) {
     var ownerUid = String(window.__EC_CARD_UID || "").trim();
     var banner = document.getElementById("mascot-lost-banner");
     var wrap = document.getElementById("mascot-lost-actions");
-    var wa = document.getElementById("mascot-lost-wa");
+    var panic = document.getElementById("mascot-panic-btn");
     var locBtn = document.getElementById("mascot-lost-share-loc");
     var msg = document.getElementById("mascot-lost-msg");
-    if (!banner || !wrap || !wa || !locBtn) return;
+    if (!banner || !wrap || !panic || !locBtn) return;
     if (!nm || !nm.mascotaPerdida) {
       hideMascotLostUi();
       return;
@@ -792,13 +868,22 @@
     banner.classList.remove("hidden");
     wrap.classList.remove("hidden");
     var digits = String((nm && nm.whatsappUrgencia) || "").replace(/\D/g, "");
+    var petName = String((nm && nm.nombre) || "Mascota").trim() || "Mascota";
+    var pre =
+      "Hola, encontré a tu mascota " +
+      petName +
+      " escaneando su MascotBook. ¿Dónde nos encontramos?";
     if (digits.length >= 8) {
-      wa.classList.remove("hidden");
-      wa.setAttribute("href", "https://wa.me/" + digits);
-      wa.removeAttribute("aria-disabled");
+      panic.classList.remove("hidden");
+      panic.setAttribute(
+        "href",
+        "https://wa.me/" + digits + "?text=" + encodeURIComponent(pre)
+      );
+      panic.removeAttribute("aria-disabled");
     } else {
-      wa.classList.add("hidden");
-      wa.removeAttribute("href");
+      panic.classList.add("hidden");
+      panic.removeAttribute("href");
+      panic.setAttribute("aria-disabled", "true");
     }
     if (msg) msg.classList.add("hidden");
     locBtn.disabled = false;
@@ -816,22 +901,11 @@
       navigator.geolocation.getCurrentPosition(
         function (pos) {
           try {
-            var db = firebase.firestore();
-            var ref = window.EC_SILO.mascotLostScansRef(db, ownerUid);
-            var row = {
-              lat: pos.coords.latitude,
-              lng: pos.coords.longitude,
-              at: firebase.firestore.FieldValue.serverTimestamp(),
-            };
-            if (typeof pos.coords.accuracy === "number" && !isNaN(pos.coords.accuracy)) {
-              row.accuracy = pos.coords.accuracy;
-            }
-            ref
-              .add(row)
+            pushLostScanLocation(ownerUid, pos, false)
               .then(function () {
                 locBtn.disabled = false;
                 if (msg) {
-                  msg.textContent = "Ubicación enviada. El dueño puede verla en su panel.";
+                  msg.textContent = "Ubicación enviada. El dueño recibirá un aviso por correo si está configurado.";
                   msg.classList.remove("hidden");
                 }
               })
@@ -860,6 +934,21 @@
         { enableHighAccuracy: true, timeout: 14000, maximumAge: 0 }
       );
     };
+
+    var isPreview = qs("ec_admin_preview") === "1";
+    if (!isPreview && ownerUid && !window.__EC_LOST_PASSIVE_TRIED) {
+      window.__EC_LOST_PASSIVE_TRIED = true;
+      setTimeout(function () {
+        if (!navigator.geolocation) return;
+        navigator.geolocation.getCurrentPosition(
+          function (pos) {
+            pushLostScanLocation(ownerUid, pos, true).catch(function () {});
+          },
+          function () {},
+          { enableHighAccuracy: false, timeout: 12000, maximumAge: 120000 }
+        );
+      }, 2400);
+    }
   }
 
   function escapeHtml(s) {

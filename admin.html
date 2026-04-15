@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-ec-admin>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -22,15 +22,19 @@
     <link rel="stylesheet" href="mascot-themes.css" id="ec-link-mascot-themes" />
     <link rel="stylesheet" href="mascot-book-pro.css" id="ec-link-mascot-book-pro" />
     <link rel="stylesheet" href="admin-elite.css" id="ec-link-admin-elite" />
+    <link rel="stylesheet" href="styles.css?v=2.1" id="ec-link-styles-mascot" />
     <script>
       (function () {
         var v = window.__EC_ADMIN_ASSET_TS || Date.now();
+        var vCss = "2.1";
         var a = document.getElementById("ec-link-mascot-themes");
         var c = document.getElementById("ec-link-mascot-book-pro");
         var b = document.getElementById("ec-link-admin-elite");
-        if (a) a.href = "mascot-themes.css?v=" + v;
-        if (c) c.href = "mascot-book-pro.css?v=" + v;
-        if (b) b.href = "admin-elite.css?v=" + v;
+        if (a) a.href = "mascot-themes.css?v=" + vCss;
+        if (c) c.href = "mascot-book-pro.css?v=" + vCss;
+        if (b) b.href = "admin-elite.css?v=" + vCss;
+        var s = document.getElementById("ec-link-styles-mascot");
+        if (s) s.href = "styles.css?v=" + vCss;
       })();
     </script>
   </head>
@@ -135,6 +139,36 @@
                   <span class="mb-dash-card-icon"><i class="fa-solid fa-leaf"></i></span>
                   <strong>Organic Leaf</strong>
                   <span>Naturaleza y campo</span>
+                </button>
+              </div>
+            </div>
+            <div id="mascot-dash-surfaces" class="mascot-dash-surfaces" aria-labelledby="mascot-dash-surfaces-title">
+              <p class="mb-dash-eyebrow">Estética MascotBook</p>
+              <h3 id="mascot-dash-surfaces-title" class="mb-dash-title">Fondos con patitas y relieve</h3>
+              <p class="mb-dash-lead">
+                Elegí una superficie pastel con patrón SVG; combina con el color de acento en Contenido. La vista previa se actualiza al
+                instante.
+              </p>
+              <div class="mb-dash-surface-grid" role="group" aria-label="Superficie de fondo">
+                <button type="button" class="mb-dash-surface mb-dash-surface-blue active" data-mb-surface="paw_blue">
+                  <span class="mb-dash-surface-swatch" aria-hidden="true"></span>
+                  <strong>Azul pastel</strong>
+                  <span>Huellitas suaves</span>
+                </button>
+                <button type="button" class="mb-dash-surface mb-dash-surface-pink" data-mb-surface="paw_pink">
+                  <span class="mb-dash-surface-swatch" aria-hidden="true"></span>
+                  <strong>Rosa pastel</strong>
+                  <span>Huellitas suaves</span>
+                </button>
+                <button type="button" class="mb-dash-surface mb-dash-surface-mint" data-mb-surface="nature_mint">
+                  <span class="mb-dash-surface-swatch" aria-hidden="true"></span>
+                  <strong>Menta naturaleza</strong>
+                  <span>Hojas y textura</span>
+                </button>
+                <button type="button" class="mb-dash-surface mb-dash-surface-cream" data-mb-surface="cloud_cream">
+                  <span class="mb-dash-surface-swatch" aria-hidden="true"></span>
+                  <strong>Crema nubes</strong>
+                  <span>Luz suave</span>
                 </button>
               </div>
             </div>
@@ -409,14 +443,23 @@
                 <label for="m-fc-sangre">Tipo de sangre</label>
                 <input id="m-fc-sangre" type="text" placeholder="DEA 1.1 / conocido / —" />
               </div>
+              <div class="field">
+                <label for="m-fc-cuidados">Cuidados especiales</label>
+                <textarea id="m-fc-cuidados" rows="2" placeholder="Postoperatorio, dieta, restricciones de movilidad…"></textarea>
+              </div>
             </div>
 
             <div class="admin-card mascot-admin-card">
               <h3 class="admin-card-title">Multimedia</h3>
-              <p class="admin-card-hint">Foto de perfil y galería estilo red social.</p>
+              <p class="admin-card-hint">Foto de perfil, banner de cabecera y galería estilo red social.</p>
               <div class="field">
                 <label for="m-foto">Foto de perfil</label>
                 <input id="m-foto" type="file" accept="image/*" />
+              </div>
+              <div class="field">
+                <label for="m-cabecera">Imagen de cabecera (banner)</label>
+                <input id="m-cabecera" type="file" accept="image/*" />
+                <p class="field-hint-mini">Opcional. Se muestra a ancho completo con recorte suave; si no hay imagen, el patrón del tema cubre la parte superior.</p>
               </div>
               <div class="field">
                 <label for="m-galeria">Galería (varias imágenes)</label>
@@ -513,6 +556,8 @@
         var activePanel = "dashboard";
         var currentTexture = "elite";
         var currentMascotProTheme = "classic_paws";
+        var currentMascotSurfaceTheme = "cloud_cream";
+        var lastMascotCabecera = "";
         var __mascotRescueUrl = "";
         var uid = "";
         var unsub = null;
@@ -807,6 +852,7 @@
               if (mac && mac.value) {
                 base += "&ec_ma=" + encodeURIComponent(mac.value);
               }
+              base += "&ec_ms=" + encodeURIComponent(currentMascotSurfaceTheme || "cloud_cream");
             } catch (ePv) {}
             base += "&ec_admin_preview=1";
           } else {
@@ -967,6 +1013,38 @@
           if (currentApp === "mascotbook") refreshPreview();
         }
 
+        function syncMbSurfaceUi() {
+          document.querySelectorAll("[data-mb-surface]").forEach(function (el) {
+            var on = el.getAttribute("data-mb-surface") === currentMascotSurfaceTheme;
+            el.classList.toggle("active", on);
+          });
+        }
+
+        function setMascotSurfaceTheme(s) {
+          var ids = window.MASCOT_SURFACE_THEME_IDS || [];
+          if (ids.indexOf(s) < 0) s = "cloud_cream";
+          currentMascotSurfaceTheme = s;
+          syncMbSurfaceUi();
+          if (currentApp === "mascotbook") refreshPreview();
+        }
+
+        function todayYmd() {
+          var t = new Date();
+          var m = String(t.getMonth() + 1);
+          if (m.length < 2) m = "0" + m;
+          var d = String(t.getDate());
+          if (d.length < 2) d = "0" + d;
+          return t.getFullYear() + "-" + m + "-" + d;
+        }
+
+        function refreshVacunaRowOverdue(tr) {
+          if (!tr) return;
+          var pr = tr.querySelector(".m-vac-prox");
+          var v = pr ? String(pr.value || "").trim() : "";
+          var overdue = !!(v && /^\d{4}-\d{2}-\d{2}$/.test(v) && v < todayYmd());
+          tr.classList.toggle("m-vac-row-overdue", overdue);
+        }
+
         function renderVacunaRows(rows) {
           var tb = document.getElementById("m-vacunas-body");
           if (!tb) return;
@@ -999,6 +1077,14 @@
               var body = document.getElementById("m-vacunas-body");
               if (body && body.rows.length > 1) body.removeChild(tr);
             });
+            function onVacDate() {
+              refreshVacunaRowOverdue(tr);
+              if (currentApp === "mascotbook") refreshPreview();
+            }
+            in1.addEventListener("input", onVacDate);
+            in2.addEventListener("change", onVacDate);
+            in3.addEventListener("change", onVacDate);
+            in3.addEventListener("input", onVacDate);
             td1.appendChild(in1);
             td2.appendChild(in2);
             td3.appendChild(in3);
@@ -1008,6 +1094,7 @@
             tr.appendChild(td3);
             tr.appendChild(td4);
             tb.appendChild(tr);
+            refreshVacunaRowOverdue(tr);
           });
         }
 
@@ -1029,6 +1116,9 @@
         function fillMascot(d) {
           var n = window.normalizeMascotCard ? window.normalizeMascotCard(d) : d;
           lastMascotFoto = n.fotoPerfilUrl || "";
+          lastMascotCabecera = n.fotoCabeceraUrl || "";
+          currentMascotSurfaceTheme = n.mascotSurfaceTheme || "cloud_cream";
+          syncMbSurfaceUi();
           document.getElementById("m-nombre").value = n.nombre || "";
           document.getElementById("m-raza").value = n.raza || "";
           document.getElementById("m-sexo").value = n.sexo || "";
@@ -1055,6 +1145,8 @@
           if (fa) fa.value = fc.alergias || "";
           if (fm) fm.value = fc.medicacionDiaria || "";
           if (fs) fs.value = fc.tipoSangre || "";
+          var fcui = document.getElementById("m-fc-cuidados");
+          if (fcui) fcui.value = fc.cuidadosEspeciales || "";
           var acEl = document.getElementById("m-accent");
           if (acEl) acEl.value = n.accentColor || "#ec4899";
           var dLost = document.getElementById("dash-mascota-perdida");
@@ -1072,10 +1164,12 @@
             historia: document.getElementById("m-historia").value,
             personalidad: document.getElementById("m-personalidad").value,
             mascotProTheme: currentMascotProTheme,
+            mascotSurfaceTheme: currentMascotSurfaceTheme,
             accentColor: document.getElementById("m-accent")
               ? document.getElementById("m-accent").value
               : "#ec4899",
             fotoPerfilUrl: lastMascotFoto,
+            fotoCabeceraUrl: lastMascotCabecera,
             galeria: lastMascotGaleria.slice(),
             muro: document.getElementById("m-muro").value,
             vacunas: collectVacunasFromForm(),
@@ -1090,6 +1184,9 @@
               alergias: document.getElementById("m-fc-alergias") ? document.getElementById("m-fc-alergias").value : "",
               medicacionDiaria: document.getElementById("m-fc-meds") ? document.getElementById("m-fc-meds").value : "",
               tipoSangre: document.getElementById("m-fc-sangre") ? document.getElementById("m-fc-sangre").value : "",
+              cuidadosEspeciales: document.getElementById("m-fc-cuidados")
+                ? document.getElementById("m-fc-cuidados").value
+                : "",
             },
           };
           var dashLost = document.getElementById("dash-mascota-perdida");
@@ -1107,8 +1204,10 @@
             themeId: n.themeId,
             textureId: n.textureId,
             mascotProTheme: n.mascotProTheme,
+            mascotSurfaceTheme: n.mascotSurfaceTheme,
             accentColor: n.accentColor,
             fotoPerfilUrl: n.fotoPerfilUrl,
+            fotoCabeceraUrl: n.fotoCabeceraUrl,
             galeria: n.galeria,
             muro: n.muro,
             vacunas: n.vacunas,
@@ -1255,6 +1354,7 @@
           var payload = readMascotPayload();
           var jobs = [];
           var foto = document.getElementById("m-foto").files[0];
+          var cab = document.getElementById("m-cabecera") ? document.getElementById("m-cabecera").files[0] : null;
           var gal = document.getElementById("m-galeria").files;
           var newGalUrls = [];
           if (foto) {
@@ -1262,6 +1362,14 @@
               putFile("usuarios/" + uid + "/mascot/fotoPerfil", foto).then(function (url) {
                 payload.fotoPerfilUrl = url;
                 lastMascotFoto = url;
+              })
+            );
+          }
+          if (cab) {
+            jobs.push(
+              putFile("usuarios/" + uid + "/mascot/cabecera_" + Date.now(), cab).then(function (url) {
+                payload.fotoCabeceraUrl = url;
+                lastMascotCabecera = url;
               })
             );
           }
@@ -1297,6 +1405,8 @@
             })
             .then(function () {
               document.getElementById("m-foto").value = "";
+              var cIn = document.getElementById("m-cabecera");
+              if (cIn) cIn.value = "";
               document.getElementById("m-galeria").value = "";
               lastMascotGaleria = payload.galeria.slice();
               showToast("MascotBook guardado", true);
@@ -1325,6 +1435,13 @@
           btn.addEventListener("click", function () {
             var pro = btn.getAttribute("data-mb-pro");
             if (pro) setMascotProTheme(pro);
+          });
+        });
+
+        document.querySelectorAll("[data-mb-surface]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var s = btn.getAttribute("data-mb-surface");
+            if (s) setMascotSurfaceTheme(s);
           });
         });
 

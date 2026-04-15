@@ -297,3 +297,68 @@ exports.card = functions
       res.redirect(301, origin + "/card.html?id=" + encodeURIComponent(uid));
     }
   });
+
+/**
+ * Email al dueño cuando alguien comparte GPS (modo perdido).
+ * Configuración (Firebase legacy config): smtp.host, smtp.port, smtp.secure, smtp.user, smtp.pass, smtp.from
+ * Ej.: firebase functions:config:set smtp.host="smtp.tuproveedor.com" smtp.port="587" smtp.user="..." smtp.pass="..." smtp.from="MascotBook <no-reply@tudominio.com>"
+ */
+let nodemailer;
+try {
+  nodemailer = require("nodemailer");
+} catch (e) {
+  nodemailer = null;
+}
+
+exports.onMascotLostScanNotify = functions
+  .region("us-east1")
+  .firestore.document("usuarios/{uid}/mascot_lost_scans/{scanId}")
+  .onCreate(async (snap, context) => {
+    const uid = context.params.uid;
+    const adminApp = getAdmin();
+    let toEmail = "";
+    try {
+      const u = await adminApp.auth().getUser(uid);
+      toEmail = String(u.email || "").trim();
+    } catch (e) {
+      console.warn("[lost-scan] getUser", uid, e.message);
+      return null;
+    }
+    if (!toEmail) {
+      console.log("[lost-scan] sin email en Auth para", uid);
+      return null;
+    }
+    const cfg = functions.config().smtp || {};
+    if (!cfg.host) {
+      console.log("[lost-scan] smtp.host no configurado; no se envía email.");
+      return null;
+    }
+    if (!nodemailer) {
+      console.warn("[lost-scan] nodemailer no disponible");
+      return null;
+    }
+    const data = snap.data() || {};
+    const transporter = nodemailer.createTransport({
+      host: String(cfg.host),
+      port: Number(cfg.port || 587),
+      secure: String(cfg.secure || "").toLowerCase() === "true",
+      auth: cfg.user ? { user: String(cfg.user), pass: String(cfg.pass || "") } : undefined,
+    });
+    const body =
+      "Se registró una ubicación desde el perfil público en modo mascota perdida.\n\n" +
+      `Latitud: ${data.lat}\nLongitud: ${data.lng}\n` +
+      (data.accuracy != null ? `Precisión (m): ${data.accuracy}\n` : "") +
+      "\nPodés ver más detalle en tu panel MascotBook.\n";
+    try {
+      await transporter.sendMail({
+        from: String(cfg.from || "MascotBook <noreply@localhost>"),
+        to: toEmail,
+        subject: "MascotBook · Nueva ubicación (mascota perdida)",
+        text: body,
+      });
+      console.log("[lost-scan] email enviado a", toEmail);
+    } catch (err) {
+      console.error("[lost-scan] sendMail", err.message || err);
+    }
+    return null;
+  });

@@ -31,7 +31,8 @@
 }
 
 .mb-social[data-mb-pro="classic_paws"] .mb-ig-cover {
-  background: linear-gradient(120deg, #c9a227, #d97706);
+  /* Sin naranja: acento suave compatible con cabecera / tema */
+  background: linear-gradient(120deg, color-mix(in srgb, var(--mb-accent) 55%, #fef3c7), #e8d9b0);
 }
 
 .mb-social[data-mb-pro="candy_pop"] {

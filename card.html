@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-ec-card>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -78,6 +78,7 @@
     <link rel="stylesheet" href="mascot-themes.css" id="ec-css-mascot-themes" />
     <link rel="stylesheet" href="mascot-social.css" id="ec-css-mascot-social" />
     <link rel="stylesheet" href="mascot-book-pro.css" id="ec-css-mascot-pro" />
+    <link rel="stylesheet" href="styles.css?v=2.1" id="ec-css-mascot-styles" />
     <script>
       (function () {
         var v = window.__EC_PAGE_LOAD_TS || Date.now();
@@ -86,9 +87,12 @@
           ["ec-css-mascot-themes", "mascot-themes.css"],
           ["ec-css-mascot-social", "mascot-social.css"],
           ["ec-css-mascot-pro", "mascot-book-pro.css"],
+          ["ec-css-mascot-styles", "styles.css"],
         ].forEach(function (pair) {
           var el = document.getElementById(pair[0]);
-          if (el) el.href = pair[1] + "?v=" + v;
+          if (!el) return;
+          if (pair[0] === "ec-css-mascot-styles") el.href = pair[1] + "?v=2.1";
+          else el.href = pair[1] + "?v=" + v;
         });
       })();
     </script>
@@ -303,26 +307,16 @@
     <!-- MascotBook — perfil tipo red social -->
     <div id="layout-mascot" class="hidden">
       <div id="mascot-lost-banner" class="mb-lost-banner hidden" role="alert" aria-live="assertive">
-        ESTA MASCOTA SE ENCUENTRA EXTRAVIADA
+        ¡ESTA MASCOTA SE ENCUENTRA EXTRAVIADA!
       </div>
       <div id="mascot-lost-actions" class="mb-lost-actions hidden">
-        <a
-          id="mascot-lost-wa"
-          class="mb-lost-wa hidden"
-          href="#"
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
-          Contactar al dueño urgente
-        </a>
         <button type="button" id="mascot-lost-share-loc" class="mb-lost-loc">
           <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
           Compartir mi ubicación con el dueño
         </button>
         <p id="mascot-lost-msg" class="mb-lost-msg hidden" role="status"></p>
       </div>
-      <div id="mascot-shell" class="mb-social texture-elite" data-mb-pro="classic_paws">
+      <div id="mascot-shell" class="mb-social texture-elite mb-surface--cloud_cream" data-mb-pro="classic_paws">
         <div class="mb-ig-topbar">
           <span class="mb-topbar-mark" aria-hidden="true"><i class="fa-solid fa-paw"></i></span>
           <div class="mb-topbar-titles">
@@ -330,10 +324,27 @@
             <span class="mb-topbar-agency">Agencia WebElite</span>
           </div>
         </div>
-        <div class="mb-ig-cover" aria-hidden="true"></div>
+        <div class="mb-hero" id="mascot-hero">
+          <img id="mascot-hero-img" class="mb-hero-img hidden" src="" alt="" width="1200" height="600" />
+          <div class="mb-hero-shade" aria-hidden="true"></div>
+        </div>
         <div class="mb-ig-profile">
-          <div class="mb-ig-avatar-wrap">
-            <img id="mascot-avatar" class="mb-ig-avatar hidden" src="" alt="" width="120" height="120" />
+          <div class="mb-avatar-col">
+            <div class="mb-ig-avatar-wrap">
+              <img id="mascot-avatar" class="mb-ig-avatar hidden" src="" alt="" width="120" height="120" />
+            </div>
+            <div class="mb-panic-wrap">
+              <a
+                id="mascot-panic-btn"
+                class="mb-panic-btn hidden"
+                href="#"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+                ¡ENCONTRÉ A ESTA MASCOTA! Contactar dueño urgente
+              </a>
+            </div>
           </div>
           <div class="mb-ig-stats">
             <div>

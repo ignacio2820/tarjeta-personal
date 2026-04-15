@@ -79,18 +79,24 @@
     textureId: "elite",
     accentColor: "#ec4899",
     fotoPerfilUrl: "",
+    fotoCabeceraUrl: "",
     galeria: [],
     muro: "",
     mascotProTheme: "classic_paws",
+    /** Fondos con patrones (huellas, naturaleza, nubes). */
+    mascotSurfaceTheme: "cloud_cream",
     vacunas: [],
     veterinario: { nombre: "", telefono: "", direccion: "" },
-    fichaCritica: { alergias: "", medicacionDiaria: "", tipoSangre: "" },
+    fichaCritica: { alergias: "", medicacionDiaria: "", tipoSangre: "", cuidadosEspeciales: "" },
     mascotaPerdida: false,
     whatsappUrgencia: "",
   };
 
   /** Temas visuales MascotBook Pro (panel + tarjeta pública). */
   window.MASCOT_PRO_THEME_IDS = ["classic_paws", "candy_pop", "night_neon", "organic_leaf"];
+
+  /** Superficies decorativas MascotBook (pastel + patrón). */
+  window.MASCOT_SURFACE_THEME_IDS = ["paw_blue", "paw_pink", "nature_mint", "cloud_cream"];
 
   var THEME_IDS = ["classic", "candy", "night", "organic", "glass"];
   var TEXTURE_IDS = ["park", "candy", "elite"];
@@ -326,6 +332,11 @@
     var waU = String(d.whatsappUrgencia || "").replace(/\D/g, "");
     if (waU.length > 18) waU = waU.slice(0, 18);
     var perdida = !!d.mascotaPerdida;
+    var surf = String(d.mascotSurfaceTheme || "")
+      .trim()
+      .toLowerCase()
+      .replace(/-/g, "_");
+    if (window.MASCOT_SURFACE_THEME_IDS.indexOf(surf) < 0) surf = "cloud_cream";
     return {
       nombre: String(d.nombre || "").trim(),
       raza: String(d.raza || "").trim(),
@@ -338,6 +349,8 @@
       mascotProTheme: pro,
       accentColor: accent,
       fotoPerfilUrl: String(d.fotoPerfilUrl || "").trim(),
+      fotoCabeceraUrl: String(d.fotoCabeceraUrl || "").trim(),
+      mascotSurfaceTheme: surf,
       galeria: gal,
       muro: String(d.muro || "").trim(),
       vacunas: vacunas,
@@ -350,6 +363,7 @@
         alergias: String(fic.alergias || "").trim(),
         medicacionDiaria: String(fic.medicacionDiaria || "").trim(),
         tipoSangre: String(fic.tipoSangre || "").trim(),
+        cuidadosEspeciales: String(fic.cuidadosEspeciales || "").trim(),
       },
       mascotaPerdida: perdida,
       whatsappUrgencia: waU,
