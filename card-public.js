@@ -97,6 +97,9 @@
       } catch (e1) {}
       if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(ac)) m.accentColor = ac;
     }
+    var mp = qs("ec_mpt").toLowerCase();
+    var ids = window.MASCOT_PRO_THEME_IDS;
+    if (ids && ids.indexOf(mp) >= 0) m.mascotProTheme = mp;
   }
 
   function mascotTextureClass(m) {
@@ -153,6 +156,17 @@
     var gal = d.mascotaGaleriaUrls;
     if (!Array.isArray(gal)) gal = [];
     var ac = String(d.mascotaColorAcento || "").trim();
+    var vac = Array.isArray(d.mascotaVacunas) ? d.mascotaVacunas : [];
+    vac = vac
+      .map(function (row) {
+        if (!row || typeof row !== "object") return null;
+        return {
+          vacuna: String(row.vacuna || row.nombre || "").trim(),
+          fecha: String(row.fecha || "").trim(),
+          proximaDosis: String(row.proximaDosis || row.proxima || "").trim(),
+        };
+      })
+      .filter(Boolean);
     return {
       nombre: String(d.mascotaNombre || "").trim(),
       raza: "",
@@ -172,6 +186,9 @@
         return String(u || "").trim();
       }).filter(Boolean),
       muro: String(d.mascotaUltimaAventura || d.mascotaBio || "").trim(),
+      vacunas: vac,
+      mascotaPerdida: !!d.mascotaPerdida,
+      whatsappUrgencia: String(d.mascotaWhatsapp || "").trim(),
     };
   }
 
@@ -569,10 +586,20 @@
     var nm = window.normalizeMascotCard ? window.normalizeMascotCard(m) : m;
     var texClass = mascotTextureClass(nm);
     shell.className = "mb-social " + texClass;
+    var pro = String(nm.mascotProTheme || "classic_paws").trim();
+    if (!window.MASCOT_PRO_THEME_IDS || window.MASCOT_PRO_THEME_IDS.indexOf(pro) < 0) {
+      pro = "classic_paws";
+    }
+    shell.setAttribute("data-mb-pro", pro);
+    shell.classList.toggle("ec-mascot-preview", qs("ec_admin_preview") === "1");
     var accent = String(nm.accentColor || "#ec4899").trim();
     if (!/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(accent)) accent = "#ec4899";
     shell.style.setProperty("--mb-accent", accent);
 
+    var fc = nm.fichaCritica || {};
+    var vet = nm.veterinario || {};
+    var vacs = Array.isArray(nm.vacunas) ? nm.vacunas : [];
+    var lostOn = !!nm.mascotaPerdida;
     var has =
       nm.nombre ||
       nm.fotoPerfilUrl ||
@@ -580,10 +607,18 @@
       nm.muro ||
       nm.historia ||
       nm.salud ||
-      nm.personalidad;
-    if (!has) {
+      nm.personalidad ||
+      vacs.length ||
+      vet.nombre ||
+      vet.telefono ||
+      vet.direccion ||
+      fc.alergias ||
+      fc.medicacionDiaria ||
+      fc.tipoSangre;
+    if (!has && !lostOn) {
       root.classList.add("hidden");
       if (empty) empty.classList.remove("hidden");
+      hideMascotLostUi();
       return;
     }
 
@@ -637,10 +672,202 @@
       gal.appendChild(im);
     });
 
-    var h = document.getElementById("mascot-health");
-    if (h) h.textContent = nm.salud || "";
+    function setBlock(idWrap, idInner, show, html) {
+      var wrap = document.getElementById(idWrap);
+      var inner = document.getElementById(idInner);
+      if (!wrap || !inner) return;
+      inner.innerHTML = html || "";
+      wrap.classList.toggle("hidden", !show);
+    }
+
+    var vacHtml = vacs
+      .map(function (r) {
+        var bits = [r.vacuna, r.fecha, r.proximaDosis].filter(Boolean);
+        if (!bits.length) return "";
+        return (
+          "<div class=\"mb-vac-line\"><strong>" +
+          escapeHtml(r.vacuna || "Vacuna") +
+          "</strong><br>" +
+          (r.fecha ? "<span class=\"mb-health-label\">Fecha</span> " + escapeHtml(r.fecha) + " · " : "") +
+          (r.proximaDosis
+            ? "<span class=\"mb-health-label\">Próxima</span> " + escapeHtml(r.proximaDosis)
+            : "") +
+          "</div>"
+        );
+      })
+      .filter(Boolean)
+      .join("");
+    setBlock("mascot-block-vacunas", "mascot-vacunas", !!vacHtml, vacHtml);
+
+    var vetHtml = "";
+    if (vet.nombre || vet.telefono || vet.direccion) {
+      vetHtml += vet.nombre ? "<div class=\"mb-health-row\"><span class=\"mb-health-label\">Nombre</span>" + escapeHtml(vet.nombre) + "</div>" : "";
+      vetHtml += vet.direccion
+        ? "<div class=\"mb-health-row\"><span class=\"mb-health-label\">Dirección</span>" + escapeHtml(vet.direccion) + "</div>"
+        : "";
+      if (vet.telefono) {
+        var tel = String(vet.telefono).replace(/\D/g, "");
+        if (tel) {
+          vetHtml +=
+            "<a class=\"mb-vet-call\" href=\"tel:" +
+            tel +
+            "\"><i class=\"fa-solid fa-phone\" aria-hidden=\"true\"></i> Llamar al veterinario</a>";
+        }
+      }
+    }
+    setBlock("mascot-block-vet", "mascot-vet", !!vetHtml, vetHtml);
+
+    var critHtml = "";
+    if (fc.alergias) {
+      critHtml +=
+        "<div class=\"mb-health-row\"><span class=\"mb-health-label\">Alergias</span>" + escapeHtml(fc.alergias) + "</div>";
+    }
+    if (fc.medicacionDiaria) {
+      critHtml +=
+        "<div class=\"mb-health-row\"><span class=\"mb-health-label\">Medicación diaria</span>" +
+        escapeHtml(fc.medicacionDiaria) +
+        "</div>";
+    }
+    if (fc.tipoSangre) {
+      critHtml +=
+        "<div class=\"mb-health-row\"><span class=\"mb-health-label\">Tipo de sangre</span>" +
+        escapeHtml(fc.tipoSangre) +
+        "</div>";
+    }
+    setBlock("mascot-block-critica", "mascot-critica", !!critHtml, critHtml);
+
+    var leg = String(nm.salud || "").trim();
+    setBlock("mascot-block-legacy", "mascot-health-legacy", !!leg, leg ? escapeHtml(leg).replace(/\n/g, "<br>") : "");
+
     var hs = document.getElementById("mascot-health-section");
-    if (hs) hs.classList.toggle("hidden", !nm.salud);
+    if (hs) {
+      var anyHealth =
+        !!vacHtml ||
+        !!vetHtml ||
+        !!critHtml ||
+        !!leg;
+      hs.classList.toggle("hidden", !anyHealth);
+    }
+
+    setupMascotLostMode(nm);
+  }
+
+  function hideMascotLostUi() {
+    var b = document.getElementById("mascot-lost-banner");
+    var wrap = document.getElementById("mascot-lost-actions");
+    var wa = document.getElementById("mascot-lost-wa");
+    var msg = document.getElementById("mascot-lost-msg");
+    if (b) b.classList.add("hidden");
+    if (wrap) wrap.classList.add("hidden");
+    if (wa) {
+      wa.classList.add("hidden");
+      wa.removeAttribute("href");
+      wa.removeAttribute("aria-disabled");
+    }
+    if (msg) {
+      msg.classList.add("hidden");
+      msg.textContent = "";
+    }
+    var locBtn = document.getElementById("mascot-lost-share-loc");
+    if (locBtn) {
+      locBtn.disabled = false;
+      locBtn.textContent = "";
+      locBtn.innerHTML =
+        '<i class="fa-solid fa-location-dot" aria-hidden="true"></i> Compartir mi ubicación con el dueño';
+    }
+  }
+
+  function setupMascotLostMode(nm) {
+    var ownerUid = String(window.__EC_CARD_UID || "").trim();
+    var banner = document.getElementById("mascot-lost-banner");
+    var wrap = document.getElementById("mascot-lost-actions");
+    var wa = document.getElementById("mascot-lost-wa");
+    var locBtn = document.getElementById("mascot-lost-share-loc");
+    var msg = document.getElementById("mascot-lost-msg");
+    if (!banner || !wrap || !wa || !locBtn) return;
+    if (!nm || !nm.mascotaPerdida) {
+      hideMascotLostUi();
+      return;
+    }
+    banner.classList.remove("hidden");
+    wrap.classList.remove("hidden");
+    var digits = String((nm && nm.whatsappUrgencia) || "").replace(/\D/g, "");
+    if (digits.length >= 8) {
+      wa.classList.remove("hidden");
+      wa.setAttribute("href", "https://wa.me/" + digits);
+      wa.removeAttribute("aria-disabled");
+    } else {
+      wa.classList.add("hidden");
+      wa.removeAttribute("href");
+    }
+    if (msg) msg.classList.add("hidden");
+    locBtn.disabled = false;
+    locBtn.onclick = function () {
+      if (!ownerUid || !window.EC_SILO || !window.EC_SILO.mascotLostScansRef) return;
+      if (!navigator.geolocation) {
+        if (msg) {
+          msg.textContent = "Tu navegador no permite geolocalización.";
+          msg.classList.remove("hidden");
+        }
+        return;
+      }
+      locBtn.disabled = true;
+      if (msg) msg.classList.add("hidden");
+      navigator.geolocation.getCurrentPosition(
+        function (pos) {
+          try {
+            var db = firebase.firestore();
+            var ref = window.EC_SILO.mascotLostScansRef(db, ownerUid);
+            var row = {
+              lat: pos.coords.latitude,
+              lng: pos.coords.longitude,
+              at: firebase.firestore.FieldValue.serverTimestamp(),
+            };
+            if (typeof pos.coords.accuracy === "number" && !isNaN(pos.coords.accuracy)) {
+              row.accuracy = pos.coords.accuracy;
+            }
+            ref
+              .add(row)
+              .then(function () {
+                locBtn.disabled = false;
+                if (msg) {
+                  msg.textContent = "Ubicación enviada. El dueño puede verla en su panel.";
+                  msg.classList.remove("hidden");
+                }
+              })
+              .catch(function () {
+                locBtn.disabled = false;
+                if (msg) {
+                  msg.textContent = "No pudimos guardar la ubicación. Intentá de nuevo.";
+                  msg.classList.remove("hidden");
+                }
+              });
+          } catch (e) {
+            locBtn.disabled = false;
+            if (msg) {
+              msg.textContent = "Error al enviar. Intentá de nuevo.";
+              msg.classList.remove("hidden");
+            }
+          }
+        },
+        function () {
+          locBtn.disabled = false;
+          if (msg) {
+            msg.textContent = "No se obtuvo permiso o ubicación. Podés intentar de nuevo.";
+            msg.classList.remove("hidden");
+          }
+        },
+        { enableHighAccuracy: true, timeout: 14000, maximumAge: 0 }
+      );
+    };
+  }
+
+  function escapeHtml(s) {
+    return String(s || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
   }
 
   function showLoading(on) {
@@ -660,6 +887,7 @@
       window.location.replace("index.html");
       return;
     }
+    window.__EC_CARD_UID = uid;
 
     var cfg = window.FIREBASE_WEB_CONFIG;
     if (!cfg || !cfg.apiKey || String(cfg.apiKey).indexOf("REEMPLAZAR") !== -1) {
@@ -684,6 +912,7 @@
       showLoading(false);
       document.getElementById("layout-elite").classList.add("hidden");
       document.getElementById("layout-mascot").classList.add("hidden");
+      hideMascotLostUi();
       if (mascot) {
         if (siloSnap.exists) {
           var data = siloSnap.data() || {};
@@ -729,6 +958,7 @@
           showLoading(false);
           document.getElementById("layout-elite").classList.add("hidden");
           document.getElementById("layout-mascot").classList.add("hidden");
+          hideMascotLostUi();
           var rawM = acctSnap.data() || {};
           renderMascot(window.normalizeMascotCard(mapLegacyMascot(rawM)));
           return;

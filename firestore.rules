@@ -25,9 +25,30 @@ service cloud.firestore {
     function mascotCardKeysOk() {
       return request.resource.data.keys().hasOnly([
         'nombre', 'raza', 'sexo', 'salud', 'historia', 'personalidad',
-        'themeId', 'textureId', 'accentColor', 'fotoPerfilUrl', 'galeria', 'muro',
+        'themeId', 'textureId', 'mascotProTheme', 'accentColor', 'fotoPerfilUrl', 'galeria', 'muro',
+        'vacunas', 'veterinario', 'fichaCritica', 'mascotaPerdida', 'whatsappUrgencia',
         'updatedAt'
       ]);
+    }
+
+    function mascotPerdidaActiva(userId) {
+      let p = /databases/$(database)/documents/usuarios/$(userId)/mascot_card/profile;
+      return exists(p) && get(p).data.mascotaPerdida == true;
+    }
+
+    /** Ping de ubicación desde visitante (sin auth) solo si modo perdido activo. */
+    function lostScanCreateOk(userId) {
+      return mascotPerdidaActiva(userId)
+        && request.resource.data.keys().hasAll(['lat', 'lng', 'at'])
+        && request.resource.data.keys().hasOnly(['lat', 'lng', 'at', 'accuracy'])
+        && request.resource.data.lat is number
+        && request.resource.data.lng is number
+        && request.resource.data.lat >= -90.0
+        && request.resource.data.lat <= 90.0
+        && request.resource.data.lng >= -180.0
+        && request.resource.data.lng <= 180.0
+        && (!('accuracy' in request.resource.data) || request.resource.data.accuracy is number)
+        && request.resource.data.at is timestamp;
     }
 
     /**
@@ -50,6 +71,12 @@ service cloud.firestore {
       allow read: if true;
       allow create, update: if isOwner(userId) && mascotCardKeysOk();
       allow delete: if isOwner(userId);
+    }
+
+    match /usuarios/{userId}/mascot_lost_scans/{scanId} {
+      allow read: if isOwner(userId);
+      allow create: if lostScanCreateOk(userId);
+      allow update, delete: if isOwner(userId);
     }
 
     match /vetPasses/{token} {

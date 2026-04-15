@@ -74,9 +74,24 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <link rel="stylesheet" href="card-elite.css?v=6" />
-    <link rel="stylesheet" href="mascot-themes.css?v=1" />
-    <link rel="stylesheet" href="mascot-social.css?v=1" />
+    <link rel="stylesheet" href="card-elite.css" id="ec-css-card-elite" />
+    <link rel="stylesheet" href="mascot-themes.css" id="ec-css-mascot-themes" />
+    <link rel="stylesheet" href="mascot-social.css" id="ec-css-mascot-social" />
+    <link rel="stylesheet" href="mascot-book-pro.css" id="ec-css-mascot-pro" />
+    <script>
+      (function () {
+        var v = window.__EC_PAGE_LOAD_TS || Date.now();
+        [
+          ["ec-css-card-elite", "card-elite.css"],
+          ["ec-css-mascot-themes", "mascot-themes.css"],
+          ["ec-css-mascot-social", "mascot-social.css"],
+          ["ec-css-mascot-pro", "mascot-book-pro.css"],
+        ].forEach(function (pair) {
+          var el = document.getElementById(pair[0]);
+          if (el) el.href = pair[1] + "?v=" + v;
+        });
+      })();
+    </script>
     <style>
       .hidden {
         display: none !important;
@@ -111,6 +126,84 @@
         to {
           transform: rotate(360deg);
         }
+      }
+      .mb-lost-banner {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        width: 100%;
+        margin: 0;
+        padding: 0.65rem 0.85rem;
+        text-align: center;
+        font-family: "Poppins", system-ui, sans-serif;
+        font-size: clamp(0.72rem, 2.8vw, 0.82rem);
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #fff;
+        background: #b91c1c;
+        box-shadow: 0 4px 20px rgba(185, 28, 28, 0.45);
+        animation: mb-lost-pulse 1.1s ease-in-out infinite;
+      }
+      @keyframes mb-lost-pulse {
+        0%,
+        100% {
+          opacity: 1;
+          filter: brightness(1);
+        }
+        50% {
+          opacity: 0.88;
+          filter: brightness(1.12);
+        }
+      }
+      .mb-lost-actions {
+        padding: 0.75rem clamp(0.75rem, 3vw, 1rem) 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+        max-width: 28rem;
+        margin: 0 auto;
+      }
+      .mb-lost-wa {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        padding: 0.85rem 1rem;
+        border-radius: 999px;
+        font-family: "Poppins", system-ui, sans-serif;
+        font-weight: 700;
+        font-size: 0.92rem;
+        text-decoration: none;
+        color: #fff;
+        background: linear-gradient(135deg, #16a34a, #15803d);
+        box-shadow: 0 6px 22px rgba(22, 163, 74, 0.35);
+      }
+      .mb-lost-wa[aria-disabled="true"] {
+        pointer-events: none;
+        opacity: 0.45;
+        box-shadow: none;
+      }
+      .mb-lost-loc {
+        font: inherit;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 0.65rem 0.85rem;
+        border-radius: 0.85rem;
+        border: 1px solid rgba(15, 23, 42, 0.12);
+        background: rgba(255, 255, 255, 0.92);
+        color: #0f172a;
+        cursor: pointer;
+      }
+      .mb-lost-loc[disabled] {
+        opacity: 0.55;
+        cursor: default;
+      }
+      .mb-lost-msg {
+        margin: 0;
+        font-size: 0.78rem;
+        color: rgba(15, 23, 42, 0.65);
+        text-align: center;
       }
       #card-not-found {
         min-height: 100dvh;
@@ -209,8 +302,34 @@
 
     <!-- MascotBook — perfil tipo red social -->
     <div id="layout-mascot" class="hidden">
-      <div id="mascot-shell" class="mb-social texture-elite">
-        <div class="mb-ig-topbar">MascotBook</div>
+      <div id="mascot-lost-banner" class="mb-lost-banner hidden" role="alert" aria-live="assertive">
+        ESTA MASCOTA SE ENCUENTRA EXTRAVIADA
+      </div>
+      <div id="mascot-lost-actions" class="mb-lost-actions hidden">
+        <a
+          id="mascot-lost-wa"
+          class="mb-lost-wa hidden"
+          href="#"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+          Contactar al dueño urgente
+        </a>
+        <button type="button" id="mascot-lost-share-loc" class="mb-lost-loc">
+          <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+          Compartir mi ubicación con el dueño
+        </button>
+        <p id="mascot-lost-msg" class="mb-lost-msg hidden" role="status"></p>
+      </div>
+      <div id="mascot-shell" class="mb-social texture-elite" data-mb-pro="classic_paws">
+        <div class="mb-ig-topbar">
+          <span class="mb-topbar-mark" aria-hidden="true"><i class="fa-solid fa-paw"></i></span>
+          <div class="mb-topbar-titles">
+            <span class="mb-topbar-title">MascotBook</span>
+            <span class="mb-topbar-agency">Agencia WebElite</span>
+          </div>
+        </div>
         <div class="mb-ig-cover" aria-hidden="true"></div>
         <div class="mb-ig-profile">
           <div class="mb-ig-avatar-wrap">
@@ -242,9 +361,23 @@
             <span>◎</span>
           </div>
           <div id="mascot-gallery" class="mb-ig-grid"></div>
-          <div id="mascot-health-section" class="mb-ig-health hidden">
-            <h2>Ficha y salud</h2>
-            <div id="mascot-health"></div>
+          <div id="mascot-health-section" class="hidden">
+            <div id="mascot-block-vacunas" class="mb-glass-block hidden">
+              <h2>Plan de vacunación</h2>
+              <div id="mascot-vacunas"></div>
+            </div>
+            <div id="mascot-block-vet" class="mb-glass-block hidden">
+              <h2>Veterinario de cabecera</h2>
+              <div id="mascot-vet"></div>
+            </div>
+            <div id="mascot-block-critica" class="mb-glass-block mb-glass-alert hidden">
+              <h2>Ficha médica crítica</h2>
+              <div id="mascot-critica"></div>
+            </div>
+            <div id="mascot-block-legacy" class="mb-glass-block hidden">
+              <h2>Notas de salud</h2>
+              <div id="mascot-health-legacy"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -263,6 +396,10 @@
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-    <script src="card-public.js?v=3"></script>
+    <script>
+      document.write(
+        '<script src="card-public.js?v=' + (window.__EC_PAGE_LOAD_TS || Date.now()) + '"><\/script>'
+      );
+    </script>
   </body>
 </html>

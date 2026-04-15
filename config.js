@@ -81,7 +81,16 @@
     fotoPerfilUrl: "",
     galeria: [],
     muro: "",
+    mascotProTheme: "classic_paws",
+    vacunas: [],
+    veterinario: { nombre: "", telefono: "", direccion: "" },
+    fichaCritica: { alergias: "", medicacionDiaria: "", tipoSangre: "" },
+    mascotaPerdida: false,
+    whatsappUrgencia: "",
   };
+
+  /** Temas visuales MascotBook Pro (panel + tarjeta pública). */
+  window.MASCOT_PRO_THEME_IDS = ["classic_paws", "candy_pop", "night_neon", "organic_leaf"];
 
   var THEME_IDS = ["classic", "candy", "night", "organic", "glass"];
   var TEXTURE_IDS = ["park", "candy", "elite"];
@@ -91,6 +100,41 @@
     if (t === "candy") return "candy";
     if (t === "park") return "organic";
     return "classic";
+  }
+
+  function mascotProThemeFromLegacy(d) {
+    var p = String(d.mascotProTheme || "").trim().toLowerCase();
+    if (window.MASCOT_PRO_THEME_IDS.indexOf(p) >= 0) return p;
+    var tex = String((d && d.textureId) || "").toLowerCase();
+    if (tex === "candy") return "candy_pop";
+    if (tex === "park") return "organic_leaf";
+    var tid = String((d && d.themeId) || "").toLowerCase();
+    if (tid === "night") return "night_neon";
+    if (tid === "candy") return "candy_pop";
+    if (tid === "organic" || tid === "glass") return "organic_leaf";
+    return "classic_paws";
+  }
+
+  function textureFromMascotProTheme(pro) {
+    if (pro === "candy_pop") return "candy";
+    if (pro === "organic_leaf") return "park";
+    return "elite";
+  }
+
+  function themeIdFromMascotPro(pro) {
+    if (pro === "night_neon") return "night";
+    if (pro === "candy_pop") return "candy";
+    if (pro === "organic_leaf") return "organic";
+    return "classic";
+  }
+
+  function normalizeVacunaRow(o) {
+    var x = o && typeof o === "object" ? o : {};
+    return {
+      vacuna: String(x.vacuna || "").trim(),
+      fecha: String(x.fecha || "").trim(),
+      proximaDosis: String(x.proximaDosis || x.proxima || "").trim(),
+    };
   }
 
   window.mascotThemeIdToClass = function (id) {
@@ -260,22 +304,28 @@
 
   window.normalizeMascotCard = function (patch) {
     var d = Object.assign({}, window.DEFAULT_MASCOT_CARD, patch || {});
-    var tid = String(d.themeId || "classic").trim().toLowerCase();
-    if (THEME_IDS.indexOf(tid) < 0) tid = "classic";
-    var tex = String(d.textureId || "").trim().toLowerCase();
-    if (TEXTURE_IDS.indexOf(tex) < 0) {
-      if (tid === "candy") tex = "candy";
-      else if (tid === "organic" || tid === "glass") tex = "park";
-      else tex = "elite";
-    }
+    var pro = mascotProThemeFromLegacy(d);
+    var tex = textureFromMascotProTheme(pro);
+    var tid = themeIdFromMascotPro(pro);
     var accent = String(d.accentColor || "").trim();
     if (!/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(accent)) accent = "#ec4899";
-    tid = themeIdFromTexture(tex);
     var gal = d.galeria;
     if (!Array.isArray(gal)) gal = [];
     gal = gal.map(function (u) {
       return String(u || "").trim();
     }).filter(Boolean);
+    var vacunas = Array.isArray(d.vacunas) ? d.vacunas : [];
+    vacunas = vacunas
+      .map(normalizeVacunaRow)
+      .filter(function (r) {
+        return r.vacuna || r.fecha || r.proximaDosis;
+      })
+      .slice(0, 24);
+    var vet = d.veterinario && typeof d.veterinario === "object" ? d.veterinario : {};
+    var fic = d.fichaCritica && typeof d.fichaCritica === "object" ? d.fichaCritica : {};
+    var waU = String(d.whatsappUrgencia || "").replace(/\D/g, "");
+    if (waU.length > 18) waU = waU.slice(0, 18);
+    var perdida = !!d.mascotaPerdida;
     return {
       nombre: String(d.nombre || "").trim(),
       raza: String(d.raza || "").trim(),
@@ -285,10 +335,24 @@
       personalidad: String(d.personalidad || "").trim(),
       themeId: tid,
       textureId: tex,
+      mascotProTheme: pro,
       accentColor: accent,
       fotoPerfilUrl: String(d.fotoPerfilUrl || "").trim(),
       galeria: gal,
       muro: String(d.muro || "").trim(),
+      vacunas: vacunas,
+      veterinario: {
+        nombre: String(vet.nombre || "").trim(),
+        telefono: String(vet.telefono || "").trim(),
+        direccion: String(vet.direccion || "").trim(),
+      },
+      fichaCritica: {
+        alergias: String(fic.alergias || "").trim(),
+        medicacionDiaria: String(fic.medicacionDiaria || "").trim(),
+        tipoSangre: String(fic.tipoSangre || "").trim(),
+      },
+      mascotaPerdida: perdida,
+      whatsappUrgencia: waU,
     };
   };
 

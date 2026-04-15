@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>EliteCard · MascotBook</title>
+    <title>Agencia WebElite · EliteCard y MascotBook</title>
     <meta
       name="description"
-      content="EliteCard para tu identidad profesional y MascotBook para el perfil social de tu mascota. Entrá con tu cuenta para editar."
+      content="Tarjeta digital profesional EliteCard y perfil social MascotBook. Probá 7 días gratis. Diseñado por Agencia WebElite."
     />
-    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="theme-color" content="#f8fafc" />
     <script>
       (function () {
         try {
@@ -32,7 +32,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link
@@ -41,232 +41,153 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <style>
-      :root {
-        --gold: #d4af37;
-      }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        min-height: 100dvh;
-        font-family: "Inter", "Poppins", system-ui, sans-serif;
-        background: #030303;
-        color: #f4f4f5;
-      }
-      .top {
-        position: sticky;
-        top: 0;
-        z-index: 20;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0.85rem 1.25rem;
-        background: rgba(8, 8, 8, 0.9);
-        backdrop-filter: blur(14px);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      }
-      .brand {
-        font-weight: 700;
-        font-size: 0.95rem;
-        color: #f5f5f5;
-        letter-spacing: -0.02em;
-      }
-      .brand span {
-        color: var(--gold);
-      }
-      .nav-auth a {
-        text-decoration: none;
-        font-size: 0.8rem;
-        font-weight: 600;
-        padding: 0.5rem 1.1rem;
-        border-radius: 999px;
-        background: linear-gradient(135deg, #c9a132, var(--gold));
-        color: #0a0a0a;
-        border: 1px solid rgba(212, 175, 55, 0.5);
-        display: inline-block;
-      }
-      .nav-auth a:hover {
-        filter: brightness(1.06);
-      }
-      .split {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        min-height: calc(100dvh - 58px);
-        gap: 0;
-      }
-      @media (max-width: 900px) {
-        .split {
-          grid-template-columns: 1fr;
-        }
-      }
-      .hub-tile {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        padding: clamp(2rem, 4vw, 3rem) 1.35rem 2.5rem;
-        text-align: center;
-        overflow: hidden;
-        transition: transform 0.25s ease, box-shadow 0.25s ease;
-      }
-      .hub-tile:hover {
-        transform: translateY(-6px);
-        z-index: 2;
-        box-shadow: 0 28px 60px rgba(0, 0, 0, 0.55);
-      }
-      .hub-tile--elite {
-        background: radial-gradient(ellipse 85% 55% at 50% -5%, rgba(212, 175, 55, 0.22), transparent),
-          linear-gradient(185deg, #050505, #121212 55%, #080808);
-        color: #f5f0e6;
-        border-right: 1px solid rgba(255, 255, 255, 0.06);
-      }
-      @media (max-width: 900px) {
-        .hub-tile--elite {
-          border-right: none;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        }
-      }
-      .hub-tile--mascot {
-        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cpath fill='%23ffffff' fill-opacity='0.07' d='M12 48c2-7 10-12 18-12 4 0 8 2 11 6 3-8 14-14 24-12 6 1 12 6 14 13h-67z'/%3E%3Ccircle cx='20' cy='22' r='4' fill='%23ffffff' fill-opacity='0.06'/%3E%3Ccircle cx='58' cy='58' r='5' fill='%23ffffff' fill-opacity='0.05'/%3E%3C/svg%3E"),
-          radial-gradient(circle at 15% 20%, rgba(244, 114, 182, 0.35), transparent 42%),
-          radial-gradient(circle at 85% 30%, rgba(125, 211, 252, 0.35), transparent 45%),
-          linear-gradient(160deg, #fff8fc 0%, #fce7f3 30%, #e0f2fe 65%, #d1fae5 100%);
-        color: #1e1b4b;
-      }
-      .hub-tile--mascot::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.35), transparent 40%);
-        pointer-events: none;
-      }
-      .hub-tile--mascot > * {
-        position: relative;
-        z-index: 1;
-      }
-      .badge {
-        font-size: 0.65rem;
-        text-transform: uppercase;
-        letter-spacing: 0.22em;
-        margin-bottom: 0.65rem;
-        opacity: 0.9;
-      }
-      .hub-tile h2 {
-        font-size: clamp(1.35rem, 3.2vw, 1.9rem);
-        font-weight: 700;
-        margin: 0 0 0.65rem;
-        letter-spacing: -0.03em;
-      }
-      .hub-tile .lead {
-        margin: 0 0 1.25rem;
-        max-width: 24rem;
-        line-height: 1.55;
-        font-size: 0.92rem;
-      }
-      .hub-tile--elite .lead {
-        color: rgba(245, 240, 230, 0.66);
-      }
-      .hub-tile--mascot .lead {
-        color: rgba(30, 27, 75, 0.78);
-        font-weight: 500;
-      }
-      .feature-list {
-        list-style: none;
-        padding: 0;
-        margin: 0 0 1.5rem;
-        width: 100%;
-        max-width: 22rem;
-        text-align: left;
-      }
-      .feature-list li {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.65rem;
-        font-size: 0.82rem;
-        margin-bottom: 0.55rem;
-        line-height: 1.4;
-      }
-      .feature-list li i {
-        margin-top: 0.12rem;
-        width: 1.25rem;
-        text-align: center;
-        color: #db2777;
-      }
-      .hub-tile--elite .feature-list li i {
-        color: var(--gold);
-      }
-      .hub-tile--mascot .feature-list li {
-        color: rgba(30, 27, 75, 0.88);
-      }
-      .hub-cta {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.82rem 1.35rem;
-        border-radius: 999px;
-        font-weight: 700;
-        font-size: 0.78rem;
-        text-decoration: none;
-        margin-top: auto;
-      }
-      .hub-tile--elite .hub-cta {
-        background: linear-gradient(135deg, #c9a132, var(--gold));
-        color: #0a0a0a;
-      }
-      .hub-tile--mascot .hub-cta {
-        background: linear-gradient(90deg, #ec4899, #8b5cf6);
-        color: #fff;
-        box-shadow: 0 12px 32px rgba(236, 72, 153, 0.35);
-      }
-      .hub-cta:hover {
-        filter: brightness(1.05);
-      }
-    </style>
+    <link rel="stylesheet" href="landing-elite.css?v=3.0" id="ec-landing-css" />
   </head>
   <body>
-    <header class="top">
-      <div class="brand">Elite<span>Card</span> · MascotBook</div>
-      <nav class="nav-auth" aria-label="Acceso">
-        <a href="login.html">Login / Crear cuenta</a>
+    <header class="site-nav">
+      <a class="nav-brand" href="index.html" aria-label="Inicio Agencia WebElite">
+        <span class="nav-brand-mark" id="nav-logo-wrap" aria-hidden="true">E</span>
+        <span class="nav-brand-text">
+          <strong>EliteCard</strong>
+          <span>by Agencia WebElite</span>
+        </span>
+      </a>
+      <nav class="nav-actions nav-actions--header" aria-label="Cuenta">
+        <a class="btn btn-ghost btn-nav-mini" href="login.html">Iniciar sesión</a>
+        <a class="btn btn-solid btn-nav-mini" href="register.html">Registro</a>
       </nav>
     </header>
 
-    <main class="split" aria-label="Selector de producto">
-      <section class="hub-tile hub-tile--elite" aria-label="EliteCard">
-        <p class="badge" style="color: var(--gold)">Profesional</p>
-        <h2>EliteCard</h2>
-        <p class="lead">Tarjeta digital premium: contacto inmediato, identidad clara y archivo VCF para que te guarden con un toque.</p>
-        <ul class="feature-list">
-          <li><i class="fa-solid fa-id-card-clip" aria-hidden="true"></i>Presentación con foto, cargo y organización alineados a tu marca.</li>
-          <li><i class="fa-solid fa-address-book" aria-hidden="true"></i>Guardar contacto y compartir enlace o QR sin fricción.</li>
-          <li><i class="fa-solid fa-palette" aria-hidden="true"></i>Fondo y disposición de botones adaptables a tu estilo.</li>
-        </ul>
-        <a
-          class="hub-cta"
-          href="login.html?next=admin.html%3FviewMode%3Dpersonal%26panel%3Dcontenido"
-          >Ir al panel EliteCard</a
-        >
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <p class="hero-eyebrow"><i class="fa-solid fa-bolt" aria-hidden="true"></i> Presencia digital premium</p>
+        <h1 id="hero-title">Tu presencia digital, nivel agencia. Sin fricción.</h1>
+        <p class="hero-lead">
+          <strong>EliteCard</strong> vende tu mejor versión profesional. <strong>MascotBook</strong> cuenta la historia de tu mascota con
+          estética social y herramientas de rescate. Probá <strong>7 días gratis</strong> y compartí el enlace al instante.
+        </p>
+        <div class="hero-ctas">
+          <a class="btn btn-solid" href="register.html">
+            <i class="fa-solid fa-gift" aria-hidden="true"></i> Empezar 7 días gratis
+          </a>
+          <a class="btn btn-outline" href="admin.html?viewMode=personal&amp;panel=dashboard">
+            <i class="fa-solid fa-eye" aria-hidden="true"></i> Ver ejemplo
+          </a>
+        </div>
       </section>
 
-      <section class="hub-tile hub-tile--mascot" aria-label="MascotBook">
-        <p class="badge" style="color: #be185d">MascotBook</p>
-        <h2>La red social de tu mascota</h2>
-        <p class="lead">Colores vivos, texturas con relieve y huellas: un perfil público tan expresivo como tu compañero.</p>
-        <ul class="feature-list">
-          <li><i class="fa-solid fa-camera-retro" aria-hidden="true"></i>Galería en rejilla estilo Instagram para sus mejores fotos.</li>
-          <li><i class="fa-solid fa-scroll" aria-hidden="true"></i>Muro y biografía para contar su historia y personalidad.</li>
-          <li><i class="fa-solid fa-heart-pulse" aria-hidden="true"></i>Bloque de ficha y salud visible cuando lo necesites.</li>
-          <li><i class="fa-solid fa-shirt" aria-hidden="true"></i>Tres texturas de fondo —Park, Candy, Elite— y color de acento a tu gusto.</li>
+      <section class="benefits" aria-labelledby="benefits-heading">
+        <h2 id="benefits-heading">Por qué WebElite</h2>
+        <ul class="benefits-grid">
+          <li class="benefit-tile">
+            <i class="fa-solid fa-qrcode" aria-hidden="true"></i>
+            <strong>QR instantáneo</strong>
+            <p>Enlace y código listos para compartir desde el celular.</p>
+          </li>
+          <li class="benefit-tile">
+            <i class="fa-solid fa-location-crosshairs" aria-hidden="true"></i>
+            <strong>GPS en rescate</strong>
+            <p>Modo mascota perdida con ubicación opcional del escaneo.</p>
+          </li>
+          <li class="benefit-tile">
+            <i class="fa-solid fa-gem" aria-hidden="true"></i>
+            <strong>Diseño premium</strong>
+            <p>Tipografías, texturas y layouts curados por la agencia.</p>
+          </li>
+          <li class="benefit-tile">
+            <i class="fa-solid fa-headset" aria-hidden="true"></i>
+            <strong>Soporte humano</strong>
+            <p>Productos claros, panel simple y evolución constante.</p>
+          </li>
         </ul>
-        <a
-          class="hub-cta"
-          href="login.html?next=admin.html%3FviewMode%3Dmascot%26panel%3Dcontenido"
-          >Ir al panel MascotBook</a
-        >
+      </section>
+
+      <section class="products" id="productos" aria-labelledby="products-heading">
+        <h2 id="products-heading">Elegí tu camino</h2>
+        <div class="product-grid">
+          <article class="product-card product-card--elite">
+            <div class="product-icon" aria-hidden="true">
+              <i class="fa-solid fa-briefcase"></i>
+            </div>
+            <h3>EliteCard</h3>
+            <p>
+              Tarjeta web profesional: foto, cargo, WhatsApp, redes y estilo visual alineado a tu marca. Ideal para vendedores,
+              médicos, creativos y equipos que quieren cerrar más reuniones.
+            </p>
+            <ul class="feature-mini">
+              <li><i class="fa-solid fa-check" aria-hidden="true"></i>QR y enlace listos para compartir en segundos</li>
+              <li><i class="fa-solid fa-check" aria-hidden="true"></i>Firma de email con tu identidad corporativa</li>
+              <li><i class="fa-solid fa-check" aria-hidden="true"></i>Diseño adaptable: fondos, forma de foto y botones</li>
+            </ul>
+            <div class="card-actions">
+              <a class="btn btn-outline" href="admin.html?viewMode=personal&amp;panel=dashboard">
+                <i class="fa-solid fa-mobile-screen" aria-hidden="true"></i> Ver demo
+              </a>
+              <a class="btn btn-solid" href="register.html?app=elitecard&amp;next=admin.html%3FviewMode%3Dpersonal%26panel%3Dcontenido">
+                Crear mi tarjeta
+              </a>
+            </div>
+          </article>
+
+          <article class="product-card product-card--mascot">
+            <div class="product-icon" aria-hidden="true">
+              <i class="fa-solid fa-paw"></i>
+            </div>
+            <h3>MascotBook</h3>
+            <p>
+              El perfil social de tu compañero: galería, historia, salud y texturas con personalidad. Un producto aparte, con el
+              mismo estándar de calidad WebElite.
+            </p>
+            <ul class="feature-mini">
+              <li><i class="fa-solid fa-heart" aria-hidden="true"></i>Galería y muro con estética social moderna</li>
+              <li><i class="fa-solid fa-palette" aria-hidden="true"></i>Temas y acentos que reflejan su carácter</li>
+              <li><i class="fa-solid fa-share-nodes" aria-hidden="true"></i>Enlace único para presumir a tu mascota</li>
+            </ul>
+            <div class="card-actions">
+              <a class="btn btn-outline" href="admin.html?viewMode=mascot&amp;panel=dashboard">
+                <i class="fa-solid fa-eye" aria-hidden="true"></i> Ver demo
+              </a>
+              <a class="btn btn-solid" href="register.html?app=mascotbook&amp;next=admin.html%3FviewMode%3Dmascot%26panel%3Dcontenido">
+                Crear MascotBook
+              </a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="cta-band" aria-labelledby="cta-title">
+        <h2 id="cta-title">¿Listo para probar sin riesgo?</h2>
+        <p>
+          Creá cuenta en minutos, editá tu tarjeta en un panel claro y compartí el enlace con quien quieras. Si sos equipo
+          Agencia WebElite, tenés el respaldo técnico y visual que tu marca merece.
+        </p>
+        <a class="btn btn-solid" href="register.html">Empezar prueba gratuita</a>
       </section>
     </main>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="footer-seal">
+        <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+        Agencia WebElite — sello de calidad
+      </div>
+      <small>EliteCard y MascotBook son productos digitales desarrollados y curados por Agencia WebElite.</small>
+    </footer>
+
+    <script>
+      (function () {
+        var sc = document.createElement("script");
+        sc.src = "config.js?v=3.0";
+        sc.onload = function () {
+          var url = String(window.EC_BRAND_LOGO_URL || "").trim();
+          var wrap = document.getElementById("nav-logo-wrap");
+          if (!url || !wrap) return;
+          wrap.innerHTML =
+            '<img src="' +
+            url.replace(/"/g, "") +
+            '" alt="EliteCard" width="42" height="42" loading="lazy" />';
+        };
+        document.body.appendChild(sc);
+      })();
+    </script>
   </body>
 </html>

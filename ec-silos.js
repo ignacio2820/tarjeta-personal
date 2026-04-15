@@ -19,6 +19,10 @@
     return db.collection(usersCollection()).doc(uid).collection("mascot_card").doc(DOC_PROFILE);
   }
 
+  function mascotLostScansRef(db, uid) {
+    return db.collection(usersCollection()).doc(uid).collection("mascot_lost_scans");
+  }
+
   function accountRef(db, uid) {
     return db.collection(usersCollection()).doc(uid);
   }
@@ -28,6 +32,7 @@
     usersCollection: usersCollection,
     personalCardRef: personalCardRef,
     mascotCardRef: mascotCardRef,
+    mascotLostScansRef: mascotLostScansRef,
     accountRef: accountRef,
   };
 })(typeof window !== "undefined" ? window : this);

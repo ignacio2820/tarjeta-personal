@@ -4,11 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>EliteCard · Agencia WebElite</title>
-    <meta name="theme-color" content="#f5f7fa" />
+    <meta name="theme-color" content="#f8fafc" />
+    <script>
+      window.__EC_ADMIN_ASSET_TS = Date.now();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link
@@ -16,26 +19,24 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="mascot-themes.css?v=1" />
-    <link rel="stylesheet" href="admin-elite.css?v=1" />
+    <link rel="stylesheet" href="mascot-themes.css" id="ec-link-mascot-themes" />
+    <link rel="stylesheet" href="mascot-book-pro.css" id="ec-link-mascot-book-pro" />
+    <link rel="stylesheet" href="admin-elite.css" id="ec-link-admin-elite" />
+    <script>
+      (function () {
+        var v = window.__EC_ADMIN_ASSET_TS || Date.now();
+        var a = document.getElementById("ec-link-mascot-themes");
+        var c = document.getElementById("ec-link-mascot-book-pro");
+        var b = document.getElementById("ec-link-admin-elite");
+        if (a) a.href = "mascot-themes.css?v=" + v;
+        if (c) c.href = "mascot-book-pro.css?v=" + v;
+        if (b) b.href = "admin-elite.css?v=" + v;
+      })();
+    </script>
   </head>
   <body>
     <div id="gate-loading">
-      <p style="color: rgba(17,24,39,0.5); font-size:0.9rem">Comprobando sesión…</p>
-    </div>
-    <div id="gate-marketing" class="hidden">
-      <div class="gate-card">
-        <div class="gate-brand">
-          <img id="gate-logo-img" class="gate-logo hidden" src="" alt="" width="48" height="48" />
-          <span id="gate-logo-fallback" class="gate-logo-fallback" aria-hidden="true">E</span>
-        </div>
-        <h1>Agencia WebElite</h1>
-        <p class="gate-tagline">EliteCard: tu tarjeta digital profesional, lista para compartir y vender.</p>
-        <div class="gate-actions">
-          <a class="btn-outline" id="gate-btn-login" href="#">Iniciar sesión</a>
-          <a class="btn-solid" id="gate-btn-register" href="#">Crear cuenta</a>
-        </div>
-      </div>
+      <p style="color: rgba(17,24,39,0.5); font-size:0.9rem">Cargando panel…</p>
     </div>
 
     <div id="app" class="hidden">
@@ -47,13 +48,20 @@
           <img id="header-logo-img" class="hidden" src="" alt="" width="40" height="40" />
           <span id="header-logo-fallback" class="gate-logo-fallback" style="width:40px;height:40px;font-size:0.95rem" aria-hidden="true">E</span>
           <div class="admin-brand-text">
-            <h1>Agencia WebElite</h1>
-            <small>EliteCard · panel profesional</small>
+            <h1>EliteCard</h1>
+            <small>Panel profesional · Agencia WebElite</small>
           </div>
         </div>
         <div class="admin-header-actions">
+          <p id="admin-guest-hint" class="admin-guest-hint hidden">
+            <i class="fa-solid fa-gift" aria-hidden="true"></i> Probá gratis <strong>7 días</strong> · iniciá sesión solo si querés guardar
+          </p>
+          <div id="header-guest-ctas" class="header-guest-ctas hidden">
+            <a class="btn-outline btn-header" id="gate-btn-login" href="#">Iniciar sesión</a>
+            <a class="btn-solid btn-header" id="gate-btn-register" href="#">Crear cuenta</a>
+          </div>
           <span id="admin-badge-perpetual" class="admin-badge-perpetual hidden">ACCESO PERPETUO - AGENCIA WEBELITE</span>
-          <button type="button" class="btn-logout" id="btn-logout">Cerrar sesión</button>
+          <button type="button" class="btn-logout hidden" id="btn-logout">Cerrar sesión</button>
         </div>
       </header>
 
@@ -64,13 +72,21 @@
             <button type="button" class="nav-tab" data-panel="contenido" role="tab">Contenido</button>
           </div>
           <div id="theme-panel" class="theme-panel hidden">
-            <h3>Textura y acento (MascotBook)</h3>
-            <div class="theme-swatches" id="theme-swatches">
-              <button type="button" class="theme-swatch" data-texture="park">Park</button>
-              <button type="button" class="theme-swatch" data-texture="candy">Candy</button>
-              <button type="button" class="theme-swatch active" data-texture="elite">Elite</button>
+            <div class="mascot-side-brand">
+              <span class="mascot-side-logo" aria-hidden="true"><i class="fa-solid fa-paw"></i></span>
+              <div>
+                <strong>MascotBook Pro</strong>
+                <small>Tema de tarjeta</small>
+              </div>
             </div>
-            <div class="field" style="margin-top: 0.75rem">
+            <p class="theme-panel-hint">Se aplica en la vista previa y al guardar.</p>
+            <div class="mb-pro-grid" id="mb-pro-grid-sidebar">
+              <button type="button" class="mb-pro-pick active" data-mb-pro="classic_paws">Classic Paws</button>
+              <button type="button" class="mb-pro-pick" data-mb-pro="candy_pop">Candy Pop</button>
+              <button type="button" class="mb-pro-pick" data-mb-pro="night_neon">Night Neon</button>
+              <button type="button" class="mb-pro-pick" data-mb-pro="organic_leaf">Organic Leaf</button>
+            </div>
+            <div class="field" style="margin-top: 0.85rem">
               <label for="m-accent">Color de acento</label>
               <input id="m-accent" type="color" value="#ec4899" />
             </div>
@@ -95,6 +111,60 @@
                 </div>
               </button>
             </div>
+            <div id="mascot-dash-themes" class="mascot-dash-themes" aria-hidden="true">
+              <p class="mb-dash-eyebrow">MascotBook Pro</p>
+              <h3 class="mb-dash-title">Temas de fondo en vivo</h3>
+              <p class="mb-dash-lead">Elegí un estilo premium; se refleja al instante en la vista previa.</p>
+              <div class="mb-dash-theme-cards" id="mb-dash-theme-cards">
+                <button type="button" class="mb-dash-card mb-dash-classic active" data-mb-pro="classic_paws">
+                  <span class="mb-dash-card-icon"><i class="fa-solid fa-sun"></i></span>
+                  <strong>Classic Paws</strong>
+                  <span>Huellas doradas sobre crema</span>
+                </button>
+                <button type="button" class="mb-dash-card mb-dash-candy" data-mb-pro="candy_pop">
+                  <span class="mb-dash-card-icon"><i class="fa-solid fa-ice-cream"></i></span>
+                  <strong>Candy Pop</strong>
+                  <span>Rosa y celeste con burbujas</span>
+                </button>
+                <button type="button" class="mb-dash-card mb-dash-night" data-mb-pro="night_neon">
+                  <span class="mb-dash-card-icon"><i class="fa-solid fa-bolt"></i></span>
+                  <strong>Night Neon</strong>
+                  <span>Oscuro tech con neón</span>
+                </button>
+                <button type="button" class="mb-dash-card mb-dash-organic" data-mb-pro="organic_leaf">
+                  <span class="mb-dash-card-icon"><i class="fa-solid fa-leaf"></i></span>
+                  <strong>Organic Leaf</strong>
+                  <span>Naturaleza y campo</span>
+                </button>
+              </div>
+            </div>
+            <div id="mascot-dash-lost" class="mascot-dash-lost" aria-labelledby="mascot-dash-lost-title">
+              <p class="mb-dash-eyebrow">Seguridad</p>
+              <h3 id="mascot-dash-lost-title" class="mb-dash-title">Modo mascota perdida</h3>
+              <p class="mb-dash-lead">
+                Activá el modo si tu mascota se extravió: el perfil público muestra alerta, un botón de WhatsApp y permite que quien
+                escanea envíe su ubicación al panel.
+              </p>
+              <div class="mascot-lost-switch-row">
+                <label class="mascot-lost-switch-label" for="dash-mascota-perdida">
+                  <input type="checkbox" id="dash-mascota-perdida" />
+                  <span>Activar Modo Mascota Perdida</span>
+                </label>
+              </div>
+              <div class="field mascot-lost-field">
+                <label for="dash-m-whatsapp-urgencia">WhatsApp de urgencia (código país + número)</label>
+                <input
+                  id="dash-m-whatsapp-urgencia"
+                  type="tel"
+                  inputmode="tel"
+                  autocomplete="tel"
+                  placeholder="Ej. 54911xxxxxxxx"
+                />
+              </div>
+              <button type="button" class="btn-outline btn-dash-lost-save" id="dash-mascota-lost-save">
+                Guardar configuración de seguridad
+              </button>
+            </div>
           </div>
 
           <div id="panel-contenido" class="hidden">
@@ -102,8 +172,8 @@
             <h2 class="form-personal-title">Tu EliteCard</h2>
 
             <div class="admin-card">
-              <h3 class="admin-card-title">Identidad profesional</h3>
-              <p class="admin-card-hint">Lo primero que ve tu cliente: rostro, nombre y marca.</p>
+              <h3 class="admin-card-title">Identidad</h3>
+              <p class="admin-card-hint">Foto, nombre, cargo y logo institucional: lo primero que ve tu cliente.</p>
               <div class="field">
                 <label for="p-foto">Foto de perfil</label>
                 <input id="p-foto" type="file" accept="image/*" />
@@ -146,8 +216,8 @@
             </div>
 
             <div class="admin-card">
-              <h3 class="admin-card-title">Canales de contacto</h3>
-              <p class="admin-card-hint">WhatsApp, correo y redes: un solo lugar para todas las vías.</p>
+              <h3 class="admin-card-title">Redes sociales</h3>
+              <p class="admin-card-hint">WhatsApp, correo, Instagram, LinkedIn y más: todas tus vías en un solo bloque.</p>
               <div class="field">
                 <label class="field-label-row" for="p-email"><i class="fa-regular fa-envelope" aria-hidden="true"></i> Email</label>
                 <input id="p-email" type="email" />
@@ -191,8 +261,8 @@
             </div>
 
             <div class="admin-card" id="admin-card-style-pro">
-              <h3 class="admin-card-title">Estilo Pro</h3>
-              <p class="admin-card-hint">Cómo se ve tu tarjeta: fondo, foto y botones. La vista previa refleja los cambios al instante.</p>
+              <h3 class="admin-card-title">Ajustes de diseño</h3>
+              <p class="admin-card-hint">Fondo, forma de foto y estilo de botones. La vista previa refleja los cambios al instante.</p>
               <div class="field">
                 <label for="p-avatar-shape">Forma de foto</label>
                 <select id="p-avatar-shape">
@@ -240,43 +310,128 @@
           </div>
 
           <div id="form-mascot" class="form-panel hidden">
-            <h2>MascotBook</h2>
-            <div class="field">
-              <label for="m-nombre">Nombre mascota</label>
-              <input id="m-nombre" type="text" />
+            <div class="mascot-admin-hero">
+              <span class="mascot-admin-logo" aria-hidden="true"><i class="fa-solid fa-paw"></i></span>
+              <div>
+                <h2 class="form-mascot-title">MascotBook Pro</h2>
+                <p class="mascot-admin-tagline">Perfil premium con salud estructurada · Agencia WebElite</p>
+              </div>
             </div>
-            <div class="field">
-              <label for="m-raza">Raza</label>
-              <input id="m-raza" type="text" />
+
+            <div class="admin-card mascot-admin-card">
+              <h3 class="admin-card-title">Identidad</h3>
+              <p class="admin-card-hint">Nombre, raza y sexo visibles en la cabecera del perfil.</p>
+              <div class="field">
+                <label for="m-nombre">Nombre mascota</label>
+                <input id="m-nombre" type="text" autocomplete="off" />
+              </div>
+              <div class="field">
+                <label for="m-raza">Raza</label>
+                <input id="m-raza" type="text" />
+              </div>
+              <div class="field">
+                <label for="m-sexo">Sexo</label>
+                <input id="m-sexo" type="text" placeholder="macho / hembra / …" />
+              </div>
             </div>
-            <div class="field">
-              <label for="m-sexo">Sexo</label>
-              <input id="m-sexo" type="text" placeholder="macho / hembra / …" />
+
+            <div class="admin-card mascot-admin-card">
+              <h3 class="admin-card-title">Personalidad y muro</h3>
+              <p class="admin-card-hint">Historia, personalidad y el texto del muro que aparece arriba en la tarjeta.</p>
+              <div class="field">
+                <label for="m-historia">Historia</label>
+                <textarea id="m-historia" rows="3"></textarea>
+              </div>
+              <div class="field">
+                <label for="m-personalidad">Personalidad</label>
+                <textarea id="m-personalidad" rows="3"></textarea>
+              </div>
+              <div class="field">
+                <label for="m-muro">Muro (visible arriba)</label>
+                <textarea id="m-muro" rows="2"></textarea>
+              </div>
+              <div class="field">
+                <label for="m-salud">Notas de salud libres</label>
+                <textarea id="m-salud" rows="3" placeholder="Observaciones generales, controles, etc."></textarea>
+              </div>
             </div>
-            <div class="field">
-              <label for="m-salud">Salud / ficha</label>
-              <textarea id="m-salud"></textarea>
+
+            <div class="admin-card mascot-admin-card">
+              <h3 class="admin-card-title">Plan de vacunación</h3>
+              <p class="admin-card-hint">Vacuna, fecha aplicada y próxima dosis. Añadí todas las filas que necesites.</p>
+              <div class="mascot-table-wrap">
+                <table class="mascot-data-table" aria-label="Vacunas">
+                  <thead>
+                    <tr>
+                      <th>Vacuna</th>
+                      <th>Fecha</th>
+                      <th>Próxima dosis</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="m-vacunas-body"></tbody>
+                </table>
+              </div>
+              <button type="button" class="btn-outline btn-mascot-add" id="m-vacuna-add">
+                <i class="fa-solid fa-plus" aria-hidden="true"></i> Añadir vacuna
+              </button>
             </div>
-            <div class="field">
-              <label for="m-historia">Historia</label>
-              <textarea id="m-historia"></textarea>
+
+            <div class="admin-card mascot-admin-card">
+              <h3 class="admin-card-title">Veterinario de cabecera</h3>
+              <p class="admin-card-hint">En la tarjeta pública el teléfono se muestra como botón de llamada.</p>
+              <div class="field">
+                <label for="m-vet-nombre">Nombre</label>
+                <input id="m-vet-nombre" type="text" />
+              </div>
+              <div class="field">
+                <label for="m-vet-tel">Teléfono</label>
+                <input id="m-vet-tel" type="tel" placeholder="+54 …" />
+              </div>
+              <div class="field">
+                <label for="m-vet-dir">Dirección / clínica</label>
+                <input id="m-vet-dir" type="text" />
+              </div>
             </div>
-            <div class="field">
-              <label for="m-personalidad">Personalidad</label>
-              <textarea id="m-personalidad"></textarea>
+
+            <div class="admin-card mascot-admin-card">
+              <h3 class="admin-card-title">Ficha médica crítica</h3>
+              <p class="admin-card-hint">Información sensible y clara para emergencias.</p>
+              <div class="field">
+                <label for="m-fc-alergias">Alergias</label>
+                <textarea id="m-fc-alergias" rows="2"></textarea>
+              </div>
+              <div class="field">
+                <label for="m-fc-meds">Medicación diaria</label>
+                <textarea id="m-fc-meds" rows="2"></textarea>
+              </div>
+              <div class="field">
+                <label for="m-fc-sangre">Tipo de sangre</label>
+                <input id="m-fc-sangre" type="text" placeholder="DEA 1.1 / conocido / —" />
+              </div>
             </div>
-            <div class="field">
-              <label for="m-muro">Muro (texto visible arriba)</label>
-              <textarea id="m-muro"></textarea>
+
+            <div class="admin-card mascot-admin-card">
+              <h3 class="admin-card-title">Multimedia</h3>
+              <p class="admin-card-hint">Foto de perfil y galería estilo red social.</p>
+              <div class="field">
+                <label for="m-foto">Foto de perfil</label>
+                <input id="m-foto" type="file" accept="image/*" />
+              </div>
+              <div class="field">
+                <label for="m-galeria">Galería (varias imágenes)</label>
+                <input id="m-galeria" type="file" accept="image/*" multiple />
+              </div>
             </div>
-            <div class="field">
-              <label for="m-foto">Foto perfil mascota</label>
-              <input id="m-foto" type="file" accept="image/*" />
+
+            <div class="admin-card mascot-admin-card mascot-tools-card">
+              <h3 class="admin-card-title">Seguridad y rescate</h3>
+              <p class="admin-card-hint">QR con el enlace único del perfil de tu mascota para compartir o localización.</p>
+              <button type="button" class="btn-qr" id="btn-mascot-qr-rescate">
+                <i class="fa-solid fa-qrcode" aria-hidden="true"></i> Generar QR de rescate
+              </button>
             </div>
-            <div class="field">
-              <label for="m-galeria">Galería (varias imágenes)</label>
-              <input id="m-galeria" type="file" accept="image/*" multiple />
-            </div>
+
             <div class="actions-row">
               <button type="button" class="btn-save" id="btn-save-mascot">Guardar MascotBook</button>
             </div>
@@ -286,14 +441,31 @@
 
         <aside class="preview-col">
           <h3>Vista previa móvil</h3>
-          <div class="phone-shell">
-            <div class="phone">
-              <iframe id="preview-frame" title="Vista previa tarjeta" src="about:blank"></iframe>
+          <p class="preview-spec">390 × 844 px · escala real</p>
+          <div class="phone-stage" id="phone-stage">
+            <div class="phone-scale-wrap" id="phone-scale-wrap">
+              <div class="phone device-390">
+                <iframe
+                  id="preview-frame"
+                  title="Vista previa tarjeta"
+                  src="about:blank"
+                  width="390"
+                  height="844"
+                ></iframe>
+              </div>
             </div>
           </div>
           <p class="link-public" id="public-url"></p>
         </aside>
       </div>
+
+      <footer class="admin-site-footer" role="contentinfo">
+        <div class="admin-footer-seal">
+          <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+          <span>Agencia WebElite</span>
+        </div>
+        <small>Sello de calidad en diseño y experiencia digital para EliteCard y MascotBook.</small>
+      </footer>
     </div>
 
     <div id="admin-qr-modal" class="admin-modal hidden" role="dialog" aria-modal="true" aria-labelledby="admin-qr-modal-title">
@@ -302,6 +474,16 @@
         <h4 id="admin-qr-modal-title">QR de tu tarjeta</h4>
         <img id="admin-qr-img" src="" alt="Código QR" width="220" height="220" />
         <button type="button" class="btn-solid" id="admin-qr-copy">Copiar enlace público</button>
+      </div>
+    </div>
+
+    <div id="admin-mascot-qr-modal" class="admin-modal hidden" role="dialog" aria-modal="true" aria-labelledby="admin-mascot-qr-title">
+      <div class="admin-modal-panel">
+        <button type="button" class="admin-modal-close" id="admin-mascot-qr-close" aria-label="Cerrar">×</button>
+        <h4 id="admin-mascot-qr-title">QR de rescate · MascotBook</h4>
+        <p class="admin-modal-sub">Escaneá para abrir el perfil público de la mascota.</p>
+        <img id="admin-mascot-qr-img" src="" alt="Código QR MascotBook" width="220" height="220" />
+        <button type="button" class="btn-solid" id="admin-mascot-qr-copy">Copiar enlace del perfil</button>
       </div>
     </div>
 
@@ -330,8 +512,11 @@
         /** Vista principal: selector de producto o formularios. */
         var activePanel = "dashboard";
         var currentTexture = "elite";
+        var currentMascotProTheme = "classic_paws";
+        var __mascotRescueUrl = "";
         var uid = "";
         var unsub = null;
+        var unsubLostScans = null;
         var lastMascotGaleria = [];
         var lastPersonalMedia = { fotoUrl: "", logoUrl: "" };
         var lastMascotFoto = "";
@@ -342,8 +527,10 @@
         var __adminPublicCardUrl = "";
 
         var gateLoading = document.getElementById("gate-loading");
-        var gateMarketing = document.getElementById("gate-marketing");
         var app = document.getElementById("app");
+        var guestHint = document.getElementById("admin-guest-hint");
+        var guestCtas = document.getElementById("header-guest-ctas");
+        var btnLogout = document.getElementById("btn-logout");
         var adminRoot = document.getElementById("admin-root");
         var panelDashboard = document.getElementById("panel-dashboard");
         var panelContenido = document.getElementById("panel-contenido");
@@ -378,18 +565,8 @@
 
         function applyBrandLogo() {
           var url = String(window.EC_BRAND_LOGO_URL || "").trim();
-          var gImg = document.getElementById("gate-logo-img");
-          var gFb = document.getElementById("gate-logo-fallback");
           var hImg = document.getElementById("header-logo-img");
           var hFb = document.getElementById("header-logo-fallback");
-          if (url && gImg && gFb) {
-            gImg.src = url;
-            gImg.classList.remove("hidden");
-            gFb.classList.add("hidden");
-          } else if (gImg && gFb) {
-            gImg.classList.add("hidden");
-            gFb.classList.remove("hidden");
-          }
           if (url && hImg && hFb) {
             hImg.src = url;
             hImg.classList.remove("hidden");
@@ -398,6 +575,28 @@
             hImg.classList.add("hidden");
             hFb.classList.remove("hidden");
           }
+        }
+
+        function setAuthChrome(loggedIn) {
+          if (guestHint) guestHint.classList.toggle("hidden", loggedIn);
+          if (guestCtas) guestCtas.classList.toggle("hidden", loggedIn);
+          if (btnLogout) btnLogout.classList.toggle("hidden", !loggedIn);
+        }
+
+        function fitPhonePreview() {
+          var stage = document.getElementById("phone-stage");
+          var wrap = document.getElementById("phone-scale-wrap");
+          if (!stage || !wrap) return;
+          var W = 390;
+          var H = 844;
+          var col = stage.closest(".preview-col");
+          var pad = 16;
+          var availW = Math.max(120, stage.clientWidth - pad);
+          var rect = col ? col.getBoundingClientRect() : { height: window.innerHeight * 0.72 };
+          var availH = Math.max(200, Math.min(820, rect.height - 108));
+          var s = Math.min(availW / W, availH / H, 1);
+          wrap.style.transform = "scale(" + s + ")";
+          stage.style.height = Math.ceil(H * s) + "px";
         }
 
         function bindAccountMeta() {
@@ -458,7 +657,10 @@
         }
 
         function openAdminQrModal() {
-          if (!uid) return;
+          if (!uid) {
+            showToast("Iniciá sesión para generar el QR de tu tarjeta.", false);
+            return;
+          }
           __adminPublicCardUrl =
             window.location.origin + "/card.html?id=" + encodeURIComponent(uid);
           var modal = document.getElementById("admin-qr-modal");
@@ -473,6 +675,30 @@
         function closeAdminQrModal() {
           var modal = document.getElementById("admin-qr-modal");
           if (modal) modal.classList.add("hidden");
+        }
+
+        function openMascotRescueQrModal() {
+          if (!uid) {
+            showToast("Iniciá sesión para generar el QR de rescate.", false);
+            return;
+          }
+          __mascotRescueUrl =
+            window.location.origin +
+            "/card.html?id=" +
+            encodeURIComponent(uid) +
+            "&view=pet";
+          var modal = document.getElementById("admin-mascot-qr-modal");
+          var img = document.getElementById("admin-mascot-qr-img");
+          if (!modal || !img) return;
+          img.src =
+            "https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=10&data=" +
+            encodeURIComponent(__mascotRescueUrl);
+          modal.classList.remove("hidden");
+        }
+
+        function closeMascotRescueQrModal() {
+          var m = document.getElementById("admin-mascot-qr-modal");
+          if (m) m.classList.add("hidden");
         }
 
         function readCurrentAppFromUrl() {
@@ -533,6 +759,7 @@
           refreshPreview();
           updateSubscriptionUi(lastAccountData);
           if (!opts || !opts.skipUrl) syncAdminUrl();
+          fitPhonePreview();
         }
 
         function setPanel(panel, opts) {
@@ -548,10 +775,21 @@
           updateThemePanelVisibility();
           if (!opts || !opts.skipUrl) syncAdminUrl();
           refreshPreview();
+          fitPhonePreview();
         }
 
         function refreshPreview() {
-          if (!uid) return;
+          if (!uid) {
+            try {
+              previewFrame.src = "about:blank";
+            } catch (eBlank) {}
+            if (publicUrlEl) {
+              publicUrlEl.innerHTML =
+                '<span class="link-public-muted">Iniciá sesión para previsualizar tu tarjeta y copiar el enlace público.</span>';
+            }
+            fitPhonePreview();
+            return;
+          }
           var base =
             window.location.origin +
             window.location.pathname.replace(/[^/]*$/, "card.html") +
@@ -561,14 +799,16 @@
             base += "&view=pet";
             try {
               var mac = document.getElementById("m-accent");
+              base +=
+                "&ec_mt=" +
+                encodeURIComponent(currentTexture || "elite") +
+                "&ec_mpt=" +
+                encodeURIComponent(currentMascotProTheme || "classic_paws");
               if (mac && mac.value) {
-                base +=
-                  "&ec_mt=" +
-                  encodeURIComponent(currentTexture || "elite") +
-                  "&ec_ma=" +
-                  encodeURIComponent(mac.value);
+                base += "&ec_ma=" + encodeURIComponent(mac.value);
               }
             } catch (ePv) {}
+            base += "&ec_admin_preview=1";
           } else {
             try {
               var ash = document.getElementById("p-avatar-shape");
@@ -592,6 +832,7 @@
           }
           base += "&t=" + Date.now();
           previewFrame.src = base;
+          fitPhonePreview();
           var pub =
             window.location.origin +
             "/card.html?id=" +
@@ -707,6 +948,84 @@
           };
         }
 
+        function syncMbProThemeUi() {
+          document.querySelectorAll("[data-mb-pro]").forEach(function (el) {
+            var on = el.getAttribute("data-mb-pro") === currentMascotProTheme;
+            el.classList.toggle("active", on);
+          });
+        }
+
+        function setMascotProTheme(pro) {
+          var ids = window.MASCOT_PRO_THEME_IDS || [];
+          if (ids.indexOf(pro) < 0) pro = "classic_paws";
+          currentMascotProTheme = pro;
+          var tmp = window.normalizeMascotCard
+            ? window.normalizeMascotCard({ mascotProTheme: pro })
+            : { textureId: "elite" };
+          currentTexture = tmp.textureId || "elite";
+          syncMbProThemeUi();
+          if (currentApp === "mascotbook") refreshPreview();
+        }
+
+        function renderVacunaRows(rows) {
+          var tb = document.getElementById("m-vacunas-body");
+          if (!tb) return;
+          tb.innerHTML = "";
+          var list = rows && rows.length ? rows : [{ vacuna: "", fecha: "", proximaDosis: "" }];
+          list.forEach(function (r) {
+            var tr = document.createElement("tr");
+            var td1 = document.createElement("td");
+            var td2 = document.createElement("td");
+            var td3 = document.createElement("td");
+            var td4 = document.createElement("td");
+            var in1 = document.createElement("input");
+            in1.type = "text";
+            in1.className = "m-vac-nom";
+            in1.value = String(r.vacuna || "");
+            var in2 = document.createElement("input");
+            in2.type = "date";
+            in2.className = "m-vac-fec";
+            in2.value = String(r.fecha || "");
+            var in3 = document.createElement("input");
+            in3.type = "date";
+            in3.className = "m-vac-prox";
+            in3.value = String(r.proximaDosis || "");
+            var del = document.createElement("button");
+            del.type = "button";
+            del.className = "m-vac-del";
+            del.setAttribute("aria-label", "Quitar fila");
+            del.textContent = "×";
+            del.addEventListener("click", function () {
+              var body = document.getElementById("m-vacunas-body");
+              if (body && body.rows.length > 1) body.removeChild(tr);
+            });
+            td1.appendChild(in1);
+            td2.appendChild(in2);
+            td3.appendChild(in3);
+            td4.appendChild(del);
+            tr.appendChild(td1);
+            tr.appendChild(td2);
+            tr.appendChild(td3);
+            tr.appendChild(td4);
+            tb.appendChild(tr);
+          });
+        }
+
+        function collectVacunasFromForm() {
+          var out = [];
+          document.querySelectorAll("#m-vacunas-body tr").forEach(function (tr) {
+            var nom = tr.querySelector(".m-vac-nom");
+            var fe = tr.querySelector(".m-vac-fec");
+            var pr = tr.querySelector(".m-vac-prox");
+            out.push({
+              vacuna: nom ? nom.value : "",
+              fecha: fe ? fe.value : "",
+              proximaDosis: pr ? pr.value : "",
+            });
+          });
+          return out;
+        }
+
         function fillMascot(d) {
           var n = window.normalizeMascotCard ? window.normalizeMascotCard(d) : d;
           lastMascotFoto = n.fotoPerfilUrl || "";
@@ -718,12 +1037,30 @@
           document.getElementById("m-personalidad").value = n.personalidad || "";
           document.getElementById("m-muro").value = n.muro || "";
           lastMascotGaleria = Array.isArray(n.galeria) ? n.galeria.slice() : [];
+          currentMascotProTheme = n.mascotProTheme || "classic_paws";
           currentTexture = n.textureId || "elite";
-          document.querySelectorAll(".theme-swatch[data-texture]").forEach(function (b) {
-            b.classList.toggle("active", b.getAttribute("data-texture") === currentTexture);
-          });
+          syncMbProThemeUi();
+          renderVacunaRows(n.vacunas);
+          var vet = n.veterinario || {};
+          var vn = document.getElementById("m-vet-nombre");
+          var vt = document.getElementById("m-vet-tel");
+          var vd = document.getElementById("m-vet-dir");
+          if (vn) vn.value = vet.nombre || "";
+          if (vt) vt.value = vet.telefono || "";
+          if (vd) vd.value = vet.direccion || "";
+          var fc = n.fichaCritica || {};
+          var fa = document.getElementById("m-fc-alergias");
+          var fm = document.getElementById("m-fc-meds");
+          var fs = document.getElementById("m-fc-sangre");
+          if (fa) fa.value = fc.alergias || "";
+          if (fm) fm.value = fc.medicacionDiaria || "";
+          if (fs) fs.value = fc.tipoSangre || "";
           var acEl = document.getElementById("m-accent");
           if (acEl) acEl.value = n.accentColor || "#ec4899";
+          var dLost = document.getElementById("dash-mascota-perdida");
+          var dWa = document.getElementById("dash-m-whatsapp-urgencia");
+          if (dLost) dLost.checked = !!n.mascotaPerdida;
+          if (dWa) dWa.value = n.whatsappUrgencia || "";
         }
 
         function readMascotPayload() {
@@ -734,14 +1071,31 @@
             salud: document.getElementById("m-salud").value,
             historia: document.getElementById("m-historia").value,
             personalidad: document.getElementById("m-personalidad").value,
-            textureId: currentTexture,
+            mascotProTheme: currentMascotProTheme,
             accentColor: document.getElementById("m-accent")
               ? document.getElementById("m-accent").value
               : "#ec4899",
             fotoPerfilUrl: lastMascotFoto,
             galeria: lastMascotGaleria.slice(),
             muro: document.getElementById("m-muro").value,
+            vacunas: collectVacunasFromForm(),
+            veterinario: {
+              nombre: document.getElementById("m-vet-nombre")
+                ? document.getElementById("m-vet-nombre").value
+                : "",
+              telefono: document.getElementById("m-vet-tel") ? document.getElementById("m-vet-tel").value : "",
+              direccion: document.getElementById("m-vet-dir") ? document.getElementById("m-vet-dir").value : "",
+            },
+            fichaCritica: {
+              alergias: document.getElementById("m-fc-alergias") ? document.getElementById("m-fc-alergias").value : "",
+              medicacionDiaria: document.getElementById("m-fc-meds") ? document.getElementById("m-fc-meds").value : "",
+              tipoSangre: document.getElementById("m-fc-sangre") ? document.getElementById("m-fc-sangre").value : "",
+            },
           };
+          var dashLost = document.getElementById("dash-mascota-perdida");
+          var dashWa = document.getElementById("dash-m-whatsapp-urgencia");
+          if (dashLost) raw.mascotaPerdida = dashLost.checked;
+          if (dashWa) raw.whatsappUrgencia = dashWa.value;
           var n = window.normalizeMascotCard(raw);
           return {
             nombre: n.nombre,
@@ -752,10 +1106,16 @@
             personalidad: n.personalidad,
             themeId: n.themeId,
             textureId: n.textureId,
+            mascotProTheme: n.mascotProTheme,
             accentColor: n.accentColor,
             fotoPerfilUrl: n.fotoPerfilUrl,
             galeria: n.galeria,
             muro: n.muro,
+            vacunas: n.vacunas,
+            veterinario: n.veterinario,
+            fichaCritica: n.fichaCritica,
+            mascotaPerdida: n.mascotaPerdida,
+            whatsappUrgencia: n.whatsappUrgencia,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
           };
         }
@@ -765,6 +1125,11 @@
             unsub();
             unsub = null;
           }
+          if (unsubLostScans) {
+            unsubLostScans();
+            unsubLostScans = null;
+          }
+          if (!uid) return;
           var db = firebase.firestore();
           var ref =
             currentApp === "mascotbook"
@@ -782,6 +1147,57 @@
               showToast("Error al leer Firestore", false);
             }
           );
+          if (currentApp === "mascotbook") {
+            var lostInit = true;
+            unsubLostScans = window.EC_SILO.mascotLostScansRef(db, uid)
+              .orderBy("at", "desc")
+              .limit(5)
+              .onSnapshot(
+                function (snap) {
+                  if (lostInit) {
+                    lostInit = false;
+                    return;
+                  }
+                  snap.docChanges().forEach(function (ch) {
+                    if (ch.type === "added") {
+                      showToast("Nueva ubicación compartida (Modo mascota perdida).", true);
+                    }
+                  });
+                },
+                function () {}
+              );
+          }
+        }
+
+        function persistMascotLostDashboard(showToastOk) {
+          if (!uid) {
+            showToast("Iniciá sesión para guardar.", false);
+            return Promise.resolve();
+          }
+          var db = firebase.firestore();
+          var dashP = document.getElementById("dash-mascota-perdida");
+          var dashW = document.getElementById("dash-m-whatsapp-urgencia");
+          var norm = window.normalizeMascotCard({
+            mascotaPerdida: dashP ? dashP.checked : false,
+            whatsappUrgencia: dashW ? dashW.value : "",
+          });
+          return window.EC_SILO
+            .mascotCardRef(db, uid)
+            .set(
+              {
+                mascotaPerdida: norm.mascotaPerdida,
+                whatsappUrgencia: norm.whatsappUrgencia,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+              },
+              { merge: true }
+            )
+            .then(function () {
+              if (showToastOk) showToast("Configuración de seguridad guardada", true);
+              refreshPreview();
+            })
+            .catch(function (e) {
+              showToast(e.message || "No se pudo guardar", false);
+            });
         }
 
         function putFile(path, file) {
@@ -792,6 +1208,10 @@
         }
 
         document.getElementById("btn-save-personal").addEventListener("click", function () {
+          if (!uid) {
+            showToast("Iniciá sesión o creá cuenta para guardar (7 días de prueba).", false);
+            return;
+          }
           var payload = readPersonalPayload();
           var jobs = [];
           var foto = document.getElementById("p-foto").files[0];
@@ -828,6 +1248,10 @@
         });
 
         document.getElementById("btn-save-mascot").addEventListener("click", function () {
+          if (!uid) {
+            showToast("Iniciá sesión o creá cuenta para guardar (7 días de prueba).", false);
+            return;
+          }
           var payload = readMascotPayload();
           var jobs = [];
           var foto = document.getElementById("m-foto").files[0];
@@ -897,12 +1321,32 @@
           });
         });
 
-        document.querySelectorAll(".theme-swatch[data-texture]").forEach(function (btn) {
+        document.querySelectorAll("[data-mb-pro]").forEach(function (btn) {
           btn.addEventListener("click", function () {
-            currentTexture = btn.getAttribute("data-texture") || "elite";
-            document.querySelectorAll(".theme-swatch[data-texture]").forEach(function (b) {
-              b.classList.toggle("active", b.getAttribute("data-texture") === currentTexture);
-            });
+            var pro = btn.getAttribute("data-mb-pro");
+            if (pro) setMascotProTheme(pro);
+          });
+        });
+
+        var vacAdd = document.getElementById("m-vacuna-add");
+        if (vacAdd) {
+          vacAdd.addEventListener("click", function () {
+            renderVacunaRows(
+              collectVacunasFromForm().concat([{ vacuna: "", fecha: "", proximaDosis: "" }])
+            );
+          });
+        }
+
+        var vacBody = document.getElementById("m-vacunas-body");
+        if (vacBody) {
+          vacBody.addEventListener("input", function () {
+            if (currentApp === "mascotbook") refreshPreview();
+          });
+        }
+        ["m-vet-nombre", "m-vet-tel", "m-vet-dir", "m-fc-alergias", "m-fc-meds", "m-fc-sangre"].forEach(function (id) {
+          var el = document.getElementById(id);
+          if (!el) return;
+          el.addEventListener("input", function () {
             if (currentApp === "mascotbook") refreshPreview();
           });
         });
@@ -913,6 +1357,31 @@
             if (currentApp === "mascotbook") refreshPreview();
           });
         }
+        var dashLostCb = document.getElementById("dash-mascota-perdida");
+        if (dashLostCb) {
+          dashLostCb.addEventListener("change", function () {
+            persistMascotLostDashboard(false);
+          });
+        }
+        var dashLostSave = document.getElementById("dash-mascota-lost-save");
+        if (dashLostSave) {
+          dashLostSave.addEventListener("click", function () {
+            persistMascotLostDashboard(true);
+          });
+        }
+        var dashLostWa = document.getElementById("dash-m-whatsapp-urgencia");
+        if (dashLostWa) {
+          dashLostWa.addEventListener("input", function () {
+            if (currentApp === "mascotbook") refreshPreview();
+          });
+        }
+        ["m-nombre", "m-raza", "m-sexo", "m-salud", "m-historia", "m-personalidad", "m-muro"].forEach(function (mid) {
+          var el = document.getElementById(mid);
+          if (!el) return;
+          el.addEventListener("input", function () {
+            if (currentApp === "mascotbook") refreshPreview();
+          });
+        });
 
         document.querySelectorAll(".bg-preset-btn").forEach(function (btn) {
           btn.addEventListener("click", function () {
@@ -971,6 +1440,27 @@
         document.getElementById("admin-qr-modal").addEventListener("click", function (ev) {
           if (ev.target.id === "admin-qr-modal") closeAdminQrModal();
         });
+        var btnMq = document.getElementById("btn-mascot-qr-rescate");
+        if (btnMq) btnMq.addEventListener("click", openMascotRescueQrModal);
+        var mqClose = document.getElementById("admin-mascot-qr-close");
+        if (mqClose) mqClose.addEventListener("click", closeMascotRescueQrModal);
+        var mqModal = document.getElementById("admin-mascot-qr-modal");
+        if (mqModal) {
+          mqModal.addEventListener("click", function (ev) {
+            if (ev.target.id === "admin-mascot-qr-modal") closeMascotRescueQrModal();
+          });
+        }
+        var mqCopy = document.getElementById("admin-mascot-qr-copy");
+        if (mqCopy) {
+          mqCopy.addEventListener("click", function () {
+            var u = __mascotRescueUrl;
+            if (navigator.clipboard && navigator.clipboard.writeText && u) {
+              navigator.clipboard.writeText(u).then(function () {
+                showToast("Enlace del perfil copiado", true);
+              });
+            }
+          });
+        }
         document.getElementById("admin-qr-copy").addEventListener("click", function () {
           var u = __adminPublicCardUrl;
           if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -1023,19 +1513,43 @@
           firebase.auth().onAuthStateChanged(function (user) {
             if (gateLoading) gateLoading.classList.add("hidden");
             if (!user) {
-              if (gateMarketing) gateMarketing.classList.remove("hidden");
-              app.classList.add("hidden");
+              uid = "";
+              if (accountUnsub) {
+                accountUnsub();
+                accountUnsub = null;
+              }
+              if (unsub) {
+                unsub();
+                unsub = null;
+              }
+              lastAccountData = {};
+              try {
+                fillPersonal({});
+                fillMascot({});
+              } catch (eClear) {}
+              setAuthChrome(false);
+              app.classList.remove("hidden");
               initGateLinks();
+              setCurrentApp(currentApp, { skipUrl: true });
+              setPanel(activePanel, { skipUrl: true });
+              syncAdminUrl();
+              updateSubscriptionUi({});
+              refreshAdminSigPreview();
+              fitPhonePreview();
               return;
             }
-            if (gateMarketing) gateMarketing.classList.add("hidden");
             uid = user.uid;
+            setAuthChrome(true);
             app.classList.remove("hidden");
             bindAccountMeta();
             setCurrentApp(currentApp, { skipUrl: true });
             setPanel(activePanel, { skipUrl: true });
             syncAdminUrl();
             refreshAdminSigPreview();
+            fitPhonePreview();
+          });
+          window.addEventListener("resize", function () {
+            fitPhonePreview();
           });
         }
       })();
