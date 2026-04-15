@@ -65,19 +65,29 @@
       }
       .auth-right {
         position: relative;
-        background-image:
-          linear-gradient(165deg, rgba(2, 6, 23, 0.58), rgba(30, 58, 138, 0.4)),
-          url("assets/Gemini_Generated_Image_5h8njw5h8njw5h8n-051fe15f-91d8-41cf-8362-b12e08c7a7b4.png");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
+        background: linear-gradient(145deg, #0f172a 0%, #1d4ed8 55%, #312e81 100%);
         color: #e2e8f0;
         padding: 2.75rem;
         display: flex;
-        align-items: flex-end;
+        align-items: center;
+        justify-content: center;
       }
       .auth-right-copy {
         max-width: 26rem;
+        width: 100%;
+        text-align: center;
+      }
+      .auth-right-image {
+        display: block;
+        width: min(100%, 430px);
+        max-height: min(52vh, 460px);
+        height: auto;
+        margin: 0 auto 1rem;
+        object-fit: contain;
+        object-position: center top;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        box-shadow: 0 16px 34px rgba(2, 6, 23, 0.35);
       }
       .auth-right-copy strong {
         display: block;
@@ -258,6 +268,11 @@
       </section>
       <aside class="auth-right">
         <div class="auth-right-copy">
+          <img
+            class="auth-right-image"
+            src="assets/Gemini_Generated_Image_5h8njw5h8njw5h8n.png"
+            alt="Vista corporativa EliteCard"
+          />
           <strong>Creá tu acceso y activá una experiencia de dashboard premium</strong>
           <p>
             Gestioná EliteCard y MascotBook desde una interfaz profesional de Agencia WebElite, diseñada para velocidad y claridad.

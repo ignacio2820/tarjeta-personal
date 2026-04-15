@@ -2,7 +2,7 @@
 <html lang="es" data-ec-admin>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EliteCard · Agencia WebElite</title>
     <meta name="theme-color" content="#f8fafc" />
     <script>
@@ -22,11 +22,11 @@
     <link rel="stylesheet" href="mascot-themes.css" id="ec-link-mascot-themes" />
     <link rel="stylesheet" href="mascot-book-pro.css" id="ec-link-mascot-book-pro" />
     <link rel="stylesheet" href="admin-elite.css" id="ec-link-admin-elite" />
-    <link rel="stylesheet" href="styles.css?v=4.0" id="ec-link-styles-mascot" />
+    <link rel="stylesheet" href="styles.css?v=6.0" id="ec-link-styles-mascot" />
     <script>
       (function () {
         var v = window.__EC_ADMIN_ASSET_TS || Date.now();
-        var vCss = "4.0";
+        var vCss = "4.2";
         var a = document.getElementById("ec-link-mascot-themes");
         var c = document.getElementById("ec-link-mascot-book-pro");
         var b = document.getElementById("ec-link-admin-elite");
@@ -329,6 +329,9 @@
                 <h2 class="form-mascot-title">MascotBook Pro</h2>
                 <p class="mascot-admin-tagline">Perfil premium con salud estructurada · Agencia WebElite</p>
               </div>
+              <button type="button" class="btn-outline btn-mascot-share" id="btn-mascot-share-card">
+                <i class="fa-solid fa-share-nodes" aria-hidden="true"></i> Compartir Tarjeta
+              </button>
             </div>
 
             <div class="mb-work-tabs" role="tablist" aria-label="Secciones MascotBook">
@@ -359,13 +362,15 @@
                         <span>Banner</span>
                       </label>
                     </div>
-                    <div class="field field-upload">
-                      <input id="m-galeria" class="file-input-hidden" type="file" accept="image/*" multiple />
-                      <label for="m-galeria" class="file-upload-box file-upload-box--compact">
-                        <i class="fa-solid fa-images" aria-hidden="true"></i>
-                        <span>Galería</span>
-                      </label>
-                    </div>
+                  </div>
+                  <div class="mascot-gallery-slots-wrap" aria-labelledby="mb-gallery-slots-title">
+                    <h4 id="mb-gallery-slots-title" class="mascot-panel-card__subtitle">
+                      <i class="fa-solid fa-images" aria-hidden="true"></i> Muro de historia · Fotos (Slots 1 al 9)
+                    </h4>
+                    <p class="mascot-panel-card__hint mascot-panel-card__hint--tight">
+                      Cada slot permite vista previa, cambiar foto y eliminarla de Firebase Storage + Firestore.
+                    </p>
+                    <div id="m-gallery-slots" class="m-gallery-slots" aria-live="polite"></div>
                   </div>
                   <div class="field-grid field-grid--three">
                     <div class="field">
@@ -386,6 +391,12 @@
                       <label for="m-accent">Color de acento</label>
                       <input id="m-accent" type="color" value="#ec4899" />
                     </div>
+                    <div class="field">
+                      <label for="m-text-color">Color de texto</label>
+                      <input id="m-text-color" type="color" value="#ffffff" />
+                    </div>
+                  </div>
+                  <div class="field-grid field-grid--two">
                     <div class="field">
                       <label>Canales del dueño</label>
                       <button type="button" class="btn-outline btn-mascot-elite-contact mb-inline-contact-note" aria-disabled="true">
@@ -605,12 +616,15 @@
         var currentTexture = "elite";
         var currentMascotProTheme = "classic_paws";
         var currentMascotSurfaceTheme = "cloud_cream";
+        var currentMascotShareId = "";
+        var MAX_MASCOT_GALLERY_SLOTS = 9;
         var lastMascotCabecera = "";
         var __mascotRescueUrl = "";
         var uid = "";
         var unsub = null;
         var unsubLostScans = null;
         var lastMascotGaleria = [];
+        var lastMascotGallerySlots = Array(MAX_MASCOT_GALLERY_SLOTS).fill("");
         var lastPersonalMedia = { fotoUrl: "", logoUrl: "" };
         var lastMascotFoto = "";
         var accountUnsub = null;
@@ -790,7 +804,7 @@
           __mascotRescueUrl =
             window.location.origin +
             "/card.html?id=" +
-            encodeURIComponent(uid) +
+            encodeURIComponent(String(currentMascotShareId || uid || "").trim()) +
             "&view=pet";
           var modal = document.getElementById("admin-mascot-qr-modal");
           var img = document.getElementById("admin-mascot-qr-img");
@@ -912,6 +926,10 @@
                 encodeURIComponent(currentMascotProTheme || "classic_paws");
               if (mac && mac.value) {
                 base += "&ec_ma=" + encodeURIComponent(mac.value);
+              }
+              var mtc = document.getElementById("m-text-color");
+              if (mtc && mtc.value) {
+                base += "&ec_mtc=" + encodeURIComponent(mtc.value);
               }
               base += "&ec_ms=" + encodeURIComponent(currentMascotSurfaceTheme || "cloud_cream");
             } catch (ePv) {}
@@ -1107,6 +1125,154 @@
           return t.getFullYear() + "-" + m + "-" + d;
         }
 
+        function normalizeMascotGallerySlots(raw) {
+          var out = [];
+          var src = raw && Array.isArray(raw.galeriaSlots) ? raw.galeriaSlots : [];
+          if (!src.length && raw && Array.isArray(raw.galeria)) src = raw.galeria;
+          for (var i = 0; i < MAX_MASCOT_GALLERY_SLOTS; i++) {
+            out.push(String(src[i] || "").trim());
+          }
+          return out;
+        }
+
+        function compactMascotGalleryFromSlots(slots) {
+          return (slots || []).map(function (u) {
+            return String(u || "").trim();
+          }).filter(Boolean);
+        }
+
+        function ensureMascotGallerySlotUi() {
+          var host = document.getElementById("m-gallery-slots");
+          if (!host || host.getAttribute("data-built") === "1") return;
+          host.setAttribute("data-built", "1");
+          var frag = document.createDocumentFragment();
+          for (var i = 0; i < MAX_MASCOT_GALLERY_SLOTS; i++) {
+            var item = document.createElement("div");
+            item.className = "m-gallery-slot";
+            item.setAttribute("data-slot-idx", String(i));
+            item.innerHTML =
+              '<div class="m-gallery-slot-preview"><img alt="" class="m-gallery-slot-img hidden" /><span class="m-gallery-slot-empty">Slot ' +
+              (i + 1) +
+              ' · Sin foto</span></div>' +
+              '<div class="m-gallery-slot-actions">' +
+              '<label class="file-upload-box file-upload-box--compact m-gallery-slot-change">' +
+              '<i class="fa-solid fa-pen" aria-hidden="true"></i><span>Cambiar</span>' +
+              '<input type="file" class="file-input-hidden m-gallery-slot-input" accept="image/*" />' +
+              "</label>" +
+              '<button type="button" class="btn-outline m-gallery-slot-delete">Eliminar</button>' +
+              "</div>";
+            frag.appendChild(item);
+          }
+          host.appendChild(frag);
+          host.querySelectorAll(".m-gallery-slot-input").forEach(function (input, idx) {
+            input.addEventListener("change", function () {
+              var f = input.files && input.files[0] ? input.files[0] : null;
+              if (!f) return;
+              updateMascotGallerySlot(idx, f);
+              input.value = "";
+            });
+          });
+          host.querySelectorAll(".m-gallery-slot-delete").forEach(function (btn, idx) {
+            btn.addEventListener("click", function () {
+              removeMascotGallerySlot(idx);
+            });
+          });
+        }
+
+        function renderMascotGallerySlots() {
+          ensureMascotGallerySlotUi();
+          var host = document.getElementById("m-gallery-slots");
+          if (!host) return;
+          host.querySelectorAll(".m-gallery-slot").forEach(function (slot, idx) {
+            var url = String(lastMascotGallerySlots[idx] || "").trim();
+            var img = slot.querySelector(".m-gallery-slot-img");
+            var empty = slot.querySelector(".m-gallery-slot-empty");
+            var del = slot.querySelector(".m-gallery-slot-delete");
+            if (img) {
+              if (url) {
+                img.src = url;
+                img.classList.remove("hidden");
+              } else {
+                img.removeAttribute("src");
+                img.classList.add("hidden");
+              }
+            }
+            if (empty) empty.classList.toggle("hidden", !!url);
+            if (del) del.disabled = !url;
+          });
+        }
+
+        function persistMascotGallerySlots(nextSlots, okMsg) {
+          if (!uid) {
+            showToast("Iniciá sesión para guardar fotos.", false);
+            return Promise.resolve();
+          }
+          var cleanSlots = normalizeMascotGallerySlots({ galeriaSlots: nextSlots });
+          return window.EC_SILO
+            .mascotCardRef(firebase.firestore(), uid)
+            .set(
+              {
+                galeriaSlots: cleanSlots,
+                galeria: compactMascotGalleryFromSlots(cleanSlots),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+              },
+              { merge: true }
+            )
+            .then(function () {
+              lastMascotGallerySlots = cleanSlots.slice();
+              lastMascotGaleria = compactMascotGalleryFromSlots(cleanSlots);
+              renderMascotGallerySlots();
+              refreshPreview();
+              if (okMsg) showToast(okMsg, true);
+            });
+        }
+
+        function updateMascotGallerySlot(idx, file) {
+          if (!uid) {
+            showToast("Iniciá sesión para cargar fotos.", false);
+            return;
+          }
+          var oldUrl = String(lastMascotGallerySlots[idx] || "").trim();
+          var safeName = String(file.name || "foto").replace(/\W/g, "_");
+          var path =
+            "usuarios/" + uid + "/mascot/galeria_slot_" + (idx + 1) + "_" + Date.now() + "_" + safeName;
+          putFile(path, file)
+            .then(function (newUrl) {
+              var next = lastMascotGallerySlots.slice();
+              next[idx] = newUrl;
+              return persistMascotGallerySlots(next, "Foto del slot " + (idx + 1) + " actualizada").then(
+                function () {
+                  if (oldUrl && oldUrl !== newUrl) {
+                    try {
+                      firebase.storage().refFromURL(oldUrl).delete().catch(function () {});
+                    } catch (e) {}
+                  }
+                }
+              );
+            })
+            .catch(function (e) {
+              showToast(e.message || "No se pudo subir la foto", false);
+            });
+        }
+
+        function removeMascotGallerySlot(idx) {
+          var oldUrl = String(lastMascotGallerySlots[idx] || "").trim();
+          if (!oldUrl) return;
+          var next = lastMascotGallerySlots.slice();
+          next[idx] = "";
+          var delJob = Promise.resolve();
+          try {
+            delJob = firebase.storage().refFromURL(oldUrl).delete().catch(function () {});
+          } catch (e) {}
+          delJob
+            .then(function () {
+              return persistMascotGallerySlots(next, "Foto eliminada del slot " + (idx + 1));
+            })
+            .catch(function (e) {
+              showToast(e.message || "No se pudo eliminar la foto", false);
+            });
+        }
+
         function refreshVacunaRowOverdue(tr) {
           if (!tr) return;
           var pr = tr.querySelector(".m-vac-prox");
@@ -1184,7 +1350,10 @@
         }
 
         function fillMascot(d) {
+          var rawDoc = d && typeof d === "object" ? d : {};
+          var raw = d && typeof d === "object" ? d : {};
           var n = window.normalizeMascotCard ? window.normalizeMascotCard(d) : d;
+          currentMascotShareId = String(n.mascotId || rawDoc.mascotId || rawDoc.mascotaId || uid || "").trim();
           lastMascotFoto = n.fotoPerfilUrl || "";
           lastMascotCabecera = n.fotoCabeceraUrl || "";
           currentMascotSurfaceTheme = n.mascotSurfaceTheme || "cloud_cream";
@@ -1196,7 +1365,9 @@
           document.getElementById("m-historia").value = n.historia || "";
           document.getElementById("m-personalidad").value = n.personalidad || "";
           document.getElementById("m-muro").value = n.muro || "";
-          lastMascotGaleria = Array.isArray(n.galeria) ? n.galeria.slice() : [];
+          lastMascotGallerySlots = normalizeMascotGallerySlots(raw);
+          lastMascotGaleria = compactMascotGalleryFromSlots(lastMascotGallerySlots);
+          renderMascotGallerySlots();
           currentMascotProTheme = n.mascotProTheme || "classic_paws";
           currentTexture = n.textureId || "elite";
           syncMbProThemeUi();
@@ -1219,6 +1390,8 @@
           if (fcui) fcui.value = fc.cuidadosEspeciales || "";
           var acEl = document.getElementById("m-accent");
           if (acEl) acEl.value = n.accentColor || "#ec4899";
+          var tcEl = document.getElementById("m-text-color");
+          if (tcEl) tcEl.value = n.textColor || "#ffffff";
           var dLost = document.getElementById("dash-mascota-perdida");
           var dWa = document.getElementById("dash-m-whatsapp-urgencia");
           if (dLost) dLost.checked = !!n.mascotaPerdida;
@@ -1226,7 +1399,9 @@
         }
 
         function readMascotPayload() {
+          var cleanSlots = normalizeMascotGallerySlots({ galeriaSlots: lastMascotGallerySlots });
           var raw = {
+            mascotId: String(currentMascotShareId || uid || "").trim(),
             nombre: document.getElementById("m-nombre").value,
             raza: document.getElementById("m-raza").value,
             sexo: document.getElementById("m-sexo").value,
@@ -1234,13 +1409,18 @@
             historia: document.getElementById("m-historia").value,
             personalidad: document.getElementById("m-personalidad").value,
             mascotProTheme: currentMascotProTheme,
+            tema: currentMascotProTheme,
             mascotSurfaceTheme: currentMascotSurfaceTheme,
             accentColor: document.getElementById("m-accent")
               ? document.getElementById("m-accent").value
               : "#ec4899",
+            textColor: document.getElementById("m-text-color")
+              ? document.getElementById("m-text-color").value
+              : "#ffffff",
             fotoPerfilUrl: lastMascotFoto,
             fotoCabeceraUrl: lastMascotCabecera,
-            galeria: lastMascotGaleria.slice(),
+            galeria: compactMascotGalleryFromSlots(cleanSlots),
+            galeriaSlots: cleanSlots,
             muro: document.getElementById("m-muro").value,
             vacunas: collectVacunasFromForm(),
             veterinario: {
@@ -1265,6 +1445,7 @@
           if (dashWa) raw.whatsappUrgencia = dashWa.value;
           var n = window.normalizeMascotCard(raw);
           return {
+            mascotId: n.mascotId || String(currentMascotShareId || uid || "").trim(),
             nombre: n.nombre,
             raza: n.raza,
             sexo: n.sexo,
@@ -1274,11 +1455,14 @@
             themeId: n.themeId,
             textureId: n.textureId,
             mascotProTheme: n.mascotProTheme,
+            tema: n.mascotProTheme,
             mascotSurfaceTheme: n.mascotSurfaceTheme,
             accentColor: n.accentColor,
+            textColor: n.textColor,
             fotoPerfilUrl: n.fotoPerfilUrl,
             fotoCabeceraUrl: n.fotoCabeceraUrl,
             galeria: n.galeria,
+            galeriaSlots: cleanSlots,
             muro: n.muro,
             vacunas: n.vacunas,
             veterinario: n.veterinario,
@@ -1376,6 +1560,51 @@
           });
         }
 
+        function setButtonBusy(btn, busy, busyText, idleText) {
+          if (!btn) return;
+          btn.disabled = !!busy;
+          btn.textContent = busy ? busyText : idleText;
+        }
+
+        function uploadMascotPrimaryMedia(kind, file) {
+          if (!uid || !file) {
+            if (!uid) showToast("Iniciá sesión para subir imágenes.", false);
+            return Promise.resolve();
+          }
+          var isProfile = kind === "foto";
+          var oldUrl = isProfile ? String(lastMascotFoto || "") : String(lastMascotCabecera || "");
+          var safe = String(file.name || "imagen").replace(/\W/g, "_");
+          var path = isProfile
+            ? "usuarios/" + uid + "/mascot/fotoPerfil_" + Date.now() + "_" + safe
+            : "usuarios/" + uid + "/mascot/cabecera_" + Date.now() + "_" + safe;
+          showToast("Guardando imagen...", true);
+          return putFile(path, file)
+            .then(function (url) {
+              var patch = {
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+              };
+              if (isProfile) patch.fotoPerfilUrl = url;
+              else patch.fotoCabeceraUrl = url;
+              return window.EC_SILO
+                .mascotCardRef(firebase.firestore(), uid)
+                .set(patch, { merge: true })
+                .then(function () {
+                  if (isProfile) lastMascotFoto = url;
+                  else lastMascotCabecera = url;
+                  refreshPreview();
+                  showToast(isProfile ? "Foto de perfil actualizada" : "Banner actualizado", true);
+                  if (oldUrl && oldUrl !== url) {
+                    try {
+                      firebase.storage().refFromURL(oldUrl).delete().catch(function () {});
+                    } catch (e) {}
+                  }
+                });
+            })
+            .catch(function (e) {
+              showToast(e.message || "No se pudo subir la imagen", false);
+            });
+        }
+
         document.getElementById("btn-save-personal").addEventListener("click", function () {
           if (!uid) {
             showToast("Iniciá sesión o creá cuenta para guardar (7 días de prueba).", false);
@@ -1417,16 +1646,17 @@
         });
 
         document.getElementById("btn-save-mascot").addEventListener("click", function () {
+          var btnSaveMascot = document.getElementById("btn-save-mascot");
           if (!uid) {
             showToast("Iniciá sesión o creá cuenta para guardar (7 días de prueba).", false);
             return;
           }
+          setButtonBusy(btnSaveMascot, true, "Guardando...", "Guardar MascotBook");
+          showToast("Guardando cambios...", true);
           var payload = readMascotPayload();
           var jobs = [];
           var foto = document.getElementById("m-foto").files[0];
           var cab = document.getElementById("m-cabecera") ? document.getElementById("m-cabecera").files[0] : null;
-          var gal = document.getElementById("m-galeria").files;
-          var newGalUrls = [];
           if (foto) {
             jobs.push(
               putFile("usuarios/" + uid + "/mascot/fotoPerfil", foto).then(function (url) {
@@ -1443,31 +1673,10 @@
               })
             );
           }
-          for (var i = 0; i < gal.length; i++) {
-            (function (file, idx) {
-              jobs.push(
-                putFile(
-                  "usuarios/" +
-                    uid +
-                    "/mascot/g_" +
-                    Date.now() +
-                    "_" +
-                    idx +
-                    "_" +
-                    file.name.replace(/\W/g, "_"),
-                  file
-                ).then(function (url) {
-                  newGalUrls[idx] = url;
-                })
-              );
-            })(gal[i], i);
-          }
           Promise.all(jobs)
             .then(function () {
-              var mergedGal = lastMascotGaleria.slice().concat(newGalUrls.filter(Boolean));
-              payload.galeria = window.normalizeMascotCard(
-                Object.assign({}, payload, { galeria: mergedGal })
-              ).galeria;
+              payload.galeria = compactMascotGalleryFromSlots(lastMascotGallerySlots);
+              payload.galeriaSlots = normalizeMascotGallerySlots({ galeriaSlots: lastMascotGallerySlots });
               payload.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
               return window.EC_SILO.mascotCardRef(firebase.firestore(), uid).set(payload, {
                 merge: true,
@@ -1477,13 +1686,14 @@
               document.getElementById("m-foto").value = "";
               var cIn = document.getElementById("m-cabecera");
               if (cIn) cIn.value = "";
-              document.getElementById("m-galeria").value = "";
               lastMascotGaleria = payload.galeria.slice();
               showToast("MascotBook guardado", true);
               refreshPreview();
+              setButtonBusy(btnSaveMascot, false, "Guardando...", "Guardar MascotBook");
             })
             .catch(function (e) {
               showToast(e.message || "Error al guardar", false);
+              setButtonBusy(btnSaveMascot, false, "Guardando...", "Guardar MascotBook");
             });
         });
 
@@ -1507,6 +1717,8 @@
           });
         });
 
+        ensureMascotGallerySlotUi();
+        renderMascotGallerySlots();
         setMascotTab("identidad");
 
         var goEliteContact = document.getElementById("btn-mascot-goto-elite-contact");
@@ -1514,6 +1726,45 @@
           goEliteContact.addEventListener("click", function () {
             setCurrentApp("personal");
             setPanel("contenido");
+          });
+        }
+        var shareMascotBtn = document.getElementById("btn-mascot-share-card");
+        if (shareMascotBtn) {
+          shareMascotBtn.addEventListener("click", function () {
+            if (!uid) {
+              showToast("Iniciá sesión para compartir la tarjeta.", false);
+              return;
+            }
+            var shareUrl =
+              window.location.origin +
+              "/card.html?id=" +
+              encodeURIComponent(String(currentMascotShareId || uid || "").trim()) +
+              "&view=pet";
+            if (navigator.share) {
+              navigator
+                .share({
+                  title: "MascotBook",
+                  text: "Te comparto la tarjeta de esta mascota",
+                  url: shareUrl,
+                })
+                .then(function () {
+                  showToast("Tarjeta compartida", true);
+                })
+                .catch(function () {});
+              return;
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard
+                .writeText(shareUrl)
+                .then(function () {
+                  showToast("Enlace copiado al portapapeles", true);
+                })
+                .catch(function () {
+                  showToast("No se pudo copiar el enlace", false);
+                });
+              return;
+            }
+            showToast("Copiá este enlace: " + shareUrl, true);
           });
         }
 
@@ -1562,6 +1813,12 @@
             if (currentApp === "mascotbook") refreshPreview();
           });
         }
+        var mTextColor = document.getElementById("m-text-color");
+        if (mTextColor) {
+          mTextColor.addEventListener("input", function () {
+            if (currentApp === "mascotbook") refreshPreview();
+          });
+        }
         var dashLostCb = document.getElementById("dash-mascota-perdida");
         if (dashLostCb) {
           dashLostCb.addEventListener("change", function () {
@@ -1588,6 +1845,26 @@
             if (currentApp === "mascotbook") refreshPreview();
           });
         });
+        var mFotoInput = document.getElementById("m-foto");
+        if (mFotoInput) {
+          mFotoInput.addEventListener("change", function () {
+            var f = mFotoInput.files && mFotoInput.files[0] ? mFotoInput.files[0] : null;
+            if (!f) return;
+            uploadMascotPrimaryMedia("foto", f).then(function () {
+              mFotoInput.value = "";
+            });
+          });
+        }
+        var mCabInput = document.getElementById("m-cabecera");
+        if (mCabInput) {
+          mCabInput.addEventListener("change", function () {
+            var f = mCabInput.files && mCabInput.files[0] ? mCabInput.files[0] : null;
+            if (!f) return;
+            uploadMascotPrimaryMedia("cabecera", f).then(function () {
+              mCabInput.value = "";
+            });
+          });
+        }
 
         document.querySelectorAll(".bg-preset-btn").forEach(function (btn) {
           btn.addEventListener("click", function () {

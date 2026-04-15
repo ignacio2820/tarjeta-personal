@@ -6,9 +6,19 @@ service cloud.firestore {
       return request.auth != null && request.auth.uid == userId;
     }
 
-    /** Solo claves permitidas en tarjeta profesional (sin campos de mascota). */
-    function personalCardKeysOk() {
-      return request.resource.data.keys().hasOnly([
+    function mascotAllowedKeys() {
+      return [
+        'nombre', 'raza', 'sexo', 'salud', 'historia', 'personalidad',
+        'mascotId',
+        'themeId', 'textureId', 'mascotProTheme', 'tema', 'mascotSurfaceTheme', 'accentColor', 'textColor',
+        'fotoPerfilUrl', 'fotoCabeceraUrl', 'galeria', 'galeriaSlots', 'muro',
+        'vacunas', 'veterinario', 'fichaCritica', 'visitas', 'likes', 'mascotaPerdida', 'whatsappUrgencia',
+        'updatedAt'
+      ];
+    }
+
+    function personalAllowedKeys() {
+      return [
         'user_nombre', 'user_cargo', 'user_empresa', 'user_bio',
         'user_avatarShape', 'user_buttonLayout', 'user_bgColor', 'user_bgPreset',
         'nombreCompleto', 'cargo', 'empresa', 'redes',
@@ -18,18 +28,38 @@ service cloud.firestore {
         'bio', 'sitioWeb', 'instagram', 'linkedin', 'mapsUrl', 'calendlyUrl',
         'emailInstitucional',
         'updatedAt'
-      ]);
+      ];
+    }
+
+    /** Solo claves permitidas en tarjeta profesional (sin campos de mascota). */
+    function personalCardKeysOk() {
+      return request.resource.data.keys().hasOnly(personalAllowedKeys());
     }
 
     /** Solo claves permitidas en MascotBook (sin campos profesionales mezclados). */
     function mascotCardKeysOk() {
-      return request.resource.data.keys().hasOnly([
-        'nombre', 'raza', 'sexo', 'salud', 'historia', 'personalidad',
-        'themeId', 'textureId', 'mascotProTheme', 'mascotSurfaceTheme', 'accentColor',
-        'fotoPerfilUrl', 'fotoCabeceraUrl', 'galeria', 'muro',
-        'vacunas', 'veterinario', 'fichaCritica', 'mascotaPerdida', 'whatsappUrgencia',
-        'updatedAt'
-      ]);
+      return request.resource.data.keys().hasOnly(mascotAllowedKeys());
+    }
+
+    function ownerUpdateMascotOk() {
+      return request.resource.data.diff(resource.data).changedKeys().hasOnly(mascotAllowedKeys());
+    }
+
+    function ownerUpdatePersonalOk() {
+      return request.resource.data.diff(resource.data).changedKeys().hasOnly(personalAllowedKeys());
+    }
+
+    function publicMascotCounterUpdateOk() {
+      let oldVisitas = (resource.data.visitas is number) ? resource.data.visitas : 0;
+      let oldLikes = (resource.data.likes is number) ? resource.data.likes : 0;
+      return resource != null
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['visitas', 'likes'])
+        && request.resource.data.visitas is number
+        && request.resource.data.likes is number
+        && request.resource.data.visitas >= oldVisitas
+        && request.resource.data.visitas <= oldVisitas + 1
+        && request.resource.data.likes >= oldLikes
+        && request.resource.data.likes <= oldLikes + 1;
     }
 
     function mascotPerdidaActiva(userId) {
@@ -64,13 +94,16 @@ service cloud.firestore {
 
     match /usuarios/{userId}/personal_card/{docId} {
       allow read: if true;
-      allow create, update: if isOwner(userId) && personalCardKeysOk();
+      allow create: if isOwner(userId) && personalCardKeysOk();
+      allow update: if isOwner(userId) && ownerUpdatePersonalOk();
       allow delete: if isOwner(userId);
     }
 
     match /usuarios/{userId}/mascot_card/{docId} {
       allow read: if true;
-      allow create, update: if isOwner(userId) && mascotCardKeysOk();
+      allow create: if isOwner(userId) && mascotCardKeysOk();
+      allow update: if (isOwner(userId) && ownerUpdateMascotOk())
+        || (!isOwner(userId) && docId == 'profile' && publicMascotCounterUpdateOk());
       allow delete: if isOwner(userId);
     }
 
@@ -78,6 +111,11 @@ service cloud.firestore {
       allow read: if isOwner(userId);
       allow create: if lostScanCreateOk(userId);
       allow update, delete: if isOwner(userId);
+    }
+
+    match /mascotas/{mascotaId} {
+      allow read: if true;
+      allow write: if request.auth != null;
     }
 
     match /vetPasses/{token} {

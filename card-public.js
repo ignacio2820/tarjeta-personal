@@ -97,6 +97,13 @@
       } catch (e1) {}
       if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(ac)) m.accentColor = ac;
     }
+    var tc = qs("ec_mtc");
+    if (tc) {
+      try {
+        tc = decodeURIComponent(tc);
+      } catch (e1b) {}
+      if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(tc)) m.textColor = tc;
+    }
     var mp = qs("ec_mpt").toLowerCase();
     var ids = window.MASCOT_PRO_THEME_IDS;
     if (ids && ids.indexOf(mp) >= 0) m.mascotProTheme = mp;
@@ -196,6 +203,7 @@
       personalidad: [d.mascotaCaracter, d.mascotaGustos].filter(Boolean).join(" · "),
       themeId: tv,
       accentColor: /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(ac) ? ac : "",
+      textColor: "#ffffff",
       fotoPerfilUrl: String(d.mascotaFotoUrl || "").trim(),
       galeria: gal.map(function (u) {
         return String(u || "").trim();
@@ -206,6 +214,39 @@
       whatsappUrgencia: String(d.mascotaWhatsapp || "").trim(),
       fotoCabeceraUrl: String(d.mascotaBannerUrl || "").trim(),
       mascotSurfaceTheme: "cloud_cream",
+      visitas: Number(d.visitas || 0) || 0,
+      likes: Number(d.likes || 0) || 0,
+    };
+  }
+
+  function mapMascotasDoc(root) {
+    var d = root || {};
+    var gal = d.galeria;
+    if (!Array.isArray(gal)) gal = Array.isArray(d.fotos) ? d.fotos : [];
+    return {
+      nombre: String(d.nombreMascota || d.nombre || "").trim(),
+      raza: String(d.raza || "").trim(),
+      sexo: String(d.sexo || d.genero || "").trim(),
+      salud: String(d.salud || d.notasSalud || "").trim(),
+      historia: String(d.historia || d.bio || "").trim(),
+      personalidad: String(d.personalidad || "").trim(),
+      accentColor: String(d.accentColor || d.colorAcento || "").trim(),
+      textColor: String(d.textColor || "").trim(),
+      fotoPerfilUrl: String(d.fotoPerfil || d.fotoPerfilUrl || d.mascotaFotoUrl || "").trim(),
+      fotoCabeceraUrl: String(d.fotoBanner || d.fotoCabeceraUrl || d.mascotaBannerUrl || "").trim(),
+      galeria: gal.map(function (u) {
+        return String(u || "").trim();
+      }).filter(Boolean),
+      muro: String(d.muro || d.ultimaAventura || "").trim(),
+      vacunas: Array.isArray(d.vacunas) ? d.vacunas : [],
+      veterinario: d.veterinario && typeof d.veterinario === "object" ? d.veterinario : {},
+      fichaCritica: d.fichaCritica && typeof d.fichaCritica === "object" ? d.fichaCritica : {},
+      mascotaPerdida: !!d.mascotaPerdida,
+      whatsappUrgencia: String(d.whatsappUrgencia || d.whatsapp || "").trim(),
+      mascotSurfaceTheme: String(d.mascotSurfaceTheme || "cloud_cream"),
+      mascotProTheme: String(d.mascotProTheme || d.tema || "classic_paws"),
+      visitas: Number(d.visitas || 0) || 0,
+      likes: Number(d.likes || 0) || 0,
     };
   }
 
@@ -618,7 +659,10 @@
     shell.classList.toggle("ec-mascot-preview", qs("ec_admin_preview") === "1");
     var accent = String(nm.accentColor || "#ec4899").trim();
     if (!/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(accent)) accent = "#ec4899";
+    var txt = String(nm.textColor || "#ffffff").trim();
+    if (!/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(txt)) txt = "#ffffff";
     shell.style.setProperty("--mb-accent", accent);
+    shell.style.setProperty("--mb-text-color", txt);
 
     var hero = document.getElementById("mascot-hero");
     var heroImg = document.getElementById("mascot-hero-img");
@@ -657,6 +701,7 @@
       nm.fotoCabeceraUrl;
     if (!has && !lostOn) {
       root.classList.add("hidden");
+      setCardEmptyMessage("Perfil de mascota no encontrado.");
       if (empty) empty.classList.remove("hidden");
       hideMascotLostUi();
       return;
@@ -682,25 +727,13 @@
       bioEl.classList.toggle("hidden", !bioText);
     }
 
-    var pills = document.getElementById("mascot-pills");
-    pills.innerHTML = "";
-    if (nm.raza) {
-      var s = document.createElement("span");
-      s.className = "mb-ig-pill";
-      s.textContent = nm.raza;
-      pills.appendChild(s);
-    }
-    if (nm.sexo) {
-      var s2 = document.createElement("span");
-      s2.className = "mb-ig-pill";
-      s2.textContent = nm.sexo;
-      pills.appendChild(s2);
-    }
-    pills.classList.toggle("hidden", !pills.children.length);
-
     var nPosts = (nm.galeria && nm.galeria.length) || 0;
     var postsEl = document.getElementById("mascot-stat-posts");
     if (postsEl) postsEl.textContent = String(nPosts);
+    var visitsEl = document.getElementById("mascot-stat-visits");
+    if (visitsEl) visitsEl.textContent = String(Number(nm.visitas || 0) || 0);
+    var likesEl = document.getElementById("mascot-stat-likes");
+    if (likesEl) likesEl.textContent = String(Number(nm.likes || 0) || 0);
 
     var gal = document.getElementById("mascot-gallery");
     gal.innerHTML = "";
@@ -823,6 +856,13 @@
     }
 
     setupMascotLostMode(nm);
+    bindMascotLikeButton();
+    updatePublicMeta({
+      title: nm.nombre ? "MascotBook - " + nm.nombre : "MascotBook",
+      description:
+        String(nm.muro || nm.historia || nm.personalidad || "Perfil público de mascota en MascotBook.").slice(0, 180),
+      image: String(nm.fotoPerfilUrl || nm.fotoCabeceraUrl || ""),
+    });
   }
 
   function hideMascotLostUi() {
@@ -986,6 +1026,50 @@
     }
   }
 
+  function shouldTrackMascotCounters() {
+    return qs("ec_admin_preview") !== "1";
+  }
+
+  var __mascotCounterRef = null;
+  function mascotProfileRef() {
+    if (__mascotCounterRef) return __mascotCounterRef;
+    var uid = String(window.__EC_CARD_UID || "").trim();
+    if (!uid || !window.EC_SILO || !firebase || !firebase.firestore) return null;
+    return window.EC_SILO.mascotCardRef(firebase.firestore(), uid);
+  }
+
+  function incrementMascotCounter(counterKey) {
+    var ref = mascotProfileRef();
+    if (!ref || !counterKey) return Promise.resolve();
+    var patch = {};
+    patch[counterKey] = firebase.firestore.FieldValue.increment(1);
+    return ref.set(patch, { merge: true });
+  }
+
+  function bindMascotLikeButton() {
+    var btn = document.getElementById("mascot-like-btn");
+    if (!btn || btn.getAttribute("data-like-bound") === "1") return;
+    btn.setAttribute("data-like-bound", "1");
+    btn.addEventListener("click", function () {
+      if (!shouldTrackMascotCounters() || btn.disabled) return;
+      btn.disabled = true;
+      incrementMascotCounter("likes")
+        .then(function () {
+          var likesEl = document.getElementById("mascot-stat-likes");
+          if (likesEl) {
+            var next = (parseInt(String(likesEl.textContent || "0"), 10) || 0) + 1;
+            likesEl.textContent = String(next);
+          }
+          btn.classList.add("is-liked");
+          btn.innerHTML = '<i class="fa-solid fa-heart" aria-hidden="true"></i> Like registrado';
+        })
+        .catch(function () {})
+        .then(function () {
+          btn.disabled = false;
+        });
+    });
+  }
+
   var __mbPhotoLbInit = false;
   function initMascotPhotoLightbox() {
     if (__mbPhotoLbInit) return;
@@ -1037,6 +1121,30 @@
       .replace(/"/g, "&quot;");
   }
 
+  function updatePublicMeta(opts) {
+    var o = opts || {};
+    var title = String(o.title || "").trim();
+    var desc = String(o.description || "").trim();
+    var image = String(o.image || "").trim();
+    if (!title) title = "MascotBook";
+    if (!desc) desc = "Conocé el perfil público de esta mascota.";
+    document.title = title;
+    function setMeta(selector, attr, value) {
+      var el = document.querySelector(selector);
+      if (!el) return;
+      el.setAttribute(attr, value);
+    }
+    setMeta('meta[name="description"]', "content", desc);
+    setMeta('meta[property="og:title"]', "content", title);
+    setMeta('meta[property="og:description"]', "content", desc);
+    setMeta('meta[name="twitter:title"]', "content", title);
+    setMeta('meta[name="twitter:description"]', "content", desc);
+    if (image) {
+      setMeta('meta[property="og:image"]', "content", image);
+      setMeta('meta[name="twitter:image"]', "content", image);
+    }
+  }
+
   function showLoading(on) {
     var el = document.getElementById("card-loading");
     if (el) el.classList.toggle("hidden", !on);
@@ -1046,6 +1154,11 @@
     showLoading(false);
     var nf = document.getElementById("card-not-found");
     if (nf) nf.classList.remove("hidden");
+  }
+
+  function setCardEmptyMessage(msg) {
+    var el = document.querySelector("#card-empty p");
+    if (el) el.textContent = msg || "Aún no hay datos públicos en este perfil.";
   }
 
   function start() {
@@ -1069,6 +1182,8 @@
 
     var db = firebase.firestore();
     var mascot = isMascotView();
+    var mascotasRef = mascot ? db.collection("mascotas").doc(uid) : null;
+    var mascotasByOwnerQuery = mascot ? db.collection("mascotas").where("ownerUid", "==", uid).limit(1) : null;
     var siloRef = mascot
       ? window.EC_SILO.mascotCardRef(db, uid)
       : window.EC_SILO.personalCardRef(db, uid);
@@ -1108,25 +1223,72 @@
       renderElite(np2);
     }
 
-    Promise.all([siloRef.get(), rootRef.get()])
+    Promise.all([
+      siloRef.get(),
+      rootRef.get(),
+      mascot && mascotasRef ? mascotasRef.get() : Promise.resolve(null),
+      mascot && mascotasByOwnerQuery ? mascotasByOwnerQuery.get() : Promise.resolve(null),
+    ])
       .then(function (pair) {
         var siloSnap = pair[0];
         var acctSnap = pair[1];
+        var mascSnap = pair[2];
+        var mascByOwnerSnap = pair[3];
         var accountRaw = acctSnap.exists ? acctSnap.data() || {} : {};
         if (mascot) {
           if (siloSnap.exists) {
+            __mascotCounterRef = siloRef;
             finishMascotOrElite(siloSnap, accountRaw);
+            if (shouldTrackMascotCounters()) {
+              setTimeout(function () {
+                incrementMascotCounter("visitas").catch(function () {});
+              }, 320);
+            }
+            return;
+          }
+          if (mascSnap && mascSnap.exists) {
+            showLoading(false);
+            document.getElementById("layout-elite").classList.add("hidden");
+            document.getElementById("layout-mascot").classList.add("hidden");
+            hideMascotLostUi();
+            __mascotCounterRef = mascotasRef;
+            renderMascot(window.normalizeMascotCard(mapMascotasDoc(mascSnap.data() || {})));
+            if (shouldTrackMascotCounters()) {
+              setTimeout(function () {
+                incrementMascotCounter("visitas").catch(function () {});
+              }, 320);
+            }
+            return;
+          }
+          if (mascByOwnerSnap && !mascByOwnerSnap.empty) {
+            var docSnap = mascByOwnerSnap.docs[0];
+            showLoading(false);
+            document.getElementById("layout-elite").classList.add("hidden");
+            document.getElementById("layout-mascot").classList.add("hidden");
+            hideMascotLostUi();
+            __mascotCounterRef = docSnap.ref;
+            renderMascot(window.normalizeMascotCard(mapMascotasDoc(docSnap.data() || {})));
+            if (shouldTrackMascotCounters()) {
+              setTimeout(function () {
+                incrementMascotCounter("visitas").catch(function () {});
+              }, 320);
+            }
             return;
           }
           if (!acctSnap.exists) {
             showLoading(false);
-            showNotFound();
+            setCardEmptyMessage("Perfil de mascota no encontrado.");
+            document.getElementById("layout-elite").classList.add("hidden");
+            document.getElementById("layout-mascot").classList.add("hidden");
+            var empty0 = document.getElementById("card-empty");
+            if (empty0) empty0.classList.remove("hidden");
             return;
           }
           showLoading(false);
           document.getElementById("layout-elite").classList.add("hidden");
           document.getElementById("layout-mascot").classList.add("hidden");
           hideMascotLostUi();
+          __mascotCounterRef = null;
           var rawM = acctSnap.data() || {};
           renderMascot(window.normalizeMascotCard(mapLegacyMascot(rawM)));
           return;

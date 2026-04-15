@@ -69,6 +69,7 @@
 
   /** MascotBook — documento usuarios/{uid}/mascot_card/profile */
   window.DEFAULT_MASCOT_CARD = {
+    mascotId: "",
     nombre: "",
     raza: "",
     sexo: "",
@@ -78,6 +79,7 @@
     themeId: "classic",
     textureId: "elite",
     accentColor: "#ec4899",
+    textColor: "#ffffff",
     fotoPerfilUrl: "",
     fotoCabeceraUrl: "",
     galeria: [],
@@ -88,6 +90,8 @@
     vacunas: [],
     veterinario: { nombre: "", telefono: "", direccion: "" },
     fichaCritica: { alergias: "", medicacionDiaria: "", tipoSangre: "", cuidadosEspeciales: "" },
+    visitas: 0,
+    likes: 0,
     mascotaPerdida: false,
     whatsappUrgencia: "",
   };
@@ -111,6 +115,8 @@
   function mascotProThemeFromLegacy(d) {
     var p = String(d.mascotProTheme || "").trim().toLowerCase();
     if (window.MASCOT_PRO_THEME_IDS.indexOf(p) >= 0) return p;
+    var t = String(d.tema || "").trim().toLowerCase();
+    if (window.MASCOT_PRO_THEME_IDS.indexOf(t) >= 0) return t;
     var tex = String((d && d.textureId) || "").toLowerCase();
     if (tex === "candy") return "candy_pop";
     if (tex === "park") return "organic_leaf";
@@ -315,6 +321,8 @@
     var tid = themeIdFromMascotPro(pro);
     var accent = String(d.accentColor || "").trim();
     if (!/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(accent)) accent = "#ec4899";
+    var textColor = String(d.textColor || "").trim();
+    if (!/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(textColor)) textColor = "#ffffff";
     var gal = d.galeria;
     if (!Array.isArray(gal)) gal = [];
     gal = gal.map(function (u) {
@@ -332,12 +340,19 @@
     var waU = String(d.whatsappUrgencia || "").replace(/\D/g, "");
     if (waU.length > 18) waU = waU.slice(0, 18);
     var perdida = !!d.mascotaPerdida;
+    var visitas = Number(d.visitas);
+    if (!isFinite(visitas) || visitas < 0) visitas = 0;
+    visitas = Math.floor(visitas);
+    var likes = Number(d.likes);
+    if (!isFinite(likes) || likes < 0) likes = 0;
+    likes = Math.floor(likes);
     var surf = String(d.mascotSurfaceTheme || "")
       .trim()
       .toLowerCase()
       .replace(/-/g, "_");
     if (window.MASCOT_SURFACE_THEME_IDS.indexOf(surf) < 0) surf = "cloud_cream";
     return {
+      mascotId: String(d.mascotId || d.mascotaId || "").trim(),
       nombre: String(d.nombre || "").trim(),
       raza: String(d.raza || "").trim(),
       sexo: String(d.sexo || "").trim(),
@@ -348,6 +363,7 @@
       textureId: tex,
       mascotProTheme: pro,
       accentColor: accent,
+      textColor: textColor,
       fotoPerfilUrl: String(d.fotoPerfilUrl || "").trim(),
       fotoCabeceraUrl: String(d.fotoCabeceraUrl || "").trim(),
       mascotSurfaceTheme: surf,
@@ -365,6 +381,8 @@
         tipoSangre: String(fic.tipoSangre || "").trim(),
         cuidadosEspeciales: String(fic.cuidadosEspeciales || "").trim(),
       },
+      visitas: visitas,
+      likes: likes,
       mascotaPerdida: perdida,
       whatsappUrgencia: waU,
     };

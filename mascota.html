@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MascotBook</title>
+    <meta name="description" content="Perfil público de mascota en MascotBook." />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="MascotBook" />
+    <meta property="og:description" content="Conocé la tarjeta pública de esta mascota." />
+    <meta property="og:image" content="/logo_EliteCard.png" />
+    <meta property="og:site_name" content="MascotBook" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="MascotBook" />
+    <meta name="twitter:description" content="Conocé la tarjeta pública de esta mascota." />
+    <meta name="twitter:image" content="/logo_EliteCard.png" />
+    <script>
+      (function () {
+        var q = window.location.search || "";
+        var h = window.location.hash || "";
+        var target = "card.html" + q;
+        if (h) target += h;
+        window.location.replace(target);
+      })();
+    </script>
+  </head>
+  <body>
+    <p>Redirigiendo a la tarjeta pública…</p>
+  </body>
+</html>
