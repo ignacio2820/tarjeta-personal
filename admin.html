@@ -22,11 +22,11 @@
     <link rel="stylesheet" href="mascot-themes.css" id="ec-link-mascot-themes" />
     <link rel="stylesheet" href="mascot-book-pro.css" id="ec-link-mascot-book-pro" />
     <link rel="stylesheet" href="admin-elite.css" id="ec-link-admin-elite" />
-    <link rel="stylesheet" href="styles.css?v=2.4" id="ec-link-styles-mascot" />
+    <link rel="stylesheet" href="styles.css?v=4.0" id="ec-link-styles-mascot" />
     <script>
       (function () {
         var v = window.__EC_ADMIN_ASSET_TS || Date.now();
-        var vCss = "2.4";
+        var vCss = "4.0";
         var a = document.getElementById("ec-link-mascot-themes");
         var c = document.getElementById("ec-link-mascot-book-pro");
         var b = document.getElementById("ec-link-admin-elite");
@@ -91,6 +91,21 @@
               <button type="button" class="mb-pro-pick" data-mb-pro="organic_leaf">Organic Leaf</button>
             </div>
             <p class="theme-panel-hint theme-panel-hint--accent">Color de acento: editarlo en Contenido → Identidad básica.</p>
+            <div class="mascot-side-uploads">
+              <p class="theme-panel-hint">Subida rápida de imágenes</p>
+              <button type="button" class="file-upload-box file-upload-box--compact mb-side-upload-trigger" data-target="m-foto">
+                <i class="fa-solid fa-camera" aria-hidden="true"></i>
+                <span>Foto de perfil</span>
+              </button>
+              <button type="button" class="file-upload-box file-upload-box--compact mb-side-upload-trigger" data-target="m-cabecera">
+                <i class="fa-solid fa-image" aria-hidden="true"></i>
+                <span>Banner</span>
+              </button>
+              <button type="button" class="file-upload-box file-upload-box--compact mb-side-upload-trigger" data-target="m-galeria">
+                <i class="fa-solid fa-images" aria-hidden="true"></i>
+                <span>Galería</span>
+              </button>
+            </div>
           </div>
         </aside>
 
@@ -330,41 +345,75 @@
               </div>
             </div>
 
+            <div class="mb-work-tabs" role="tablist" aria-label="Secciones MascotBook">
+              <button type="button" class="mb-tab-btn active" data-mb-tab="identidad" role="tab">Identidad</button>
+              <button type="button" class="mb-tab-btn" data-mb-tab="salud" role="tab">Salud</button>
+              <button type="button" class="mb-tab-btn" data-mb-tab="seguridad" role="tab">Seguridad y contacto</button>
+            </div>
+
             <div class="mascot-form-workspace">
               <div class="mascot-form-main">
-                <section class="mascot-panel-card" aria-labelledby="mb-card-id-title">
-                  <h3 id="mb-card-id-title" class="mascot-panel-card__title">Identidad básica</h3>
-                  <p class="mascot-panel-card__hint">Foto, cabecera, galería, datos de cabecera y color de acento del perfil.</p>
-                  <div class="field">
-                    <label for="m-foto">Foto de perfil</label>
-                    <input id="m-foto" type="file" accept="image/*" />
+                <section class="mascot-panel-card mascot-panel-card--identity" data-mb-tab-panel="identidad" aria-labelledby="mb-card-id-title">
+                  <h3 id="mb-card-id-title" class="mascot-panel-card__title">
+                    <i class="fa-solid fa-id-card" aria-hidden="true"></i> Identidad básica
+                  </h3>
+                  <p class="mascot-panel-card__hint">Datos principales del perfil en formato compacto para escritorio.</p>
+                  <div class="field-grid field-grid--three">
+                    <div class="field field-upload">
+                      <input id="m-foto" class="file-input-hidden" type="file" accept="image/*" />
+                      <label for="m-foto" class="file-upload-box file-upload-box--compact">
+                        <i class="fa-solid fa-camera" aria-hidden="true"></i>
+                        <span>Foto perfil</span>
+                      </label>
+                    </div>
+                    <div class="field field-upload">
+                      <input id="m-cabecera" class="file-input-hidden" type="file" accept="image/*" />
+                      <label for="m-cabecera" class="file-upload-box file-upload-box--compact">
+                        <i class="fa-solid fa-image" aria-hidden="true"></i>
+                        <span>Banner</span>
+                      </label>
+                    </div>
+                    <div class="field field-upload">
+                      <input id="m-galeria" class="file-input-hidden" type="file" accept="image/*" multiple />
+                      <label for="m-galeria" class="file-upload-box file-upload-box--compact">
+                        <i class="fa-solid fa-images" aria-hidden="true"></i>
+                        <span>Galería</span>
+                      </label>
+                    </div>
                   </div>
-                  <div class="field">
-                    <label for="m-cabecera">Imagen de cabecera (banner)</label>
-                    <input id="m-cabecera" type="file" accept="image/*" />
-                    <p class="field-hint-mini">Opcional. Si no subís imagen, el tema cubre la parte superior con patrón suave.</p>
+                  <div class="field-grid field-grid--three">
+                    <div class="field">
+                      <label for="m-nombre">Nombre mascota</label>
+                      <input id="m-nombre" type="text" autocomplete="off" placeholder="Ej. Luna" />
+                    </div>
+                    <div class="field">
+                      <label for="m-raza">Raza</label>
+                      <input id="m-raza" type="text" placeholder="Ej. mestizo, caniche toy, golden…" />
+                    </div>
+                    <div class="field">
+                      <label for="m-sexo">Sexo</label>
+                      <input id="m-sexo" type="text" placeholder="macho, hembra o cómo preferís indicarlo" />
+                    </div>
                   </div>
-                  <div class="field">
-                    <label for="m-galeria">Galería (varias imágenes)</label>
-                    <input id="m-galeria" type="file" accept="image/*" multiple />
+                  <div class="field-grid field-grid--two">
+                    <div class="field">
+                      <label for="m-accent">Color de acento</label>
+                      <input id="m-accent" type="color" value="#ec4899" />
+                    </div>
+                    <div class="field">
+                      <label>Canales del dueño</label>
+                      <button type="button" class="btn-outline btn-mascot-elite-contact mb-inline-contact-note" aria-disabled="true">
+                        Ir a contacto EliteCard
+                      </button>
+                    </div>
                   </div>
-                  <div class="field">
-                    <label for="m-nombre">Nombre mascota</label>
-                    <input id="m-nombre" type="text" autocomplete="off" placeholder="Ej. Luna" />
-                  </div>
-                  <div class="field">
-                    <label for="m-raza">Raza</label>
-                    <input id="m-raza" type="text" placeholder="Ej. mestizo, caniche toy, golden…" />
-                  </div>
-                  <div class="field">
-                    <label for="m-sexo">Sexo</label>
-                    <input id="m-sexo" type="text" placeholder="macho, hembra o cómo preferís indicarlo" />
-                  </div>
-                  <div class="field">
-                    <label for="m-accent">Color de acento</label>
-                    <input id="m-accent" type="color" value="#ec4899" />
-                  </div>
-                  <h4 class="mascot-panel-card__subtitle">Historia y muro</h4>
+                </section>
+
+                <section class="mascot-panel-card mascot-panel-card--identity" data-mb-tab-panel="identidad" aria-labelledby="mb-card-story-title">
+                  <h3 id="mb-card-story-title" class="mascot-panel-card__title">
+                    <i class="fa-solid fa-pen-nib" aria-hidden="true"></i> Historia y muro
+                  </h3>
+                  <p class="mascot-panel-card__hint">Humanizá el perfil con una narrativa clara y fácil de leer.</p>
                   <div class="field">
                     <label for="m-historia">Historia</label>
                     <textarea id="m-historia" rows="3" placeholder="Origen, adopción, anécdotas que humanicen el perfil."></textarea>
@@ -378,20 +427,40 @@
                     <textarea id="m-muro" rows="2" placeholder="Frase corta o última aventura que quieras destacar arriba."></textarea>
                   </div>
                 </section>
+              </div>
 
-                <section class="mascot-panel-card" aria-labelledby="mb-card-contact-title">
-                  <h3 id="mb-card-contact-title" class="mascot-panel-card__title">Canales de contacto</h3>
-                  <p class="mascot-panel-card__hint">
-                    WhatsApp general, correo e Instagram del dueño viven en <strong>Tu EliteCard</strong> (mismo usuario). Editá ahí para que
-                    aparezcan en los botones del perfil público.
-                  </p>
-                  <button type="button" class="btn-outline btn-mascot-elite-contact" id="btn-mascot-goto-elite-contact">
-                    Ir a contacto EliteCard
+              <aside class="mascot-security-aside mascot-form-side" aria-label="Columna salud MascotBook">
+                <section class="mascot-panel-card mascot-panel-card--security" data-mb-tab-panel="seguridad" aria-labelledby="mb-card-security-title">
+                  <h3 id="mb-card-security-title" class="mascot-panel-card__title">
+                    <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Seguridad
+                  </h3>
+                  <p class="mascot-panel-card__hint">Modo mascota perdida: alerta roja y botón de pánico para contacto inmediato.</p>
+                  <div class="mascot-lost-switch-row mascot-lost-switch-row--xl">
+                    <label class="mascot-lost-switch-label mascot-lost-switch-label--xl" for="dash-mascota-perdida">
+                      <input type="checkbox" id="dash-mascota-perdida" />
+                      <span>Activar Modo Mascota Perdida</span>
+                    </label>
+                  </div>
+                  <div class="field">
+                    <label for="dash-m-whatsapp-urgencia">WhatsApp de urgencia (dueño)</label>
+                    <input
+                      id="dash-m-whatsapp-urgencia"
+                      type="tel"
+                      inputmode="tel"
+                      autocomplete="tel"
+                      placeholder="Código país + número, ej. 54911xxxxxxxx"
+                    />
+                  </div>
+                  <button type="button" class="btn-outline btn-dash-lost-save" id="dash-mascota-lost-save">Guardar configuración de seguridad</button>
+                  <button type="button" class="btn-qr" id="btn-mascot-qr-rescate">
+                    <i class="fa-solid fa-qrcode" aria-hidden="true"></i> Generar QR de rescate
                   </button>
                 </section>
 
-                <section class="mascot-panel-card" aria-labelledby="mb-card-health-title">
-                  <h3 id="mb-card-health-title" class="mascot-panel-card__title">Ficha de salud</h3>
+                <section class="mascot-panel-card mascot-panel-card--health" data-mb-tab-panel="salud" aria-labelledby="mb-card-health-title">
+                  <h3 id="mb-card-health-title" class="mascot-panel-card__title">
+                    <i class="fa-solid fa-paw" aria-hidden="true"></i> Ficha de salud
+                  </h3>
                   <p class="mascot-panel-card__hint">Vacunas, veterinario de cabecera, ficha crítica y notas libres.</p>
                   <div class="mascot-table-wrap">
                     <table class="mascot-data-table" aria-label="Vacunas">
@@ -409,7 +478,7 @@
                   <button type="button" class="btn-outline btn-mascot-add" id="m-vacuna-add">
                     <i class="fa-solid fa-plus" aria-hidden="true"></i> Añadir vacuna
                   </button>
-                  <h4 class="mascot-panel-card__subtitle">Veterinario de cabecera</h4>
+                  <h4 class="mascot-panel-card__subtitle"><i class="fa-solid fa-stethoscope" aria-hidden="true"></i> Veterinario de cabecera</h4>
                   <p class="mascot-panel-card__hint mascot-panel-card__hint--tight">En la tarjeta pública el teléfono se muestra como botón de llamada.</p>
                   <div class="field">
                     <label for="m-vet-nombre">Nombre</label>
@@ -423,7 +492,7 @@
                     <label for="m-vet-dir">Dirección / clínica</label>
                     <input id="m-vet-dir" type="text" placeholder="Calle, ciudad o enlace a maps en la bio si preferís" />
                   </div>
-                  <h4 class="mascot-panel-card__subtitle">Ficha médica crítica</h4>
+                  <h4 class="mascot-panel-card__subtitle"><i class="fa-solid fa-briefcase-medical" aria-hidden="true"></i> Ficha médica crítica</h4>
                   <div class="field">
                     <label for="m-fc-alergias">Alergias</label>
                     <textarea id="m-fc-alergias" rows="2" placeholder="Medicamentos, alimentos, picaduras…"></textarea>
@@ -446,42 +515,23 @@
                   </div>
                 </section>
 
-                <section class="mascot-panel-card mascot-panel-card--tools" aria-labelledby="mb-card-tools-title">
-                  <h3 id="mb-card-tools-title" class="mascot-panel-card__title">Seguridad y rescate</h3>
-                  <p class="mascot-panel-card__hint">QR con el enlace único del perfil para compartir o rescate.</p>
-                  <button type="button" class="btn-qr" id="btn-mascot-qr-rescate">
-                    <i class="fa-solid fa-qrcode" aria-hidden="true"></i> Generar QR de rescate
+                <section class="mascot-panel-card" data-mb-tab-panel="seguridad" aria-labelledby="mb-card-contact-title">
+                  <h3 id="mb-card-contact-title" class="mascot-panel-card__title">
+                    <i class="fa-solid fa-address-book" aria-hidden="true"></i> Canales de contacto
+                  </h3>
+                  <p class="mascot-panel-card__hint">
+                    WhatsApp, email e Instagram del dueño se editan en <strong>Tu EliteCard</strong> (mismo usuario).
+                  </p>
+                  <button type="button" class="btn-outline btn-mascot-elite-contact" id="btn-mascot-goto-elite-contact">
+                    Ir a contacto EliteCard
                   </button>
                 </section>
 
-                <div class="actions-row actions-row--mascot">
-                  <button type="button" class="btn-save" id="btn-save-mascot">Guardar MascotBook</button>
-                </div>
-              </div>
-
-              <aside class="mascot-security-aside" aria-label="Seguridad MascotBook">
-                <section class="mascot-panel-card mascot-panel-card--security">
-                  <h3 class="mascot-panel-card__title">Seguridad</h3>
-                  <p class="mascot-panel-card__hint">Modo mascota perdida: alerta roja en el perfil y botón de WhatsApp para quien encuentre a tu mascota.</p>
-                  <div class="mascot-lost-switch-row mascot-lost-switch-row--xl">
-                    <label class="mascot-lost-switch-label mascot-lost-switch-label--xl" for="dash-mascota-perdida">
-                      <input type="checkbox" id="dash-mascota-perdida" />
-                      <span>Activar Modo Mascota Perdida</span>
-                    </label>
-                  </div>
-                  <div class="field">
-                    <label for="dash-m-whatsapp-urgencia">WhatsApp de urgencia (dueño)</label>
-                    <input
-                      id="dash-m-whatsapp-urgencia"
-                      type="tel"
-                      inputmode="tel"
-                      autocomplete="tel"
-                      placeholder="Código país + número, ej. 54911xxxxxxxx"
-                    />
-                  </div>
-                  <button type="button" class="btn-outline btn-dash-lost-save" id="dash-mascota-lost-save">Guardar configuración de seguridad</button>
-                </section>
               </aside>
+            </div>
+
+            <div class="actions-row actions-row--mascot">
+              <button type="button" class="btn-save" id="btn-save-mascot">Guardar MascotBook</button>
             </div>
           </div>
           </div>
@@ -559,6 +609,7 @@
         var currentApp = "mascotbook";
         /** Vista principal: selector de producto o formularios. */
         var activePanel = "dashboard";
+        var currentMascotTab = "identidad";
         var currentTexture = "elite";
         var currentMascotProTheme = "classic_paws";
         var currentMascotSurfaceTheme = "cloud_cream";
@@ -645,8 +696,20 @@
           var rect = col ? col.getBoundingClientRect() : { height: window.innerHeight * 0.72 };
           var availH = Math.max(200, Math.min(820, rect.height - 108));
           var s = Math.min(availW / W, availH / H, 1);
+          if (currentApp === "mascotbook") s = Math.min(s, 0.8);
           wrap.style.transform = "scale(" + s + ")";
           stage.style.height = Math.ceil(H * s) + "px";
+        }
+
+        function setMascotTab(tab) {
+          var next = tab === "salud" || tab === "seguridad" ? tab : "identidad";
+          currentMascotTab = next;
+          document.querySelectorAll(".mb-tab-btn[data-mb-tab]").forEach(function (btn) {
+            btn.classList.toggle("active", btn.getAttribute("data-mb-tab") === next);
+          });
+          document.querySelectorAll("#form-mascot [data-mb-tab-panel]").forEach(function (panel) {
+            panel.classList.toggle("mb-tab-panel-hidden", panel.getAttribute("data-mb-tab-panel") !== next);
+          });
         }
 
         function bindAccountMeta() {
@@ -805,6 +868,7 @@
           formPersonal.classList.toggle("hidden", currentApp !== "personal");
           formMascot.classList.toggle("hidden", currentApp !== "mascotbook");
           updateThemePanelVisibility();
+          if (currentApp === "mascotbook") setMascotTab(currentMascotTab || "identidad");
           bindFirestore();
           refreshPreview();
           updateSubscriptionUi(lastAccountData);
@@ -1444,6 +1508,21 @@
             setPanel(btn.getAttribute("data-panel") || "dashboard");
           });
         });
+
+        document.querySelectorAll(".mb-tab-btn[data-mb-tab]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            setMascotTab(btn.getAttribute("data-mb-tab") || "identidad");
+          });
+        });
+
+        document.querySelectorAll(".mb-side-upload-trigger[data-target]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var id = btn.getAttribute("data-target");
+            var input = id ? document.getElementById(id) : null;
+            if (input && input.click) input.click();
+          });
+        });
+        setMascotTab("identidad");
 
         var goEliteContact = document.getElementById("btn-mascot-goto-elite-contact");
         if (goEliteContact) {

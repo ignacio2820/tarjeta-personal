@@ -269,10 +269,10 @@ body {
 }
 
 .admin-root.view-mascot.layout {
-  grid-template-columns: minmax(240px, 280px) minmax(0, 1fr) minmax(400px, 460px);
+  grid-template-columns: minmax(220px, 260px) minmax(0, 1fr) 380px;
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1024px) {
   .layout {
     grid-template-columns: 1fr;
   }
@@ -343,7 +343,7 @@ body {
 }
 
 .admin-root.view-mascot .dash-hub {
-  max-width: 1000px;
+  max-width: 1200px;
   gap: 1.25rem;
   padding: 0.65rem 0 1.5rem;
 }
@@ -943,14 +943,14 @@ details.vcf-details summary {
 
 /* —— MascotBook Pro (admin) —— */
 .admin-root.view-mascot #panel-dashboard {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0.25rem 0 1.5rem;
 }
 
 .mascot-dash-themes {
   display: none;
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 1.5rem auto 0;
   padding: 0 0.25rem;
 }
@@ -961,7 +961,7 @@ details.vcf-details summary {
 
 .mascot-dash-lost {
   display: none;
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 1.5rem auto 0;
   padding: 1.25rem 1.1rem 1.35rem;
   border-radius: 1rem;
@@ -1011,7 +1011,7 @@ details.vcf-details summary {
 
 .mascot-dash-surfaces {
   display: none;
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 1.25rem auto 0;
   padding: 1.1rem 1rem 1.2rem;
   border-radius: 1rem;
@@ -1394,7 +1394,7 @@ details.vcf-details summary {
 
 /* —— MascotBook · panel Contenido (tarjetas #F9FAFB) —— */
 .admin-root.view-mascot #panel-contenido {
-  background: #f9fafb;
+  background: #f3f4f6;
   border-radius: 0;
   margin: -1.25rem -1.35rem;
   padding: 1.35rem 1.35rem 2rem;
@@ -1402,33 +1402,73 @@ details.vcf-details summary {
 }
 
 #form-mascot.form-panel--mascot {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
   width: 100%;
 }
 
+.mb-work-tabs {
+  display: flex;
+  gap: 0.55rem;
+  margin: 0 0 1rem;
+  padding: 0.2rem;
+}
+
+.mb-tab-btn {
+  border: 1px solid #dbe3ef;
+  background: #fff;
+  color: #475569;
+  border-radius: 999px;
+  padding: 0.48rem 0.82rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.mb-tab-btn.active {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(29, 78, 216, 0.2);
+}
+
+.mb-tab-panel-hidden {
+  display: none !important;
+}
+
 .mascot-form-workspace {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 17.5rem;
-  gap: 1.35rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
   align-items: start;
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
   width: 100%;
 }
 
 .mascot-security-aside {
-  position: sticky;
-  top: 0.75rem;
+  position: static;
+  top: auto;
 }
 
 .mascot-panel-card {
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 22px rgba(15, 23, 42, 0.07), 0 1px 3px rgba(15, 23, 42, 0.05);
-  padding: 32px;
-  margin-bottom: 1.25rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  padding: 34px;
+  margin-bottom: 24px;
   border: 1px solid #e5e7eb;
+}
+
+.mascot-panel-card--identity {
+  border-left: 4px solid #1d4ed8;
+}
+
+.mascot-panel-card--health {
+  border-top: 4px solid #c3b1e1;
+  border-left: 1px solid #e5e7eb;
 }
 
 .mascot-panel-card__title {
@@ -1437,6 +1477,9 @@ details.vcf-details summary {
   font-weight: 700;
   letter-spacing: -0.02em;
   color: #1e3a8a;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .mascot-panel-card__subtitle {
@@ -1444,6 +1487,9 @@ details.vcf-details summary {
   font-size: 17px;
   font-weight: 700;
   color: #334155;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 
 .mascot-panel-card__hint {
@@ -1459,10 +1505,25 @@ details.vcf-details summary {
 }
 
 .mascot-panel-card--security {
+  border-left: 4px solid #dc2626;
   border-color: rgba(220, 38, 38, 0.22);
   box-shadow:
     0 4px 26px rgba(220, 38, 38, 0.1),
     0 1px 3px rgba(15, 23, 42, 0.05);
+}
+
+.mascot-panel-card--health .mascot-panel-card__title,
+.mascot-panel-card--health .mascot-panel-card__subtitle {
+  color: #6d5c8b;
+}
+
+.mascot-panel-card--health .mascot-panel-card__title i,
+.mascot-panel-card--health .mascot-panel-card__subtitle i {
+  color: #c3b1e1;
+}
+
+.mascot-panel-card--security .mascot-panel-card__title {
+  color: #b91c1c;
 }
 
 .mascot-panel-card--tools .btn-qr {
@@ -1471,16 +1532,126 @@ details.vcf-details summary {
 
 .btn-mascot-elite-contact {
   margin-top: 0.15rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.mb-inline-contact-note[aria-disabled="true"] {
+  opacity: 0.75;
+  pointer-events: none;
 }
 
 .actions-row--mascot {
   margin-top: 0.25rem;
+  grid-column: 1 / -1;
 }
 
 #form-mascot.form-panel--mascot .field > label {
   font-size: max(18px, 1.05rem);
   color: #334155;
   font-weight: 600;
+}
+
+.field-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.field-grid--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.field-grid--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.field-upload {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.file-input-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  border: 0;
+  padding: 0;
+  clip: rect(0 0 0 0);
+  overflow: hidden;
+}
+
+.file-upload-box {
+  border: 1px dashed #cbd5e1;
+  background: linear-gradient(180deg, #ffffff, #f8fafc);
+  border-radius: 14px;
+  padding: 0.78rem 0.95rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #334155;
+  cursor: pointer;
+  transition: border-color 0.18s, box-shadow 0.18s, transform 0.12s;
+}
+
+.file-upload-box i {
+  font-size: 0.98rem;
+  color: #1d4ed8;
+}
+
+.file-upload-box span {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.file-upload-box small {
+  font-size: 0.74rem;
+  color: #64748b;
+}
+
+.file-upload-box:hover {
+  border-color: #1d4ed8;
+  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.12);
+  transform: translateY(-1px);
+}
+
+.file-input-hidden:focus-visible + .file-upload-box {
+  outline: 2px solid rgba(29, 78, 216, 0.25);
+  outline-offset: 2px;
+}
+
+.mascot-side-uploads {
+  margin-top: 0.75rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.field-upload--compact {
+  margin-top: 0.45rem;
+}
+
+.file-upload-box--compact {
+  padding: 0.52rem 0.65rem;
+  border-radius: 11px;
+  flex-direction: row;
+  gap: 0.35rem;
+  justify-content: flex-start;
+}
+
+.file-upload-box--compact i {
+  font-size: 0.88rem;
+}
+
+.file-upload-box--compact span {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.file-upload-box--compact small {
+  display: none;
 }
 
 #form-mascot.form-panel--mascot .mascot-data-table th {
@@ -1496,6 +1667,8 @@ details.vcf-details summary {
 #form-mascot.form-panel--mascot select,
 #form-mascot.form-panel--mascot .mascot-data-table input {
   font-size: max(16px, 1rem);
+  padding-top: 0.52rem;
+  padding-bottom: 0.52rem;
 }
 
 #form-mascot.form-panel--mascot textarea {
@@ -1529,25 +1702,63 @@ details.vcf-details summary {
   cursor: pointer;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1024px) {
   .mascot-form-workspace {
     grid-template-columns: 1fr;
   }
 
-  .mascot-security-aside {
-    position: static;
-    order: -1;
+  .field-grid--three,
+  .field-grid--two {
+    grid-template-columns: 1fr;
   }
 }
 
 .admin-root.view-mascot .preview-col {
-  background: #f8fafc;
+  background: #f3f4f6;
   border-left: 1px solid #e5e7eb;
   padding: 1.5rem clamp(0.85rem, 1.5vw, 1.5rem);
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: calc(100dvh - 56px);
+  overflow: auto;
+}
+
+.mascot-preview-security {
+  margin-bottom: 1rem;
+}
+
+.mascot-preview-security .btn-qr,
+.mascot-preview-security .btn-dash-lost-save {
+  width: 100%;
+  margin-top: 0.55rem;
+}
+
+#form-mascot.form-panel--mascot .mascot-data-table td {
+  padding-top: 0.28rem;
+  padding-bottom: 0.28rem;
+}
+
+#form-mascot.form-panel--mascot .mascot-data-table input {
+  padding: 0.36rem 0.44rem;
+  border-radius: 0.45rem;
+}
+
+.admin-root.view-mascot .preview-col h3,
+.admin-root.view-mascot .preview-col .preview-spec,
+.admin-root.view-mascot .preview-col .phone-stage,
+.admin-root.view-mascot .preview-col .link-public {
+  max-width: 320px;
 }
 
 @media (max-width: 520px) {
   .mascot-panel-card {
     padding: 24px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .mb-work-tabs {
+    flex-wrap: wrap;
   }
 }
