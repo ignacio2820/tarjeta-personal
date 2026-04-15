@@ -268,6 +268,10 @@ body {
   min-height: calc(100dvh - 56px);
 }
 
+.admin-root.view-mascot.layout {
+  grid-template-columns: minmax(240px, 280px) minmax(0, 1fr) minmax(400px, 460px);
+}
+
 @media (max-width: 1180px) {
   .layout {
     grid-template-columns: 1fr;
@@ -324,6 +328,10 @@ body {
   overflow: auto;
 }
 
+.admin-root.view-mascot .main {
+  padding: 1.5rem clamp(1rem, 2vw, 1.75rem);
+}
+
 /* —— Hub —— */
 .dash-hub {
   display: grid;
@@ -332,6 +340,12 @@ body {
   max-width: 56rem;
   margin: 0 auto;
   padding: 0.5rem 0 1.25rem;
+}
+
+.admin-root.view-mascot .dash-hub {
+  max-width: 1000px;
+  gap: 1.25rem;
+  padding: 0.65rem 0 1.5rem;
 }
 
 @media (max-width: 720px) {
@@ -373,21 +387,15 @@ body {
 
 .hub-card.hub-mascot-impact {
   min-height: 14rem;
-  border: none;
-  background: linear-gradient(135deg, #fce7f3 0%, #e0f2fe 45%, #fdf4ff 100%);
-  box-shadow: 0 12px 40px rgba(219, 39, 119, 0.15), 0 4px 16px rgba(14, 165, 233, 0.12);
+  border: 1px solid #e5e7eb;
+  background: linear-gradient(145deg, #f8fafc 0%, #eff6ff 42%, #f1f5f9 100%);
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.07), 0 2px 8px rgba(15, 23, 42, 0.04);
   position: relative;
   overflow: hidden;
 }
 
 .hub-card.hub-mascot-impact::before {
-  content: "";
-  position: absolute;
-  inset: -40% -20% auto auto;
-  width: 12rem;
-  height: 12rem;
-  background: radial-gradient(circle, rgba(244, 114, 182, 0.35), transparent 70%);
-  pointer-events: none;
+  display: none;
 }
 
 .hub-card.hub-mascot-impact .hub-inner {
@@ -934,9 +942,15 @@ details.vcf-details summary {
 }
 
 /* —— MascotBook Pro (admin) —— */
+.admin-root.view-mascot #panel-dashboard {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0.25rem 0 1.5rem;
+}
+
 .mascot-dash-themes {
   display: none;
-  max-width: 56rem;
+  max-width: 1000px;
   margin: 1.5rem auto 0;
   padding: 0 0.25rem;
 }
@@ -947,13 +961,20 @@ details.vcf-details summary {
 
 .mascot-dash-lost {
   display: none;
-  max-width: 56rem;
+  max-width: 1000px;
   margin: 1.5rem auto 0;
   padding: 1.25rem 1.1rem 1.35rem;
   border-radius: 1rem;
   border: 2px solid rgba(220, 38, 38, 0.25);
   background: linear-gradient(145deg, rgba(254, 226, 226, 0.65), rgba(255, 255, 255, 0.96));
   box-shadow: var(--ae-shadow);
+}
+
+.mascot-dash-lost.mascot-dash-lost--hint {
+  border: 1px solid var(--ae-border);
+  background: #fff;
+  box-shadow: 0 4px 22px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  border-radius: 12px;
 }
 
 .admin-root.view-mascot .mascot-dash-lost {
@@ -990,7 +1011,7 @@ details.vcf-details summary {
 
 .mascot-dash-surfaces {
   display: none;
-  max-width: 56rem;
+  max-width: 1000px;
   margin: 1.25rem auto 0;
   padding: 1.1rem 1rem 1.2rem;
   border-radius: 1rem;
@@ -1112,6 +1133,13 @@ details.vcf-details summary {
   letter-spacing: -0.03em;
 }
 
+.admin-root.view-mascot .mb-dash-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e3a8a;
+  letter-spacing: -0.02em;
+}
+
 .mb-dash-lead {
   margin: 0 0 1rem;
   font-size: 0.88rem;
@@ -1223,6 +1251,11 @@ details.vcf-details summary {
   color: var(--ae-muted);
   margin: 0 0 0.65rem;
   line-height: 1.35;
+}
+
+.theme-panel-hint--accent {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
 }
 
 .mb-pro-grid {
@@ -1357,4 +1390,164 @@ details.vcf-details summary {
   font-size: 0.82rem;
   color: var(--ae-muted);
   line-height: 1.4;
+}
+
+/* —— MascotBook · panel Contenido (tarjetas #F9FAFB) —— */
+.admin-root.view-mascot #panel-contenido {
+  background: #f9fafb;
+  border-radius: 0;
+  margin: -1.25rem -1.35rem;
+  padding: 1.35rem 1.35rem 2rem;
+  min-height: calc(100dvh - 56px - 2.5rem);
+}
+
+#form-mascot.form-panel--mascot {
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.mascot-form-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 17.5rem;
+  gap: 1.35rem;
+  align-items: start;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.mascot-security-aside {
+  position: sticky;
+  top: 0.75rem;
+}
+
+.mascot-panel-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 22px rgba(15, 23, 42, 0.07), 0 1px 3px rgba(15, 23, 42, 0.05);
+  padding: 32px;
+  margin-bottom: 1.25rem;
+  border: 1px solid #e5e7eb;
+}
+
+.mascot-panel-card__title {
+  margin: 0 0 0.45rem;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #1e3a8a;
+}
+
+.mascot-panel-card__subtitle {
+  margin: 1.25rem 0 0.5rem;
+  font-size: 17px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.mascot-panel-card__hint {
+  margin: 0 0 1rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: #64748b;
+  max-width: 62ch;
+}
+
+.mascot-panel-card__hint--tight {
+  margin-top: -0.35rem;
+}
+
+.mascot-panel-card--security {
+  border-color: rgba(220, 38, 38, 0.22);
+  box-shadow:
+    0 4px 26px rgba(220, 38, 38, 0.1),
+    0 1px 3px rgba(15, 23, 42, 0.05);
+}
+
+.mascot-panel-card--tools .btn-qr {
+  margin-top: 0.25rem;
+}
+
+.btn-mascot-elite-contact {
+  margin-top: 0.15rem;
+}
+
+.actions-row--mascot {
+  margin-top: 0.25rem;
+}
+
+#form-mascot.form-panel--mascot .field > label {
+  font-size: max(18px, 1.05rem);
+  color: #334155;
+  font-weight: 600;
+}
+
+#form-mascot.form-panel--mascot .mascot-data-table th {
+  font-size: max(13px, 0.72rem);
+}
+
+#form-mascot.form-panel--mascot input[type="text"],
+#form-mascot.form-panel--mascot input[type="tel"],
+#form-mascot.form-panel--mascot input[type="email"],
+#form-mascot.form-panel--mascot input[type="color"],
+#form-mascot.form-panel--mascot input[type="file"]::file-selector-button,
+#form-mascot.form-panel--mascot textarea,
+#form-mascot.form-panel--mascot select,
+#form-mascot.form-panel--mascot .mascot-data-table input {
+  font-size: max(16px, 1rem);
+}
+
+#form-mascot.form-panel--mascot textarea {
+  line-height: 1.45;
+}
+
+#form-mascot.form-panel--mascot .field-hint-mini {
+  font-size: max(14px, 0.85rem);
+  line-height: 1.4;
+}
+
+.mascot-lost-switch-row--xl {
+  margin: 0.5rem 0 1.1rem;
+}
+
+.mascot-lost-switch-label--xl {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  font-size: max(18px, 1.05rem);
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.mascot-lost-switch-label--xl input {
+  width: 1.65rem;
+  height: 1.65rem;
+  min-width: 1.65rem;
+  margin-top: 0.12rem;
+  accent-color: #dc2626;
+  cursor: pointer;
+}
+
+@media (max-width: 1100px) {
+  .mascot-form-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .mascot-security-aside {
+    position: static;
+    order: -1;
+  }
+}
+
+.admin-root.view-mascot .preview-col {
+  background: #f8fafc;
+  border-left: 1px solid #e5e7eb;
+  padding: 1.5rem clamp(0.85rem, 1.5vw, 1.5rem);
+}
+
+@media (max-width: 520px) {
+  .mascot-panel-card {
+    padding: 24px;
+  }
 }

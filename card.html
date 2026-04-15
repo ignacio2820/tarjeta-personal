@@ -78,7 +78,7 @@
     <link rel="stylesheet" href="mascot-themes.css" id="ec-css-mascot-themes" />
     <link rel="stylesheet" href="mascot-social.css" id="ec-css-mascot-social" />
     <link rel="stylesheet" href="mascot-book-pro.css" id="ec-css-mascot-pro" />
-    <link rel="stylesheet" href="styles.css?v=2.1" id="ec-css-mascot-styles" />
+    <link rel="stylesheet" href="styles.css?v=2.4" id="ec-css-mascot-styles" />
     <script>
       (function () {
         var v = window.__EC_PAGE_LOAD_TS || Date.now();
@@ -91,7 +91,7 @@
         ].forEach(function (pair) {
           var el = document.getElementById(pair[0]);
           if (!el) return;
-          if (pair[0] === "ec-css-mascot-styles") el.href = pair[1] + "?v=2.1";
+          if (pair[0] === "ec-css-mascot-styles") el.href = pair[1] + "?v=2.4";
           else el.href = pair[1] + "?v=" + v;
         });
       })();
@@ -325,25 +325,19 @@
           </div>
         </div>
         <div class="mb-hero" id="mascot-hero">
-          <img id="mascot-hero-img" class="mb-hero-img hidden" src="" alt="" width="1200" height="600" />
+          <img id="mascot-hero-img" class="mb-hero-img mascot-photo hidden" src="" alt="" width="1200" height="600" />
           <div class="mb-hero-shade" aria-hidden="true"></div>
         </div>
         <div class="mb-ig-profile">
           <div class="mb-avatar-col">
             <div class="mb-ig-avatar-wrap">
-              <img id="mascot-avatar" class="mb-ig-avatar hidden" src="" alt="" width="120" height="120" />
+              <img id="mascot-avatar" class="mb-ig-avatar mascot-photo hidden" src="" alt="" width="120" height="120" />
             </div>
             <div class="mb-panic-wrap">
-              <a
-                id="mascot-panic-btn"
-                class="mb-panic-btn hidden"
-                href="#"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
+              <button type="button" id="mascot-panic-btn" class="mb-panic-btn hidden">
                 <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
-                ¡ENCONTRÉ A ESTA MASCOTA! Contactar dueño urgente
-              </a>
+                ¡ENCONTRÉ A ESTA MASCOTA!
+              </button>
             </div>
           </div>
           <div class="mb-ig-stats">
@@ -391,6 +385,14 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div id="mb-photo-lightbox" class="mb-photo-lightbox hidden" role="dialog" aria-modal="true" aria-label="Foto ampliada">
+      <button type="button" class="mb-photo-lightbox__backdrop" aria-label="Cerrar"></button>
+      <div class="mb-photo-lightbox__content">
+        <button type="button" class="mb-photo-lightbox__close" aria-label="Cerrar">×</button>
+        <img id="mb-photo-lightbox-img" class="mb-photo-lightbox__img" src="" alt="" />
       </div>
     </div>
 

@@ -22,11 +22,11 @@
     <link rel="stylesheet" href="mascot-themes.css" id="ec-link-mascot-themes" />
     <link rel="stylesheet" href="mascot-book-pro.css" id="ec-link-mascot-book-pro" />
     <link rel="stylesheet" href="admin-elite.css" id="ec-link-admin-elite" />
-    <link rel="stylesheet" href="styles.css?v=2.1" id="ec-link-styles-mascot" />
+    <link rel="stylesheet" href="styles.css?v=2.4" id="ec-link-styles-mascot" />
     <script>
       (function () {
         var v = window.__EC_ADMIN_ASSET_TS || Date.now();
-        var vCss = "2.1";
+        var vCss = "2.4";
         var a = document.getElementById("ec-link-mascot-themes");
         var c = document.getElementById("ec-link-mascot-book-pro");
         var b = document.getElementById("ec-link-admin-elite");
@@ -90,10 +90,7 @@
               <button type="button" class="mb-pro-pick" data-mb-pro="night_neon">Night Neon</button>
               <button type="button" class="mb-pro-pick" data-mb-pro="organic_leaf">Organic Leaf</button>
             </div>
-            <div class="field" style="margin-top: 0.85rem">
-              <label for="m-accent">Color de acento</label>
-              <input id="m-accent" type="color" value="#ec4899" />
-            </div>
+            <p class="theme-panel-hint theme-panel-hint--accent">Color de acento: editarlo en Contenido → Identidad básica.</p>
           </div>
         </aside>
 
@@ -172,32 +169,13 @@
                 </button>
               </div>
             </div>
-            <div id="mascot-dash-lost" class="mascot-dash-lost" aria-labelledby="mascot-dash-lost-title">
+            <div id="mascot-dash-lost" class="mascot-dash-lost mascot-dash-lost--hint" aria-labelledby="mascot-dash-lost-title">
               <p class="mb-dash-eyebrow">Seguridad</p>
               <h3 id="mascot-dash-lost-title" class="mb-dash-title">Modo mascota perdida</h3>
               <p class="mb-dash-lead">
-                Activá el modo si tu mascota se extravió: el perfil público muestra alerta, un botón de WhatsApp y permite que quien
-                escanea envíe su ubicación al panel.
+                Activá el interruptor y el WhatsApp de urgencia en <strong>Contenido</strong>: la tarjeta blanca <strong>Seguridad</strong> arriba a la
+                derecha. La vista previa del móvil refleja el banner rojo y el botón de pánico al instante.
               </p>
-              <div class="mascot-lost-switch-row">
-                <label class="mascot-lost-switch-label" for="dash-mascota-perdida">
-                  <input type="checkbox" id="dash-mascota-perdida" />
-                  <span>Activar Modo Mascota Perdida</span>
-                </label>
-              </div>
-              <div class="field mascot-lost-field">
-                <label for="dash-m-whatsapp-urgencia">WhatsApp de urgencia (código país + número)</label>
-                <input
-                  id="dash-m-whatsapp-urgencia"
-                  type="tel"
-                  inputmode="tel"
-                  autocomplete="tel"
-                  placeholder="Ej. 54911xxxxxxxx"
-                />
-              </div>
-              <button type="button" class="btn-outline btn-dash-lost-save" id="dash-mascota-lost-save">
-                Guardar configuración de seguridad
-              </button>
             </div>
           </div>
 
@@ -343,7 +321,7 @@
             </div>
           </div>
 
-          <div id="form-mascot" class="form-panel hidden">
+          <div id="form-mascot" class="form-panel form-panel--mascot hidden">
             <div class="mascot-admin-hero">
               <span class="mascot-admin-logo" aria-hidden="true"><i class="fa-solid fa-paw"></i></span>
               <div>
@@ -352,131 +330,158 @@
               </div>
             </div>
 
-            <div class="admin-card mascot-admin-card">
-              <h3 class="admin-card-title">Identidad</h3>
-              <p class="admin-card-hint">Nombre, raza y sexo visibles en la cabecera del perfil.</p>
-              <div class="field">
-                <label for="m-nombre">Nombre mascota</label>
-                <input id="m-nombre" type="text" autocomplete="off" />
-              </div>
-              <div class="field">
-                <label for="m-raza">Raza</label>
-                <input id="m-raza" type="text" />
-              </div>
-              <div class="field">
-                <label for="m-sexo">Sexo</label>
-                <input id="m-sexo" type="text" placeholder="macho / hembra / …" />
-              </div>
-            </div>
+            <div class="mascot-form-workspace">
+              <div class="mascot-form-main">
+                <section class="mascot-panel-card" aria-labelledby="mb-card-id-title">
+                  <h3 id="mb-card-id-title" class="mascot-panel-card__title">Identidad básica</h3>
+                  <p class="mascot-panel-card__hint">Foto, cabecera, galería, datos de cabecera y color de acento del perfil.</p>
+                  <div class="field">
+                    <label for="m-foto">Foto de perfil</label>
+                    <input id="m-foto" type="file" accept="image/*" />
+                  </div>
+                  <div class="field">
+                    <label for="m-cabecera">Imagen de cabecera (banner)</label>
+                    <input id="m-cabecera" type="file" accept="image/*" />
+                    <p class="field-hint-mini">Opcional. Si no subís imagen, el tema cubre la parte superior con patrón suave.</p>
+                  </div>
+                  <div class="field">
+                    <label for="m-galeria">Galería (varias imágenes)</label>
+                    <input id="m-galeria" type="file" accept="image/*" multiple />
+                  </div>
+                  <div class="field">
+                    <label for="m-nombre">Nombre mascota</label>
+                    <input id="m-nombre" type="text" autocomplete="off" placeholder="Ej. Luna" />
+                  </div>
+                  <div class="field">
+                    <label for="m-raza">Raza</label>
+                    <input id="m-raza" type="text" placeholder="Ej. mestizo, caniche toy, golden…" />
+                  </div>
+                  <div class="field">
+                    <label for="m-sexo">Sexo</label>
+                    <input id="m-sexo" type="text" placeholder="macho, hembra o cómo preferís indicarlo" />
+                  </div>
+                  <div class="field">
+                    <label for="m-accent">Color de acento</label>
+                    <input id="m-accent" type="color" value="#ec4899" />
+                  </div>
+                  <h4 class="mascot-panel-card__subtitle">Historia y muro</h4>
+                  <div class="field">
+                    <label for="m-historia">Historia</label>
+                    <textarea id="m-historia" rows="3" placeholder="Origen, adopción, anécdotas que humanicen el perfil."></textarea>
+                  </div>
+                  <div class="field">
+                    <label for="m-personalidad">Personalidad</label>
+                    <textarea id="m-personalidad" rows="3" placeholder="Tímida, juguetona, curiosa con extraños…"></textarea>
+                  </div>
+                  <div class="field">
+                    <label for="m-muro">Muro (visible arriba)</label>
+                    <textarea id="m-muro" rows="2" placeholder="Frase corta o última aventura que quieras destacar arriba."></textarea>
+                  </div>
+                </section>
 
-            <div class="admin-card mascot-admin-card">
-              <h3 class="admin-card-title">Personalidad y muro</h3>
-              <p class="admin-card-hint">Historia, personalidad y el texto del muro que aparece arriba en la tarjeta.</p>
-              <div class="field">
-                <label for="m-historia">Historia</label>
-                <textarea id="m-historia" rows="3"></textarea>
-              </div>
-              <div class="field">
-                <label for="m-personalidad">Personalidad</label>
-                <textarea id="m-personalidad" rows="3"></textarea>
-              </div>
-              <div class="field">
-                <label for="m-muro">Muro (visible arriba)</label>
-                <textarea id="m-muro" rows="2"></textarea>
-              </div>
-              <div class="field">
-                <label for="m-salud">Notas de salud libres</label>
-                <textarea id="m-salud" rows="3" placeholder="Observaciones generales, controles, etc."></textarea>
-              </div>
-            </div>
+                <section class="mascot-panel-card" aria-labelledby="mb-card-contact-title">
+                  <h3 id="mb-card-contact-title" class="mascot-panel-card__title">Canales de contacto</h3>
+                  <p class="mascot-panel-card__hint">
+                    WhatsApp general, correo e Instagram del dueño viven en <strong>Tu EliteCard</strong> (mismo usuario). Editá ahí para que
+                    aparezcan en los botones del perfil público.
+                  </p>
+                  <button type="button" class="btn-outline btn-mascot-elite-contact" id="btn-mascot-goto-elite-contact">
+                    Ir a contacto EliteCard
+                  </button>
+                </section>
 
-            <div class="admin-card mascot-admin-card">
-              <h3 class="admin-card-title">Plan de vacunación</h3>
-              <p class="admin-card-hint">Vacuna, fecha aplicada y próxima dosis. Añadí todas las filas que necesites.</p>
-              <div class="mascot-table-wrap">
-                <table class="mascot-data-table" aria-label="Vacunas">
-                  <thead>
-                    <tr>
-                      <th>Vacuna</th>
-                      <th>Fecha</th>
-                      <th>Próxima dosis</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody id="m-vacunas-body"></tbody>
-                </table>
-              </div>
-              <button type="button" class="btn-outline btn-mascot-add" id="m-vacuna-add">
-                <i class="fa-solid fa-plus" aria-hidden="true"></i> Añadir vacuna
-              </button>
-            </div>
+                <section class="mascot-panel-card" aria-labelledby="mb-card-health-title">
+                  <h3 id="mb-card-health-title" class="mascot-panel-card__title">Ficha de salud</h3>
+                  <p class="mascot-panel-card__hint">Vacunas, veterinario de cabecera, ficha crítica y notas libres.</p>
+                  <div class="mascot-table-wrap">
+                    <table class="mascot-data-table" aria-label="Vacunas">
+                      <thead>
+                        <tr>
+                          <th>Vacuna</th>
+                          <th>Fecha</th>
+                          <th>Próxima dosis</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody id="m-vacunas-body"></tbody>
+                    </table>
+                  </div>
+                  <button type="button" class="btn-outline btn-mascot-add" id="m-vacuna-add">
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i> Añadir vacuna
+                  </button>
+                  <h4 class="mascot-panel-card__subtitle">Veterinario de cabecera</h4>
+                  <p class="mascot-panel-card__hint mascot-panel-card__hint--tight">En la tarjeta pública el teléfono se muestra como botón de llamada.</p>
+                  <div class="field">
+                    <label for="m-vet-nombre">Nombre</label>
+                    <input id="m-vet-nombre" type="text" placeholder="Clínica o profesional de confianza" />
+                  </div>
+                  <div class="field">
+                    <label for="m-vet-tel">Teléfono</label>
+                    <input id="m-vet-tel" type="tel" placeholder="Código país + número, ej. +54 11 …" />
+                  </div>
+                  <div class="field">
+                    <label for="m-vet-dir">Dirección / clínica</label>
+                    <input id="m-vet-dir" type="text" placeholder="Calle, ciudad o enlace a maps en la bio si preferís" />
+                  </div>
+                  <h4 class="mascot-panel-card__subtitle">Ficha médica crítica</h4>
+                  <div class="field">
+                    <label for="m-fc-alergias">Alergias</label>
+                    <textarea id="m-fc-alergias" rows="2" placeholder="Medicamentos, alimentos, picaduras…"></textarea>
+                  </div>
+                  <div class="field">
+                    <label for="m-fc-meds">Medicación diaria</label>
+                    <textarea id="m-fc-meds" rows="2" placeholder="Dosis y horario si aplica."></textarea>
+                  </div>
+                  <div class="field">
+                    <label for="m-fc-sangre">Tipo de sangre</label>
+                    <input id="m-fc-sangre" type="text" placeholder="DEA 1.1, desconocido o guión" />
+                  </div>
+                  <div class="field">
+                    <label for="m-fc-cuidados">Cuidados especiales</label>
+                    <textarea id="m-fc-cuidados" rows="2" placeholder="Postoperatorio, dieta, restricciones de movilidad…"></textarea>
+                  </div>
+                  <div class="field">
+                    <label for="m-salud">Notas de salud libres</label>
+                    <textarea id="m-salud" rows="3" placeholder="Controles, observaciones generales, recordatorios."></textarea>
+                  </div>
+                </section>
 
-            <div class="admin-card mascot-admin-card">
-              <h3 class="admin-card-title">Veterinario de cabecera</h3>
-              <p class="admin-card-hint">En la tarjeta pública el teléfono se muestra como botón de llamada.</p>
-              <div class="field">
-                <label for="m-vet-nombre">Nombre</label>
-                <input id="m-vet-nombre" type="text" />
-              </div>
-              <div class="field">
-                <label for="m-vet-tel">Teléfono</label>
-                <input id="m-vet-tel" type="tel" placeholder="+54 …" />
-              </div>
-              <div class="field">
-                <label for="m-vet-dir">Dirección / clínica</label>
-                <input id="m-vet-dir" type="text" />
-              </div>
-            </div>
+                <section class="mascot-panel-card mascot-panel-card--tools" aria-labelledby="mb-card-tools-title">
+                  <h3 id="mb-card-tools-title" class="mascot-panel-card__title">Seguridad y rescate</h3>
+                  <p class="mascot-panel-card__hint">QR con el enlace único del perfil para compartir o rescate.</p>
+                  <button type="button" class="btn-qr" id="btn-mascot-qr-rescate">
+                    <i class="fa-solid fa-qrcode" aria-hidden="true"></i> Generar QR de rescate
+                  </button>
+                </section>
 
-            <div class="admin-card mascot-admin-card">
-              <h3 class="admin-card-title">Ficha médica crítica</h3>
-              <p class="admin-card-hint">Información sensible y clara para emergencias.</p>
-              <div class="field">
-                <label for="m-fc-alergias">Alergias</label>
-                <textarea id="m-fc-alergias" rows="2"></textarea>
+                <div class="actions-row actions-row--mascot">
+                  <button type="button" class="btn-save" id="btn-save-mascot">Guardar MascotBook</button>
+                </div>
               </div>
-              <div class="field">
-                <label for="m-fc-meds">Medicación diaria</label>
-                <textarea id="m-fc-meds" rows="2"></textarea>
-              </div>
-              <div class="field">
-                <label for="m-fc-sangre">Tipo de sangre</label>
-                <input id="m-fc-sangre" type="text" placeholder="DEA 1.1 / conocido / —" />
-              </div>
-              <div class="field">
-                <label for="m-fc-cuidados">Cuidados especiales</label>
-                <textarea id="m-fc-cuidados" rows="2" placeholder="Postoperatorio, dieta, restricciones de movilidad…"></textarea>
-              </div>
-            </div>
 
-            <div class="admin-card mascot-admin-card">
-              <h3 class="admin-card-title">Multimedia</h3>
-              <p class="admin-card-hint">Foto de perfil, banner de cabecera y galería estilo red social.</p>
-              <div class="field">
-                <label for="m-foto">Foto de perfil</label>
-                <input id="m-foto" type="file" accept="image/*" />
-              </div>
-              <div class="field">
-                <label for="m-cabecera">Imagen de cabecera (banner)</label>
-                <input id="m-cabecera" type="file" accept="image/*" />
-                <p class="field-hint-mini">Opcional. Se muestra a ancho completo con recorte suave; si no hay imagen, el patrón del tema cubre la parte superior.</p>
-              </div>
-              <div class="field">
-                <label for="m-galeria">Galería (varias imágenes)</label>
-                <input id="m-galeria" type="file" accept="image/*" multiple />
-              </div>
-            </div>
-
-            <div class="admin-card mascot-admin-card mascot-tools-card">
-              <h3 class="admin-card-title">Seguridad y rescate</h3>
-              <p class="admin-card-hint">QR con el enlace único del perfil de tu mascota para compartir o localización.</p>
-              <button type="button" class="btn-qr" id="btn-mascot-qr-rescate">
-                <i class="fa-solid fa-qrcode" aria-hidden="true"></i> Generar QR de rescate
-              </button>
-            </div>
-
-            <div class="actions-row">
-              <button type="button" class="btn-save" id="btn-save-mascot">Guardar MascotBook</button>
+              <aside class="mascot-security-aside" aria-label="Seguridad MascotBook">
+                <section class="mascot-panel-card mascot-panel-card--security">
+                  <h3 class="mascot-panel-card__title">Seguridad</h3>
+                  <p class="mascot-panel-card__hint">Modo mascota perdida: alerta roja en el perfil y botón de WhatsApp para quien encuentre a tu mascota.</p>
+                  <div class="mascot-lost-switch-row mascot-lost-switch-row--xl">
+                    <label class="mascot-lost-switch-label mascot-lost-switch-label--xl" for="dash-mascota-perdida">
+                      <input type="checkbox" id="dash-mascota-perdida" />
+                      <span>Activar Modo Mascota Perdida</span>
+                    </label>
+                  </div>
+                  <div class="field">
+                    <label for="dash-m-whatsapp-urgencia">WhatsApp de urgencia (dueño)</label>
+                    <input
+                      id="dash-m-whatsapp-urgencia"
+                      type="tel"
+                      inputmode="tel"
+                      autocomplete="tel"
+                      placeholder="Código país + número, ej. 54911xxxxxxxx"
+                    />
+                  </div>
+                  <button type="button" class="btn-outline btn-dash-lost-save" id="dash-mascota-lost-save">Guardar configuración de seguridad</button>
+                </section>
+              </aside>
             </div>
           </div>
           </div>
@@ -855,6 +860,15 @@
               base += "&ec_ms=" + encodeURIComponent(currentMascotSurfaceTheme || "cloud_cream");
             } catch (ePv) {}
             base += "&ec_admin_preview=1";
+            try {
+              var dl = document.getElementById("dash-mascota-perdida");
+              var dw = document.getElementById("dash-m-whatsapp-urgencia");
+              if (dl && dl.checked) {
+                base += "&ec_preview_lost=1";
+                var dig = dw ? String(dw.value || "").replace(/\D/g, "") : "";
+                if (dig.length >= 8) base += "&ec_preview_wa=" + encodeURIComponent(dig);
+              }
+            } catch (eLostPv) {}
           } else {
             try {
               var ash = document.getElementById("p-avatar-shape");
@@ -1431,6 +1445,14 @@
           });
         });
 
+        var goEliteContact = document.getElementById("btn-mascot-goto-elite-contact");
+        if (goEliteContact) {
+          goEliteContact.addEventListener("click", function () {
+            setCurrentApp("personal");
+            setPanel("contenido");
+          });
+        }
+
         document.querySelectorAll("[data-mb-pro]").forEach(function (btn) {
           btn.addEventListener("click", function () {
             var pro = btn.getAttribute("data-mb-pro");
@@ -1460,13 +1482,15 @@
             if (currentApp === "mascotbook") refreshPreview();
           });
         }
-        ["m-vet-nombre", "m-vet-tel", "m-vet-dir", "m-fc-alergias", "m-fc-meds", "m-fc-sangre"].forEach(function (id) {
-          var el = document.getElementById(id);
-          if (!el) return;
-          el.addEventListener("input", function () {
-            if (currentApp === "mascotbook") refreshPreview();
-          });
-        });
+        ["m-vet-nombre", "m-vet-tel", "m-vet-dir", "m-fc-alergias", "m-fc-meds", "m-fc-sangre", "m-fc-cuidados"].forEach(
+          function (id) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener("input", function () {
+              if (currentApp === "mascotbook") refreshPreview();
+            });
+          }
+        );
 
         var mAccent = document.getElementById("m-accent");
         if (mAccent) {
@@ -1478,6 +1502,7 @@
         if (dashLostCb) {
           dashLostCb.addEventListener("change", function () {
             persistMascotLostDashboard(false);
+            if (currentApp === "mascotbook") refreshPreview();
           });
         }
         var dashLostSave = document.getElementById("dash-mascota-lost-save");

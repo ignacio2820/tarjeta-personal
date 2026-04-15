@@ -1555,11 +1555,96 @@ html:has(.ec-pet-mode) body {
     inset 0 1px 0 rgba(255, 255, 255, 0.25),
     0 12px 36px rgba(185, 28, 28, 0.45);
   cursor: pointer;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
-#layout-mascot .mb-panic-btn[aria-disabled="true"] {
+#layout-mascot .mb-panic-btn:disabled {
   opacity: 0.45;
   pointer-events: none;
+  cursor: not-allowed;
+}
+
+/* Lightbox fotos MascotBook (perfil + galería) */
+.mb-photo-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 6000;
+  display: grid;
+  place-items: center;
+  padding: max(0.75rem, env(safe-area-inset-top)) max(0.75rem, env(safe-area-inset-right))
+    max(0.75rem, env(safe-area-inset-bottom)) max(0.75rem, env(safe-area-inset-left));
+  box-sizing: border-box;
+}
+
+.mb-photo-lightbox.hidden {
+  display: none !important;
+}
+
+.mb-photo-lightbox__backdrop {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: rgba(0, 0, 0, 0.9);
+  cursor: zoom-out;
+}
+
+.mb-photo-lightbox__content {
+  position: relative;
+  z-index: 1;
+  max-width: min(96vw, 1200px);
+  max-height: 90dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.mb-photo-lightbox__content .mb-photo-lightbox__close,
+.mb-photo-lightbox__content .mb-photo-lightbox__img {
+  pointer-events: auto;
+}
+
+.mb-photo-lightbox__close {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  z-index: 2;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  border: none;
+  background: rgba(15, 23, 42, 0.72);
+  color: #fff;
+  font-size: 1.65rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.mb-photo-lightbox__close:hover {
+  background: rgba(30, 41, 59, 0.92);
+}
+
+.mb-photo-lightbox__img {
+  max-width: 100%;
+  max-height: 85dvh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 0.35rem;
+  vertical-align: middle;
+}
+
+#layout-mascot .mascot-photo,
+#layout-mascot .gallery-item {
+  cursor: zoom-in;
 }
 
 #layout-mascot .mb-hero {

@@ -105,6 +105,16 @@
       .replace(/-/g, "_");
     var sids = window.MASCOT_SURFACE_THEME_IDS;
     if (sids && sids.indexOf(ms) >= 0) m.mascotSurfaceTheme = ms;
+    if (qs("ec_admin_preview") === "1" && qs("ec_preview_lost") === "1") {
+      m.mascotaPerdida = true;
+      var rawW = qs("ec_preview_wa");
+      if (rawW) {
+        try {
+          rawW = decodeURIComponent(rawW);
+        } catch (eLw) {}
+        m.whatsappUrgencia = String(rawW || "").replace(/\D/g, "");
+      }
+    }
   }
 
   function mascotTextureClass(m) {
@@ -699,6 +709,7 @@
       im.src = url;
       im.alt = "";
       im.loading = "lazy";
+      im.className = "gallery-item";
       gal.appendChild(im);
     });
 
@@ -823,8 +834,8 @@
     if (wrap) wrap.classList.add("hidden");
     if (panic) {
       panic.classList.add("hidden");
-      panic.removeAttribute("href");
-      panic.setAttribute("aria-disabled", "true");
+      panic.onclick = null;
+      panic.disabled = true;
     }
     if (msg) {
       msg.classList.add("hidden");
@@ -869,21 +880,45 @@
     wrap.classList.remove("hidden");
     var digits = String((nm && nm.whatsappUrgencia) || "").replace(/\D/g, "");
     var petName = String((nm && nm.nombre) || "Mascota").trim() || "Mascota";
-    var pre =
+    var stdMsg =
       "Hola, encontré a tu mascota " +
       petName +
       " escaneando su MascotBook. ¿Dónde nos encontramos?";
+    function openMascotRescueWa(text) {
+      window.open("https://wa.me/" + digits + "?text=" + encodeURIComponent(text), "_blank", "noopener,noreferrer");
+    }
     if (digits.length >= 8) {
       panic.classList.remove("hidden");
-      panic.setAttribute(
-        "href",
-        "https://wa.me/" + digits + "?text=" + encodeURIComponent(pre)
-      );
-      panic.removeAttribute("aria-disabled");
+      panic.disabled = false;
+      panic.onclick = function () {
+        if (panic.disabled) return;
+        if (!navigator.geolocation) {
+          openMascotRescueWa(stdMsg);
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          function (pos) {
+            var lat = pos.coords.latitude;
+            var lng = pos.coords.longitude;
+            var msg =
+              "¡Hola! Encontré a tu mascota " +
+              petName +
+              ". Mi ubicación actual es: https://www.google.com/maps?q=" +
+              lat +
+              "," +
+              lng;
+            openMascotRescueWa(msg);
+          },
+          function () {
+            openMascotRescueWa(stdMsg);
+          },
+          { enableHighAccuracy: true, timeout: 14000, maximumAge: 0 }
+        );
+      };
     } else {
       panic.classList.add("hidden");
-      panic.removeAttribute("href");
-      panic.setAttribute("aria-disabled", "true");
+      panic.onclick = null;
+      panic.disabled = true;
     }
     if (msg) msg.classList.add("hidden");
     locBtn.disabled = false;
@@ -951,6 +986,49 @@
     }
   }
 
+  var __mbPhotoLbInit = false;
+  function initMascotPhotoLightbox() {
+    if (__mbPhotoLbInit) return;
+    var lb = document.getElementById("mb-photo-lightbox");
+    var lbImg = document.getElementById("mb-photo-lightbox-img");
+    var bd = lb ? lb.querySelector(".mb-photo-lightbox__backdrop") : null;
+    var closeBtn = lb ? lb.querySelector(".mb-photo-lightbox__close") : null;
+    if (!lb || !lbImg || !bd || !closeBtn) return;
+    __mbPhotoLbInit = true;
+    function closeLb() {
+      lb.classList.add("hidden");
+      lb.setAttribute("aria-hidden", "true");
+      lbImg.removeAttribute("src");
+      document.body.style.overflow = "";
+    }
+    function openLb(src) {
+      if (!src) return;
+      lbImg.src = src;
+      lb.classList.remove("hidden");
+      lb.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+    document.addEventListener(
+      "click",
+      function (ev) {
+        var t = ev.target;
+        if (!t || t.nodeType !== 1) return;
+        if (t.tagName !== "IMG") return;
+        if (!t.classList.contains("mascot-photo") && !t.classList.contains("gallery-item")) return;
+        if (t.classList.contains("hidden")) return;
+        if (!t.getAttribute("src")) return;
+        ev.preventDefault();
+        openLb(t.src);
+      },
+      true
+    );
+    bd.addEventListener("click", closeLb);
+    closeBtn.addEventListener("click", closeLb);
+    document.addEventListener("keydown", function (ev) {
+      if (ev.key === "Escape" && lb && !lb.classList.contains("hidden")) closeLb();
+    });
+  }
+
   function escapeHtml(s) {
     return String(s || "")
       .replace(/&/g, "&amp;")
@@ -977,6 +1055,7 @@
       return;
     }
     window.__EC_CARD_UID = uid;
+    initMascotPhotoLightbox();
 
     var cfg = window.FIREBASE_WEB_CONFIG;
     if (!cfg || !cfg.apiKey || String(cfg.apiKey).indexOf("REEMPLAZAR") !== -1) {
