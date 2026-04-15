@@ -12,7 +12,8 @@
   background: #0a0a0a;
   color: #fafafa;
   overflow-x: clip;
-  padding-bottom: calc(3.1rem + env(safe-area-inset-bottom, 0px));
+  font-size: 18px;
+  padding-bottom: calc(1.2rem + env(safe-area-inset-bottom, 0px));
 }
 
 .mb-social.texture-park {
@@ -69,7 +70,7 @@
 .mb-hero {
   position: relative;
   width: 100%;
-  min-height: 10.5rem;
+  min-height: 200px;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -89,7 +90,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(to bottom, transparent 40%, rgba(0, 0, 0, 0.42) 100%);
+  background: linear-gradient(to bottom, transparent 60%, rgba(0, 0, 0, 0.18) 100%);
   opacity: 0;
 }
 
@@ -173,7 +174,7 @@
   color: var(--mb-text-color);
 }
 
-.mb-social.texture-candy .mb-like-btn {
+.mb-social.texture-candy .mb-gallery-like-btn {
   border-color: rgba(30, 27, 75, 0.18);
   background: rgba(255, 255, 255, 0.78);
   color: #1e1b4b;
@@ -186,56 +187,6 @@
   letter-spacing: 0.06em;
 }
 
-.mb-ig-like-row {
-  margin-top: 0.7rem;
-  width: 100%;
-}
-
-.mb-like-btn {
-  width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-  border-radius: 999px;
-  padding: 0.55rem 0.9rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.42rem;
-  font: inherit;
-  font-size: 0.82rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.14s ease, box-shadow 0.14s ease, background 0.2s ease;
-}
-
-.mb-like-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.22);
-}
-
-.mb-like-btn i {
-  color: #fb7185;
-}
-
-.mb-like-btn.is-liked {
-  background: #dc2626;
-  border-color: #dc2626;
-  color: #fff;
-  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.35);
-}
-
-.mb-like-btn.is-liked i {
-  color: #fff;
-}
-
-.mb-like-btn[disabled] {
-  opacity: 0.6;
-  cursor: default;
-  transform: none;
-  box-shadow: none;
-}
-
 .mb-ig-body {
   padding: 0.85rem 1rem 2.5rem;
   max-width: none;
@@ -246,9 +197,10 @@
 
 .mb-ig-name {
   margin: 0.35rem 0 0;
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: clamp(2.2rem, 6vw, 2.75rem);
+  font-weight: 800;
   color: var(--mb-text-color);
+  line-height: 1.05;
 }
 
 .mb-ig-sub {
@@ -325,12 +277,53 @@
   box-sizing: border-box;
 }
 
+.mb-gallery-item {
+  position: relative;
+}
+
 .mb-ig-grid img,
 .mb-ig-grid .gallery-item {
   width: 100%;
   aspect-ratio: 1;
   object-fit: cover;
   display: block;
+}
+
+.mb-gallery-like-btn {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  width: 1.65rem;
+  height: 1.65rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: rgba(15, 23, 42, 0.48);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.mb-gallery-like-btn i {
+  font-size: 0.78rem;
+}
+
+.mb-gallery-like-btn:hover {
+  transform: scale(1.04);
+}
+
+.mb-gallery-like-btn.is-liked {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #fff;
+}
+
+.mb-gallery-like-btn[disabled] {
+  opacity: 0.7;
+  cursor: default;
+  transform: none;
 }
 
 .mb-ig-health {
@@ -372,6 +365,10 @@
   flex-shrink: 0;
 }
 
+.mb-ig-topbar {
+  display: none;
+}
+
 .mb-topbar-titles {
   display: flex;
   flex-direction: column;
@@ -394,14 +391,34 @@
 }
 
 .mb-brand-footer {
-  margin-top: 1rem;
-  padding: 1rem 0.9rem;
+  margin: 1rem 1rem 0.6rem;
+  padding: 0.85rem 0.95rem;
   border-radius: 0.9rem;
   border: 1px solid rgba(255, 255, 255, 0.16);
   background: rgba(255, 255, 255, 0.06);
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
+  width: calc(100% - 2rem);
+  justify-content: center;
+}
+
+.mb-brand-footer img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+.mb-brand-footer strong {
+  display: block;
+  font-size: 1rem;
+  line-height: 1.1;
+}
+
+.mb-brand-footer small {
+  display: block;
+  font-size: 0.8rem;
+  opacity: 0.75;
 }
 
 .mb-social.texture-candy .mb-brand-footer {
@@ -567,21 +584,21 @@
   -webkit-backdrop-filter: blur(10px);
 }
 
-.mb-social[data-mb-pro="classic_paws"] .mb-like-btn,
+.mb-social[data-mb-pro="classic_paws"] .mb-gallery-like-btn,
 .mb-social[data-mb-pro="classic_paws"] .mb-vet-map {
   border-color: rgba(37, 99, 235, 0.45);
   background: rgba(37, 99, 235, 0.1);
   color: #1e3a8a;
 }
 
-.mb-social[data-mb-pro="candy_pop"] .mb-like-btn,
+.mb-social[data-mb-pro="candy_pop"] .mb-gallery-like-btn,
 .mb-social[data-mb-pro="candy_pop"] .mb-vet-map {
   border-color: rgba(255, 255, 255, 0.45);
   background: rgba(255, 255, 255, 0.2);
   color: #fff;
 }
 
-.mb-social[data-mb-pro="night_neon"] .mb-like-btn,
+.mb-social[data-mb-pro="night_neon"] .mb-gallery-like-btn,
 .mb-social[data-mb-pro="night_neon"] .mb-vet-map {
   border-color: rgba(34, 211, 238, 0.55);
   background: rgba(34, 211, 238, 0.1);
@@ -589,7 +606,7 @@
   box-shadow: 0 0 14px rgba(34, 211, 238, 0.25);
 }
 
-.mb-social[data-mb-pro="organic_leaf"] .mb-like-btn,
+.mb-social[data-mb-pro="organic_leaf"] .mb-gallery-like-btn,
 .mb-social[data-mb-pro="organic_leaf"] .mb-vet-map {
   border-color: rgba(22, 163, 74, 0.45);
   background: rgba(22, 163, 74, 0.1);

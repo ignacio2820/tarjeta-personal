@@ -737,13 +737,27 @@
 
     var gal = document.getElementById("mascot-gallery");
     gal.innerHTML = "";
-    (nm.galeria || []).forEach(function (url) {
+    (nm.galeria || []).forEach(function (url, idx) {
+      var item = document.createElement("div");
+      item.className = "mb-gallery-item";
+
       var im = document.createElement("img");
       im.src = url;
-      im.alt = "";
+      im.alt = "Foto de la mascota " + String(idx + 1);
       im.loading = "lazy";
       im.className = "gallery-item";
-      gal.appendChild(im);
+
+      var likeBtn = document.createElement("button");
+      likeBtn.type = "button";
+      likeBtn.className = "mb-gallery-like-btn";
+      likeBtn.setAttribute("aria-label", "Dar like a esta foto");
+      likeBtn.setAttribute("title", "Dar like");
+      likeBtn.setAttribute("data-mb-photo-url", url);
+      likeBtn.innerHTML = '<i class="fa-solid fa-heart" aria-hidden="true"></i>';
+
+      item.appendChild(im);
+      item.appendChild(likeBtn);
+      gal.appendChild(item);
     });
 
     function setBlock(idWrap, idInner, show, html) {
@@ -856,7 +870,7 @@
     }
 
     setupMascotLostMode(nm);
-    bindMascotLikeButton();
+    bindMascotPhotoLikeButtons();
     updatePublicMeta({
       title: nm.nombre ? "MascotBook - " + nm.nombre : "MascotBook",
       description:
@@ -1046,27 +1060,65 @@
     return ref.set(patch, { merge: true });
   }
 
-  function bindMascotLikeButton() {
-    var btn = document.getElementById("mascot-like-btn");
-    if (!btn || btn.getAttribute("data-like-bound") === "1") return;
-    btn.setAttribute("data-like-bound", "1");
-    btn.addEventListener("click", function () {
-      if (!shouldTrackMascotCounters() || btn.disabled) return;
-      btn.disabled = true;
-      incrementMascotCounter("likes")
-        .then(function () {
-          var likesEl = document.getElementById("mascot-stat-likes");
-          if (likesEl) {
-            var next = (parseInt(String(likesEl.textContent || "0"), 10) || 0) + 1;
-            likesEl.textContent = String(next);
-          }
-          btn.classList.add("is-liked");
-          btn.innerHTML = '<i class="fa-solid fa-heart" aria-hidden="true"></i> Like registrado';
-        })
-        .catch(function () {})
-        .then(function () {
-          btn.disabled = false;
-        });
+  function photoLikeStorageKey(url) {
+    var uid = String(window.__EC_CARD_UID || "").trim();
+    var raw = String(url || "").trim();
+    if (!raw) return "";
+    var safe = "";
+    try {
+      safe = window.btoa(unescape(encodeURIComponent(raw))).replace(/[=+/]/g, "_");
+    } catch (e) {
+      safe = raw.slice(0, 120).replace(/\W/g, "_");
+    }
+    return "mb_photo_like_" + uid + "_" + safe;
+  }
+
+  function isPhotoLikedLocal(url) {
+    var key = photoLikeStorageKey(url);
+    if (!key) return false;
+    try {
+      return localStorage.getItem(key) === "1";
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function rememberPhotoLikedLocal(url) {
+    var key = photoLikeStorageKey(url);
+    if (!key) return;
+    try {
+      localStorage.setItem(key, "1");
+    } catch (e) {}
+  }
+
+  function bindMascotPhotoLikeButtons() {
+    var host = document.getElementById("mascot-gallery");
+    if (!host) return;
+    host.querySelectorAll(".mb-gallery-like-btn[data-mb-photo-url]").forEach(function (btn) {
+      if (btn.getAttribute("data-like-bound") === "1") return;
+      btn.setAttribute("data-like-bound", "1");
+      var photoUrl = String(btn.getAttribute("data-mb-photo-url") || "").trim();
+      if (isPhotoLikedLocal(photoUrl)) btn.classList.add("is-liked");
+      btn.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        if (!shouldTrackMascotCounters() || btn.disabled || btn.classList.contains("is-liked")) return;
+        btn.disabled = true;
+        incrementMascotCounter("likes")
+          .then(function () {
+            var likesEl = document.getElementById("mascot-stat-likes");
+            if (likesEl) {
+              var next = (parseInt(String(likesEl.textContent || "0"), 10) || 0) + 1;
+              likesEl.textContent = String(next);
+            }
+            btn.classList.add("is-liked");
+            rememberPhotoLikedLocal(photoUrl);
+          })
+          .catch(function () {})
+          .then(function () {
+            btn.disabled = false;
+          });
+      });
     });
   }
 
@@ -1181,7 +1233,7 @@
     } catch (e) {}
 
     var db = firebase.firestore();
-    var mascot = isMascotView();
+    var mascot = !!window.__MB_VIEW_IS_PET || isMascotView();
     var mascotasRef = mascot ? db.collection("mascotas").doc(uid) : null;
     var mascotasByOwnerQuery = mascot ? db.collection("mascotas").where("ownerUid", "==", uid).limit(1) : null;
     var siloRef = mascot
@@ -1239,11 +1291,6 @@
           if (siloSnap.exists) {
             __mascotCounterRef = siloRef;
             finishMascotOrElite(siloSnap, accountRaw);
-            if (shouldTrackMascotCounters()) {
-              setTimeout(function () {
-                incrementMascotCounter("visitas").catch(function () {});
-              }, 320);
-            }
             return;
           }
           if (mascSnap && mascSnap.exists) {
@@ -1253,11 +1300,6 @@
             hideMascotLostUi();
             __mascotCounterRef = mascotasRef;
             renderMascot(window.normalizeMascotCard(mapMascotasDoc(mascSnap.data() || {})));
-            if (shouldTrackMascotCounters()) {
-              setTimeout(function () {
-                incrementMascotCounter("visitas").catch(function () {});
-              }, 320);
-            }
             return;
           }
           if (mascByOwnerSnap && !mascByOwnerSnap.empty) {
@@ -1268,11 +1310,6 @@
             hideMascotLostUi();
             __mascotCounterRef = docSnap.ref;
             renderMascot(window.normalizeMascotCard(mapMascotasDoc(docSnap.data() || {})));
-            if (shouldTrackMascotCounters()) {
-              setTimeout(function () {
-                incrementMascotCounter("visitas").catch(function () {});
-              }, 320);
-            }
             return;
           }
           if (!acctSnap.exists) {

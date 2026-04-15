@@ -110,6 +110,19 @@
         });
       })();
     </script>
+    <script>
+      (function () {
+        try {
+          var p = new URLSearchParams(window.location.search);
+          var view = String(p.get("view") || "")
+            .trim()
+            .toLowerCase();
+          window.__MB_VIEW_IS_PET = view === "pet" || view === "mascota" || view === "mascotbook";
+        } catch (e) {
+          window.__MB_VIEW_IS_PET = false;
+        }
+      })();
+    </script>
     <style>
       .hidden {
         display: none !important;
@@ -375,12 +388,6 @@
               <span>likes</span>
             </div>
           </div>
-          <div class="mb-ig-like-row">
-            <button type="button" id="mascot-like-btn" class="mb-like-btn">
-              <i class="fa-solid fa-heart" aria-hidden="true"></i>
-              Dar like
-            </button>
-          </div>
         </div>
         <div class="mb-ig-body">
           <h1 id="mascot-name" class="mb-ig-name"></h1>
@@ -411,6 +418,13 @@
             </div>
           </div>
         </div>
+        <footer class="mb-brand-footer" aria-label="Marca MascotBook">
+          <img src="/logo_EliteCard.png" alt="Logo MascotBook" width="38" height="38" />
+          <div>
+            <strong>MascotBook</strong>
+            <small>Agencia WebElite</small>
+          </div>
+        </footer>
       </div>
     </div>
 
@@ -435,6 +449,31 @@
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+    <script>
+      (function () {
+        if (!window.__MB_VIEW_IS_PET) return;
+        if (typeof firebase === "undefined" || !window.FIREBASE_WEB_CONFIG) return;
+        try {
+          if (!firebase.apps.length) firebase.initializeApp(window.FIREBASE_WEB_CONFIG);
+        } catch (e) {}
+        try {
+          var params = new URLSearchParams(window.location.search);
+          var uid =
+            params.get("id") ||
+            params.get("ID") ||
+            params.get("user") ||
+            params.get("uid") ||
+            "";
+          uid = String(uid || "").trim();
+          if (!uid) return;
+          var db = firebase.firestore();
+          var ref = db.collection("mascotas").doc(uid);
+          ref
+            .set({ visitas: firebase.firestore.FieldValue.increment(1) }, { merge: true })
+            .catch(function () {});
+        } catch (e2) {}
+      })();
+    </script>
     <script>
       document.write(
         '<script src="card-public.js?v=' + (window.__EC_PAGE_LOAD_TS || Date.now()) + '"><\/script>'
