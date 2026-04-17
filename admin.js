@@ -51,6 +51,10 @@
   }
 
   function resolveStatusField(docData, app) {
+    var g = docData && docData.status != null ? String(docData.status).trim().toLowerCase() : "";
+    if (g === "suspended" || g === "expired") return g;
+    if (g === "premium" || g === "active") return "active";
+    if (g === "trial") return "trial";
     var a = normalizeApp(app);
     if (a === "mascotbook") {
       return docData && docData.mascotbook_status != null
@@ -67,15 +71,26 @@
   }
 
   function getPlanStatusFromDoc(docData, app) {
+    var gs = docData && docData.status != null ? String(docData.status).trim().toLowerCase() : "";
+    if (gs === "suspended" || gs === "expired") return "inactive";
+    if (gs === "premium") return "active";
     var s = String(resolveStatusField(docData, app) || "trial")
       .trim()
       .toLowerCase();
-    if (s === "active" || s === "pro" || s === "paid") return "active";
+    if (s === "active" || s === "pro" || s === "paid" || s === "premium") return "active";
+    if (s === "suspended" || s === "expired") return "inactive";
     return "trial";
   }
 
   function getFechaRegistroMs(docData) {
-    if (!docData || docData.fecha_registro == null) return null;
+    if (!docData) return null;
+    if (docData.createdAt != null) {
+      var c = docData.createdAt;
+      if (typeof c === "number" && isFinite(c)) return c;
+      if (c && typeof c.toMillis === "function") return c.toMillis();
+      if (c && typeof c.seconds === "number") return c.seconds * 1000;
+    }
+    if (docData.fecha_registro == null) return null;
     var f = docData.fecha_registro;
     if (typeof f === "number" && isFinite(f)) return f;
     if (f && typeof f.toMillis === "function") return f.toMillis();
@@ -94,7 +109,8 @@
   function isEmailSignatureLocked(docData, app, uid, email) {
     if (isPerpetualAccess(uid, email, docData)) return false;
     if (normalizeApp(app) === "mascotbook") return true;
-    return getPlanStatusFromDoc(docData, "elitecard") === "trial";
+    var st = getPlanStatusFromDoc(docData, "elitecard");
+    return st === "trial" || st === "inactive";
   }
 
   global.EliteCardAdminSubscription = {

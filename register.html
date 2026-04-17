@@ -383,8 +383,13 @@
                 var a = String(q.get("app") || "").trim().toLowerCase();
                 if (a === "mascotbook") initialApp = "mascotbook";
               } catch (eApp) {}
+              var trialUntil = firebase.firestore.Timestamp.fromMillis(
+                Date.now() + 7 * 24 * 60 * 60 * 1000
+              );
               var doc = {
                 plan_status: "trial",
+                status: "trial",
+                premiumUntil: trialUntil,
                 fecha_registro: firebase.firestore.FieldValue.serverTimestamp(),
                 email: user.email || email,
                 role: "user",
@@ -396,10 +401,19 @@
                 doc.elitecard_status = "trial";
                 doc.mascotbook_status = "inactive";
               }
-              return db
-                .collection(col)
-                .doc(user.uid)
-                .set(doc, { merge: true })
+              var memCol = (window.FIRESTORE_MEMBERSHIP_COLLECTION || "users").trim() || "users";
+              var memDoc = {
+                email: user.email || email,
+                displayName: String(user.displayName || "").trim(),
+                role: "user",
+                status: "trial",
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                premiumUntil: trialUntil,
+              };
+              return Promise.all([
+                db.collection(col).doc(user.uid).set(doc, { merge: true }),
+                db.collection(memCol).doc(user.uid).set(memDoc, { merge: true }),
+              ])
                 .then(function () {
                   try {
                     localStorage.setItem("ec_current_app", initialApp);

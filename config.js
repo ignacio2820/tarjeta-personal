@@ -79,7 +79,8 @@
     themeId: "classic",
     textureId: "elite",
     accentColor: "#ec4899",
-    textColor: "#ffffff",
+    /** Derivado del tema en normalizeMascotCard (Classic Paws por defecto). */
+    textColor: "#1c1917",
     fotoPerfilUrl: "",
     fotoCabeceraUrl: "",
     galeria: [],
@@ -101,6 +102,14 @@
 
   /** Superficies decorativas MascotBook (pastel + patrón). */
   window.MASCOT_SURFACE_THEME_IDS = ["paw_blue", "paw_pink", "nature_mint", "cloud_cream"];
+
+  /** Color de texto legible por tema Pro (no editable en panel; evita conflicto con acento). */
+  window.MB_THEME_TEXT_BY_PRO = {
+    classic_paws: "#1c1917",
+    candy_pop: "#312e81",
+    night_neon: "#ecfeff",
+    organic_leaf: "#14532d",
+  };
 
   var THEME_IDS = ["classic", "candy", "night", "organic", "glass"];
   var TEXTURE_IDS = ["park", "candy", "elite"];
@@ -316,13 +325,15 @@
 
   window.normalizeMascotCard = function (patch) {
     var d = Object.assign({}, window.DEFAULT_MASCOT_CARD, patch || {});
-    var pro = mascotProThemeFromLegacy(d);
+    var pro = String(d.mascotProTheme || d.tema || "").trim().toLowerCase().replace(/-/g, "_");
+    var proIds = window.MASCOT_PRO_THEME_IDS;
+    if (!proIds || proIds.indexOf(pro) < 0) pro = mascotProThemeFromLegacy(d);
     var tex = textureFromMascotProTheme(pro);
     var tid = themeIdFromMascotPro(pro);
     var accent = String(d.accentColor || "").trim();
     if (!/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(accent)) accent = "#ec4899";
-    var textColor = String(d.textColor || "").trim();
-    if (!/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(textColor)) textColor = "#ffffff";
+    var themeTextMap = window.MB_THEME_TEXT_BY_PRO || {};
+    var textColor = themeTextMap[pro] || "#1c1917";
     var gal = d.galeria;
     if (!Array.isArray(gal)) gal = [];
     gal = gal.map(function (u) {
@@ -350,10 +361,13 @@
       .trim()
       .toLowerCase()
       .replace(/-/g, "_");
-    if (window.MASCOT_SURFACE_THEME_IDS.indexOf(surf) < 0) surf = "cloud_cream";
+    var surfIds = window.MASCOT_SURFACE_THEME_IDS;
+    if (!surfIds || surfIds.indexOf(surf) < 0) surf = "cloud_cream";
+    var nombreVal = String(d.nombre || d.nombreMascota || d.name || "").trim();
     return {
       mascotId: String(d.mascotId || d.mascotaId || "").trim(),
-      nombre: String(d.nombre || "").trim(),
+      ownerUid: String(d.ownerUid || "").trim(),
+      nombre: nombreVal,
       raza: String(d.raza || "").trim(),
       sexo: String(d.sexo || "").trim(),
       salud: String(d.salud || "").trim(),
@@ -362,6 +376,7 @@
       themeId: tid,
       textureId: tex,
       mascotProTheme: pro,
+      tema: pro,
       accentColor: accent,
       textColor: textColor,
       fotoPerfilUrl: String(d.fotoPerfilUrl || "").trim(),
@@ -386,6 +401,11 @@
       mascotaPerdida: perdida,
       whatsappUrgencia: waU,
     };
+  };
+
+  /** Normalización única de MascotBook (alias semántico compartido). */
+  window.normalizeMascotData = function (docData) {
+    return window.normalizeMascotCard(docData);
   };
 
   window.CARD_DEFAULTS = window.normalizeTarjetaData(window.DEFAULT_TARJETA_RAW);

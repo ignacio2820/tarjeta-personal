@@ -16,8 +16,18 @@ window.FIREBASE_WEB_CONFIG = {
 /** Colección donde cada documento es un perfil (ID = uid de Auth). */
 window.FIRESTORE_USERS_COLLECTION = "usuarios";
 
+/** Membresía, rol y premium (ID = uid). Reglas: listado solo admin. */
+window.FIRESTORE_MEMBERSHIP_COLLECTION = "users";
+
 /**
  * Sin ?user= en la URL, la tarjeta carga este documento (UID del admin principal).
  * Dejalo vacío ("") para usar el documento legacy "perfil" hasta migrar datos al uid real.
  */
 window.FIRESTORE_DEFAULT_CARD_UID = "";
+
+/** Si tiene URL (https://…), "Pasar a Premium" abre esa página; si está vacío, se muestra el modal de contacto. */
+window.EC_PREMIUM_UPGRADE_URL = "";
+
+/** Texto mostrado en el modal de contacto cuando no hay URL de pago (HTML permitido mínimo: <br>). */
+window.EC_PREMIUM_CONTACT_MESSAGE =
+  "Para activar <strong>MascotBook Pro</strong> sin límite de tiempo, contactá a <strong>Agencia WebElite</strong> y te pasamos medios de pago y valores actualizados.";

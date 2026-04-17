@@ -37,7 +37,13 @@
             }
           }
           uid = String(uid || "").trim();
-          if (!uid) {
+          var ecAdminPv = String(params.get("ec_admin_preview") || "").trim() === "1";
+          var viewEarly = String(params.get("view") || "")
+            .trim()
+            .toLowerCase();
+          var isPetLikeView =
+            viewEarly === "pet" || viewEarly === "mascota" || viewEarly === "mascotbook";
+          if (!uid && !ecAdminPv && !isPetLikeView) {
             window.location.replace("index.html");
             return;
           }
@@ -52,26 +58,28 @@
           } else {
             document.title = "EliteCard";
           }
-          var manifestUrl =
-            origin +
-            "/manifest-user?id=" +
-            encodeURIComponent(uid) +
-            "&app=" +
-            encodeURIComponent(app);
-          function injectManifest() {
-            var link = document.getElementById("manifest-link");
-            if (link) link.href = manifestUrl;
-            else {
-              var newLink = document.createElement("link");
-              newLink.rel = "manifest";
-              newLink.id = "manifest-link";
-              newLink.href = manifestUrl;
-              document.head.appendChild(newLink);
+          if (uid) {
+            var manifestUrl =
+              origin +
+              "/manifest-user?id=" +
+              encodeURIComponent(uid) +
+              "&app=" +
+              encodeURIComponent(app);
+            function injectManifest() {
+              var link = document.getElementById("manifest-link");
+              if (link) link.href = manifestUrl;
+              else {
+                var newLink = document.createElement("link");
+                newLink.rel = "manifest";
+                newLink.id = "manifest-link";
+                newLink.href = manifestUrl;
+                document.head.appendChild(newLink);
+              }
             }
+            if (document.readyState === "loading") {
+              document.addEventListener("DOMContentLoaded", injectManifest);
+            } else injectManifest();
           }
-          if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", injectManifest);
-          } else injectManifest();
         } catch (e2) {}
       })();
     </script>
@@ -92,6 +100,7 @@
     <link rel="stylesheet" href="mascot-themes.css" id="ec-css-mascot-themes" />
     <link rel="stylesheet" href="mascot-social.css" id="ec-css-mascot-social" />
     <link rel="stylesheet" href="mascot-book-pro.css" id="ec-css-mascot-pro" />
+    <link rel="stylesheet" href="mascot-theme-engine.css" id="ec-css-mascot-theme-engine" />
     <link rel="stylesheet" href="styles.css?v=6.0" id="ec-css-mascot-styles" />
     <script>
       (function () {
@@ -101,6 +110,7 @@
           ["ec-css-mascot-themes", "mascot-themes.css"],
           ["ec-css-mascot-social", "mascot-social.css"],
           ["ec-css-mascot-pro", "mascot-book-pro.css"],
+          ["ec-css-mascot-theme-engine", "mascot-theme-engine.css"],
           ["ec-css-mascot-styles", "styles.css"],
         ].forEach(function (pair) {
           var el = document.getElementById(pair[0]);
@@ -127,10 +137,38 @@
       .hidden {
         display: none !important;
       }
+      #card-render:not(.hidden) {
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+      }
       body {
         margin: 0;
         min-height: 100dvh;
         overflow-x: hidden;
+      }
+      /* Capas: tras render válido, la tarjeta queda por encima de carga/error */
+      #card-render {
+        position: relative;
+        isolation: isolate;
+        min-height: 100vh !important;
+        min-height: 100dvh !important;
+        background: #fff !important;
+      }
+      #card-render.ec-mb-content-layer {
+        z-index: 500;
+      }
+      #card-loading {
+        z-index: 100;
+      }
+      #card-not-found,
+      #card-empty {
+        z-index: 120;
+      }
+      #card-render.ec-mb-content-layer #layout-mascot,
+      #card-render.ec-mb-content-layer #layout-elite {
+        position: relative;
+        z-index: 400;
       }
       #layout-mascot,
       #mascot-shell {
@@ -269,6 +307,7 @@
     </style>
   </head>
   <body>
+    <div id="card-render">
     <div id="card-loading" aria-busy="true">
       <div class="card-spinner" aria-hidden="true"></div>
     </div>
@@ -350,7 +389,7 @@
         </button>
         <p id="mascot-lost-msg" class="mb-lost-msg hidden" role="status"></p>
       </div>
-      <div id="mascot-shell" class="mb-social texture-elite mb-surface--cloud_cream" data-mb-pro="classic_paws">
+      <div id="mascot-shell" class="mb-social mb-theme--classic_paws mb-surface--cloud_cream" data-mb-pro="classic_paws">
         <div class="mb-ig-topbar">
           <span class="mb-topbar-mark" aria-hidden="true"><i class="fa-solid fa-paw"></i></span>
           <div class="mb-topbar-titles">
@@ -392,6 +431,8 @@
         <div class="mb-ig-body">
           <h1 id="mascot-name" class="mb-ig-name"></h1>
           <p id="mascot-sub" class="mb-ig-sub"></p>
+          <p id="muro" class="mb-ig-bio hidden"></p>
+          <p id="personalidad" class="mb-ig-bio hidden"></p>
           <p id="mascot-bio" class="mb-ig-bio"></p>
           <div class="mb-ig-tabs" aria-hidden="true">
             <span class="active">▦</span>
@@ -435,17 +476,13 @@
         <img id="mb-photo-lightbox-img" class="mb-photo-lightbox__img" src="" alt="" />
       </div>
     </div>
+    </div>
 
-    <script>
-      (function () {
-        var t = window.__EC_PAGE_LOAD_TS || Date.now();
-        document.write('<script src="firebase-config.js?v=' + t + '"><\/script>');
-        document.write('<script src="config.js?v=' + t + '"><\/script>');
-        document.write('<script src="ec-silos.js?v=' + t + '"><\/script>');
-        document.write('<script src="admin.js?v=' + t + '"><\/script>');
-        document.write('<script src="elite-mail-sig.js?v=' + t + '"><\/script>');
-      })();
-    </script>
+    <script src="firebase-config.js"></script>
+    <script src="config.js"></script>
+    <script src="ec-silos.js"></script>
+    <script src="elite-mail-sig.js"></script>
+
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
@@ -465,19 +502,25 @@
             params.get("uid") ||
             "";
           uid = String(uid || "").trim();
+          console.log("[MascotBook/card.html] view=pet — id en query:", uid || "(vacío)");
           if (!uid) return;
+          if (String(params.get("ec_admin_preview") || "").trim() === "1") return;
           var db = firebase.firestore();
           var ref = db.collection("mascotas").doc(uid);
           ref
-            .set({ visitas: firebase.firestore.FieldValue.increment(1) }, { merge: true })
-            .catch(function () {});
+            .get()
+            .then(function (snap) {
+              console.log(
+                "[MascotBook/card.html] getDoc(mascotas," + uid + ").exists:",
+                snap.exists
+              );
+            })
+            .catch(function (err) {
+              console.warn("[MascotBook/card.html] getDoc mascotas error:", err && err.message);
+            });
         } catch (e2) {}
       })();
     </script>
-    <script>
-      document.write(
-        '<script src="card-public.js?v=' + (window.__EC_PAGE_LOAD_TS || Date.now()) + '"><\/script>'
-      );
-    </script>
+    <script src="card-public.js"></script>
   </body>
 </html>

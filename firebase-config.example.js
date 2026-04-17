@@ -12,6 +12,11 @@ window.FIREBASE_WEB_CONFIG = {
 };
 
 window.FIRESTORE_USERS_COLLECTION = "usuarios";
+window.FIRESTORE_MEMBERSHIP_COLLECTION = "users";
 
 /** Sin ?user=, tarjeta pública usa este UID (admin principal). Vacío → documento "perfil". */
 window.FIRESTORE_DEFAULT_CARD_UID = "";
+
+window.EC_PREMIUM_UPGRADE_URL = "";
+window.EC_PREMIUM_CONTACT_MESSAGE =
+  "Contactá a tu agencia para activar Premium: indicá email, WhatsApp o link de pago aquí.";

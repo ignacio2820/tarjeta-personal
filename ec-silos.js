@@ -5,10 +5,20 @@
   "use strict";
 
   var USERS = "usuarios";
+  var MEMBERSHIP = "users";
   var DOC_PROFILE = "profile";
 
   function usersCollection() {
     return (global.FIRESTORE_USERS_COLLECTION || USERS).trim() || USERS;
+  }
+
+  /** Perfil de membresía / roles (Firestore). Reglas: solo dueño o admin. */
+  function membershipCollection() {
+    return (global.FIRESTORE_MEMBERSHIP_COLLECTION || MEMBERSHIP).trim() || MEMBERSHIP;
+  }
+
+  function membershipRef(db, uid) {
+    return db.collection(membershipCollection()).doc(uid);
   }
 
   function personalCardRef(db, uid) {
@@ -30,6 +40,8 @@
   global.EC_SILO = {
     DOC_PROFILE: DOC_PROFILE,
     usersCollection: usersCollection,
+    membershipCollection: membershipCollection,
+    membershipRef: membershipRef,
     personalCardRef: personalCardRef,
     mascotCardRef: mascotCardRef,
     mascotLostScansRef: mascotLostScansRef,

@@ -1675,61 +1675,95 @@ html:has(.ec-pet-mode) body {
   opacity: 1;
 }
 
+/* Menos solapamiento con el banner que -2.6rem (mascot-social.css) */
 #layout-mascot .mb-ig-profile {
   position: relative;
   z-index: 2;
+  margin-top: -1.35rem;
 }
 
-/* Superficies pastel + relieve (sobrescriben fondos data-mb-pro cuando aplica) */
-#layout-mascot .mb-social.mb-surface--paw_blue {
-  background-color: #e8f4fc !important;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Cpath fill='%232563eb' fill-opacity='0.12' d='M10 24c-1-2 1-4 3-3 1 .3 1.5 1.2 1.6 2 .6-1.6 2.8-2.5 4.4-1.6 1.2.6 1.8 2 1.6 3.4-.2 1-.8 1.8-1.6 2.1-2 .9-4.5-.2-5.5-2-.5-.9-.6-2-.5-2.9z'/%3E%3Cpath fill='%232563eb' fill-opacity='0.1' d='M28 32c-.8-1.4.7-2.8 2.2-2.2.8.3 1.3 1 1.4 1.7.5-1.3 2-2 3.2-1.3 1 .5 1.5 1.6 1.4 2.7-.1.8-.5 1.4-1.2 1.7-1.4.7-3.2-.1-4-1.4-.4-.7-.5-1.5-.3-2.2z'/%3E%3C/svg%3E") !important;
-  background-size: 44px 44px !important;
-  color: #0f172a !important;
-  box-shadow: inset 0 0 80px rgba(255, 255, 255, 0.35);
+/* Footer marca: logo + nombre agencia centrados (especialmente en móvil) */
+#layout-mascot footer.mb-brand-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  max-width: min(100%, 100vw);
+  box-sizing: border-box;
+  margin: 1rem auto 0.6rem;
+  padding-left: max(1rem, env(safe-area-inset-left, 0px));
+  padding-right: max(1rem, env(safe-area-inset-right, 0px));
+  cursor: pointer;
 }
 
-#layout-mascot .mb-social.mb-surface--paw_pink {
-  background-color: #fff0f6 !important;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Cpath fill='%23db2777' fill-opacity='0.11' d='M10 24c-1-2 1-4 3-3 1 .3 1.5 1.2 1.6 2 .6-1.6 2.8-2.5 4.4-1.6 1.2.6 1.8 2 1.6 3.4-.2 1-.8 1.8-1.6 2.1-2 .9-4.5-.2-5.5-2-.5-.9-.6-2-.5-2.9z'/%3E%3Cpath fill='%23db2777' fill-opacity='0.09' d='M28 32c-.8-1.4.7-2.8 2.2-2.2.8.3 1.3 1 1.4 1.7.5-1.3 2-2 3.2-1.3 1 .5 1.5 1.6 1.4 2.7-.1.8-.5 1.4-1.2 1.7-1.4.7-3.2-.1-4-1.4-.4-.7-.5-1.5-.3-2.2z'/%3E%3C/svg%3E") !important;
-  background-size: 44px 44px !important;
-  color: #4a044e !important;
-  box-shadow: inset 0 0 80px rgba(255, 255, 255, 0.4);
+#layout-mascot footer.mb-brand-footer > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
 }
 
-#layout-mascot .mb-social.mb-surface--nature_mint {
-  background-color: #e6fff4 !important;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cpath fill='%23166534' fill-opacity='0.1' d='M6 38c6-10 18-16 30-14 4 1 8 3 10 7-14 2-28 6-40 7z'/%3E%3Cpath fill='%2378716f' fill-opacity='0.14' d='M36 10c2 1 3 3 2 5-1 2-4 2-6 1-1-2 1-5 4-6z'/%3E%3C/svg%3E") !important;
-  background-size: 56px 56px !important;
-  color: #064e3b !important;
-  box-shadow: inset 0 0 70px rgba(255, 255, 255, 0.35);
+#layout-mascot footer.mb-brand-footer strong,
+#layout-mascot footer.mb-brand-footer small {
+  display: block;
+  text-align: center;
+  width: 100%;
 }
 
-#layout-mascot .mb-social.mb-surface--cloud_cream {
-  background-color: #fffbeb !important;
-  background-image: radial-gradient(circle at 20% 30%, rgba(253, 224, 71, 0.2) 0, transparent 40%),
-    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.9) 0, transparent 35%),
-    radial-gradient(circle at 50% 80%, rgba(255, 255, 255, 0.75) 0, transparent 45%) !important;
-  color: #292524 !important;
-  box-shadow: inset 0 0 100px rgba(255, 255, 255, 0.5);
+#layout-mascot footer.mb-brand-footer img {
+  flex-shrink: 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-#layout-mascot .mb-social.mb-surface--paw_blue .mb-glass-block,
-#layout-mascot .mb-social.mb-surface--paw_pink .mb-glass-block,
-#layout-mascot .mb-social.mb-surface--nature_mint .mb-glass-block,
-#layout-mascot .mb-social.mb-surface--cloud_cream .mb-glass-block {
-  background: rgba(255, 255, 255, 0.42);
-  border-color: rgba(15, 23, 42, 0.1);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 10px 40px rgba(15, 23, 42, 0.08);
+/* Móvil: una columna centrada (logo + texto alineados entre sí) */
+@media (max-width: 767px) {
+  #layout-mascot footer.mb-brand-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: max(0.75rem, env(safe-area-inset-left, 0px));
+    padding-right: max(0.75rem, env(safe-area-inset-right, 0px));
+    text-align: center;
+  }
+
+  #layout-mascot footer.mb-brand-footer > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
+
+  #layout-mascot footer.mb-brand-footer img {
+    float: none;
+    display: block;
+    margin: 0 auto 10px;
+    text-align: center;
+  }
+
+  #layout-mascot footer.mb-brand-footer strong,
+  #layout-mascot footer.mb-brand-footer small {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    width: 100%;
+  }
 }
 
-#layout-mascot .mb-social.mb-surface--paw_blue .mb-ig-topbar,
-#layout-mascot .mb-social.mb-surface--paw_pink .mb-ig-topbar,
-#layout-mascot .mb-social.mb-surface--nature_mint .mb-ig-topbar,
-#layout-mascot .mb-social.mb-surface--cloud_cream .mb-ig-topbar {
-  background: rgba(255, 255, 255, 0.35);
-  border-bottom-color: rgba(15, 23, 42, 0.08);
-  color: inherit;
-}
+/* Superficies MascotBook: capas en mascot-theme-engine.css (sin pisar el tema) */

@@ -2,37 +2,61 @@
  * Tarjeta pública — un solo silo Firestore (personal_card o mascot_card) + fallback legacy usuarios/{uid}.
  */
 (function () {
-  "use strict";
+  var __ecCardPublicDomReadyDone = false;
+  function runCardPublicWhenDomReady() {
+    if (__ecCardPublicDomReadyDone) return;
+    __ecCardPublicDomReadyDone = true;
+    (function () {
+      "use strict";
 
-  function qs(name) {
-    try {
-      var p = new URLSearchParams(window.location.search);
-      return String(p.get(name) || "").trim();
-    } catch (e) {
-      return "";
-    }
-  }
-
-  function resolveUid() {
-    var uid =
-      qs("id") || qs("ID") || qs("user") || qs("uid") || "";
-    if (!uid && window.location.hash) {
-      var m = window.location.hash.match(/(?:^|[?&#])id=([^&]+)/i);
-      if (m && m[1]) {
+      function qs(name) {
         try {
-          uid = decodeURIComponent(m[1]);
-        } catch (e2) {
-          uid = m[1];
+          var p = new URLSearchParams(window.location.search);
+          return String(p.get(name) || "").trim();
+        } catch (e) {
+          return "";
         }
       }
-    }
-    return String(uid || "").trim();
-  }
 
-  function isMascotView() {
-    var v = qs("view").toLowerCase();
-    return v === "pet" || v === "mascota" || v === "mascotbook";
-  }
+      function resolveUid() {
+        var uid =
+          qs("id") || qs("ID") || qs("user") || qs("uid") || "";
+        if (!uid && window.location.hash) {
+          var m = window.location.hash.match(/(?:^|[?&#])id=([^&]+)/i);
+          if (m && m[1]) {
+            try {
+              uid = decodeURIComponent(m[1]);
+            } catch (e2) {
+              uid = m[1];
+            }
+          }
+        }
+        return String(uid || "").trim();
+      }
+
+      function isMascotView() {
+        var v = qs("view").toLowerCase();
+        return v === "pet" || v === "mascota" || v === "mascotbook";
+      }
+
+      /** Vista MascotBook pública: no exige auth; solo ?view=pet (o __MB_VIEW_IS_PET). */
+      function isPetPublicView() {
+        return !!window.__MB_VIEW_IS_PET || isMascotView();
+      }
+
+      function isEcAdminPreview() {
+        return String(qs("ec_admin_preview") || "") === "1";
+      }
+
+      function isEcAdminMascotPreview() {
+        return isEcAdminPreview() && isMascotView();
+      }
+
+      /** UID disponible antes de start() (iframe preview, contadores, mensajes). */
+      window.__EC_CARD_UID = resolveUid();
+
+      /** Preview admin: si el padre envió datos por postMessage, no pisan Firestore. */
+      var __ecMascotPreviewLocked = false;
 
   function applyElitePreviewOverrides(p) {
     var oa = qs("ec_pa").toLowerCase();
@@ -88,21 +112,12 @@
   }
 
   function applyMascotPreviewOverrides(m) {
-    var tx = qs("ec_mt").toLowerCase();
-    if (tx === "park" || tx === "candy" || tx === "elite") m.textureId = tx;
     var ac = qs("ec_ma");
     if (ac) {
       try {
         ac = decodeURIComponent(ac);
       } catch (e1) {}
       if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(ac)) m.accentColor = ac;
-    }
-    var tc = qs("ec_mtc");
-    if (tc) {
-      try {
-        tc = decodeURIComponent(tc);
-      } catch (e1b) {}
-      if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(tc)) m.textColor = tc;
     }
     var mp = qs("ec_mpt").toLowerCase();
     var ids = window.MASCOT_PRO_THEME_IDS;
@@ -122,15 +137,6 @@
         m.whatsappUrgencia = String(rawW || "").replace(/\D/g, "");
       }
     }
-  }
-
-  function mascotTextureClass(m) {
-    var t = String((m && m.textureId) || "").toLowerCase();
-    if (t === "park" || t === "candy" || t === "elite") return "texture-" + t;
-    var tid = String((m && m.themeId) || "classic").toLowerCase();
-    if (tid === "candy") return "texture-candy";
-    if (tid === "organic" || tid === "glass") return "texture-park";
-    return "texture-elite";
   }
 
   function mapLegacyPersonal(root) {
@@ -219,35 +225,101 @@
     };
   }
 
-  function mapMascotasDoc(root) {
-    var d = root || {};
-    var gal = d.galeria;
-    if (!Array.isArray(gal)) gal = Array.isArray(d.fotos) ? d.fotos : [];
-    return {
-      nombre: String(d.nombreMascota || d.nombre || "").trim(),
-      raza: String(d.raza || "").trim(),
-      sexo: String(d.sexo || d.genero || "").trim(),
-      salud: String(d.salud || d.notasSalud || "").trim(),
-      historia: String(d.historia || d.bio || "").trim(),
-      personalidad: String(d.personalidad || "").trim(),
-      accentColor: String(d.accentColor || d.colorAcento || "").trim(),
-      textColor: String(d.textColor || "").trim(),
-      fotoPerfilUrl: String(d.fotoPerfil || d.fotoPerfilUrl || d.mascotaFotoUrl || "").trim(),
-      fotoCabeceraUrl: String(d.fotoBanner || d.fotoCabeceraUrl || d.mascotaBannerUrl || "").trim(),
-      galeria: gal.map(function (u) {
-        return String(u || "").trim();
-      }).filter(Boolean),
-      muro: String(d.muro || d.ultimaAventura || "").trim(),
-      vacunas: Array.isArray(d.vacunas) ? d.vacunas : [],
-      veterinario: d.veterinario && typeof d.veterinario === "object" ? d.veterinario : {},
-      fichaCritica: d.fichaCritica && typeof d.fichaCritica === "object" ? d.fichaCritica : {},
-      mascotaPerdida: !!d.mascotaPerdida,
-      whatsappUrgencia: String(d.whatsappUrgencia || d.whatsapp || "").trim(),
-      mascotSurfaceTheme: String(d.mascotSurfaceTheme || "cloud_cream"),
-      mascotProTheme: String(d.mascotProTheme || d.tema || "classic_paws"),
-      visitas: Number(d.visitas || 0) || 0,
-      likes: Number(d.likes || 0) || 0,
-    };
+  function setText(id, value, fallback) {
+    try {
+      var el = document.getElementById(id);
+      if (!el) {
+        console.warn("[MascotBook] applyDoc: elemento no encontrado #" + id);
+        return;
+      }
+      var s = value == null ? "" : String(value);
+      s = s.trim();
+      if (!s && fallback != null && fallback !== "") s = String(fallback);
+      el.textContent = s;
+    } catch (e) {
+      console.error("[MascotBook] applyDoc: setText error #" + id, e);
+    }
+  }
+
+  function setImage(id, url) {
+    try {
+      var el = document.getElementById(id);
+      if (!el) {
+        console.warn("[MascotBook] applyDoc: nodo no encontrado #" + id);
+        return;
+      }
+      if (String(el.tagName || "").toUpperCase() !== "IMG") {
+        console.warn("[MascotBook] applyDoc: #" + id + " no es <img>");
+        return;
+      }
+      var u = String(url || "").trim();
+      if (u) {
+        el.src = u;
+        el.classList.remove("hidden");
+        el.style.display = "block";
+      } else {
+        el.removeAttribute("src");
+        el.classList.add("hidden");
+        el.style.display = "";
+      }
+    } catch (e) {
+      console.error("[MascotBook] applyDoc: setImage error #" + id, e);
+    }
+  }
+
+  function applyDoc(d) {
+    d = d && typeof d === "object" ? d : {};
+    try {
+      var temaDbg =
+        d.tema != null && String(d.tema).trim()
+          ? d.tema
+          : d.theme != null && String(d.theme).trim()
+            ? d.theme
+            : d.estilo != null && String(d.estilo).trim()
+              ? d.estilo
+              : d.mascotProTheme;
+      console.log("TEMA:", temaDbg);
+      console.log("FOTO PERFIL:", d.fotoPerfilUrl || d.avatar);
+      console.log("FOTO PORTADA:", d.fotoCabeceraUrl || d.portada);
+
+      var nombre = String(d.nombre || "").trim();
+      setText("mascot-name", nombre, "");
+      setText("mascot-sub", String(d.raza || "").trim(), "");
+
+      var bioText = String(d.historia || d.bio || "").trim();
+      var bioEl = document.getElementById("mascot-bio");
+      if (bioEl) {
+        bioEl.textContent = bioText;
+        bioEl.classList.toggle("hidden", !bioText);
+      } else {
+        console.warn("[MascotBook] applyDoc: elemento no encontrado #mascot-bio");
+      }
+
+      var hero = document.getElementById("mascot-hero");
+      var portadaUrl = String(d.fotoCabeceraUrl || d.portada || "").trim();
+      setImage("mascot-hero-img", portadaUrl);
+      if (hero) {
+        if (portadaUrl) hero.classList.add("mb-hero--has-img");
+        else hero.classList.remove("mb-hero--has-img");
+      }
+
+      setImage("mascot-avatar", d.fotoPerfilUrl || d.avatar);
+
+      var baseVisits = Number(d.visitas || 0) || 0;
+      var visDisplay = baseVisits;
+      setText("mascot-stat-visits", String(visDisplay), "0");
+      setText("mascot-stat-likes", String(Number(d.likes || 0) || 0), "0");
+
+      console.log("[MascotBook] applyDoc: campos core aplicados", {
+        nombre: nombre || "(vacío)",
+        tieneAvatar: !!String(d.fotoPerfilUrl || d.avatar || "").trim(),
+        tieneBanner: !!String(d.fotoCabeceraUrl || d.portada || "").trim(),
+        visitasMostradas: visDisplay,
+        likes: Number(d.likes || 0) || 0,
+      });
+    } catch (e) {
+      console.error("[MascotBook] applyDoc error:", e);
+    }
   }
 
   function igHref(s) {
@@ -360,6 +432,9 @@
     var closeBtn = document.getElementById("elite-qr-close");
     var copyBtn = document.getElementById("elite-qr-copy");
     var nativeBtn = document.getElementById("elite-qr-share-native");
+    try {
+      if (ov) ov.classList.add("hidden");
+    } catch (eHidden) {}
     if (ov) {
       ov.addEventListener("click", function (ev) {
         if (ev.target === ov) closeEliteQrOverlay();
@@ -634,110 +709,253 @@
   }
 
   function renderMascot(m) {
+    var base = m && typeof m === "object" ? m : {};
+    var nm;
+    try {
+      nm = window.normalizeMascotCard
+        ? window.normalizeMascotCard(base)
+        : Object.assign({}, base);
+    } catch (eNorm) {
+      nm = Object.assign({}, window.DEFAULT_MASCOT_CARD || {}, base || {});
+    }
+    m = nm;
+
+    try {
+      var shareBtn = document.getElementById("elite-footer-share");
+      if (shareBtn) shareBtn.style.setProperty("display", "none", "important");
+    } catch (eShareBtn) {}
+
+    try {
+      var eliteRoot = document.getElementById("layout-elite");
+      if (eliteRoot) eliteRoot.classList.add("hidden");
+    } catch (eHideElite) {}
+
+    try {
+      document.body.style.overflow = "auto";
+      document.body.classList.remove("hidden", "d-none");
+      try {
+        document.body.style.opacity = "";
+        document.body.style.visibility = "";
+      } catch (eb0) {}
+      var crRoot = document.getElementById("card-render");
+      if (crRoot) {
+        crRoot.classList.remove("hidden", "d-none");
+        try {
+          crRoot.style.opacity = "";
+          crRoot.style.visibility = "";
+          crRoot.style.display = "block";
+        } catch (eb1) {}
+      }
+    } catch (eNuke) {}
+
+    if (qs("ec_admin_preview") === "1") {
+      try {
+        document.body.style.backgroundColor = "#ffffff";
+        var crW = document.getElementById("card-render");
+        if (crW) crW.style.backgroundColor = "#ffffff";
+      } catch (eWhite) {}
+    }
+
     var root = document.getElementById("layout-mascot");
     var shell = document.getElementById("mascot-shell");
-    var empty = document.getElementById("card-empty");
-    if (empty) empty.classList.add("hidden");
-    if (!root || !shell) return;
+    if (!root || !shell) {
+      console.warn("[renderMascot] Falta #layout-mascot o #mascot-shell");
+      return;
+    }
     root.classList.remove("hidden");
-    applyMascotPreviewOverrides(m);
-    var nm = window.normalizeMascotCard ? window.normalizeMascotCard(m) : m;
-    var texClass = mascotTextureClass(nm);
-    var surf = String(nm.mascotSurfaceTheme || "cloud_cream")
+    showLoading(false);
+    try {
+      var nfHide = document.getElementById("card-not-found");
+      if (nfHide) nfHide.classList.add("hidden");
+    } catch (eNf) {}
+    try {
+      applyMascotPreviewOverrides(m || {});
+    } catch (ePrev) {
+      console.warn("[renderMascot] applyMascotPreviewOverrides:", ePrev);
+    }
+
+    var keepEmptyShell =
+      !!(m && m.__mascotFirestoreDocExists) || !!window.__EC_MASCOT_DOC_EXISTS;
+    if (keepEmptyShell) nm.__mascotFirestoreDocExists = true;
+
+    function getFieldAnyCase(obj, key) {
+      if (!obj || typeof obj !== "object") return undefined;
+      if (Object.prototype.hasOwnProperty.call(obj, key)) return obj[key];
+      var lk = String(key || "").toLowerCase();
+      if (!lk) return undefined;
+      var ks = Object.keys(obj);
+      for (var i = 0; i < ks.length; i++) {
+        var k = ks[i];
+        if (String(k || "").toLowerCase() === lk) return obj[k];
+      }
+      return undefined;
+    }
+
+    function pickFirstNonEmpty(obj, keys) {
+      for (var i = 0; i < keys.length; i++) {
+        var v = getFieldAnyCase(obj, keys[i]);
+        if (v == null) continue;
+        if (typeof v === "string") {
+          var s = v.trim();
+          if (s) return s;
+          continue;
+        }
+        return v;
+      }
+      return undefined;
+    }
+
+    // Compat con Firestore/Dashboard: nombres alternativos y mayúsculas.
+    // La UI pública usa estos nombres canónicos: nombre, fotoPerfilUrl, fotoCabeceraUrl,
+    // mascotProTheme, mascotSurfaceTheme.
+    var _nombre = pickFirstNonEmpty(nm, ["nombre", "name"]);
+    if (_nombre !== undefined) nm.nombre = String(_nombre || "").trim();
+    var _avatar = pickFirstNonEmpty(nm, [
+      "fotoPerfilUrl",
+      "fotoPerfilURL",
+      "fotoUrl",
+      "foto",
+      "avatar",
+      "avatarUrl",
+      "avatarURL",
+      "photoUrl",
+      "photoURL",
+    ]);
+    if (_avatar !== undefined) nm.fotoPerfilUrl = String(_avatar || "").trim();
+    var _banner = pickFirstNonEmpty(nm, [
+      "fotoCabeceraUrl",
+      "fotoCabeceraURL",
+      "portada",
+      "bannerUrl",
+      "bannerURL",
+      "coverUrl",
+      "coverURL",
+      "headerUrl",
+      "headerURL",
+    ]);
+    if (_banner !== undefined) nm.fotoCabeceraUrl = String(_banner || "").trim();
+    var _proTheme = pickFirstNonEmpty(nm, ["mascotProTheme", "tema", "theme", "estilo"]);
+    if (_proTheme !== undefined) nm.mascotProTheme = String(_proTheme || "").trim();
+    var _surfaceTheme = pickFirstNonEmpty(nm, ["mascotSurfaceTheme", "surfaceTheme"]);
+    if (_surfaceTheme !== undefined) nm.mascotSurfaceTheme = String(_surfaceTheme || "").trim();
+
+    var surf = String((nm && nm.mascotSurfaceTheme) || "cloud_cream")
       .trim()
       .toLowerCase()
       .replace(/-/g, "_");
     if (!window.MASCOT_SURFACE_THEME_IDS || window.MASCOT_SURFACE_THEME_IDS.indexOf(surf) < 0) {
       surf = "cloud_cream";
     }
-    shell.className = "mb-social " + texClass + " mb-surface--" + surf;
-    var pro = String(nm.mascotProTheme || "classic_paws").trim();
-    if (!window.MASCOT_PRO_THEME_IDS || window.MASCOT_PRO_THEME_IDS.indexOf(pro) < 0) {
+    var pro = String((nm && (nm.tema || nm.mascotProTheme)) || "classic_paws")
+      .trim()
+      .toLowerCase()
+      .replace(/-/g, "_");
+    var proIds = window.MASCOT_PRO_THEME_IDS;
+    if (!proIds || !proIds.length || proIds.indexOf(pro) < 0) {
       pro = "classic_paws";
     }
+    shell.className = "mb-social";
+    shell.classList.add("mb-theme--" + pro);
+    shell.classList.add("mb-surface--" + surf);
+    if (qs("ec_admin_preview") === "1") shell.classList.add("ec-mascot-preview");
     shell.setAttribute("data-mb-pro", pro);
-    shell.classList.toggle("ec-mascot-preview", qs("ec_admin_preview") === "1");
+    function stripMbThemeHostClasses(el) {
+      if (!el) return;
+      el.className = String(el.className || "")
+        .replace(/\bmb-theme--[a-z0-9_]+\b/gi, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+    var themeHost = "mb-theme--" + pro;
+    var cardRenderHost = document.getElementById("card-render");
+    if (qs("ec_admin_preview") === "1") {
+      document.body.className = themeHost;
+      if (cardRenderHost) {
+        stripMbThemeHostClasses(cardRenderHost);
+        cardRenderHost.classList.add(themeHost);
+      }
+    } else {
+      stripMbThemeHostClasses(document.body);
+      document.body.classList.add(themeHost);
+      stripMbThemeHostClasses(cardRenderHost);
+      if (cardRenderHost) cardRenderHost.classList.add(themeHost);
+    }
+    var stHost = document.getElementById("mb-theme-host-inject");
+    if (stHost) stHost.remove();
+    if (pro === "candy_pop") {
+      stHost = document.createElement("style");
+      stHost.id = "mb-theme-host-inject";
+      stHost.textContent =
+        "#card-render.mb-theme--candy_pop{min-height:100dvh;background-color:#fff5fb;background-image:radial-gradient(circle at 14% 22%,rgba(255,255,255,.55) 0 9%,transparent 10%),radial-gradient(circle at 78% 18%,rgba(255,255,255,.4) 0 7%,transparent 8%),radial-gradient(circle at 62% 72%,rgba(255,255,255,.35) 0 11%,transparent 12%),url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='%23ffffff' fill-opacity='0.22'%3E%3Cpath d='M20 38c-1.2-2 1-4 2.8-3.2 1 .4 1.6 1.2 1.8 2 .6-1.8 2.8-2.8 4.4-2 1.3.6 2 2 1.8 3.4-.2 1.2-.8 2-1.8 2.4-2 1-4.6-.2-5.6-2-.7-1.2-.8-2.6-.4-3.6z'/%3E%3Ccircle cx='48' cy='24' r='3'/%3E%3Ccircle cx='56' cy='30' r='2.4'/%3E%3Ccircle cx='52' cy='38' r='2.4'/%3E%3Ccircle cx='44' cy='42' r='3'/%3E%3C/g%3E%3C/svg%3E\"),linear-gradient(128deg,#ffe4f1 0%,#e0f2fe 42%,#fef9c3 100%);background-size:auto,auto,auto,72px 72px,auto}";
+      document.head.appendChild(stHost);
+    }
     var accent = String(nm.accentColor || "#ec4899").trim();
     if (!/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(accent)) accent = "#ec4899";
-    var txt = String(nm.textColor || "#ffffff").trim();
-    if (!/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(txt)) txt = "#ffffff";
     shell.style.setProperty("--mb-accent", accent);
-    shell.style.setProperty("--mb-text-color", txt);
 
-    var hero = document.getElementById("mascot-hero");
-    var heroImg = document.getElementById("mascot-hero-img");
-    if (hero && heroImg) {
-      if (nm.fotoCabeceraUrl) {
-        heroImg.src = nm.fotoCabeceraUrl;
-        heroImg.classList.remove("hidden");
-        hero.classList.add("mb-hero--has-img");
-      } else {
-        heroImg.removeAttribute("src");
-        heroImg.classList.add("hidden");
-        hero.classList.remove("mb-hero--has-img");
-      }
+    applyDoc(nm);
+
+    try {
+      var nombreMeta = String(nm.nombre || "").trim() || "Mascota";
+      var petTitle = "Tarjeta de Identidad de " + nombreMeta;
+      var petDesc =
+        "Conoce a " + nombreMeta + ", su historia y datos de contacto en MascotBook.";
+      document.title = petTitle;
+      updatePublicMeta({
+        title: petTitle,
+        description: petDesc,
+        image: String(nm.fotoPerfilUrl || "").trim(),
+      });
+    } catch (eMetaEarly) {
+      console.warn("[renderMascot] meta temprano:", eMetaEarly);
     }
 
-    var fc = nm.fichaCritica || {};
-    var vet = nm.veterinario || {};
+    try {
+      var muroText = String(nm.muro || "").trim();
+      var muroEl = document.getElementById("muro");
+      if (muroEl) {
+        muroEl.textContent = muroText;
+        muroEl.classList.toggle("hidden", !muroText);
+      } else {
+        console.warn("[renderMascot] elemento no encontrado #muro");
+      }
+      var persText = String(nm.personalidad || "").trim();
+      var persEl = document.getElementById("personalidad");
+      if (persEl) {
+        persEl.textContent = persText;
+        persEl.classList.toggle("hidden", !persText);
+      } else {
+        console.warn("[renderMascot] elemento no encontrado #personalidad");
+      }
+    } catch (eMuroPers) {
+      console.warn("[renderMascot] muro/personalidad:", eMuroPers);
+    }
+
+    try {
+      shell.style.opacity = "1";
+      shell.style.visibility = "visible";
+    } catch (eOp) {}
+
+    nm = nm || {};
+    var fc =
+      nm.fichaCritica && typeof nm.fichaCritica === "object" ? nm.fichaCritica : {};
+    var vet =
+      nm.veterinario && typeof nm.veterinario === "object" ? nm.veterinario : {};
     var vacs = Array.isArray(nm.vacunas) ? nm.vacunas : [];
     var lostOn = !!nm.mascotaPerdida;
-    var has =
-      nm.nombre ||
-      nm.fotoPerfilUrl ||
-      (nm.galeria && nm.galeria.length) ||
-      nm.muro ||
-      nm.historia ||
-      nm.salud ||
-      nm.personalidad ||
-      vacs.length ||
-      vet.nombre ||
-      vet.telefono ||
-      vet.direccion ||
-      fc.alergias ||
-      fc.medicacionDiaria ||
-      fc.tipoSangre ||
-      fc.cuidadosEspeciales ||
-      nm.fotoCabeceraUrl;
-    if (!has && !lostOn) {
-      root.classList.add("hidden");
-      setCardEmptyMessage("Perfil de mascota no encontrado.");
-      if (empty) empty.classList.remove("hidden");
-      hideMascotLostUi();
-      return;
-    }
-
-    var img = document.getElementById("mascot-avatar");
-    if (img) {
-      if (nm.fotoPerfilUrl) {
-        img.src = nm.fotoPerfilUrl;
-        img.classList.remove("hidden");
-      } else img.classList.add("hidden");
-    }
-    document.getElementById("mascot-name").textContent = nm.nombre || "Mascota";
-    document.getElementById("mascot-sub").textContent = [nm.raza, nm.sexo].filter(Boolean).join(" · ");
-
-    var bioParts = [nm.muro, nm.historia, nm.personalidad].map(function (x) {
-      return String(x || "").trim();
-    });
-    var bioText = bioParts.filter(Boolean).join("\n\n");
-    var bioEl = document.getElementById("mascot-bio");
-    if (bioEl) {
-      bioEl.textContent = bioText;
-      bioEl.classList.toggle("hidden", !bioText);
-    }
 
     var nPosts = (nm.galeria && nm.galeria.length) || 0;
     var postsEl = document.getElementById("mascot-stat-posts");
     if (postsEl) postsEl.textContent = String(nPosts);
-    var visitsEl = document.getElementById("mascot-stat-visits");
-    if (visitsEl) visitsEl.textContent = String(Number(nm.visitas || 0) || 0);
-    var likesEl = document.getElementById("mascot-stat-likes");
-    if (likesEl) likesEl.textContent = String(Number(nm.likes || 0) || 0);
 
     var gal = document.getElementById("mascot-gallery");
-    gal.innerHTML = "";
-    (nm.galeria || []).forEach(function (url, idx) {
+    if (!gal) {
+      console.warn("[renderMascot] Falta #mascot-gallery");
+    } else {
+      gal.innerHTML = "";
+    }
+    (Array.isArray(nm.galeria) ? nm.galeria : []).forEach(function (url, idx) {
+      if (!gal) return;
       var item = document.createElement("div");
       item.className = "mb-gallery-item";
 
@@ -782,6 +1000,7 @@
 
     var vacHtml = vacs
       .map(function (r) {
+        r = r && typeof r === "object" ? r : {};
         var bits = [r.vacuna, r.fecha, r.proximaDosis].filter(Boolean);
         if (!bits.length) return "";
         var overdue = vacunaProximaVencida(r.proximaDosis);
@@ -869,14 +1088,61 @@
       hs.classList.toggle("hidden", !anyHealth);
     }
 
-    setupMascotLostMode(nm);
-    bindMascotPhotoLikeButtons();
-    updatePublicMeta({
-      title: nm.nombre ? "MascotBook - " + nm.nombre : "MascotBook",
-      description:
-        String(nm.muro || nm.historia || nm.personalidad || "Perfil público de mascota en MascotBook.").slice(0, 180),
-      image: String(nm.fotoPerfilUrl || nm.fotoCabeceraUrl || ""),
-    });
+    try {
+      setupMascotLostMode(nm);
+    } catch (eLost) {
+      console.warn("[renderMascot] setupMascotLostMode:", eLost);
+    }
+    try {
+      bindMascotPhotoLikeButtons();
+    } catch (eLike) {
+      console.warn("[renderMascot] bindMascotPhotoLikeButtons:", eLike);
+    }
+    try {
+      wireMascotBrandFooterOnce();
+    } catch (eBf) {}
+    try {
+      maybeIncrementMascotVisitOncePerSession();
+    } catch (eVis) {}
+    try {
+      delete window.__EC_MASCOT_DOC_EXISTS;
+    } catch (eEnd) {
+      window.__EC_MASCOT_DOC_EXISTS = false;
+    }
+
+    var crDone = document.getElementById("card-render");
+    if (crDone) {
+      crDone.classList.remove("hidden", "d-none");
+      crDone.classList.add("ec-mb-content-layer");
+      try {
+        crDone.style.opacity = "";
+        crDone.style.visibility = "";
+        crDone.style.display = "block";
+      } catch (eCr) {}
+    }
+
+    try {
+      root.style.setProperty("display", "block", "important");
+      root.style.setProperty("opacity", "1", "important");
+      root.style.setProperty("visibility", "visible", "important");
+      shell.style.setProperty("display", "block", "important");
+      shell.style.setProperty("opacity", "1", "important");
+      shell.style.setProperty("visibility", "visible", "important");
+    } catch (eForce) {}
+    try {
+      document.body.style.overflow = "auto";
+    } catch (eBo) {}
+    window.__EC_MASCOT_HAS_RENDERED = true;
+    window.__EC_MASCOT_LAYERS_REMOVED = true;
+    try {
+      var lmFin = document.getElementById("layout-mascot");
+      if (lmFin) lmFin.classList.remove("hidden");
+      var clFin = document.getElementById("card-loading");
+      if (clFin) clFin.classList.add("hidden");
+      var crFin = document.getElementById("card-render");
+      if (crFin) crFin.classList.add("ec-mb-content-layer");
+    } catch (eFin) {}
+    return;
   }
 
   function hideMascotLostUi() {
@@ -933,7 +1199,7 @@
     banner.classList.remove("hidden");
     wrap.classList.remove("hidden");
     var digits = String((nm && nm.whatsappUrgencia) || "").replace(/\D/g, "");
-    var petName = String((nm && nm.nombre) || "Mascota").trim() || "Mascota";
+    var petName = String((nm && nm.nombre) || "").trim() || "esta mascota";
     var stdMsg =
       "Hola, encontré a tu mascota " +
       petName +
@@ -1046,10 +1312,12 @@
 
   var __mascotCounterRef = null;
   function mascotProfileRef() {
-    if (__mascotCounterRef) return __mascotCounterRef;
     var uid = String(window.__EC_CARD_UID || "").trim();
-    if (!uid || !window.EC_SILO || !firebase || !firebase.firestore) return null;
-    return window.EC_SILO.mascotCardRef(firebase.firestore(), uid);
+    if (!uid || typeof firebase === "undefined" || !firebase.firestore) return null;
+    if (!__mascotCounterRef) {
+      __mascotCounterRef = firebase.firestore().collection("mascotas").doc(uid);
+    }
+    return __mascotCounterRef;
   }
 
   function incrementMascotCounter(counterKey) {
@@ -1057,7 +1325,53 @@
     if (!ref || !counterKey) return Promise.resolve();
     var patch = {};
     patch[counterKey] = firebase.firestore.FieldValue.increment(1);
-    return ref.set(patch, { merge: true });
+    return ref
+      .update(patch)
+      .catch(function () {
+        return ref.set(patch, { merge: true });
+      });
+  }
+
+  var __mbBrandFooterWired = false;
+  function wireMascotBrandFooterOnce() {
+    if (__mbBrandFooterWired) return;
+    var footer = document.querySelector("#layout-mascot footer.mb-brand-footer");
+    if (!footer) return;
+    __mbBrandFooterWired = true;
+    footer.style.cursor = "pointer";
+    footer.addEventListener("click", function () {
+      window.open("https://tarjeta-profesional-pedro.web.app", "_blank", "noopener,noreferrer");
+    });
+  }
+
+  function maybeIncrementMascotVisitOncePerSession() {
+    if (qs("ec_admin_preview") === "1") return;
+    if (!isPetPublicView()) return;
+    var uid = String(window.__EC_CARD_UID || "").trim();
+    if (!uid || typeof firebase === "undefined" || !firebase.firestore) return;
+    var key = "visited_" + uid;
+    try {
+      if (sessionStorage.getItem(key) === "1") return;
+    } catch (eS) {
+      return;
+    }
+    var ref = firebase.firestore().collection("mascotas").doc(uid);
+    var patch = { visitas: firebase.firestore.FieldValue.increment(1) };
+    ref
+      .update(patch)
+      .catch(function () {
+        return ref.set(patch, { merge: true });
+      })
+      .then(function () {
+        try {
+          sessionStorage.setItem(key, "1");
+        } catch (e2) {}
+        var el = document.getElementById("mascot-stat-visits");
+        if (!el) return;
+        var n = parseInt(String(el.textContent || "0"), 10) || 0;
+        el.textContent = String(n + 1);
+      })
+      .catch(function () {});
   }
 
   function photoLikeStorageKey(url) {
@@ -1173,37 +1487,98 @@
       .replace(/"/g, "&quot;");
   }
 
+  function ensureHeadMetaByProperty(prop, content) {
+    var el = document.head && document.head.querySelector('meta[property="' + prop + '"]');
+    if (!el) {
+      el = document.createElement("meta");
+      el.setAttribute("property", prop);
+      if (document.head) document.head.appendChild(el);
+    }
+    el.setAttribute("content", content);
+  }
+
+  function ensureHeadMetaByName(name, content) {
+    var el = document.head && document.head.querySelector('meta[name="' + name + '"]');
+    if (!el) {
+      el = document.createElement("meta");
+      el.setAttribute("name", name);
+      if (document.head) document.head.appendChild(el);
+    }
+    el.setAttribute("content", content);
+  }
+
+  function absoluteUrlForOgImage(u) {
+    u = String(u || "").trim();
+    if (!u) return "";
+    if (/^https?:\/\//i.test(u)) return u;
+    if (u.indexOf("//") === 0) return String(location.protocol || "https:") + u;
+    try {
+      return new URL(u, location.origin).href;
+    } catch (e) {
+      return u;
+    }
+  }
+
   function updatePublicMeta(opts) {
     var o = opts || {};
     var title = String(o.title || "").trim();
     var desc = String(o.description || "").trim();
-    var image = String(o.image || "").trim();
+    var imageRaw = String(o.image || "").trim();
+    var image = absoluteUrlForOgImage(imageRaw);
     if (!title) title = "MascotBook";
     if (!desc) desc = "Conocé el perfil público de esta mascota.";
     document.title = title;
-    function setMeta(selector, attr, value) {
-      var el = document.querySelector(selector);
-      if (!el) return;
-      el.setAttribute(attr, value);
-    }
-    setMeta('meta[name="description"]', "content", desc);
-    setMeta('meta[property="og:title"]', "content", title);
-    setMeta('meta[property="og:description"]', "content", desc);
-    setMeta('meta[name="twitter:title"]', "content", title);
-    setMeta('meta[name="twitter:description"]', "content", desc);
+    ensureHeadMetaByName("description", desc);
+    ensureHeadMetaByProperty("og:title", title);
+    ensureHeadMetaByProperty("og:description", desc);
+    ensureHeadMetaByName("twitter:title", title);
+    ensureHeadMetaByName("twitter:description", desc);
     if (image) {
-      setMeta('meta[property="og:image"]', "content", image);
-      setMeta('meta[name="twitter:image"]', "content", image);
+      ensureHeadMetaByProperty("og:image", image);
+      ensureHeadMetaByName("twitter:image", image);
     }
   }
 
   function showLoading(on) {
     var el = document.getElementById("card-loading");
-    if (el) el.classList.toggle("hidden", !on);
+    if (!el) return;
+    if (on) {
+      if (String(qs("ec_admin_preview") || "") === "1") {
+        var lm = document.getElementById("layout-mascot");
+        if (
+          window.__EC_MASCOT_HAS_RENDERED &&
+          lm &&
+          !lm.classList.contains("hidden")
+        ) {
+          return;
+        }
+      }
+      el.classList.remove("hidden");
+      try {
+        el.style.display = "";
+      } catch (eD0) {}
+      el.setAttribute("aria-busy", "true");
+    } else {
+      el.classList.add("hidden");
+      try {
+        el.style.display = "none";
+      } catch (eD1) {}
+      el.setAttribute("aria-busy", "false");
+    }
   }
 
   function showNotFound() {
     showLoading(false);
+    try {
+      var lm = document.getElementById("layout-mascot");
+      if (lm) lm.classList.add("hidden");
+      var le = document.getElementById("layout-elite");
+      if (le) le.classList.add("hidden");
+      var ce = document.getElementById("card-empty");
+      if (ce) ce.classList.add("hidden");
+    } catch (eLay) {
+      console.error("[MascotBook] showNotFound: error ocultando layouts", eLay);
+    }
     var nf = document.getElementById("card-not-found");
     if (nf) nf.classList.remove("hidden");
   }
@@ -1215,15 +1590,104 @@
 
   function start() {
     var uid = resolveUid();
+    console.log("[MascotBook] ID recibido:", uid || "(vacío)");
+    var petPublic = isPetPublicView();
+
     if (!uid) {
+      if (isEcAdminPreview()) {
+        showLoading(true);
+        var emptyWait = document.getElementById("card-empty");
+        if (emptyWait) emptyWait.classList.add("hidden");
+        var nfWait = document.getElementById("card-not-found");
+        if (nfWait) nfWait.classList.add("hidden");
+        return;
+      }
+      if (petPublic) {
+        showLoading(false);
+        var le0 = document.getElementById("layout-elite");
+        if (le0) le0.classList.add("hidden");
+        var lm0 = document.getElementById("layout-mascot");
+        if (lm0) lm0.classList.add("hidden");
+        setCardEmptyMessage("Falta el id de la mascota en el enlace (?id=…).");
+        var emptyPet = document.getElementById("card-empty");
+        if (emptyPet) emptyPet.classList.remove("hidden");
+        return;
+      }
       window.location.replace("index.html");
       return;
     }
     window.__EC_CARD_UID = uid;
     initMascotPhotoLightbox();
 
+    /** Vista previa admin sin doc en Firestore: tarjeta de bienvenida hasta el postMessage. */
+    var EC_DEMO_MASCOT_UID = "__ec_demo_mascot__";
+    if (uid === EC_DEMO_MASCOT_UID && isEcAdminMascotPreview()) {
+      showLoading(false);
+      var leDemo = document.getElementById("layout-elite");
+      if (leDemo) leDemo.classList.add("hidden");
+      var ceDemo = document.getElementById("card-empty");
+      if (ceDemo) ceDemo.classList.add("hidden");
+      var nfDemo = document.getElementById("card-not-found");
+      if (nfDemo) nfDemo.classList.add("hidden");
+      var lmDemo = document.getElementById("layout-mascot");
+      if (lmDemo) lmDemo.classList.remove("hidden");
+      var welcomePayload = {
+        nombre: "Luna (demo)",
+        raza: "Mestiza adorable",
+        sexo: "Hembra",
+        salud: "",
+        historia:
+          "Soy un ejemplo vivo del panel: editá estos textos y la vista previa se actualiza al instante.",
+        personalidad: "Juguetona, curiosa y muy sociable.",
+        muro: "¡Hola! Estás probando MascotBook en modo demo.",
+        mascotProTheme: "classic_paws",
+        tema: "classic_paws",
+        mascotSurfaceTheme: "cloud_cream",
+        accentColor: "#ec4899",
+        fotoPerfilUrl:
+          "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400&h=400&fit=crop&q=80",
+        fotoCabeceraUrl:
+          "https://images.unsplash.com/photo-1552053834-87076afc88a7?w=1200&h=600&fit=crop&q=80",
+        galeria: [],
+        galeriaSlots: [],
+        vacunas: [],
+        veterinario: {},
+        fichaCritica: {},
+        visitas: 12,
+        likes: 3,
+        mascotaPerdida: false,
+        whatsappUrgencia: "",
+        mascotId: uid,
+        ownerUid: uid,
+      };
+      try {
+        var nm0 = window.normalizeMascotCard
+          ? window.normalizeMascotCard(welcomePayload)
+          : welcomePayload;
+        renderMascot(nm0);
+      } catch (eDemoWelcome) {
+        console.error("[MascotBook] Demo bienvenida:", eDemoWelcome);
+      }
+      return;
+    }
+
     var cfg = window.FIREBASE_WEB_CONFIG;
     if (!cfg || !cfg.apiKey || String(cfg.apiKey).indexOf("REEMPLAZAR") !== -1) {
+      if (isEcAdminMascotPreview()) {
+        showLoading(true);
+        return;
+      }
+      if (petPublic) {
+        showLoading(false);
+        var leC = document.getElementById("layout-elite");
+        if (leC) leC.classList.add("hidden");
+        var lmC = document.getElementById("layout-mascot");
+        if (lmC) lmC.classList.add("hidden");
+        setCardEmptyMessage("Configuración de Firebase no disponible en esta página.");
+        var emptyCfg = document.getElementById("card-empty");
+        if (emptyCfg) emptyCfg.classList.remove("hidden");
+        return;
+      }
       showNotFound();
       return;
     }
@@ -1234,8 +1698,6 @@
 
     var db = firebase.firestore();
     var mascot = !!window.__MB_VIEW_IS_PET || isMascotView();
-    var mascotasRef = mascot ? db.collection("mascotas").doc(uid) : null;
-    var mascotasByOwnerQuery = mascot ? db.collection("mascotas").where("ownerUid", "==", uid).limit(1) : null;
     var siloRef = mascot
       ? window.EC_SILO.mascotCardRef(db, uid)
       : window.EC_SILO.personalCardRef(db, uid);
@@ -1243,21 +1705,103 @@
 
     showLoading(true);
 
-    function finishMascotOrElite(siloSnap, accountRaw) {
-      showLoading(false);
-      document.getElementById("layout-elite").classList.add("hidden");
-      document.getElementById("layout-mascot").classList.add("hidden");
-      hideMascotLostUi();
-      if (mascot) {
-        if (siloSnap.exists) {
-          var data = siloSnap.data() || {};
-          var nm = window.normalizeMascotCard ? window.normalizeMascotCard(data) : data;
-          renderMascot(nm);
-        } else {
-          showNotFound();
-        }
+    function renderMascotUnlessPreviewSuperseded(nm) {
+      if (qs("ec_admin_preview") === "1" && __ecMascotPreviewLocked) return;
+      try {
+        renderMascot(nm);
+      } catch (eRender) {
+        console.error("[MascotBook] renderMascot error:", eRender);
+        try {
+          showLoading(false);
+          var crF = document.getElementById("card-render");
+          if (crF) {
+            crF.style.display = "block";
+            crF.classList.remove("hidden");
+          }
+          var nfF = document.getElementById("card-not-found");
+          if (nfF) {
+            nfF.style.display = "none";
+            nfF.classList.add("hidden");
+          }
+          var ceF = document.getElementById("card-empty");
+          if (ceF) {
+            ceF.style.display = "none";
+            ceF.classList.add("hidden");
+          }
+          var lm = document.getElementById("layout-mascot");
+          if (lm) lm.classList.remove("hidden");
+        } catch (e2) {}
+      }
+    }
+
+    function mergeMascotasCountersThenRender(np) {
+      if (!np || typeof np !== "object") np = {};
+      var uidLocal = String(window.__EC_CARD_UID || "").trim();
+      if (!uidLocal || typeof firebase === "undefined" || !firebase.firestore) {
+        renderMascotUnlessPreviewSuperseded(np);
         return;
       }
+      db.collection("mascotas")
+        .doc(uidLocal)
+        .get()
+        .then(function (snap) {
+          if (snap.exists) {
+            var c = snap.data() || {};
+            if (c.visitas != null) np.visitas = Number(c.visitas) || 0;
+            if (c.likes != null) np.likes = Number(c.likes) || 0;
+          }
+          renderMascotUnlessPreviewSuperseded(np);
+        })
+        .catch(function () {
+          renderMascotUnlessPreviewSuperseded(np);
+        });
+    }
+
+    if (isEcAdminMascotPreview()) {
+      setTimeout(function () {
+        if (__ecMascotPreviewLocked) return;
+        if (window.__EC_MASCOT_HAS_RENDERED) return;
+        var testPayload = {
+          nombre: "Prueba · Preview MascotBook",
+          raza: "Timeout3s",
+          muro:
+            "Datos de prueba: no llegó postMessage desde el panel. Si ves esto, el render del iframe funciona.",
+          historia: "",
+          personalidad: "",
+          mascotProTheme: "candy_pop",
+          tema: "candy_pop",
+          mascotSurfaceTheme: "cloud_cream",
+          visitas: 0,
+          likes: 0,
+          galeria: [],
+          ownerUid: uid,
+          mascotId: uid,
+        };
+        try {
+          showLoading(false);
+        } catch (eT0) {}
+        var normTest = window.normalizeMascotCard
+          ? window.normalizeMascotCard(testPayload)
+          : testPayload;
+        try {
+          renderMascot(normTest);
+        } catch (eT1) {
+          console.error("[MascotBook] Preview datos de prueba:", eT1);
+        }
+        __ecMascotPreviewLocked = true;
+        console.warn(
+          "[MascotBook] Preview: datos de prueba inyectados (sin postMessage en 3s)."
+        );
+      }, 3000);
+    }
+
+    function finishMascotOrElite(siloSnap, accountRaw) {
+      showLoading(false);
+      var leF = document.getElementById("layout-elite");
+      if (leF) leF.classList.add("hidden");
+      var lmF = document.getElementById("layout-mascot");
+      if (lmF) lmF.classList.add("hidden");
+      hideMascotLostUi();
       if (siloSnap.exists) {
         var data2 = siloSnap.data() || {};
         var np = window.normalizePersonalCard ? window.normalizePersonalCard(data2) : data2;
@@ -1275,59 +1819,82 @@
       renderElite(np2);
     }
 
-    Promise.all([
-      siloRef.get(),
-      rootRef.get(),
-      mascot && mascotasRef ? mascotasRef.get() : Promise.resolve(null),
-      mascot && mascotasByOwnerQuery ? mascotasByOwnerQuery.get() : Promise.resolve(null),
-    ])
+    function finishMascotBook(siloSnap, accountRaw) {
+      showLoading(false);
+      var leF = document.getElementById("layout-elite");
+      if (leF) leF.classList.add("hidden");
+      var lmF = document.getElementById("layout-mascot");
+      if (lmF) lmF.classList.add("hidden");
+      hideMascotLostUi();
+      console.log("SNAP:", siloSnap.exists);
+      if (siloSnap.exists) {
+        var data = siloSnap.data() || {};
+        console.log("DATA:", data);
+        try {
+          window.__EC_LAST_MASCOTA_RAW_DOC =
+            data && typeof data === "object" ? Object.assign({}, data) : {};
+        } catch (eRaw) {
+          window.__EC_LAST_MASCOTA_RAW_DOC = data;
+        }
+        window.__EC_MASCOT_DOC_EXISTS = true;
+        var lmOk = document.getElementById("layout-mascot");
+        if (lmOk) lmOk.classList.remove("hidden");
+        try {
+          __mascotCounterRef = db.collection("mascotas").doc(uid);
+        } catch (eMc) {}
+        var np = window.normalizeMascotCard ? window.normalizeMascotCard(data) : data;
+        np.__mascotFirestoreDocExists = true;
+        mergeMascotasCountersThenRender(np);
+        return;
+      }
+      var raw = accountRaw && typeof accountRaw === "object" ? accountRaw : {};
+      if (!raw || Object.keys(raw).length === 0) {
+        if (isEcAdminMascotPreview()) {
+          showLoading(true);
+          return;
+        }
+        showNotFound();
+        return;
+      }
+      try {
+        window.__EC_LAST_MASCOTA_RAW_DOC =
+          raw && typeof raw === "object" ? Object.assign({}, raw) : {};
+      } catch (eR2) {
+        window.__EC_LAST_MASCOTA_RAW_DOC = raw;
+      }
+      window.__EC_MASCOT_DOC_EXISTS = true;
+      var lmOk2 = document.getElementById("layout-mascot");
+      if (lmOk2) lmOk2.classList.remove("hidden");
+      try {
+        __mascotCounterRef = db.collection("mascotas").doc(uid);
+      } catch (eMc2) {}
+      var legacy = mapLegacyMascot(raw);
+      var np2 = window.normalizeMascotCard ? window.normalizeMascotCard(legacy) : legacy;
+      np2.__mascotFirestoreDocExists = true;
+      mergeMascotasCountersThenRender(np2);
+    }
+
+    Promise.all([siloRef.get(), rootRef.get()])
       .then(function (pair) {
         var siloSnap = pair[0];
         var acctSnap = pair[1];
-        var mascSnap = pair[2];
-        var mascByOwnerSnap = pair[3];
         var accountRaw = acctSnap.exists ? acctSnap.data() || {} : {};
         if (mascot) {
           if (siloSnap.exists) {
-            __mascotCounterRef = siloRef;
-            finishMascotOrElite(siloSnap, accountRaw);
-            return;
-          }
-          if (mascSnap && mascSnap.exists) {
-            showLoading(false);
-            document.getElementById("layout-elite").classList.add("hidden");
-            document.getElementById("layout-mascot").classList.add("hidden");
-            hideMascotLostUi();
-            __mascotCounterRef = mascotasRef;
-            renderMascot(window.normalizeMascotCard(mapMascotasDoc(mascSnap.data() || {})));
-            return;
-          }
-          if (mascByOwnerSnap && !mascByOwnerSnap.empty) {
-            var docSnap = mascByOwnerSnap.docs[0];
-            showLoading(false);
-            document.getElementById("layout-elite").classList.add("hidden");
-            document.getElementById("layout-mascot").classList.add("hidden");
-            hideMascotLostUi();
-            __mascotCounterRef = docSnap.ref;
-            renderMascot(window.normalizeMascotCard(mapMascotasDoc(docSnap.data() || {})));
+            finishMascotBook(siloSnap, accountRaw);
             return;
           }
           if (!acctSnap.exists) {
-            showLoading(false);
-            setCardEmptyMessage("Perfil de mascota no encontrado.");
-            document.getElementById("layout-elite").classList.add("hidden");
-            document.getElementById("layout-mascot").classList.add("hidden");
-            var empty0 = document.getElementById("card-empty");
-            if (empty0) empty0.classList.remove("hidden");
+            if (isEcAdminMascotPreview()) {
+              showLoading(true);
+            } else {
+              showLoading(false);
+              showNotFound();
+            }
             return;
           }
-          showLoading(false);
-          document.getElementById("layout-elite").classList.add("hidden");
-          document.getElementById("layout-mascot").classList.add("hidden");
-          hideMascotLostUi();
-          __mascotCounterRef = null;
-          var rawM = acctSnap.data() || {};
-          renderMascot(window.normalizeMascotCard(mapLegacyMascot(rawM)));
+          var rawMascot = acctSnap.data() || {};
+          finishMascotBook(siloSnap, rawMascot);
           return;
         }
         if (siloSnap.exists) {
@@ -1335,19 +1902,81 @@
           return;
         }
         if (!acctSnap.exists) {
-          showLoading(false);
-          showNotFound();
+          if (isEcAdminPreview()) {
+            showLoading(true);
+          } else {
+            showLoading(false);
+            showNotFound();
+          }
           return;
         }
         var rawAll = acctSnap.data() || {};
         finishMascotOrElite(siloSnap, rawAll);
       })
-      .catch(function () {
+      .catch(function (err) {
+        console.error("Error Firestore:", err);
+        if (mascot) {
+          if (isEcAdminMascotPreview()) {
+            showLoading(true);
+            return;
+          }
+          showLoading(false);
+          setCardEmptyMessage(
+            "No se pudo cargar el perfil. Si sos el dueño, revisá las reglas de Firestore."
+          );
+          var leEr = document.getElementById("layout-elite");
+          if (leEr) leEr.classList.add("hidden");
+          var lmEr = document.getElementById("layout-mascot");
+          if (lmEr) lmEr.classList.add("hidden");
+          var nfEr = document.getElementById("card-not-found");
+          if (nfEr) nfEr.classList.add("hidden");
+          var emptyErr = document.getElementById("card-empty");
+          if (emptyErr) emptyErr.classList.remove("hidden");
+          return;
+        }
+        if (isEcAdminPreview()) {
+          showLoading(true);
+          return;
+        }
         showNotFound();
       });
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", start);
-  } else start();
+  window.addEventListener("message", function (ev) {
+    if (String(qs("ec_admin_preview") || "") !== "1") return;
+    try {
+      var origin = window.location.origin || "";
+      if (origin && ev.origin !== origin) return;
+    } catch (eOrig) {}
+    var data = ev.data;
+    if (!data || typeof data !== "object" || data.type !== "EC_MASCOTBOOK_PREVIEW") return;
+    var payload = data.payload;
+    if (!payload || typeof payload !== "object") return;
+    __ecMascotPreviewLocked = true;
+    var pUid = String(payload.ownerUid || payload.mascotId || resolveUid() || "").trim();
+    if (pUid) window.__EC_CARD_UID = pUid;
+    showLoading(false);
+    var layElite = document.getElementById("layout-elite");
+    if (layElite) layElite.classList.add("hidden");
+    var emptyMsg = document.getElementById("card-empty");
+    if (emptyMsg) emptyMsg.classList.add("hidden");
+    var nfMsg = document.getElementById("card-not-found");
+    if (nfMsg) nfMsg.classList.add("hidden");
+    if (typeof hideMascotLostUi === "function") hideMascotLostUi();
+    try {
+      initMascotPhotoLightbox();
+    } catch (eLb) {}
+    var nm = window.normalizeMascotCard ? window.normalizeMascotCard(payload) : payload;
+    renderMascot(nm);
+  });
+
+  start();
+    })();
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    runCardPublicWhenDomReady();
+  });
+  if (document.readyState !== "loading") {
+    runCardPublicWhenDomReady();
+  }
 })();

@@ -6,10 +6,25 @@ service cloud.firestore {
       return request.auth != null && request.auth.uid == userId;
     }
 
+    /** Documento /users/{uid} — membresía y rol (no confundir con usuarios/{uid} tarjetas). */
+    function usersMembershipPath(userId) {
+      return /databases/$(database)/documents/users/$(userId);
+    }
+
+    function isMembershipAdmin() {
+      return request.auth != null
+        && exists(usersMembershipPath(request.auth.uid))
+        && get(usersMembershipPath(request.auth.uid)).data.role == 'admin';
+    }
+
+    function membershipProfileKeys() {
+      return ['email', 'displayName', 'role', 'status', 'createdAt', 'premiumUntil', 'updatedAt'];
+    }
+
     function mascotAllowedKeys() {
       return [
         'nombre', 'raza', 'sexo', 'salud', 'historia', 'personalidad',
-        'mascotId',
+        'mascotId', 'ownerUid',
         'themeId', 'textureId', 'mascotProTheme', 'tema', 'mascotSurfaceTheme', 'accentColor', 'textColor',
         'fotoPerfilUrl', 'fotoCabeceraUrl', 'galeria', 'galeriaSlots', 'muro',
         'vacunas', 'veterinario', 'fichaCritica', 'visitas', 'likes', 'mascotaPerdida', 'whatsappUrgencia',
@@ -83,10 +98,38 @@ service cloud.firestore {
     }
 
     /**
-     * Documento raíz: metadatos de cuenta (planes, registro).
-     * Lectura autenticada del dueño o pública mínima si otras partes del sistema lo requieren.
-     * Ajustá a `allow read: if true` si necesitás lectura pública de metadatos.
+     * /users — membresía: solo dueño o admin lee cada doc; queries a la colección solo devuelven filas permitidas (admin ve todas).
+     * Alta: el usuario crea su doc con role user y status trial.
+     * /usuarios — tarjetas y metadatos legacy; lectura pública del doc raíz para flujos existentes.
      */
+    match /users/{userId} {
+      allow read: if request.auth != null && (isOwner(userId) || isMembershipAdmin());
+      allow create: if request.auth != null
+        && isOwner(userId)
+        && request.resource.data.keys().hasAll(['email', 'role', 'status', 'createdAt', 'premiumUntil'])
+        && request.resource.data.keys().hasOnly(membershipProfileKeys())
+        && request.resource.data.role == 'user'
+        && request.resource.data.status == 'trial';
+      allow update: if isMembershipAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(membershipProfileKeys());
+      /** El dueño puede pasar a expired cuando ya venció premiumUntil (sincroniza estado en cliente). */
+      allow update: if request.auth != null
+        && isOwner(userId)
+        && request.resource.data.status == 'expired'
+        && resource.data.status != 'expired'
+        && resource.data.premiumUntil is timestamp
+        && resource.data.premiumUntil < request.time
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(membershipProfileKeys());
+      allow update: if request.auth != null
+        && isOwner(userId)
+        && request.resource.data.diff(resource.data).changedKeys().hasOnly(['email', 'displayName', 'updatedAt'])
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.status == resource.data.status
+        && request.resource.data.premiumUntil == resource.data.premiumUntil
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isMembershipAdmin();
+    }
+
     match /usuarios/{userId} {
       allow read: if true;
       allow write: if isOwner(userId);
@@ -113,9 +156,15 @@ service cloud.firestore {
       allow update, delete: if isOwner(userId);
     }
 
+    /**
+     * mascotas — lectura pública sin condiciones de ID ni auth (descarta bloqueos silenciosos en lectura).
+     * Escritura: dueño autenticado o actualización pública de contadores visitas/likes.
+     */
     match /mascotas/{mascotaId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow create, delete: if request.auth != null && request.auth.uid == mascotaId;
+      allow update: if (request.auth != null && request.auth.uid == mascotaId)
+        || publicMascotCounterUpdateOk();
     }
 
     match /vetPasses/{token} {
