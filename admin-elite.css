@@ -689,6 +689,17 @@ details.vcf-details summary {
   margin-top: 1.25rem;
 }
 
+/* Guardar EliteCard: siempre visible al cambiar de pestaña; sticky al hacer scroll en la columna. */
+#form-personal .actions-row--elite-persist {
+  position: sticky;
+  bottom: 0;
+  z-index: 4;
+  padding-top: 1rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.35rem;
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0) 0%, var(--ae-bg) 28%);
+}
+
 .btn-save {
   border: none;
   background: var(--ae-blue);
@@ -1145,6 +1156,15 @@ details.vcf-details summary {
   background: rgba(212, 175, 55, 0.12);
 }
 
+.btn-admin-chip--edit {
+  border-color: rgba(37, 99, 235, 0.45);
+  color: #1d4ed8;
+}
+
+.btn-admin-chip--edit:hover {
+  background: rgba(37, 99, 235, 0.1);
+}
+
 .btn-admin-chip--warn {
   border-color: rgba(217, 119, 6, 0.55);
   color: #b45309;
@@ -1221,6 +1241,206 @@ details.vcf-details summary {
 .admin-modal-panel .btn-solid {
   margin-top: 1rem;
   width: 100%;
+}
+
+.admin-modal--blocking {
+  z-index: 400;
+}
+
+/* Modal cross-sell / bloqueo de producto — backdrop premium + panel oscuro */
+#admin-product-access-modal.admin-modal--product-access-gate {
+  background: rgba(6, 8, 12, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.admin-modal-panel--product-access {
+  max-width: 26rem;
+  text-align: left;
+  background: #0a0a0c;
+  color: rgba(248, 250, 252, 0.92);
+  border: 1px solid #d4af37;
+  border-radius: 1.25rem;
+  box-shadow:
+    0 0 0 1px rgba(212, 175, 55, 0.12),
+    0 24px 48px rgba(0, 0, 0, 0.55);
+}
+
+.admin-modal-panel--product-access h2 {
+  margin: 0 0 1rem;
+  font-size: 1.35rem;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: rgba(248, 250, 252, 0.96);
+}
+
+.admin-product-access-title {
+  text-align: center;
+}
+
+.admin-modal-panel--product-access h2.admin-product-access-title--alert {
+  color: #ff4d4d;
+  font-weight: 700;
+  font-size: 1.28rem;
+  letter-spacing: -0.02em;
+}
+
+.admin-modal-panel--product-access .admin-modal-sub {
+  color: rgba(226, 232, 240, 0.9);
+}
+
+.admin-modal-panel--product-access .btn-elite-cta-primary,
+.admin-modal-panel--product-access .admin-product-access-cta-primary {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(145deg, #f4e4a6, #d4af37 45%, #b8860b);
+  color: #0a0a0a;
+  border: 1px solid rgba(212, 175, 55, 0.95);
+  font-weight: 700;
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.35);
+}
+
+.admin-modal-panel--product-access .btn-elite-cta-primary::after,
+.admin-modal-panel--product-access .admin-product-access-cta-primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.45) 50%,
+    transparent 62%
+  );
+  transform: translateX(-120%);
+  transition: transform 0.55s ease;
+  pointer-events: none;
+}
+
+.admin-modal-panel--product-access .btn-elite-cta-primary:hover,
+.admin-modal-panel--product-access .admin-product-access-cta-primary:hover {
+  filter: brightness(1.05);
+}
+
+.admin-modal-panel--product-access .btn-elite-cta-primary:hover::after,
+.admin-modal-panel--product-access .admin-product-access-cta-primary:hover::after {
+  transform: translateX(120%);
+}
+
+.btn-product-access-secondary {
+  width: 100%;
+  margin: 0;
+  padding: 0.78rem 1.1rem;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  background: rgba(30, 41, 59, 0.85);
+  color: rgba(226, 232, 240, 0.95);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.btn-product-access-secondary:hover {
+  background: rgba(51, 65, 85, 0.95);
+  border-color: rgba(203, 213, 225, 0.5);
+  color: #f8fafc;
+}
+
+.admin-modal-panel--product-access .btn-product-access-logout {
+  border-color: rgba(148, 163, 184, 0.35);
+  color: rgba(203, 213, 225, 0.95);
+  background: transparent;
+}
+
+.admin-modal-panel--product-access .btn-product-access-logout:hover {
+  border-color: rgba(248, 250, 252, 0.35);
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.admin-product-access-preview-wrap {
+  margin-top: 1.15rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(212, 175, 55, 0.22);
+}
+
+.admin-product-access-preview-label {
+  margin: 0 0 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.85);
+  text-align: center;
+}
+
+.admin-product-access-preview-card {
+  position: relative;
+  width: 7.5rem;
+  margin: 0 auto;
+  border-radius: 0.65rem;
+  overflow: hidden;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+  background: #111;
+}
+
+.admin-product-access-preview-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  vertical-align: middle;
+  object-fit: cover;
+  aspect-ratio: 3 / 4;
+}
+
+.admin-product-access-preview-watermark {
+  position: absolute;
+  right: 0.35rem;
+  bottom: 0.35rem;
+  padding: 0.12rem 0.4rem;
+  border-radius: 0.25rem;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(10, 10, 12, 0.92);
+  background: rgba(212, 175, 55, 0.92);
+  pointer-events: none;
+}
+
+.admin-product-access-body p {
+  margin: 0;
+  line-height: 1.6;
+  color: rgba(226, 232, 240, 0.9);
+}
+
+.admin-product-access-body p + p {
+  margin-top: 0.85rem;
+}
+
+.admin-product-access-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 1.25rem;
+}
+
+.admin-product-access-actions .btn-solid,
+.admin-product-access-actions .btn-outline,
+.admin-product-access-actions .btn-product-access-secondary {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+}
+
+.admin-modal-panel--product-access .admin-product-access-actions .btn-solid {
+  margin-top: 0;
 }
 
 /* —— Mascot form (sin cambiar estructura) —— */
@@ -1919,6 +2139,39 @@ details.vcf-details summary {
 }
 
 .mb-tab-panel-hidden {
+  display: none !important;
+}
+
+.pc-work-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin: 0 0 1rem;
+  padding: 0.2rem;
+  width: 100%;
+}
+
+.pc-tab-btn {
+  border: 1px solid #dbe3ef;
+  background: #fff;
+  color: #475569;
+  border-radius: 999px;
+  padding: 0.48rem 0.82rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.pc-tab-btn.active {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(29, 78, 216, 0.2);
+}
+
+.pc-tab-panel-hidden {
   display: none !important;
 }
 

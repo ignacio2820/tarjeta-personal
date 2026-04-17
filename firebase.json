@@ -17,6 +17,16 @@
         "source": "/admin.html",
         "destination": "/admin",
         "type": 301
+      },
+      {
+        "source": "/dashboard-elitecard",
+        "destination": "/admin.html?viewMode=personal&panel=dashboard",
+        "type": 302
+      },
+      {
+        "source": "/dashboard-mascotbook",
+        "destination": "/admin.html?viewMode=mascot&panel=dashboard",
+        "type": 302
       }
     ],
     "rewrites": [

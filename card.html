@@ -329,10 +329,14 @@
 
     <!-- EliteCard -->
     <div id="layout-elite" class="elite-shell elite-ghost hidden">
+      <div id="elite-hero-banner" class="ec-hero-banner hidden" role="img" aria-label=""></div>
       <div class="ec-wrap">
         <header class="ec-head">
           <div class="ec-photo-ring">
             <img id="elite-photo" class="ec-photo hidden" src="" alt="" width="140" height="210" />
+            <div id="elite-photo-fallback" class="ec-photo-fallback hidden" aria-hidden="true">
+              <i class="fa-solid fa-user" aria-hidden="true"></i>
+            </div>
           </div>
           <h1 id="elite-name" class="ec-name"></h1>
           <p id="elite-role" class="ec-role"></p>
@@ -444,6 +448,10 @@
             <div id="mascot-block-vacunas" class="mb-glass-block hidden">
               <h2>Plan de vacunación</h2>
               <div id="mascot-vacunas"></div>
+            </div>
+            <div id="mascot-block-owner" class="mb-glass-block hidden">
+              <h2>Datos del dueño</h2>
+              <div id="mascot-owner"></div>
             </div>
             <div id="mascot-block-vet" class="mb-glass-block hidden">
               <h2>Veterinario de cabecera</h2>

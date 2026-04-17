@@ -13,6 +13,7 @@ window.FIREBASE_WEB_CONFIG = {
 
 window.FIRESTORE_USERS_COLLECTION = "usuarios";
 window.FIRESTORE_MEMBERSHIP_COLLECTION = "users";
+window.FIRESTORE_ELITE_MEMBERSHIP_COLLECTION = "users_elite";
 
 /** Sin ?user=, tarjeta pública usa este UID (admin principal). Vacío → documento "perfil". */
 window.FIRESTORE_DEFAULT_CARD_UID = "";

@@ -79,7 +79,94 @@
       .toLowerCase();
     if (s === "active" || s === "pro" || s === "paid" || s === "premium") return "active";
     if (s === "suspended" || s === "expired") return "inactive";
+    if (s === "inactive" || s === "none" || s === "disabled") return "inactive";
     return "trial";
+  }
+
+  function activeProductsList(docData) {
+    if (!docData || typeof docData !== "object") return null;
+    var ap = docData.activeProducts;
+    if (!Array.isArray(ap)) return null;
+    var out = [];
+    for (var i = 0; i < ap.length; i++) {
+      var t = String(ap[i] || "")
+        .trim()
+        .toLowerCase()
+        .replace(/-/g, "");
+      if (t === "mascotbook" || t === "mascot") out.push("mascotbook");
+      if (t === "elitecard" || t === "elite" || t === "personal") out.push("elitecard");
+    }
+    return out.length ? out : null;
+  }
+
+  function globalMembershipBlocksProductAccess(docData) {
+    var gst = String((docData && docData.status) || "").trim().toLowerCase();
+    return gst === "suspended" || gst === "expired";
+  }
+
+  function eliteSidecarGrantsAccess(eliteCollData) {
+    if (!eliteCollData || typeof eliteCollData !== "object") return false;
+    var st = String(eliteCollData.status || "").trim().toLowerCase();
+    if (st === "suspended" || st === "expired") return false;
+    if (st === "premium" || st === "active") return true;
+    if (st !== "trial") return false;
+    var pu = eliteCollData.premiumUntil;
+    if (pu != null) {
+      var ms = null;
+      try {
+        if (typeof pu.toMillis === "function") ms = pu.toMillis();
+        else if (typeof pu.seconds === "number") ms = pu.seconds * 1000;
+      } catch (ePu) {}
+      if (ms != null && Date.now() <= ms) return true;
+    }
+    return !isTrialPeriodExpired(eliteCollData, "elitecard", "", "");
+  }
+
+  function hasMascotBookDashboardAccess(docData, uid, email) {
+    if (!docData || typeof docData !== "object") docData = {};
+    if (isPerpetualAccess(uid, email, docData)) return true;
+    if (globalMembershipBlocksProductAccess(docData)) return false;
+    var ap = activeProductsList(docData);
+    if (ap && ap.indexOf("mascotbook") < 0) {
+      if (docData.hasMascotBook === true) return true;
+      if (getPlanStatusFromDoc(docData, "mascotbook") === "active") return true;
+      return false;
+    }
+    if (docData.hasMascotBook === true) return true;
+    var st = getPlanStatusFromDoc(docData, "mascotbook");
+    if (st === "inactive") {
+      if (docData.hasMascotBook === true) return true;
+      if (ap && ap.indexOf("mascotbook") >= 0) return true;
+      return false;
+    }
+    if (st === "active") return true;
+    if (st === "trial" && !isTrialPeriodExpired(docData, "mascotbook", uid, email)) return true;
+    return false;
+  }
+
+  function hasEliteCardDashboardAccess(docData, eliteCollData, uid, email) {
+    if (!docData || typeof docData !== "object") docData = {};
+    if (isPerpetualAccess(uid, email, docData)) return true;
+    if (globalMembershipBlocksProductAccess(docData)) return false;
+    var ap = activeProductsList(docData);
+    if (ap && ap.indexOf("elitecard") < 0) {
+      if (docData.hasEliteCard === true) return true;
+      if (getPlanStatusFromDoc(docData, "elitecard") === "active") return true;
+      if (eliteSidecarGrantsAccess(eliteCollData)) return true;
+      return false;
+    }
+    if (docData.hasEliteCard === true) return true;
+    var st = getPlanStatusFromDoc(docData, "elitecard");
+    if (st === "inactive") {
+      if (docData.hasEliteCard === true) return true;
+      if (ap && ap.indexOf("elitecard") >= 0) return true;
+      if (eliteSidecarGrantsAccess(eliteCollData)) return true;
+      return false;
+    }
+    if (st === "active") return true;
+    if (st === "trial" && !isTrialPeriodExpired(docData, "elitecard", uid, email)) return true;
+    if (eliteSidecarGrantsAccess(eliteCollData)) return true;
+    return false;
   }
 
   function getFechaRegistroMs(docData) {
@@ -124,5 +211,8 @@
     getFechaRegistroMs: getFechaRegistroMs,
     isTrialPeriodExpired: isTrialPeriodExpired,
     isEmailSignatureLocked: isEmailSignatureLocked,
+    activeProductsList: activeProductsList,
+    hasMascotBookDashboardAccess: hasMascotBookDashboardAccess,
+    hasEliteCardDashboardAccess: hasEliteCardDashboardAccess,
   };
 })(window);

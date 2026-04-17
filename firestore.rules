@@ -27,7 +27,7 @@ service cloud.firestore {
         'mascotId', 'ownerUid',
         'themeId', 'textureId', 'mascotProTheme', 'tema', 'mascotSurfaceTheme', 'accentColor', 'textColor',
         'fotoPerfilUrl', 'fotoCabeceraUrl', 'galeria', 'galeriaSlots', 'muro',
-        'vacunas', 'veterinario', 'fichaCritica', 'visitas', 'likes', 'mascotaPerdida', 'whatsappUrgencia',
+        'vacunas', 'dueno', 'veterinario', 'fichaCritica', 'visitas', 'likes', 'mascotaPerdida', 'whatsappUrgencia',
         'updatedAt'
       ];
     }

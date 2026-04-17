@@ -397,12 +397,30 @@
               if (initialApp === "mascotbook") {
                 doc.mascotbook_status = "trial";
                 doc.elitecard_status = "inactive";
+                doc.hasMascotBook = true;
+                doc.hasEliteCard = false;
               } else {
                 doc.elitecard_status = "trial";
                 doc.mascotbook_status = "inactive";
+                doc.hasEliteCard = true;
+                doc.hasMascotBook = false;
               }
+              doc.activeProducts = initialApp === "mascotbook" ? ["mascotbook"] : ["elitecard"];
               var memCol = (window.FIRESTORE_MEMBERSHIP_COLLECTION || "users").trim() || "users";
+              var eliteCol =
+                (window.FIRESTORE_ELITE_MEMBERSHIP_COLLECTION || "users_elite").trim() || "users_elite";
               var memDoc = {
+                email: user.email || email,
+                displayName: String(user.displayName || "").trim(),
+                role: "user",
+                status: "trial",
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                premiumUntil: trialUntil,
+                hasMascotBook: initialApp === "mascotbook",
+                hasEliteCard: initialApp !== "mascotbook",
+                activeProducts: initialApp === "mascotbook" ? ["mascotbook"] : ["elitecard"],
+              };
+              var eliteDoc = {
                 email: user.email || email,
                 displayName: String(user.displayName || "").trim(),
                 role: "user",
@@ -413,6 +431,7 @@
               return Promise.all([
                 db.collection(col).doc(user.uid).set(doc, { merge: true }),
                 db.collection(memCol).doc(user.uid).set(memDoc, { merge: true }),
+                db.collection(eliteCol).doc(user.uid).set(eliteDoc, { merge: true }),
               ])
                 .then(function () {
                   try {

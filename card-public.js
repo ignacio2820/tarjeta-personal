@@ -52,11 +52,16 @@
         return isEcAdminPreview() && isMascotView();
       }
 
+      function isEcAdminElitePreview() {
+        return isEcAdminPreview() && !isMascotView();
+      }
+
       /** UID disponible antes de start() (iframe preview, contadores, mensajes). */
       window.__EC_CARD_UID = resolveUid();
 
       /** Preview admin: si el padre envió datos por postMessage, no pisan Firestore. */
       var __ecMascotPreviewLocked = false;
+      var __ecElitePreviewLocked = false;
 
   function applyElitePreviewOverrides(p) {
     var oa = qs("ec_pa").toLowerCase();
@@ -174,6 +179,7 @@
       user_buttonLayout: String(d.user_buttonLayout || d.buttonLayout || "list").trim().toLowerCase(),
       user_bgColor: String(d.user_bgColor || "#000000").trim(),
       user_bgPreset: String(d.user_bgPreset || "matte").trim().toLowerCase(),
+      bannerUrl: String(d.bannerUrl || d.banner_url || "").trim(),
     };
   }
 
@@ -267,6 +273,8 @@
     }
   }
 
+  var MB_DEFAULT_HERO_BANNER_URL = "/assets/image_0.png";
+
   function applyDoc(d) {
     d = d && typeof d === "object" ? d : {};
     try {
@@ -296,11 +304,28 @@
       }
 
       var hero = document.getElementById("mascot-hero");
-      var portadaUrl = String(d.fotoCabeceraUrl || d.portada || "").trim();
+      var portadaCustomUrl = String(d.fotoCabeceraUrl || d.portada || "").trim();
+      var portadaUrl = portadaCustomUrl || MB_DEFAULT_HERO_BANNER_URL;
       setImage("mascot-hero-img", portadaUrl);
+      var heroImg = document.getElementById("mascot-hero-img");
+      if (heroImg) {
+        heroImg.style.objectFit = "cover";
+        heroImg.style.objectPosition = "center";
+      }
       if (hero) {
         if (portadaUrl) hero.classList.add("mb-hero--has-img");
         else hero.classList.remove("mb-hero--has-img");
+        if (!portadaCustomUrl) {
+          hero.style.backgroundImage = "url('" + MB_DEFAULT_HERO_BANNER_URL + "')";
+          hero.style.backgroundSize = "cover";
+          hero.style.backgroundPosition = "center";
+          hero.style.backgroundRepeat = "no-repeat";
+        } else {
+          hero.style.backgroundImage = "";
+          hero.style.backgroundSize = "";
+          hero.style.backgroundPosition = "";
+          hero.style.backgroundRepeat = "";
+        }
       }
 
       setImage("mascot-avatar", d.fotoPerfilUrl || d.avatar);
@@ -499,19 +524,69 @@
       p.logoUrl ||
       p.mapsUrl ||
       p.calendlyUrl ||
-      (p.redes && (p.redes.instagram || p.redes.linkedin || p.redes.sitioWeb));
+      (p.redes &&
+        (p.redes.instagram ||
+          p.redes.linkedin ||
+          p.redes.sitioWeb ||
+          p.redes.whatsappNumero));
     if (!has) {
+      var heroEmpty = document.getElementById("elite-hero-banner");
+      if (heroEmpty) {
+        heroEmpty.classList.add("hidden");
+        heroEmpty.style.backgroundImage = "";
+        heroEmpty.setAttribute("aria-label", "");
+      }
       root.classList.add("hidden");
       if (empty) empty.classList.remove("hidden");
       return;
     }
 
+    var hero = document.getElementById("elite-hero-banner");
+    var bannerUrl = String(p.bannerUrl || p.banner_url || "").trim();
+    if (hero) {
+      if (bannerUrl) {
+        hero.classList.remove("hidden");
+        hero.style.backgroundImage = "url(" + JSON.stringify(bannerUrl) + ")";
+        hero.setAttribute("aria-label", "Banner · " + (p.user_empresa || p.empresa || p.user_nombre || ""));
+      } else {
+        hero.classList.add("hidden");
+        hero.style.backgroundImage = "";
+        hero.setAttribute("aria-label", "");
+      }
+    }
+
     var photo = document.getElementById("elite-photo");
+    var photoFb = document.getElementById("elite-photo-fallback");
+    if (photo && photoFb) {
+      photo.onerror = function () {
+        try {
+          photo.removeAttribute("src");
+        } catch (ePh) {}
+        photo.classList.add("hidden");
+        photoFb.classList.remove("hidden");
+      };
+      photo.onload = function () {
+        photo.classList.remove("hidden");
+        photoFb.classList.add("hidden");
+      };
+    }
     if (photo) {
       if (p.fotoUrl) {
+        photo.alt = p.user_nombre || p.nombreCompleto || "Foto de perfil";
         photo.src = p.fotoUrl;
-        photo.classList.remove("hidden");
-      } else photo.classList.add("hidden");
+        try {
+          if (photo.complete && photo.naturalHeight > 0) {
+            photo.classList.remove("hidden");
+            if (photoFb) photoFb.classList.add("hidden");
+          }
+        } catch (eCmp) {}
+      } else {
+        photo.classList.add("hidden");
+        try {
+          photo.removeAttribute("src");
+        } catch (ePh2) {}
+        if (photoFb) photoFb.classList.add("hidden");
+      }
     }
     var avatarShape = String(p.user_avatarShape || p.avatarShape || "rect").toLowerCase();
     root.classList.toggle("ec-avatar-round", avatarShape === "round" || avatarShape === "circle");
@@ -706,6 +781,9 @@
         openEliteQrOverlay();
       };
     }
+    try {
+      window.__EC_ELITE_HAS_RENDERED = true;
+    } catch (eElR) {}
   }
 
   function renderMascot(m) {
@@ -939,6 +1017,8 @@
     nm = nm || {};
     var fc =
       nm.fichaCritica && typeof nm.fichaCritica === "object" ? nm.fichaCritica : {};
+    var own =
+      nm.dueno && typeof nm.dueno === "object" ? nm.dueno : {};
     var vet =
       nm.veterinario && typeof nm.veterinario === "object" ? nm.veterinario : {};
     var vacs = Array.isArray(nm.vacunas) ? nm.vacunas : [];
@@ -986,6 +1066,15 @@
       wrap.classList.toggle("hidden", !show);
     }
 
+    function phoneHrefFromRaw(rawPhone) {
+      var raw = String(rawPhone || "").trim();
+      if (!raw) return "";
+      var hasPlus = raw.charAt(0) === "+";
+      var digits = raw.replace(/\D/g, "");
+      if (!digits) return "";
+      return "tel:" + (hasPlus ? "+" : "") + digits;
+    }
+
     function vacunaProximaVencida(prox) {
       var s = String(prox || "").trim();
       if (!s || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
@@ -1023,6 +1112,44 @@
       .join("");
     setBlock("mascot-block-vacunas", "mascot-vacunas", !!vacHtml, vacHtml);
 
+    var ownerHtml = "";
+    if (own.nombre || own.telefono || own.direccion || own.email) {
+      ownerHtml += own.nombre
+        ? "<div class=\"mb-health-row\"><span class=\"mb-health-label\">Nombre</span>" +
+          escapeHtml(own.nombre) +
+          "</div>"
+        : "";
+      ownerHtml += own.email
+        ? "<div class=\"mb-health-row\"><span class=\"mb-health-label\">Email</span>" +
+          escapeHtml(own.email) +
+          "</div>"
+        : "";
+      ownerHtml += own.direccion
+        ? "<div class=\"mb-health-row\"><span class=\"mb-health-label\">Dirección</span>" +
+          escapeHtml(own.direccion) +
+          "</div>"
+        : "";
+      if (own.direccion) {
+        var dq = encodeURIComponent(
+          [own.direccion, own.nombre].filter(Boolean).join(" · ")
+        );
+        ownerHtml +=
+          "<a class=\"mb-vet-map\" rel=\"noopener noreferrer\" target=\"_blank\" href=\"https://www.google.com/maps/search/?api=1&query=" +
+          dq +
+          "\"><i class=\"fa-solid fa-map-location-dot\" aria-hidden=\"true\"></i> Ver dirección (Dueño)</a>";
+      }
+      if (own.telefono) {
+        var ownTelHref = phoneHrefFromRaw(own.telefono);
+        if (ownTelHref) {
+          ownerHtml +=
+            "<a class=\"mb-vet-call\" href=\"" +
+            ownTelHref +
+            "\"><i class=\"fa-solid fa-phone\" aria-hidden=\"true\"></i> Llamar dueño</a>";
+        }
+      }
+    }
+    setBlock("mascot-block-owner", "mascot-owner", !!ownerHtml, ownerHtml);
+
     var vetHtml = "";
     if (vet.nombre || vet.telefono || vet.direccion) {
       vetHtml += vet.nombre ? "<div class=\"mb-health-row\"><span class=\"mb-health-label\">Nombre</span>" + escapeHtml(vet.nombre) + "</div>" : "";
@@ -1039,11 +1166,11 @@
           "\"><i class=\"fa-solid fa-map-location-dot\" aria-hidden=\"true\"></i> Abrir en mapa</a>";
       }
       if (vet.telefono) {
-        var tel = String(vet.telefono).replace(/\D/g, "");
-        if (tel) {
+        var vetTelHref = phoneHrefFromRaw(vet.telefono);
+        if (vetTelHref) {
           vetHtml +=
-            "<a class=\"mb-vet-call\" href=\"tel:" +
-            tel +
+            "<a class=\"mb-vet-call\" href=\"" +
+            vetTelHref +
             "\"><i class=\"fa-solid fa-phone\" aria-hidden=\"true\"></i> Llamar al veterinario</a>";
         }
       }
@@ -1082,6 +1209,7 @@
     if (hs) {
       var anyHealth =
         !!vacHtml ||
+        !!ownerHtml ||
         !!vetHtml ||
         !!critHtml ||
         !!leg;
@@ -1552,6 +1680,15 @@
         ) {
           return;
         }
+        var leLd = document.getElementById("layout-elite");
+        if (
+          window.__EC_ELITE_HAS_RENDERED &&
+          leLd &&
+          !leLd.classList.contains("hidden") &&
+          !isMascotView()
+        ) {
+          return;
+        }
       }
       el.classList.remove("hidden");
       try {
@@ -1646,8 +1783,7 @@
         accentColor: "#ec4899",
         fotoPerfilUrl:
           "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400&h=400&fit=crop&q=80",
-        fotoCabeceraUrl:
-          "https://images.unsplash.com/photo-1552053834-87076afc88a7?w=1200&h=600&fit=crop&q=80",
+        fotoCabeceraUrl: "/assets/image_0.png",
         galeria: [],
         galeriaSlots: [],
         vacunas: [],
@@ -1667,6 +1803,63 @@
         renderMascot(nm0);
       } catch (eDemoWelcome) {
         console.error("[MascotBook] Demo bienvenida:", eDemoWelcome);
+      }
+      return;
+    }
+
+    /** Vista previa admin EliteCard sin Firestore (mismo UID demo que admin.html). */
+    var EC_DEMO_ELITE_UID = "__ec_demo_elite__";
+    if (uid === EC_DEMO_ELITE_UID && isEcAdminElitePreview()) {
+      showLoading(false);
+      var lmElDemo = document.getElementById("layout-mascot");
+      if (lmElDemo) lmElDemo.classList.add("hidden");
+      var ceElDemo = document.getElementById("card-empty");
+      if (ceElDemo) ceElDemo.classList.add("hidden");
+      var nfElDemo = document.getElementById("card-not-found");
+      if (nfElDemo) nfElDemo.classList.add("hidden");
+      var leElDemo = document.getElementById("layout-elite");
+      if (leElDemo) leElDemo.classList.remove("hidden");
+      var eliteWelcomePayload = {
+        user_nombre: "Lic. Valentina Schwindt",
+        user_cargo: "Abogada · Societaria, contratos y compliance",
+        user_empresa: "Estudio Schwindt",
+        user_bio:
+          "Asesoro a empresas y profesionales en constitución societaria, acuerdos comerciales y buenas prácticas regulatorias. Trabajo con foco en claridad, tiempos realistas y acompañamiento cercano.",
+        email: "valentina.schwindt@estudioschwindt.demo",
+        emailInstitucional: "contacto@estudioschwindt.demo",
+        telefono: "+54 9 11 5555 7788",
+        whatsappNumero: "+54 9 11 5555 7788",
+        fotoUrl: "assets/image_1.png",
+        bannerUrl: "assets/image_2.png",
+        logoUrl: "",
+        instagram: "https://instagram.com/estudio.schwindt",
+        linkedin: "https://www.linkedin.com/in/valentina-schwindt-abogada",
+        sitioWeb: "https://estudioschwindt.demo",
+        mapsUrl: "https://maps.google.com/?q=Av.+Corrientes+1234,+CABA",
+        calendlyUrl: "https://calendly.com/demo-elitecard/reunion",
+        vcardNombres: "Valentina",
+        vcardApellidos: "Schwindt",
+        vcardOrganizacion: "Estudio Schwindt",
+        vcardTitulo: "Abogada",
+        user_avatarShape: "rect",
+        user_buttonLayout: "list",
+        user_bgColor: "#000000",
+        user_bgPreset: "matte",
+        redes: {
+          instagram: "https://instagram.com/estudio.schwindt",
+          linkedin: "https://www.linkedin.com/in/valentina-schwindt-abogada",
+          sitioWeb: "https://estudioschwindt.demo",
+          whatsappNumero: "5491155557788",
+        },
+      };
+      try {
+        var ne0 = window.normalizePersonalCard
+          ? window.normalizePersonalCard(eliteWelcomePayload)
+          : eliteWelcomePayload;
+        applyElitePreviewOverrides(ne0);
+        renderElite(ne0);
+      } catch (eEliteWelcome) {
+        console.error("[EliteCard] Demo bienvenida:", eEliteWelcome);
       }
       return;
     }
@@ -1795,7 +1988,47 @@
       }, 3000);
     }
 
+    if (isEcAdminElitePreview()) {
+      setTimeout(function () {
+        if (__ecElitePreviewLocked) return;
+        if (window.__EC_ELITE_HAS_RENDERED) return;
+        var testElite = {
+          user_nombre: "Lic. Valentina Schwindt (demo)",
+          user_cargo: "Abogada · Societaria, contratos y compliance",
+          user_empresa: "Estudio Schwindt",
+          email: "valentina.schwindt@estudioschwindt.demo",
+          telefono: "+54 9 11 5555 7788",
+          fotoUrl: "assets/image_1.png",
+          bannerUrl: "assets/image_2.png",
+          user_bgColor: "#000000",
+          user_bgPreset: "matte",
+          redes: {
+            linkedin: "https://www.linkedin.com/in/valentina-schwindt-abogada",
+            whatsappNumero: "5491155557788",
+          },
+        };
+        try {
+          showLoading(false);
+        } catch (eTe0) {}
+        var normElite = window.normalizePersonalCard
+          ? window.normalizePersonalCard(testElite)
+          : testElite;
+        try {
+          applyElitePreviewOverrides(normElite);
+          renderElite(normElite);
+        } catch (eTe1) {
+          console.error("[EliteCard] Preview datos de prueba:", eTe1);
+        }
+        __ecElitePreviewLocked = true;
+        console.warn("[EliteCard] Preview: datos de prueba (sin postMessage en 3s).");
+      }, 3000);
+    }
+
     function finishMascotOrElite(siloSnap, accountRaw) {
+      if (isEcAdminElitePreview() && __ecElitePreviewLocked) {
+        showLoading(false);
+        return;
+      }
       showLoading(false);
       var leF = document.getElementById("layout-elite");
       if (leF) leF.classList.add("hidden");
@@ -1902,12 +2135,38 @@
           return;
         }
         if (!acctSnap.exists) {
-          if (isEcAdminPreview()) {
-            showLoading(true);
-          } else {
+          if (isEcAdminElitePreview()) {
             showLoading(false);
-            showNotFound();
+            var leHold = document.getElementById("layout-elite");
+            var lmHold = document.getElementById("layout-mascot");
+            if (lmHold) lmHold.classList.add("hidden");
+            var ceHold = document.getElementById("card-empty");
+            if (ceHold) ceHold.classList.add("hidden");
+            var nfHold = document.getElementById("card-not-found");
+            if (nfHold) nfHold.classList.add("hidden");
+            if (leHold) leHold.classList.remove("hidden");
+            var syncPl = {
+              user_nombre: "Vista previa en vivo",
+              user_cargo: "Sincronizando con el panel…",
+              user_empresa: "",
+              user_bgColor: "#000000",
+              user_bgPreset: "matte",
+              redes: {
+                linkedin: "https://www.linkedin.com/",
+                whatsappNumero: "5490000000000",
+              },
+            };
+            try {
+              var nSync = window.normalizePersonalCard
+                ? window.normalizePersonalCard(syncPl)
+                : syncPl;
+              applyElitePreviewOverrides(nSync);
+              renderElite(nSync);
+            } catch (eSync) {}
+            return;
           }
+          showLoading(false);
+          showNotFound();
           return;
         }
         var rawAll = acctSnap.data() || {};
@@ -1949,7 +2208,32 @@
       if (origin && ev.origin !== origin) return;
     } catch (eOrig) {}
     var data = ev.data;
-    if (!data || typeof data !== "object" || data.type !== "EC_MASCOTBOOK_PREVIEW") return;
+    if (!data || typeof data !== "object") return;
+
+    if (data.type === "EC_ELITE_PREVIEW" && !isMascotView()) {
+      var ep = data.payload;
+      if (!ep || typeof ep !== "object") return;
+      __ecElitePreviewLocked = true;
+      showLoading(false);
+      var lmEl = document.getElementById("layout-mascot");
+      if (lmEl) lmEl.classList.add("hidden");
+      var emptyEl = document.getElementById("card-empty");
+      if (emptyEl) emptyEl.classList.add("hidden");
+      var nfEl = document.getElementById("card-not-found");
+      if (nfEl) nfEl.classList.add("hidden");
+      var layEliteMsg = document.getElementById("layout-elite");
+      if (layEliteMsg) layEliteMsg.classList.remove("hidden");
+      var npEl = window.normalizePersonalCard ? window.normalizePersonalCard(ep) : ep;
+      applyElitePreviewOverrides(npEl);
+      try {
+        renderElite(npEl);
+      } catch (eElPm) {
+        console.error("[EliteCard] postMessage preview:", eElPm);
+      }
+      return;
+    }
+
+    if (data.type !== "EC_MASCOTBOOK_PREVIEW") return;
     var payload = data.payload;
     if (!payload || typeof payload !== "object") return;
     __ecMascotPreviewLocked = true;

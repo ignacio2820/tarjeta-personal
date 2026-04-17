@@ -18,6 +18,7 @@ window.FIRESTORE_USERS_COLLECTION = "usuarios";
 
 /** Membresía, rol y premium (ID = uid). Reglas: listado solo admin. */
 window.FIRESTORE_MEMBERSHIP_COLLECTION = "users";
+window.FIRESTORE_ELITE_MEMBERSHIP_COLLECTION = "users_elite";
 
 /**
  * Sin ?user= en la URL, la tarjeta carga este documento (UID del admin principal).

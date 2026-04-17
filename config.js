@@ -65,6 +65,7 @@
     user_buttonLayout: "list",
     user_bgColor: "#000000",
     user_bgPreset: "matte",
+    bannerUrl: "",
   };
 
   /** MascotBook — documento usuarios/{uid}/mascot_card/profile */
@@ -89,6 +90,7 @@
     /** Fondos con patrones (huellas, naturaleza, nubes). */
     mascotSurfaceTheme: "cloud_cream",
     vacunas: [],
+    dueno: { nombre: "", direccion: "", telefono: "", email: "" },
     veterinario: { nombre: "", telefono: "", direccion: "" },
     fichaCritica: { alergias: "", medicacionDiaria: "", tipoSangre: "", cuidadosEspeciales: "" },
     visitas: 0,
@@ -320,6 +322,7 @@
       user_buttonLayout: buttonLayout,
       user_bgColor: bg,
       user_bgPreset: preset,
+      bannerUrl: String(d.bannerUrl || d.banner_url || "").trim(),
     };
   };
 
@@ -346,6 +349,7 @@
         return r.vacuna || r.fecha || r.proximaDosis;
       })
       .slice(0, 24);
+    var own = d.dueno && typeof d.dueno === "object" ? d.dueno : {};
     var vet = d.veterinario && typeof d.veterinario === "object" ? d.veterinario : {};
     var fic = d.fichaCritica && typeof d.fichaCritica === "object" ? d.fichaCritica : {};
     var waU = String(d.whatsappUrgencia || "").replace(/\D/g, "");
@@ -385,6 +389,12 @@
       galeria: gal,
       muro: String(d.muro || "").trim(),
       vacunas: vacunas,
+      dueno: {
+        nombre: String(own.nombre || own.nombreCompleto || "").trim(),
+        direccion: String(own.direccion || own.direccionCompleta || "").trim(),
+        telefono: String(own.telefono || "").trim(),
+        email: String(own.email || own.correo || "").trim(),
+      },
       veterinario: {
         nombre: String(vet.nombre || "").trim(),
         telefono: String(vet.telefono || "").trim(),

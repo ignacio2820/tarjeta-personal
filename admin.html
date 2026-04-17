@@ -107,7 +107,7 @@
             <button type="button" class="nav-tab active" data-panel="dashboard" role="tab">Dashboard</button>
             <button type="button" class="nav-tab" data-panel="contenido" role="tab">Contenido</button>
             <button type="button" class="nav-tab hidden" data-panel="control" id="nav-tab-control" role="tab">
-              Panel de Control
+              Administración
             </button>
             <button type="button" class="nav-tab nav-tab-passive" aria-disabled="true">Configuración</button>
           </div>
@@ -126,7 +126,7 @@
               <button type="button" class="mb-pro-pick" data-mb-pro="night_neon">Night Neon</button>
               <button type="button" class="mb-pro-pick" data-mb-pro="organic_leaf">Organic Leaf</button>
             </div>
-            <p class="theme-panel-hint theme-panel-hint--accent">Color de acento: editarlo en Contenido → Identidad básica.</p>
+            <p class="theme-panel-hint theme-panel-hint--accent">Estilo visual estandarizado por tema MascotBook Pro.</p>
           </div>
         </aside>
 
@@ -217,7 +217,7 @@
 
           <div id="panel-control" class="hidden">
             <div class="admin-card admin-card--control">
-              <h2 class="form-personal-title">Panel de Control</h2>
+              <h2 class="form-personal-title">Administración</h2>
               <p class="admin-card-hint">
                 Usuarios registrados (colección <strong>users</strong> en Firestore): roles, membresía y acciones de administración.
               </p>
@@ -244,10 +244,15 @@
           <div id="panel-contenido" class="hidden">
           <div id="form-personal" class="form-panel">
             <h2 class="form-personal-title">Tu EliteCard</h2>
+            <div class="pc-work-tabs" role="tablist" aria-label="Secciones EliteCard">
+              <button type="button" class="pc-tab-btn active" data-p-tab="identidad" role="tab">Identidad</button>
+              <button type="button" class="pc-tab-btn" data-p-tab="redes" role="tab">Redes Sociales</button>
+              <button type="button" class="pc-tab-btn" data-p-tab="ajustes" role="tab">Ajustes y Diseño</button>
+            </div>
 
-            <div class="admin-card">
+            <div class="admin-card" data-p-tab-panel="identidad">
               <h3 class="admin-card-title">Identidad</h3>
-              <p class="admin-card-hint">Foto, nombre, cargo y logo institucional: lo primero que ve tu cliente.</p>
+              <p class="admin-card-hint">Foto, banner/logo, datos profesionales y biografía: lo primero que ve tu cliente.</p>
               <div class="field">
                 <label for="p-foto">Foto de perfil</label>
                 <input id="p-foto" type="file" accept="image/*" />
@@ -265,7 +270,11 @@
                 <input id="p-empresa" type="text" />
               </div>
               <div class="field">
-                <label for="p-logo">Logo institucional</label>
+                <label class="field-label-row" for="p-bio"><i class="fa-solid fa-align-left" aria-hidden="true"></i> Biografía / Resumen</label>
+                <textarea id="p-bio"></textarea>
+              </div>
+              <div class="field">
+                <label for="p-logo">Banner / Logo institucional</label>
                 <input id="p-logo" type="file" accept="image/*" />
               </div>
               <details class="vcf-details">
@@ -289,7 +298,7 @@
               </details>
             </div>
 
-            <div class="admin-card">
+            <div class="admin-card pc-tab-panel-hidden" data-p-tab-panel="redes">
               <h3 class="admin-card-title">Redes sociales</h3>
               <p class="admin-card-hint">WhatsApp, correo, Instagram, LinkedIn y más: todas tus vías en un solo bloque.</p>
               <div class="field">
@@ -328,13 +337,9 @@
                 <label class="field-label-row" for="p-calendly"><i class="fa-regular fa-calendar" aria-hidden="true"></i> Calendly (URL)</label>
                 <input id="p-calendly" type="url" />
               </div>
-              <div class="field">
-                <label class="field-label-row" for="p-bio"><i class="fa-solid fa-align-left" aria-hidden="true"></i> Bio corta</label>
-                <textarea id="p-bio"></textarea>
-              </div>
             </div>
 
-            <div class="admin-card" id="admin-card-style-pro">
+            <div class="admin-card pc-tab-panel-hidden" id="admin-card-style-pro" data-p-tab-panel="ajustes">
               <h3 class="admin-card-title">Ajustes de diseño</h3>
               <p class="admin-card-hint">Fondo, forma de foto y estilo de botones. La vista previa refleja los cambios al instante.</p>
               <div class="field">
@@ -367,7 +372,7 @@
               </div>
             </div>
 
-            <div class="admin-card admin-tools-card">
+            <div class="admin-card admin-tools-card pc-tab-panel-hidden" data-p-tab-panel="ajustes">
               <h3 class="admin-card-title">Compartir y correo</h3>
               <button type="button" class="btn-qr" id="btn-admin-qr">Generar QR de mi Tarjeta</button>
               <p class="admin-card-hint">Firma para pegar en Outlook, Gmail, etc.</p>
@@ -378,7 +383,7 @@
               </div>
             </div>
 
-            <div class="actions-row">
+            <div class="actions-row actions-row--elite-persist">
               <button type="button" class="btn-save" id="btn-save-personal">Guardar EliteCard</button>
             </div>
           </div>
@@ -439,13 +444,6 @@
                       <input id="m-sexo" type="text" placeholder="macho, hembra o cómo preferís indicarlo" />
                     </div>
                   </div>
-                  <div class="field">
-                    <label for="m-accent">Color de acento</label>
-                    <input id="m-accent" type="color" value="#ec4899" />
-                    <p class="mascot-panel-card__hint" style="margin-top: 0.35rem">
-                      El color del texto lo define el <strong>tema</strong> elegido (Classic Paws, Candy Pop, etc.).
-                    </p>
-                  </div>
                   <h4 id="mb-card-story-title" class="mascot-panel-card__subtitle mascot-panel-card__subtitle--spaced">
                     <i class="fa-solid fa-pen-nib" aria-hidden="true"></i> Historia y muro
                   </h4>
@@ -485,6 +483,33 @@
 
               <aside class="mascot-security-aside mascot-form-side" aria-label="Columna salud MascotBook">
                 <section class="mascot-panel-card mascot-panel-card--security" data-mb-tab-panel="seguridad" aria-labelledby="mb-card-security-title">
+                  <h4 class="mascot-panel-card__subtitle"><i class="fa-solid fa-user" aria-hidden="true"></i> Datos del dueño</h4>
+                  <p class="mascot-panel-card__hint mascot-panel-card__hint--tight">
+                    Datos clave de rescate: se muestran en la tarjeta pública encima del veterinario.
+                  </p>
+                  <div class="field-grid field-grid--two">
+                    <div class="field">
+                      <label for="m-owner-nombre">Nombre completo del dueño</label>
+                      <input id="m-owner-nombre" type="text" placeholder="Nombre y apellido" />
+                    </div>
+                    <div class="field">
+                      <label for="m-owner-email">Correo electrónico</label>
+                      <input id="m-owner-email" type="email" placeholder="correo@ejemplo.com" />
+                    </div>
+                  </div>
+                  <div class="field-grid field-grid--two">
+                    <div class="field">
+                      <label for="m-owner-tel">Teléfono de contacto</label>
+                      <input id="m-owner-tel" type="tel" value="+54 9 " placeholder="+54 9 [Código de Área] [Número]" />
+                      <p class="mascot-panel-card__hint mascot-panel-card__hint--tight">
+                        Formato Argentina: +54 9 [Código de Área sin 0] [Número sin 15]. Para otros países, ingresá el código correspondiente.
+                      </p>
+                    </div>
+                    <div class="field">
+                      <label for="m-owner-dir">Dirección completa (GPS)</label>
+                      <input id="m-owner-dir" type="text" placeholder="Calle, ciudad, provincia y país" />
+                    </div>
+                  </div>
                   <h3 id="mb-card-security-title" class="mascot-panel-card__title">
                     <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Seguridad
                   </h3>
@@ -541,7 +566,10 @@
                     </div>
                     <div class="field">
                       <label for="m-vet-tel">Teléfono</label>
-                      <input id="m-vet-tel" type="tel" placeholder="Código país + número, ej. +54 11 …" />
+                      <input id="m-vet-tel" type="tel" value="+54 9 " placeholder="+54 9 [Código de Área] [Número]" />
+                      <p class="mascot-panel-card__hint mascot-panel-card__hint--tight">
+                        Formato Argentina: +54 9 [Código de Área sin 0] [Número sin 15]. Para otros países, ingresá el código correspondiente.
+                      </p>
                     </div>
                   </div>
                   <div class="field">
@@ -674,6 +702,65 @@
       </div>
     </div>
 
+    <div id="admin-demo-save-personal-modal" class="admin-modal hidden" role="dialog" aria-modal="true" aria-labelledby="admin-demo-save-personal-title">
+      <div class="admin-modal-panel admin-modal-panel--demo">
+        <button type="button" class="admin-modal-close" id="admin-demo-save-personal-close" aria-label="Cerrar">×</button>
+        <h4 id="admin-demo-save-personal-title">Guardar EliteCard</h4>
+        <p class="admin-modal-sub">
+          ¡Tu tarjeta quedó genial! Registrate para guardarla y probar EliteCard Pro gratis por 7 días
+        </p>
+        <div class="admin-demo-save-actions">
+          <a class="btn-solid btn-header" id="admin-demo-save-personal-register" href="#">Crear cuenta</a>
+          <a class="btn-outline btn-header" id="admin-demo-save-personal-login" href="#">Iniciar sesión</a>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="admin-product-access-modal"
+      class="admin-modal admin-modal--blocking admin-modal--product-access-gate hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="admin-product-access-title"
+    >
+      <div class="admin-modal-panel admin-modal-panel--product-access">
+        <h2 id="admin-product-access-title" class="admin-product-access-title">Acceso al producto</h2>
+        <div id="admin-product-access-body" class="admin-modal-sub admin-product-access-body"></div>
+        <div
+          id="admin-product-access-preview-wrap"
+          class="admin-product-access-preview-wrap hidden"
+          aria-hidden="true"
+        >
+          <p class="admin-product-access-preview-label">Así se ve una EliteCard profesional</p>
+          <div class="admin-product-access-preview-card" aria-hidden="true">
+            <img
+              class="admin-product-access-preview-img"
+              src="assets/image_1.png"
+              width="120"
+              height="160"
+              alt=""
+              decoding="async"
+            />
+            <span class="admin-product-access-preview-watermark">Demo</span>
+          </div>
+        </div>
+        <div class="admin-demo-save-actions admin-product-access-actions">
+          <a
+            class="btn-solid btn-header btn-elite-cta-primary admin-product-access-cta-primary hidden"
+            id="admin-product-access-primary"
+            href="#"
+            >Activar mi EliteCard Pro (7 Días de Prueba)</a>
+          <button type="button" class="btn-product-access-secondary hidden" id="admin-product-access-back-mascot">
+            Volver a mi MascotBook
+          </button>
+          <a class="btn-solid btn-header" id="admin-product-access-register" href="#">Crear cuenta para este producto</a>
+          <button type="button" class="btn-outline btn-header btn-product-access-logout" id="admin-product-access-logout">
+            Cerrar sesión
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div id="admin-qr-modal" class="admin-modal hidden" role="dialog" aria-modal="true" aria-labelledby="admin-qr-modal-title">
       <div class="admin-modal-panel">
         <button type="button" class="admin-modal-close" id="admin-qr-close" aria-label="Cerrar">×</button>
@@ -717,6 +804,7 @@
         var currentApp = "mascotbook";
         /** Vista principal: selector de producto o formularios. */
         var activePanel = "dashboard";
+        var currentPersonalTab = "identidad";
         var currentMascotTab = "identidad";
         var currentTexture = "elite";
         var currentMascotProTheme = "classic_paws";
@@ -729,6 +817,43 @@
         /** Vista previa MascotBook sin sesión: mismo id que card-public.js (demo). */
         var EC_DEMO_MASCOT_UID = "__ec_demo_mascot__";
         var demoModeActive = false;
+        var EC_SUPER_ADMIN_EMAIL = "ignacio2820@gmail.com";
+        var EC_DEMO_ELITE_UID = "__ec_demo_elite__";
+        /** Demo EliteCard — vista previa en vivo (panel, sin Firestore). */
+        var mockEliteData = {
+          user_nombre: "Lic. Valentina Schwindt",
+          user_cargo: "Abogada · Societaria, contratos y compliance",
+          user_empresa: "Estudio Schwindt",
+          user_bio:
+            "Asesoro a empresas y profesionales en constitución societaria, acuerdos comerciales y buenas prácticas regulatorias. Trabajo con foco en claridad, tiempos realistas y acompañamiento cercano.",
+          email: "valentina.schwindt@estudioschwindt.demo",
+          emailInstitucional: "contacto@estudioschwindt.demo",
+          telefono: "+54 9 11 5555 7788",
+          whatsappNumero: "+54 9 11 5555 7788",
+          fotoUrl: "assets/image_1.png",
+          bannerUrl: "assets/image_2.png",
+          logoUrl: "",
+          instagram: "https://instagram.com/estudio.schwindt",
+          linkedin: "https://www.linkedin.com/in/valentina-schwindt-abogada",
+          sitioWeb: "https://estudioschwindt.demo",
+          mapsUrl: "https://maps.google.com/?q=Av.+Corrientes+1234,+CABA",
+          calendlyUrl: "https://calendly.com/demo-elitecard/reunion",
+          vcardNombres: "Valentina",
+          vcardApellidos: "Schwindt",
+          vcardOrganizacion: "Estudio Schwindt",
+          vcardTitulo: "Abogada",
+          user_avatarShape: "rect",
+          user_buttonLayout: "list",
+          user_bgColor: "#000000",
+          user_bgPreset: "matte",
+          redes: {
+            instagram: "https://instagram.com/estudio.schwindt",
+            linkedin: "https://www.linkedin.com/in/valentina-schwindt-abogada",
+            sitioWeb: "https://estudioschwindt.demo",
+            whatsappNumero: "5491155557788",
+          },
+        };
+        var mockProfessionalData = mockEliteData;
         var mockMascotData = {
           nombre: "Luna (demo)",
           raza: "Mestiza adorable",
@@ -741,14 +866,13 @@
           mascotProTheme: "classic_paws",
           tema: "classic_paws",
           mascotSurfaceTheme: "cloud_cream",
-          accentColor: "#ec4899",
           fotoPerfilUrl:
             "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400&h=400&fit=crop&q=80",
-          fotoCabeceraUrl:
-            "https://images.unsplash.com/photo-1552053834-87076afc88a7?w=1200&h=600&fit=crop&q=80",
+          fotoCabeceraUrl: "/assets/image_0.png",
           galeriaSlots: [],
           galeria: [],
           vacunas: [],
+          dueno: {},
           veterinario: {},
           fichaCritica: {},
           visitas: 12,
@@ -762,14 +886,16 @@
         var unsubLostScans = null;
         var lastMascotGaleria = [];
         var lastMascotGallerySlots = Array(MAX_MASCOT_GALLERY_SLOTS).fill("");
-        var lastPersonalMedia = { fotoUrl: "", logoUrl: "" };
+        var lastPersonalMedia = { fotoUrl: "", logoUrl: "", bannerUrl: "" };
         var lastMascotFoto = "";
         var lastMascotVisitas = 0;
         var lastMascotLikes = 0;
         var accountUnsubMembership = null;
         var accountUnsubLegacy = null;
+        var eliteMembershipUnsub = null;
         var lastMembershipData = {};
         var lastLegacyAccountData = {};
+        var lastEliteMembershipData = {};
         var lastAccountData = {};
         var __adminSigText = "";
         var __adminSigHtml = "";
@@ -789,6 +915,7 @@
         var previewFrame = document.getElementById("preview-frame");
         var publicUrlEl = document.getElementById("public-url");
         var toastEl = document.getElementById("toast");
+        var DEFAULT_AR_PHONE_PREFIX = "+54 9 ";
 
         function showToast(msg, ok) {
           toastEl.textContent = msg;
@@ -796,6 +923,24 @@
           setTimeout(function () {
             toastEl.classList.remove("show");
           }, 2600);
+        }
+
+        function ensurePhonePrefixOnEmpty(inputEl) {
+          if (!inputEl) return;
+          var v = String(inputEl.value || "").trim();
+          if (!v) inputEl.value = DEFAULT_AR_PHONE_PREFIX;
+        }
+
+        function suggestInternationalPhoneFormat(inputEl) {
+          if (!inputEl) return;
+          var raw = String(inputEl.value || "").trim();
+          if (!raw) {
+            inputEl.value = DEFAULT_AR_PHONE_PREFIX;
+            return;
+          }
+          if (raw.charAt(0) !== "+") {
+            showToast("Sugerencia: iniciá el teléfono con '+' y código de país (ej. +54 9 ...).", false);
+          }
         }
 
         function getGateNextUrl() {
@@ -853,20 +998,48 @@
           if (m) m.classList.add("hidden");
         }
 
+        function openDemoSavePersonalModal() {
+          var m = document.getElementById("admin-demo-save-personal-modal");
+          if (m) m.classList.remove("hidden");
+        }
+
+        function closeDemoSavePersonalModal() {
+          var m = document.getElementById("admin-demo-save-personal-modal");
+          if (m) m.classList.add("hidden");
+        }
+
         function wireDemoRegistrationLinks() {
           var next = encodeURIComponent(getGateNextUrl());
           var reg = document.getElementById("admin-demo-save-register");
           var log = document.getElementById("admin-demo-save-login");
+          var regP = document.getElementById("admin-demo-save-personal-register");
+          var logP = document.getElementById("admin-demo-save-personal-login");
           var bReg = document.getElementById("admin-demo-banner-register");
           if (reg) reg.href = "register.html?app=mascotbook&next=" + next;
           if (log) log.href = "login.html?next=" + next;
+          if (regP) regP.href = "register.html?app=elitecard&next=" + next;
+          if (logP) logP.href = "login.html?next=" + next;
           if (bReg) bReg.href = "register.html?app=mascotbook&next=" + next;
           var c1 = document.getElementById("admin-demo-save-close");
           if (c1) c1.onclick = closeDemoSaveModal;
+          var c2 = document.getElementById("admin-demo-save-personal-close");
+          if (c2) c2.onclick = closeDemoSavePersonalModal;
         }
 
         function membershipCollection() {
           return window.EC_SILO ? window.EC_SILO.membershipCollection() : "users";
+        }
+
+        function eliteMembershipCollection() {
+          return (window.FIRESTORE_ELITE_MEMBERSHIP_COLLECTION || "users_elite").trim() || "users_elite";
+        }
+
+        function normalizeEmail(v) {
+          return String(v || "").trim().toLowerCase();
+        }
+
+        function isSuperAdminEmail(email) {
+          return normalizeEmail(email) === normalizeEmail(EC_SUPER_ADMIN_EMAIL);
         }
 
         function clearAccountListeners() {
@@ -878,14 +1051,20 @@
             accountUnsubLegacy();
             accountUnsubLegacy = null;
           }
+          if (eliteMembershipUnsub) {
+            eliteMembershipUnsub();
+            eliteMembershipUnsub = null;
+          }
           lastMembershipData = {};
           lastLegacyAccountData = {};
+          lastEliteMembershipData = {};
         }
 
         function mergeAndPublishAccount() {
           lastAccountData = Object.assign({}, lastLegacyAccountData, lastMembershipData);
           maybeMarkMembershipExpired();
           updateSubscriptionUi(lastAccountData);
+          scheduleProductAccessEnforcement();
         }
 
         function ensureMembershipDoc(user) {
@@ -896,11 +1075,20 @@
           return ref.get().then(function (snap) {
             var email = String(user.email || "").trim();
             var displayName = String(user.displayName || "").trim();
+            var isSuperAdmin = isSuperAdminEmail(email);
+            var farFuture = firebase.firestore.Timestamp.fromMillis(
+              new Date("2099-12-31T23:59:59Z").getTime()
+            );
             if (snap.exists) {
               var patch = {};
               var d = snap.data() || {};
               if (email && d.email !== email) patch.email = email;
               if (String(displayName || "") !== String(d.displayName || "")) patch.displayName = displayName;
+              if (isSuperAdmin) {
+                if (String(d.role || "").toLowerCase() !== "admin") patch.role = "admin";
+                if (String(d.status || "").toLowerCase() !== "premium") patch.status = "premium";
+                patch.premiumUntil = farFuture;
+              }
               if (Object.keys(patch).length) {
                 patch.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
                 return ref.set(patch, { merge: true });
@@ -914,25 +1102,133 @@
               {
                 email: email,
                 displayName: displayName,
-                role: "user",
-                status: "trial",
+                role: isSuperAdmin ? "admin" : "user",
+                status: isSuperAdmin ? "premium" : "trial",
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                premiumUntil: trialUntil,
+                premiumUntil: isSuperAdmin ? farFuture : trialUntil,
               },
               { merge: true }
             );
           });
         }
 
+        function ensureEliteMembershipDoc(user) {
+          if (!user || !user.uid || !firebase.firestore) return Promise.resolve();
+          var db = firebase.firestore();
+          var col = eliteMembershipCollection();
+          var ref = db.collection(col).doc(user.uid);
+          return ref.get().then(function (snap) {
+            var email = String(user.email || "").trim();
+            var displayName = String(user.displayName || "").trim();
+            var isSuperAdmin = isSuperAdminEmail(email);
+            var farFuture = firebase.firestore.Timestamp.fromMillis(
+              new Date("2099-12-31T23:59:59Z").getTime()
+            );
+            if (snap.exists) {
+              var patch = {};
+              var d = snap.data() || {};
+              if (email && d.email !== email) patch.email = email;
+              if (String(displayName || "") !== String(d.displayName || "")) patch.displayName = displayName;
+              if (isSuperAdmin) {
+                if (String(d.role || "").toLowerCase() !== "admin") patch.role = "admin";
+                if (String(d.status || "").toLowerCase() !== "premium") patch.status = "premium";
+                patch.premiumUntil = farFuture;
+              }
+              if (Object.keys(patch).length) {
+                patch.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+                return ref.set(patch, { merge: true });
+              }
+              return Promise.resolve();
+            }
+            var trialUntil = firebase.firestore.Timestamp.fromMillis(
+              Date.now() + 7 * 24 * 60 * 60 * 1000
+            );
+            return ref.set(
+              {
+                email: email,
+                displayName: displayName,
+                role: isSuperAdmin ? "admin" : "user",
+                status: isSuperAdmin ? "premium" : "trial",
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                premiumUntil: isSuperAdmin ? farFuture : trialUntil,
+              },
+              { merge: true }
+            );
+          });
+        }
+
+        function bindEliteMembershipMeta() {
+          if (eliteMembershipUnsub) {
+            eliteMembershipUnsub();
+            eliteMembershipUnsub = null;
+          }
+          if (!uid) return;
+          eliteMembershipUnsub = firebase
+            .firestore()
+            .collection(eliteMembershipCollection())
+            .doc(uid)
+            .onSnapshot(
+              function (snap) {
+                lastEliteMembershipData = snap.exists ? snap.data() || {} : {};
+                maybeMarkEliteMembershipExpired();
+                scheduleProductAccessEnforcement();
+              },
+              function () {}
+            );
+        }
+
+        function maybeMarkEliteMembershipExpired() {
+          var u = firebase.auth && firebase.auth().currentUser;
+          if (!u || u.uid !== uid) return;
+          if (isSuperAdminEmail(u.email || "")) return;
+          var m = lastEliteMembershipData || {};
+          var st = String(m.status || "").toLowerCase();
+          if (st === "expired" || st === "suspended") return;
+          if (st !== "trial" && st !== "premium") return;
+          var pu = m.premiumUntil;
+          if (pu == null) return;
+          var ms = null;
+          try {
+            if (pu.toMillis) ms = pu.toMillis();
+            else if (typeof pu.seconds === "number") ms = pu.seconds * 1000;
+          } catch (eMs2) {}
+          if (ms == null || Date.now() <= ms) return;
+          firebase
+            .firestore()
+            .collection(eliteMembershipCollection())
+            .doc(uid)
+            .update({
+              status: "expired",
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            })
+            .catch(function () {});
+        }
+
+        function getEffectiveEliteMembership() {
+          var st = String(lastEliteMembershipData.status || "").trim().toLowerCase();
+          if (!st) return null;
+          return lastEliteMembershipData;
+        }
+
+        function isPersonalSavingBlockedByEliteMembership() {
+          if (!uid) return false;
+          var m = getEffectiveEliteMembership();
+          if (!m) return false;
+          var st = String(m.status || "").toLowerCase();
+          return st === "expired" || st === "suspended";
+        }
+
         function maybeMarkMembershipExpired() {
           var u = firebase.auth && firebase.auth().currentUser;
           if (!u || u.uid !== uid) return;
+          if (isSuperAdminEmail(u.email || "")) return;
           var m = lastMembershipData || {};
           var Sub = window.EliteCardAdminSubscription;
           var merged = Object.assign({}, lastLegacyAccountData, m);
           if (Sub && Sub.isPerpetualAccess(uid, u.email || "", merged)) return;
           var st = String(m.status || "").toLowerCase();
           if (st === "expired" || st === "suspended") return;
+          if (st !== "trial" && st !== "premium") return;
           var pu = m.premiumUntil;
           if (pu == null) return;
           var ms = null;
@@ -1001,6 +1297,10 @@
           return Math.max(0, Math.ceil(diff / 86400000));
         }
 
+        function getMembershipDaysRemaining() {
+          return getTrialDaysRemaining();
+        }
+
         function dismissTrialWelcomeModal() {
           try {
             sessionStorage.setItem(EC_TRIAL_WELCOME_SESSION_KEY, "1");
@@ -1033,24 +1333,32 @@
             strip.classList.add("hidden");
             return;
           }
+          var user = firebase.auth && firebase.auth().currentUser;
+          if (user && isSuperAdminEmail(user.email || "")) {
+            strip.classList.add("hidden");
+            return;
+          }
+          if (String(lastAccountData.role || "").toLowerCase() !== "user") {
+            strip.classList.add("hidden");
+            return;
+          }
           var st = String(lastAccountData.status || "").toLowerCase();
           var Sub = window.EliteCardAdminSubscription;
-          var user = firebase.auth && firebase.auth().currentUser;
           if (Sub && user && Sub.isPerpetualAccess(uid, user.email || "", lastAccountData)) {
             strip.classList.add("hidden");
             return;
           }
-          if (st !== "trial") {
+          if (st !== "trial" && st !== "premium") {
             strip.classList.add("hidden");
             return;
           }
-          var days = getTrialDaysRemaining();
+          var days = getMembershipDaysRemaining();
           if (days === null) {
             strip.classList.add("hidden");
             return;
           }
           strip.classList.remove("hidden");
-          badge.textContent = "Días de prueba restantes: " + days;
+          badge.textContent = "Te quedan " + days + " días de tu membresía";
         }
 
         function openPremiumUpgrade() {
@@ -1143,6 +1451,8 @@
                 tdAc.appendChild(document.createTextNode(" "));
                 tdAc.appendChild(mkBtn("Regalar 1 año", "gift-year", " btn-admin-chip--gift"));
                 tdAc.appendChild(document.createTextNode(" "));
+                tdAc.appendChild(mkBtn("Editar status", "edit-status", " btn-admin-chip--edit"));
+                tdAc.appendChild(document.createTextNode(" "));
                 tdAc.appendChild(
                   mkBtn(st === "suspended" ? "Reactivar" : "Suspender", "toggle-suspend", " btn-admin-chip--warn")
                 );
@@ -1208,6 +1518,46 @@
                 })
                 .then(function () {
                   okToast("Se sumaron 365 días de premium");
+                })
+                .catch(errToast);
+              return;
+            }
+            if (ac === "edit-status") {
+              ref
+                .get()
+                .then(function (s) {
+                  var cur = String((s.data() && s.data().status) || "trial").toLowerCase();
+                  var next = prompt(
+                    "Nuevo status para este usuario (trial, premium, expired, suspended):",
+                    cur || "trial"
+                  );
+                  if (next == null) return Promise.resolve(null);
+                  next = String(next || "").trim().toLowerCase();
+                  if (
+                    next !== "trial" &&
+                    next !== "premium" &&
+                    next !== "expired" &&
+                    next !== "suspended"
+                  ) {
+                    throw new Error("Status inválido.");
+                  }
+                  var patch = { status: next, updatedAt: fv.serverTimestamp() };
+                  if (next === "premium") {
+                    var base = s.data() && s.data().premiumUntil;
+                    var now = Date.now();
+                    var startMs = now;
+                    if (base && base.toMillis) startMs = Math.max(now, base.toMillis());
+                    else if (base && typeof base.seconds === "number")
+                      startMs = Math.max(now, base.seconds * 1000);
+                    patch.premiumUntil = firebase.firestore.Timestamp.fromMillis(
+                      startMs + 365 * 24 * 60 * 60 * 1000
+                    );
+                  }
+                  return ref.update(patch);
+                })
+                .then(function (r) {
+                  if (r === null) return;
+                  okToast("Status actualizado manualmente");
                 })
                 .catch(errToast);
               return;
@@ -1279,6 +1629,18 @@
           document.querySelectorAll("#form-mascot [data-mb-tab-panel]").forEach(function (panel) {
             panel.classList.toggle("mb-tab-panel-hidden", panel.getAttribute("data-mb-tab-panel") !== next);
           });
+        }
+
+        function setPersonalTab(tab) {
+          var next = tab === "redes" || tab === "ajustes" ? tab : "identidad";
+          currentPersonalTab = next;
+          document.querySelectorAll(".pc-tab-btn[data-p-tab]").forEach(function (btn) {
+            btn.classList.toggle("active", btn.getAttribute("data-p-tab") === next);
+          });
+          document.querySelectorAll("#form-personal [data-p-tab-panel]").forEach(function (panel) {
+            panel.classList.toggle("pc-tab-panel-hidden", panel.getAttribute("data-p-tab-panel") !== next);
+          });
+          fitPhonePreview();
         }
 
         function bindAccountMeta() {
@@ -1472,20 +1834,250 @@
           themePanel.classList.toggle("hidden", !show);
         }
 
-        function setCurrentApp(app, opts) {
-          if (app !== "personal" && app !== "mascotbook") app = "mascotbook";
-          currentApp = app;
+        var productAccessTimer = null;
+        var productAccessDeniedShown = false;
+
+        function hideProductAccessDeniedModal() {
+          var m = document.getElementById("admin-product-access-modal");
+          if (m) m.classList.add("hidden");
+          var t = document.getElementById("admin-product-access-title");
+          if (t) t.classList.remove("admin-product-access-title--alert");
+          var pr = document.getElementById("admin-product-access-primary");
+          if (pr) pr.classList.add("hidden");
+          var bk = document.getElementById("admin-product-access-back-mascot");
+          if (bk) bk.classList.add("hidden");
+          var pw = document.getElementById("admin-product-access-preview-wrap");
+          if (pw) {
+            pw.classList.add("hidden");
+            pw.setAttribute("aria-hidden", "true");
+          }
+        }
+
+        function scheduleProductAccessEnforcement() {
+          if (!uid) return;
+          try {
+            if (!firebase.auth || !firebase.auth().currentUser) return;
+          } catch (eAu) {
+            return;
+          }
+          clearTimeout(productAccessTimer);
+          productAccessTimer = setTimeout(function () {
+            runProductAccessEnforcement();
+          }, 120);
+        }
+
+        function revealAdminAppAfterProductCheck() {
+          productAccessDeniedShown = false;
+          hideProductAccessDeniedModal();
+          if (gateLoading) {
+            gateLoading.classList.add("hidden");
+            gateLoading.innerHTML =
+              "<p style=\"color: rgba(17,24,39,0.5); font-size:0.9rem\">Cargando panel…</p>";
+          }
+          app.classList.remove("hidden");
+          setCurrentApp(readCurrentAppFromUrl(), { skipUrl: true, skipProductGate: true });
+          setPanel(activePanel, { skipUrl: true });
+          syncAdminUrl();
+          refreshAdminSigPreview();
+          refreshPreview();
+          fitPhonePreview();
+        }
+
+        function showProductAccessDeniedModal(requested, opts) {
+          opts = opts || {};
+          var crossSell = !!(opts.crossSellFromMascot && requested === "personal");
+          if (gateLoading) gateLoading.classList.add("hidden");
+          app.classList.add("hidden");
+          productAccessDeniedShown = true;
+          var m = document.getElementById("admin-product-access-modal");
+          var title = document.getElementById("admin-product-access-title");
+          var body = document.getElementById("admin-product-access-body");
+          var primary = document.getElementById("admin-product-access-primary");
+          var backMb = document.getElementById("admin-product-access-back-mascot");
+          var reg = document.getElementById("admin-product-access-register");
+          var previewWrap = document.getElementById("admin-product-access-preview-wrap");
+          if (!m || !title || !body) return;
+          var isMb = requested === "mascotbook";
+          title.classList.toggle("admin-product-access-title--alert", crossSell);
+          if (previewWrap) {
+            if (crossSell) {
+              previewWrap.classList.remove("hidden");
+              previewWrap.setAttribute("aria-hidden", "false");
+            } else {
+              previewWrap.classList.add("hidden");
+              previewWrap.setAttribute("aria-hidden", "true");
+            }
+          }
+          if (crossSell) {
+            title.textContent = "¡Acceso Exclusivo de EliteCard!";
+            body.innerHTML =
+              "<p>Vimos que ya tienes tu cuenta de <strong>MascotBook</strong> activa, ¡felicitaciones!</p>" +
+              "<p>Pero para acceder a este Panel de <strong>EliteCard</strong> y diseñar tu Tarjeta Personal Profesional con diseño Premium, necesitas una suscripción activa de EliteCard.</p>" +
+              "<p>Adquiérela ahora y centraliza toda tu identidad digital en un solo lugar.</p>";
+            if (primary) {
+              primary.textContent = "Activar mi EliteCard Pro (7 Días de Prueba)";
+              var pay = String(window.EC_PREMIUM_UPGRADE_URL || "").trim();
+              if (pay && /^https?:\/\//i.test(pay)) {
+                primary.href = pay;
+                primary.target = "_blank";
+                primary.rel = "noopener noreferrer";
+              } else {
+                primary.href =
+                  "register.html?app=elitecard&next=" +
+                  encodeURIComponent("admin.html?viewMode=personal&panel=contenido");
+                primary.removeAttribute("target");
+                primary.removeAttribute("rel");
+              }
+              primary.classList.remove("hidden");
+            }
+            if (backMb) backMb.classList.remove("hidden");
+            if (reg) reg.classList.add("hidden");
+          } else if (!isMb) {
+            title.textContent = "EliteCard no está activo";
+            body.innerHTML =
+              "<p>No tenés una suscripción activa ni período de prueba vigente para <strong>EliteCard</strong>. Adquirilo para entrar al panel y editar tu perfil.</p>";
+            if (primary) primary.classList.add("hidden");
+            if (backMb) backMb.classList.add("hidden");
+            if (reg) {
+              reg.classList.remove("hidden");
+              reg.href =
+                "register.html?app=elitecard&next=" +
+                encodeURIComponent("admin.html?viewMode=personal&panel=contenido");
+            }
+          } else {
+            title.textContent = "MascotBook no está activo";
+            body.innerHTML =
+              "<p>No tenés una suscripción activa ni período de prueba vigente para <strong>MascotBook</strong>. Adquirilo para entrar al panel y editar tu perfil.</p>";
+            if (primary) primary.classList.add("hidden");
+            if (backMb) backMb.classList.add("hidden");
+            if (reg) {
+              reg.classList.remove("hidden");
+              reg.href =
+                "register.html?app=mascotbook&next=" +
+                encodeURIComponent("admin.html?viewMode=mascot&panel=contenido");
+            }
+          }
+          m.classList.remove("hidden");
+        }
+
+        function accountAccessDataHydrated() {
+          var m =
+            lastMembershipData &&
+            typeof lastMembershipData === "object" &&
+            Object.keys(lastMembershipData).length > 0;
+          var l =
+            lastLegacyAccountData &&
+            typeof lastLegacyAccountData === "object" &&
+            Object.keys(lastLegacyAccountData).length > 0;
+          return !!(m || l);
+        }
+
+        function runProductAccessEnforcement() {
+          var user = firebase.auth().currentUser;
+          if (!user || !uid) return;
+          if (demoModeActive) {
+            revealAdminAppAfterProductCheck();
+            return;
+          }
+          if (isSuperAdminEmail(user.email || "")) {
+            revealAdminAppAfterProductCheck();
+            return;
+          }
+          if (!accountAccessDataHydrated()) return;
+          var Sub = window.EliteCardAdminSubscription;
+          if (!Sub || typeof Sub.hasMascotBookDashboardAccess !== "function") {
+            revealAdminAppAfterProductCheck();
+            return;
+          }
+          var requested = readCurrentAppFromUrl();
+          var email = user.email || "";
+          var doc = lastAccountData || {};
+          var eliteD = lastEliteMembershipData || {};
+          var okMb = Sub.hasMascotBookDashboardAccess(doc, uid, email);
+          var okEl = Sub.hasEliteCardDashboardAccess(doc, eliteD, uid, email);
+          var ok = requested === "mascotbook" ? okMb : okEl;
+
+          if (ok) {
+            revealAdminAppAfterProductCheck();
+            return;
+          }
+
+          if (requested === "mascotbook" && okEl) {
+            window.location.replace("admin.html?viewMode=personal&panel=dashboard");
+            return;
+          }
+          if (requested === "personal" && !okEl && okMb) {
+            if (productAccessDeniedShown) return;
+            showProductAccessDeniedModal("personal", { crossSellFromMascot: true });
+            return;
+          }
+
+          if (productAccessDeniedShown) return;
+          showProductAccessDeniedModal(requested);
+        }
+
+        function applyHubProductAccessGate(previousApp) {
+          var user = firebase.auth().currentUser;
+          if (!user || !uid || demoModeActive) return true;
+          if (isSuperAdminEmail(user.email || "")) return true;
+          var Sub = window.EliteCardAdminSubscription;
+          if (!Sub) return true;
+          var email = user.email || "";
+          var doc = lastAccountData || {};
+          var eliteD = lastEliteMembershipData || {};
+          var okMb = Sub.hasMascotBookDashboardAccess(doc, uid, email);
+          var okEl = Sub.hasEliteCardDashboardAccess(doc, eliteD, uid, email);
+          var want = currentApp;
+          var ok = want === "mascotbook" ? okMb : okEl;
+          if (ok) return true;
+          if (want === "mascotbook" && okEl) {
+            window.location.replace("admin.html?viewMode=personal&panel=dashboard");
+            return false;
+          }
+          if (want === "personal" && !okEl && okMb) {
+            showProductAccessDeniedModal("personal", { crossSellFromMascot: true });
+            setCurrentApp(previousApp, { skipUrl: true, skipProductGate: true });
+            return false;
+          }
+          showProductAccessDeniedModal(want);
+          setCurrentApp(previousApp, { skipUrl: true, skipProductGate: true });
+          return false;
+        }
+
+        function setCurrentApp(nextApp, opts) {
+          if (nextApp !== "personal" && nextApp !== "mascotbook") nextApp = "mascotbook";
+          var previousApp = currentApp;
+          currentApp = nextApp;
+          var panelEl = document.getElementById("app");
+          if (
+            !(opts && opts.skipProductGate) &&
+            uid &&
+            !demoModeActive &&
+            panelEl &&
+            !panelEl.classList.contains("hidden") &&
+            previousApp !== currentApp
+          ) {
+            if (!applyHubProductAccessGate(previousApp)) {
+              return;
+            }
+          }
           adminRoot.classList.remove("view-personal", "view-mascot");
           adminRoot.classList.add(currentApp === "mascotbook" ? "view-mascot" : "view-personal");
           formPersonal.classList.toggle("hidden", currentApp !== "personal");
           formMascot.classList.toggle("hidden", currentApp !== "mascotbook");
           updateThemePanelVisibility();
+          if (currentApp === "personal") setPersonalTab(currentPersonalTab || "identidad");
           if (currentApp === "mascotbook") setMascotTab(currentMascotTab || "identidad");
           bindFirestore();
           if (!uid && currentApp === "mascotbook") {
             try {
               fillMascot(mockMascotData);
             } catch (eDemoApp) {}
+          }
+          if (!uid && currentApp === "personal") {
+            try {
+              fillPersonal(mockProfessionalData);
+            } catch (eDemoPersonal) {}
           }
           refreshPreview();
           updateSubscriptionUi(lastAccountData);
@@ -1541,7 +2133,79 @@
           if (currentApp === "mascotbook" && demoModeActive) {
             return EC_DEMO_MASCOT_UID;
           }
+          if (currentApp === "personal" && demoModeActive) {
+            return EC_DEMO_ELITE_UID;
+          }
           return String(uid || "").trim();
+        }
+
+        function personalIdentityLooksEmpty(p) {
+          if (!p || typeof p !== "object") return true;
+          var pick = function (s) {
+            return String(s || "").trim();
+          };
+          if (pick(p.user_nombre || p.nombreCompleto)) return false;
+          if (pick(p.user_cargo || p.cargo)) return false;
+          if (pick(p.user_empresa || p.empresa)) return false;
+          if (pick(p.email)) return false;
+          if (pick(p.telefono)) return false;
+          if (pick(p.whatsappNumero)) return false;
+          if (pick(p.fotoUrl)) return false;
+          if (pick(p.logoUrl)) return false;
+          if (pick(p.user_bio || p.bio)) return false;
+          var r = p.redes || {};
+          if (pick(r.instagram || p.instagram)) return false;
+          if (pick(r.linkedin || p.linkedin)) return false;
+          if (pick(r.sitioWeb || p.sitioWeb)) return false;
+          if (pick(r.whatsappNumero)) return false;
+          return true;
+        }
+
+        function mergeElitePreviewPayloadForIframe() {
+          var form = readPersonalPayload();
+          try {
+            delete form.updatedAt;
+          } catch (eUa) {}
+          var loggedIn = false;
+          try {
+            loggedIn = !!(firebase.auth && firebase.auth().currentUser);
+          } catch (eLg) {}
+          var needDemo = demoModeActive || (loggedIn && personalIdentityLooksEmpty(form));
+          if (!needDemo) return form;
+          var base = JSON.parse(JSON.stringify(mockEliteData));
+          var redB = base.redes && typeof base.redes === "object" ? base.redes : {};
+          var redF = form.redes && typeof form.redes === "object" ? form.redes : {};
+          base.redes = Object.assign({}, redB, redF);
+          Object.keys(form).forEach(function (k) {
+            if (k === "redes") return;
+            var v = form[k];
+            if (typeof v === "string" && v.trim()) base[k] = v.trim();
+          });
+          Object.keys(redF).forEach(function (rk) {
+            var rv = redF[rk];
+            if (typeof rv === "string" && rv.trim()) base.redes[rk] = rv.trim();
+          });
+          if (form.fotoUrl && String(form.fotoUrl).trim()) base.fotoUrl = String(form.fotoUrl).trim();
+          if (form.logoUrl && String(form.logoUrl).trim()) base.logoUrl = String(form.logoUrl).trim();
+          if (form.bannerUrl && String(form.bannerUrl).trim()) base.bannerUrl = String(form.bannerUrl).trim();
+          return window.normalizePersonalCard ? window.normalizePersonalCard(base) : base;
+        }
+
+        function postElitePreviewToIframe() {
+          if (currentApp !== "personal" || !previewFrame) return;
+          var previewUid = getPreviewAuthUid();
+          if (!previewUid) return;
+          try {
+            var w = previewFrame.contentWindow;
+            if (!w || typeof w.postMessage !== "function") return;
+            var payload = mergeElitePreviewPayloadForIframe();
+            w.postMessage({ type: "EC_ELITE_PREVIEW", payload: payload }, window.location.origin);
+            setTimeout(function () {
+              try {
+                w.postMessage({ type: "EC_ELITE_PREVIEW", payload: payload }, window.location.origin);
+              } catch (e2) {}
+            }, 120);
+          } catch (ePe) {}
         }
 
         function postMascotPreviewToIframe() {
@@ -1620,6 +2284,8 @@
           previewFrame.onload = function () {
             if (currentApp === "mascotbook") {
               postMascotPreviewToIframe();
+            } else if (currentApp === "personal") {
+              postElitePreviewToIframe();
             }
           };
           previewFrame.src = base;
@@ -1633,6 +2299,9 @@
             if (currentApp === "mascotbook" && demoModeActive && !loggedIn) {
               publicUrlEl.innerHTML =
                 '<span class="link-public-muted">Modo demo: registrate para obtener tu enlace público y guardar en la nube.</span>';
+            } else if (currentApp === "personal" && demoModeActive && !loggedIn) {
+              publicUrlEl.innerHTML =
+                '<span class="link-public-muted">Modo demo: registrate para publicar tu EliteCard y copiar el enlace real.</span>';
             } else {
               publicUrlEl.innerHTML =
                 'Público: <a href="' + pub + '" target="_blank" rel="noopener">' + pub + "</a>";
@@ -1644,6 +2313,7 @@
           var n = window.normalizePersonalCard ? window.normalizePersonalCard(d) : d;
           lastPersonalMedia.fotoUrl = n.fotoUrl || "";
           lastPersonalMedia.logoUrl = n.logoUrl || "";
+          lastPersonalMedia.bannerUrl = n.bannerUrl || "";
           document.getElementById("p-nombre").value = n.user_nombre || n.nombreCompleto || "";
           document.getElementById("p-cargo").value = n.user_cargo || n.cargo || "";
           document.getElementById("p-empresa").value = n.user_empresa || n.empresa || "";
@@ -1706,6 +2376,7 @@
             vcardTitulo: document.getElementById("p-vt").value,
             fotoUrl: lastPersonalMedia.fotoUrl,
             logoUrl: lastPersonalMedia.logoUrl,
+            bannerUrl: lastPersonalMedia.bannerUrl,
             redes: {
               instagram: document.getElementById("p-insta").value,
               linkedin: document.getElementById("p-li").value,
@@ -1743,6 +2414,7 @@
             linkedin: n.linkedin,
             mapsUrl: n.mapsUrl,
             calendlyUrl: n.calendlyUrl,
+            bannerUrl: n.bannerUrl,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
           };
         }
@@ -2137,12 +2809,21 @@
           currentTexture = n.textureId || "elite";
           syncMbProThemeUi();
           renderVacunaRows(n.vacunas);
+          var own = n.dueno || {};
+          var on = document.getElementById("m-owner-nombre");
+          var od = document.getElementById("m-owner-dir");
+          var ot = document.getElementById("m-owner-tel");
+          var oe = document.getElementById("m-owner-email");
+          if (on) on.value = own.nombre || "";
+          if (od) od.value = own.direccion || "";
+          if (ot) ot.value = own.telefono || DEFAULT_AR_PHONE_PREFIX;
+          if (oe) oe.value = own.email || "";
           var vet = n.veterinario || {};
           var vn = document.getElementById("m-vet-nombre");
           var vt = document.getElementById("m-vet-tel");
           var vd = document.getElementById("m-vet-dir");
           if (vn) vn.value = vet.nombre || "";
-          if (vt) vt.value = vet.telefono || "";
+          if (vt) vt.value = vet.telefono || DEFAULT_AR_PHONE_PREFIX;
           if (vd) vd.value = vet.direccion || "";
           var fc = n.fichaCritica || {};
           var fa = document.getElementById("m-fc-alergias");
@@ -2153,8 +2834,6 @@
           if (fs) fs.value = fc.tipoSangre || "";
           var fcui = document.getElementById("m-fc-cuidados");
           if (fcui) fcui.value = fc.cuidadosEspeciales || "";
-          var acEl = document.getElementById("m-accent");
-          if (acEl) acEl.value = n.accentColor || "#ec4899";
           var dLost = document.getElementById("dash-mascota-perdida");
           var dWa = document.getElementById("dash-m-whatsapp-urgencia");
           if (dLost) dLost.checked = !!n.mascotaPerdida;
@@ -2201,15 +2880,26 @@
             mascotProTheme: currentMascotProTheme,
             tema: currentMascotProTheme,
             mascotSurfaceTheme: currentMascotSurfaceTheme,
-            accentColor: document.getElementById("m-accent")
-              ? document.getElementById("m-accent").value
-              : "#ec4899",
             fotoPerfilUrl: lastMascotFoto,
             fotoCabeceraUrl: lastMascotCabecera,
             galeria: compactMascotGalleryFromSlots(cleanSlots),
             galeriaSlots: cleanSlots,
             muro: document.getElementById("m-muro").value,
             vacunas: collectVacunasFromForm(),
+            dueno: {
+              nombre: document.getElementById("m-owner-nombre")
+                ? document.getElementById("m-owner-nombre").value
+                : "",
+              direccion: document.getElementById("m-owner-dir")
+                ? document.getElementById("m-owner-dir").value
+                : "",
+              telefono: document.getElementById("m-owner-tel")
+                ? document.getElementById("m-owner-tel").value
+                : "",
+              email: document.getElementById("m-owner-email")
+                ? document.getElementById("m-owner-email").value
+                : "",
+            },
             veterinario: {
               nombre: document.getElementById("m-vet-nombre")
                 ? document.getElementById("m-vet-nombre").value
@@ -2247,7 +2937,6 @@
             mascotProTheme: n.mascotProTheme,
             tema: n.tema,
             mascotSurfaceTheme: n.mascotSurfaceTheme,
-            accentColor: n.accentColor,
             textColor: n.textColor,
             fotoPerfilUrl: n.fotoPerfilUrl,
             fotoCabeceraUrl: n.fotoCabeceraUrl,
@@ -2255,6 +2944,7 @@
             galeriaSlots: cleanSlots,
             muro: n.muro,
             vacunas: n.vacunas,
+            dueno: n.dueno,
             veterinario: n.veterinario,
             fichaCritica: n.fichaCritica,
             mascotaPerdida: n.mascotaPerdida,
@@ -2422,7 +3112,12 @@
 
         document.getElementById("btn-save-personal").addEventListener("click", function () {
           if (!uid) {
-            showToast("Iniciá sesión o creá cuenta para guardar (7 días de prueba).", false);
+            wireDemoRegistrationLinks();
+            openDemoSavePersonalModal();
+            return;
+          }
+          if (isPersonalSavingBlockedByEliteMembership()) {
+            showToast("Suscripción EliteCard vencida. Renová para seguir guardando.", false);
             return;
           }
           if (isSavingBlockedByMembership()) {
@@ -2557,9 +3252,16 @@
           });
         });
 
+        document.querySelectorAll(".pc-tab-btn[data-p-tab]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            setPersonalTab(btn.getAttribute("data-p-tab") || "identidad");
+          });
+        });
+
         ensureMascotGallerySlotUi();
         renderMascotGallerySlots();
         setMascotTab("identidad");
+        setPersonalTab("identidad");
 
         var goEliteContact = document.getElementById("btn-mascot-goto-elite-contact");
         if (goEliteContact) {
@@ -2637,7 +3339,19 @@
             if (currentApp === "mascotbook") refreshPreview();
           });
         }
-        ["m-vet-nombre", "m-vet-tel", "m-vet-dir", "m-fc-alergias", "m-fc-meds", "m-fc-sangre", "m-fc-cuidados"].forEach(
+        [
+          "m-owner-nombre",
+          "m-owner-dir",
+          "m-owner-tel",
+          "m-owner-email",
+          "m-vet-nombre",
+          "m-vet-tel",
+          "m-vet-dir",
+          "m-fc-alergias",
+          "m-fc-meds",
+          "m-fc-sangre",
+          "m-fc-cuidados",
+        ].forEach(
           function (id) {
             var el = document.getElementById(id);
             if (!el) return;
@@ -2647,12 +3361,15 @@
           }
         );
 
-        var mAccent = document.getElementById("m-accent");
-        if (mAccent) {
-          mAccent.addEventListener("input", function () {
-            if (currentApp === "mascotbook") refreshPreview();
+        ["m-owner-tel", "m-vet-tel"].forEach(function (id) {
+          var telInput = document.getElementById(id);
+          if (!telInput) return;
+          ensurePhonePrefixOnEmpty(telInput);
+          telInput.addEventListener("blur", function () {
+            suggestInternationalPhoneFormat(telInput);
           });
-        }
+        });
+
         var dashLostCb = document.getElementById("dash-mascota-perdida");
         if (dashLostCb) {
           dashLostCb.addEventListener("change", function () {
@@ -2743,14 +3460,27 @@
           });
         });
 
-        document.getElementById("btn-logout").addEventListener("click", function () {
+        function signOutToIndex() {
           firebase
             .auth()
             .signOut()
             .then(function () {
               window.location.href = "index.html";
             });
-        });
+        }
+
+        document.getElementById("btn-logout").addEventListener("click", signOutToIndex);
+
+        var btnProductAccessLogout = document.getElementById("admin-product-access-logout");
+        if (btnProductAccessLogout) {
+          btnProductAccessLogout.addEventListener("click", signOutToIndex);
+        }
+        var btnProductAccessBackMascot = document.getElementById("admin-product-access-back-mascot");
+        if (btnProductAccessBackMascot) {
+          btnProductAccessBackMascot.addEventListener("click", function () {
+            window.location.href = "/dashboard-mascotbook";
+          });
+        }
 
         document.getElementById("btn-admin-qr").addEventListener("click", openAdminQrModal);
         document.getElementById("admin-qr-close").addEventListener("click", closeAdminQrModal);
@@ -2761,6 +3491,12 @@
         if (demoSaveModal) {
           demoSaveModal.addEventListener("click", function (ev) {
             if (ev.target === demoSaveModal) closeDemoSaveModal();
+          });
+        }
+        var demoSavePersonalModal = document.getElementById("admin-demo-save-personal-modal");
+        if (demoSavePersonalModal) {
+          demoSavePersonalModal.addEventListener("click", function (ev) {
+            if (ev.target === demoSavePersonalModal) closeDemoSavePersonalModal();
           });
         }
         var btnControlRefresh = document.getElementById("btn-admin-control-refresh");
@@ -2866,8 +3602,15 @@
           activePanel = readPanelFromUrl();
           currentMascotShareId = resolveMascotDocId();
           firebase.auth().onAuthStateChanged(function (user) {
-            if (gateLoading) gateLoading.classList.add("hidden");
             if (!user) {
+              clearTimeout(productAccessTimer);
+              productAccessDeniedShown = false;
+              if (gateLoading) {
+                gateLoading.classList.add("hidden");
+                gateLoading.innerHTML =
+                  "<p style=\"color: rgba(17,24,39,0.5); font-size:0.9rem\">Cargando panel…</p>";
+              }
+              hideProductAccessDeniedModal();
               uid = "";
               clearAccountListeners();
               if (unsub) {
@@ -2876,14 +3619,15 @@
               }
               lastAccountData = {};
               try {
-                fillPersonal({});
+                if (currentApp === "personal") fillPersonal(mockProfessionalData);
+                else fillPersonal({});
                 if (currentApp !== "mascotbook") fillMascot({});
               } catch (eClear) {}
               setAuthChrome(false);
               wireDemoRegistrationLinks();
               app.classList.remove("hidden");
               initGateLinks();
-              setCurrentApp(currentApp, { skipUrl: true });
+              setCurrentApp(currentApp, { skipUrl: true, skipProductGate: true });
               setPanel(activePanel, { skipUrl: true });
               syncAdminUrl();
               updateSubscriptionUi({});
@@ -2894,16 +3638,30 @@
             }
             uid = user.uid;
             setAuthChrome(true);
-            app.classList.remove("hidden");
+            productAccessDeniedShown = false;
+            if (gateLoading) {
+              gateLoading.classList.remove("hidden");
+              gateLoading.innerHTML =
+                "<p style=\"color: rgba(17,24,39,0.5); font-size:0.9rem\">Verificando acceso al producto…</p>";
+            }
+            app.classList.add("hidden");
+            hideProductAccessDeniedModal();
             ensureMembershipDoc(user)
               .catch(function () {})
               .then(function () {
+                return ensureEliteMembershipDoc(user).catch(function () {});
+              })
+              .then(function () {
                 bindAccountMeta();
-                setCurrentApp(currentApp, { skipUrl: true });
-                setPanel(activePanel, { skipUrl: true });
-                syncAdminUrl();
-                refreshAdminSigPreview();
-                fitPhonePreview();
+                bindEliteMembershipMeta();
+                scheduleProductAccessEnforcement();
+                setTimeout(function () {
+                  try {
+                    if (firebase.auth().currentUser && app.classList.contains("hidden")) {
+                      scheduleProductAccessEnforcement();
+                    }
+                  } catch (eRetry) {}
+                }, 2200);
               });
           });
           window.addEventListener("resize", function () {

@@ -8,12 +8,39 @@
   color: #ffffff;
   font-family: "Inter", "Montserrat", "Poppins", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Banner institucional (opcional; demo y perfiles con bannerUrl) */
+.elite-shell .ec-hero-banner {
+  display: none;
+  width: 100%;
+  max-width: 28rem;
+  margin: 0 auto;
+  min-height: clamp(6.5rem, 22vw, 10.5rem);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 0 0 16px 16px;
+  border-bottom: 2px solid rgba(212, 175, 55, 0.45);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.elite-shell .ec-hero-banner:not(.hidden) {
+  display: block;
 }
 
 .elite-shell .ec-wrap {
   max-width: 28rem;
   margin: 0 auto;
   padding: 1.35rem 0.95rem calc(7.25rem + env(safe-area-inset-bottom, 0px));
+  position: relative;
+  z-index: 2;
+  flex: 1;
 }
 
 .elite-shell .ec-head {
@@ -49,6 +76,51 @@
   border: 2px solid rgba(212, 175, 55, 0.9);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
   display: block;
+}
+
+/* Fallback si la foto no carga (ruta incorrecta, etc.) */
+.elite-shell:not(.ec-avatar-round) .ec-photo-fallback {
+  width: 8.75rem;
+  max-width: min(88vw, 11rem);
+  aspect-ratio: 2 / 3;
+  border-radius: 12px;
+  border: 2px solid rgba(212, 175, 55, 0.9);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  background: #4b5563;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(2.5rem, 10vw, 3.25rem);
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.elite-shell.ec-avatar-round .ec-photo-fallback {
+  width: 7.75rem;
+  height: 7.75rem;
+  border-radius: 50%;
+  border: 2px solid rgba(212, 175, 55, 0.75);
+  background: #4b5563;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Vista previa admin: contorno premium tipo tarjeta física */
+.elite-shell.ec-admin-preview:not(.ec-avatar-round)::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  box-shadow: inset 0 0 0 2px rgba(212, 175, 55, 0.55), inset 0 0 0 6px rgba(0, 0, 0, 0.35),
+    inset 0 0 48px rgba(212, 175, 55, 0.08);
+}
+
+.elite-shell.ec-admin-preview .ec-wrap {
+  position: relative;
+  z-index: 1;
 }
 
 .elite-shell.ec-avatar-round .ec-photo {
