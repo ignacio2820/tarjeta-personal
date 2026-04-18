@@ -90,6 +90,16 @@
               Pasar a Premium
             </button>
           </div>
+          <button
+            type="button"
+            class="btn-outline btn-header ec-header-new-mascot hidden"
+            id="btn-ec-header-nueva-mascota"
+            data-ec-action="new-mascota"
+            title="Crear otro perfil MascotBook"
+          >
+            <i class="fa-solid fa-plus" aria-hidden="true"></i>
+            <span>Nueva Mascota</span>
+          </button>
           <span id="admin-badge-perpetual" class="admin-badge-perpetual hidden">ACCESO PERPETUO - AGENCIA WEBELITE</span>
           <span id="user-display-name-wrap" class="admin-header-user-wrap hidden" aria-live="polite">
             <span id="user-display-name" class="admin-header-user-name"></span>
@@ -114,6 +124,20 @@
             </button>
             <button type="button" class="nav-tab hidden" id="nav-tab-config" role="tab">
               Configuración
+            </button>
+          </div>
+          <div id="ec-sidebar-mascot-actions" class="ec-sidebar-mascot-actions hidden" aria-label="Acciones MascotBook">
+            <p class="ec-sidebar-mascot-actions__title">
+              <i class="fa-solid fa-paw" aria-hidden="true"></i> Mascotas
+            </p>
+            <button
+              type="button"
+              class="ec-sidebar-btn-new-mascot"
+              id="btn-ec-sidebar-nueva-mascota"
+              data-ec-action="new-mascota"
+            >
+              <i class="fa-solid fa-plus" aria-hidden="true"></i>
+              <span>Nueva Mascota</span>
             </button>
           </div>
           <div id="theme-panel" class="theme-panel hidden">
@@ -418,14 +442,29 @@
 
             <div id="ec-mascot-tarjeta-bar" class="ec-mascot-tarjeta-bar hidden" aria-label="Selector de tarjeta MascotBook">
               <div class="ec-mascot-tarjeta-bar__row">
-                <label for="ec-mascot-tarjeta-select">Tarjeta activa</label>
-                <select id="ec-mascot-tarjeta-select" class="ec-mascot-tarjeta-select"></select>
-                <button type="button" class="btn-outline btn-ec-mascot-nueva" id="btn-ec-mascot-nueva-tarjeta">
-                  + Nueva mascota
+                <div class="ec-mascot-tarjeta-label-block">
+                  <label for="ec-mascot-tarjeta-select" class="ec-mascot-tarjeta-label">
+                    <i class="fa-solid fa-paw" aria-hidden="true"></i>
+                    <span class="ec-mascot-tarjeta-label__prefix">Gestionando a:</span>
+                    <span id="ec-mascot-managing-name" class="ec-mascot-managing-name" aria-live="polite"></span>
+                  </label>
+                </div>
+                <div class="ec-mascot-select-wrapper">
+                  <select id="ec-mascot-tarjeta-select" class="ec-mascot-tarjeta-select" aria-label="Elegí mascota"></select>
+                  <i class="fa-solid fa-chevron-down ec-mascot-select-icon" aria-hidden="true"></i>
+                </div>
+                <button
+                  type="button"
+                  class="btn-solid btn-ec-mascot-nueva"
+                  id="btn-ec-mascot-nueva-tarjeta"
+                  data-ec-action="new-mascota"
+                >
+                  <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                  <span>+ Nueva Mascota</span>
                 </button>
               </div>
               <p class="ec-mascot-tarjeta-bar__hint">
-                El enlace público usa el ID del perfil en <code>mascotas</code>. Los QR antiguos con tu UID de usuario siguen funcionando.
+                El enlace público usa el ID del perfil en <code>mascotas</code>. Intercambiá perfiles al instante.
               </p>
             </div>
 
@@ -843,6 +882,30 @@
     </div>
 
     <div
+      id="admin-mascot-new-modal"
+      class="admin-modal hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="admin-mascot-new-title"
+    >
+      <div class="admin-modal-panel admin-modal-panel--premium">
+        <button type="button" class="admin-modal-close" id="admin-mascot-new-close" aria-label="Cerrar">×</button>
+        <div class="admin-modal-header-icon">
+          <i class="fa-solid fa-paw" aria-hidden="true"></i>
+        </div>
+        <h4 id="admin-mascot-new-title" class="admin-modal-title-premium">Nueva Mascota</h4>
+        <p class="admin-modal-sub">Creá un nuevo perfil independiente. Ingresá el nombre de tu mascota para comenzar.</p>
+        <div class="field">
+          <label for="admin-mascot-new-name">Nombre de la mascota</label>
+          <input id="admin-mascot-new-name" type="text" placeholder="Ej. Luna" autocomplete="off" />
+        </div>
+        <div class="admin-modal-actions-premium">
+          <button type="button" class="btn-solid btn-premium-action" id="admin-mascot-new-confirm">Crear Perfil</button>
+        </div>
+      </div>
+    </div>
+
+    <div
       id="admin-confirm-modal"
       class="admin-modal admin-modal--blocking hidden"
       role="dialog"
@@ -894,6 +957,10 @@
         var currentMascotShareId = "";
         /** Índice Firestore tarjetas (MascotBook) para multi-perfil. */
         var ecMascotTarjetasList = [];
+        /** ID del documento en `tarjetas` asociado al perfil seleccionado. */
+        var currentTarjetaDocId = "";
+        /** Alta de mascota nueva: primer guardado hace `addDoc` en `tarjetas`. */
+        var ecMascotCreationMode = false;
         var MAX_MASCOT_GALLERY_SLOTS = 9;
         var lastMascotCabecera = "";
         var __mascotRescueUrl = "";
@@ -1327,6 +1394,7 @@
                   });
                   try {
                     sessionStorage.removeItem("ec_sel_mascot_public_id_" + u);
+                    sessionStorage.removeItem("ec_sel_mascot_tarjeta_doc_" + u);
                   } catch (e2) {}
                   showToast("Perfil MascotBook eliminado", true);
                   window.location.reload();
@@ -1402,6 +1470,7 @@
           demoModeActive = !logged;
           if (ban) ban.classList.toggle("hidden", logged || currentApp !== "mascotbook");
           updateGlobalConfigNavVisibility();
+          updateMascotMultiUiChrome();
         }
 
         function updateGlobalConfigNavVisibility() {
@@ -2589,6 +2658,7 @@
           formPersonal.classList.toggle("hidden", currentApp !== "personal");
           formMascot.classList.toggle("hidden", currentApp !== "mascotbook");
           updateThemePanelVisibility();
+          updateMascotMultiUiChrome();
           if (currentApp === "personal") setPersonalTab(currentPersonalTab || "identidad");
           if (currentApp === "mascotbook") setMascotTab(currentMascotTab || "identidad");
           bindFirestore();
@@ -2813,12 +2883,11 @@
           } catch (eLI) {}
           var base;
           if (currentApp === "mascotbook") {
-            // URL fija: origin/card.html?id=<UID de la sesión>&view=pet&ec_admin_preview=1
-            // (con tu cuenta: id=RLsuhkSg9kPlNECktN8KKU4tts92)
+            var cardIdForUrl = getMascotCardIdForPreviewUrl() || effectiveUid;
             base =
               window.location.origin +
               "/card.html?id=" +
-              encodeURIComponent(effectiveUid) +
+              encodeURIComponent(cardIdForUrl) +
               "&view=pet&ec_admin_preview=1";
           } else {
             base =
@@ -2858,10 +2927,11 @@
           };
           previewFrame.src = base;
           fitPhonePreview();
+          var pubId = currentApp === "mascotbook" ? getMascotCardIdForPreviewUrl() || effectiveUid : effectiveUid;
           var pub =
             window.location.origin +
             "/card.html?id=" +
-            encodeURIComponent(effectiveUid) +
+            encodeURIComponent(pubId) +
             (currentApp === "mascotbook" ? "&view=pet" : "");
           if (publicUrlEl) {
             if (currentApp === "mascotbook" && demoModeActive && !loggedIn) {
@@ -3072,6 +3142,7 @@
             return;
           }
           uid = auTh.uid;
+          var mid = resolveMascotDocId();
           var n = window.normalizeMascotData({ mascotProTheme: pro, tema: pro });
           var slice = {
             tema: n.mascotProTheme,
@@ -3080,7 +3151,7 @@
             textureId: n.textureId,
             textColor: n.textColor,
             ownerUid: auTh.uid,
-            mascotId: auTh.uid,
+            mascotId: mid,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
           };
           writeMascotBookFirestore(slice)
@@ -3100,12 +3171,13 @@
             return;
           }
           uid = auSf.uid;
+          var mid = resolveMascotDocId();
           var ids = window.MASCOT_SURFACE_THEME_IDS || [];
           if (ids.indexOf(surf) < 0) surf = "cloud_cream";
           var slice = {
             mascotSurfaceTheme: surf,
             ownerUid: auSf.uid,
-            mascotId: auSf.uid,
+            mascotId: mid,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
           };
           writeMascotBookFirestore(slice)
@@ -3437,6 +3509,7 @@
           var dWa = document.getElementById("dash-m-whatsapp-urgencia");
           if (dLost) dLost.checked = !!n.mascotaPerdida;
           if (dWa) dWa.value = n.whatsappUrgencia || "";
+          syncEcMascotManagingNameFromSelect();
           if (currentApp === "mascotbook") refreshPreview();
           syncMascotMediaRemoveButtons();
           if (uid && !demoModeActive) setDashboardDataLoading(false);
@@ -3562,37 +3635,270 @@
           return String(e || "").trim().toLowerCase();
         }
 
-        function renderMascotTarjetaBar(list) {
+        function ecMascotOptionLabelForRow(t, list) {
+          var base = String(t.mascotaNombre || "").trim() || "Sin nombre";
+          var nDup = 0;
+          (list || []).forEach(function (x) {
+            var b = String(x.mascotaNombre || "").trim() || "Sin nombre";
+            if (b === base) nDup++;
+          });
+          if (nDup > 1 && t.publicCardId && String(t.publicCardId).length > 6) {
+            return base + " · …" + String(t.publicCardId).slice(-6);
+          }
+          return base;
+        }
+
+        function syncEcMascotManagingNameFromSelect() {
+          var sel = document.getElementById("ec-mascot-tarjeta-select");
+          var nameEl = document.getElementById("ec-mascot-managing-name");
+          if (!sel || !nameEl) return;
+          var opt = sel.options[sel.selectedIndex];
+          if (!opt) {
+            nameEl.textContent = "";
+            return;
+          }
+          var raw = String(opt.textContent || "").trim();
+          nameEl.textContent = raw.replace(/\s*·\s*….*$/, "").trim() || raw;
+        }
+
+        /**
+         * Llena el select de mascotas: valor = doc.id en `tarjetas`, texto = nombre (con sufijo si hay duplicados).
+         */
+        function llenarSelectorMascotas(list) {
           var bar = document.getElementById("ec-mascot-tarjeta-bar");
           var sel = document.getElementById("ec-mascot-tarjeta-select");
           if (!bar || !sel) return;
-          if (!list || list.length < 2) {
+          var arr = list || [];
+          var show = arr.length >= 1 || ecMascotCreationMode;
+          if (!show) {
             bar.classList.add("hidden");
+            bar.classList.remove("ec-mascot-tarjeta-bar--multi");
             return;
           }
           bar.classList.remove("hidden");
-          var cur = String(currentMascotShareId || "").trim();
+          var nOpts = arr.length + (ecMascotCreationMode ? 1 : 0);
+          bar.classList.toggle("ec-mascot-tarjeta-bar--multi", nOpts > 1);
           sel.innerHTML = "";
-          list.forEach(function (t) {
+          if (ecMascotCreationMode) {
+            var oCr = document.createElement("option");
+            oCr.value = "__ec_creating__";
+            oCr.textContent = "Nueva mascota (sin guardar)";
+            sel.appendChild(oCr);
+          }
+          arr.forEach(function (t) {
             var opt = document.createElement("option");
-            opt.value = t.publicCardId;
-            var label = t.mascotaNombre || "Sin nombre";
-            if (t.publicCardId && t.publicCardId.length > 6) {
-              label += " · …" + t.publicCardId.slice(-6);
-            }
-            opt.textContent = label;
+            opt.value = t.docId;
+            opt.textContent = ecMascotOptionLabelForRow(t, arr);
             sel.appendChild(opt);
           });
-          if (cur) {
-            try {
-              sel.value = cur;
-            } catch (eSv) {}
+          if (ecMascotCreationMode) {
+            sel.value = "__ec_creating__";
+          } else {
+            var cur = String(currentTarjetaDocId || "").trim();
+            if (cur) {
+              try {
+                sel.value = cur;
+              } catch (eSv) {}
+            }
+            if (!sel.value && arr.length) sel.value = arr[0].docId;
           }
+          syncEcMascotManagingNameFromSelect();
+        }
+
+        /**
+         * Llena el selector de mascotas a partir de la lista (p. ej. filas de tarjetas con ownerEmail del usuario).
+         */
+        function ecFillMascotTarjetaSelectorFromList(list) {
+          llenarSelectorMascotas(list || []);
+        }
+
+        function ecRunMascotProfileSwitchTransition() {
+          var ws = document.getElementById("mascot-form-workspace");
+          if (!ws) return;
+          ws.classList.remove("mb-profile-transition");
+          void ws.offsetWidth;
+          ws.classList.add("mb-profile-transition");
+          clearTimeout(ecRunMascotProfileSwitchTransition._t);
+          ecRunMascotProfileSwitchTransition._t = setTimeout(function () {
+            ws.classList.remove("mb-profile-transition");
+          }, 380);
+        }
+
+        /**
+         * Carga datos del perfil desde `tarjetas/{docId}` (verifica ownerUid y ownerEmail de sesión).
+         */
+        function cargarDatosMascota(docId) {
+          ecMascotCreationMode = false;
+          var user = firebase.auth().currentUser;
+          if (!user || !uid || currentApp !== "mascotbook") return Promise.resolve();
+          var id = String(docId || "").trim();
+          if (!id) return Promise.resolve();
+          var db = firebase.firestore();
+          var emailNorm = ecNormalizeOwnerEmail(user.email);
+          return db
+            .collection("tarjetas")
+            .doc(id)
+            .get()
+            .then(function (snap) {
+              if (!snap.exists) {
+                showToast("Tarjeta no encontrada.", false);
+                return;
+              }
+              var x = snap.data() || {};
+              if (String(x.ownerUid || "").trim() !== String(uid).trim()) {
+                showToast("No tenés permiso para editar esta mascota.", false);
+                return;
+              }
+              if (ecNormalizeOwnerEmail(x.ownerEmail) !== emailNorm) {
+                showToast("No tenés permiso para editar esta mascota.", false);
+                return;
+              }
+              var pid = String(x.publicCardId || "").trim();
+              if (!pid) {
+                showToast("Perfil incompleto (sin ID público).", false);
+                return;
+              }
+              currentTarjetaDocId = id;
+              currentMascotShareId = pid;
+              try {
+                sessionStorage.setItem("ec_sel_mascot_tarjeta_doc_" + uid, id);
+              } catch (eSs) {}
+              var sel = document.getElementById("ec-mascot-tarjeta-select");
+              if (sel) {
+                try {
+                  sel.value = id;
+                } catch (eSv) {}
+              }
+              syncEcMascotManagingNameFromSelect();
+              ecRunMascotProfileSwitchTransition();
+              bindFirestore();
+            })
+            .catch(function () {
+              showToast("No se pudo cargar el perfil.", false);
+            });
+        }
+
+        function cambiarPerfilMascota(docIdTarjeta) {
+          return cargarDatosMascota(docIdTarjeta);
+        }
+
+        function enterMascotCreationMode() {
+          if (!uid || demoModeActive) return;
+          if (isSavingBlockedByMembership()) {
+            showToast("Membresía vencida o suspendida.", false);
+            return;
+          }
+          var user = firebase.auth().currentUser;
+          var isPrem = false;
+          if (window.EliteCardAdminSubscription) {
+            isPrem = window.EliteCardAdminSubscription.isPremiumOrActiveTrial(
+              lastMembershipData,
+              "mascotbook",
+              uid,
+              user ? ecNormalizeOwnerEmail(user.email) : ""
+            );
+          } else {
+            isPrem = true;
+          }
+          if (ecMascotTarjetasList && ecMascotTarjetasList.length > 0) {
+            if (!isPrem && ecMascotTarjetasList.length >= 1) {
+              showToast(
+                "Nueva suscripción requerida para agregar más mascotas. Pasá a Premium para continuar.",
+                false
+              );
+              if (typeof openPremiumContactModal === "function") openPremiumContactModal();
+              return;
+            }
+            if (isPrem && ecMascotTarjetasList.length >= 5) {
+              showToast("Alcanzaste el límite máximo de 5 perfiles MascotBook.", false);
+              return;
+            }
+          }
+          var db = firebase.firestore();
+          ecMascotCreationMode = true;
+          currentTarjetaDocId = "";
+          currentMascotShareId = db.collection("mascotas").doc().id;
+          fillMascot({});
+          llenarSelectorMascotas(ecMascotTarjetasList);
+          showToast("Modo creación: completá el perfil y guardá para publicar.", true);
+          ecRunMascotProfileSwitchTransition();
+          bindFirestore();
+          refreshPreview();
+        }
+
+        /**
+         * Cambia de perfil sin recargar la página (acepta doc.id de `tarjetas` o publicCardId legacy).
+         */
+        function ecSwitchMascotProfileWithoutReload(idOrPublicId) {
+          var raw = String(idOrPublicId || "").trim();
+          if (!raw || !uid) return;
+          if (raw === "__ec_creating__") {
+            if (!ecMascotCreationMode) enterMascotCreationMode();
+            return;
+          }
+          var list = ecMascotTarjetasList || [];
+          for (var i = 0; i < list.length; i++) {
+            if (list[i].docId === raw) {
+              cambiarPerfilMascota(raw);
+              return;
+            }
+          }
+          for (var j = 0; j < list.length; j++) {
+            if (list[j].publicCardId === raw) {
+              cambiarPerfilMascota(list[j].docId);
+              return;
+            }
+          }
+          ecMascotCreationMode = false;
+          currentMascotShareId = raw;
+          currentTarjetaDocId = "";
+          try {
+            sessionStorage.removeItem("ec_sel_mascot_tarjeta_doc_" + uid);
+            sessionStorage.setItem("ec_sel_mascot_public_id_" + uid, raw);
+          } catch (e) {}
+          var sel = document.getElementById("ec-mascot-tarjeta-select");
+          if (sel) {
+            try {
+              sel.value = raw;
+            } catch (e2) {}
+          }
+          syncEcMascotManagingNameFromSelect();
+          ecRunMascotProfileSwitchTransition();
+          bindFirestore();
+        }
+
+        window.ecFillMascotTarjetaSelectorFromList = ecFillMascotTarjetaSelectorFromList;
+        window.ecSwitchMascotProfileWithoutReload = ecSwitchMascotProfileWithoutReload;
+        window.llenarSelectorMascotas = llenarSelectorMascotas;
+        window.cargarDatosMascota = cargarDatosMascota;
+        window.cambiarPerfilMascota = cambiarPerfilMascota;
+
+        function updateMascotMultiUiChrome() {
+          var show = !!(uid && !demoModeActive && currentApp === "mascotbook");
+          var side = document.getElementById("ec-sidebar-mascot-actions");
+          var head = document.getElementById("btn-ec-header-nueva-mascota");
+          if (side) side.classList.toggle("hidden", !show);
+          if (head) head.classList.toggle("hidden", !show);
+        }
+
+        function ecSetNewMascotaButtonsDisabled(disabled) {
+          document.querySelectorAll('[data-ec-action="new-mascota"]').forEach(function (b) {
+            b.disabled = !!disabled;
+          });
+        }
+
+        function renderMascotTarjetaBar(list) {
+          llenarSelectorMascotas(list || []);
         }
 
         function ensureMascotTarjetasThenBind(done) {
           var user = firebase.auth().currentUser;
           if (!user || !uid || currentApp !== "mascotbook") {
+            done();
+            return;
+          }
+          if (ecMascotCreationMode) {
+            llenarSelectorMascotas(ecMascotTarjetasList);
             done();
             return;
           }
@@ -3618,7 +3924,9 @@
                 return db.collection("mascotas").doc(uid).get().then(function (ms) {
                   if (!ms.exists) {
                     ecMascotTarjetasList = [];
+                    currentTarjetaDocId = "";
                     currentMascotShareId = uid;
+                    llenarSelectorMascotas([]);
                     done();
                     return;
                   }
@@ -3649,24 +3957,51 @@
                 });
               }
               ecMascotTarjetasList = list;
-              var saved = "";
+              var savedDoc = "";
               try {
-                saved = sessionStorage.getItem("ec_sel_mascot_public_id_" + uid) || "";
+                savedDoc = sessionStorage.getItem("ec_sel_mascot_tarjeta_doc_" + uid) || "";
               } catch (eSs) {}
-              var pick = list[0].publicCardId;
-              for (var i = 0; i < list.length; i++) {
-                if (list[i].publicCardId === saved) {
-                  pick = list[i].publicCardId;
+              var pickDocId = list[0].docId;
+              if (savedDoc) {
+                for (var i = 0; i < list.length; i++) {
+                  if (list[i].docId === savedDoc) {
+                    pickDocId = savedDoc;
+                    break;
+                  }
+                }
+              } else {
+                try {
+                  var oldPid = sessionStorage.getItem("ec_sel_mascot_public_id_" + uid) || "";
+                  if (oldPid) {
+                    for (var j = 0; j < list.length; j++) {
+                      if (list[j].publicCardId === oldPid) {
+                        pickDocId = list[j].docId;
+                        try {
+                          sessionStorage.setItem("ec_sel_mascot_tarjeta_doc_" + uid, pickDocId);
+                        } catch (eM) {}
+                        break;
+                      }
+                    }
+                  }
+                } catch (eOld) {}
+              }
+              for (var k = 0; k < list.length; k++) {
+                if (list[k].docId === pickDocId) {
+                  currentTarjetaDocId = list[k].docId;
+                  currentMascotShareId = list[k].publicCardId;
                   break;
                 }
               }
-              if (pick) currentMascotShareId = pick;
-              renderMascotTarjetaBar(list);
+              llenarSelectorMascotas(list);
               done();
             })
             .catch(function () {
               done();
             });
+        }
+
+        function openAdminMascotNewModal() {
+          enterMascotCreationMode();
         }
 
         function wireEcMascotTarjetaBarOnce() {
@@ -3675,69 +4010,14 @@
           var sel = document.getElementById("ec-mascot-tarjeta-select");
           if (sel) {
             sel.addEventListener("change", function () {
-              var v = String(sel.value || "").trim();
-              if (!v || !uid) return;
-              currentMascotShareId = v;
-              try {
-                sessionStorage.setItem("ec_sel_mascot_public_id_" + uid, v);
-              } catch (e1) {}
-              bindFirestore();
+              ecSwitchMascotProfileWithoutReload(String(sel.value || "").trim());
             });
           }
-          var btnNew = document.getElementById("btn-ec-mascot-nueva-tarjeta");
-          if (btnNew) {
-            btnNew.addEventListener("click", function () {
-              if (!uid || demoModeActive) return;
-              if (isSavingBlockedByMembership()) {
-                showToast("Membresía vencida o suspendida.", false);
-                return;
-              }
-              var nm = window.prompt("Nombre de la mascota (etiqueta en el panel):", "Nueva mascota");
-              if (nm == null) return;
-              nm = String(nm || "").trim() || "Nueva mascota";
-              var user = firebase.auth().currentUser;
-              if (!user) return;
-              var db = firebase.firestore();
-              var email = ecNormalizeOwnerEmail(user.email);
-              var cardId = db.collection("mascotas").doc().id;
-              var tId = db.collection("tarjetas").doc().id;
-              var batch = db.batch();
-              batch.set(db.collection("tarjetas").doc(tId), {
-                ownerUid: uid,
-                ownerEmail: email,
-                mascotaNombre: nm,
-                publicCardId: cardId,
-                tipo: "mascotbook",
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-              });
-              batch.set(db.collection("mascotas").doc(cardId), {
-                ownerUid: uid,
-                ownerEmail: email,
-                mascotId: cardId,
-                nombre: nm,
-                visitas: 0,
-                likes: 0,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-              });
-              btnNew.disabled = true;
-              batch
-                .commit()
-                .then(function () {
-                  currentMascotShareId = cardId;
-                  try {
-                    sessionStorage.setItem("ec_sel_mascot_public_id_" + uid, cardId);
-                  } catch (e2) {}
-                  showToast("Nueva tarjeta creada. Podés editarla y generar su QR.", true);
-                  bindFirestore();
-                })
-                .catch(function (e) {
-                  showToast(e.message || "No se pudo crear la tarjeta", false);
-                })
-                .then(function () {
-                  btnNew.disabled = false;
-                });
+          document.querySelectorAll('[data-ec-action="new-mascota"]').forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              openAdminMascotNewModal();
             });
-          }
+          });
         }
 
         function bindFirestore() {
@@ -3844,7 +4124,7 @@
             alertaExtravioActiva: norm.alertaExtravioActiva,
             whatsappUrgencia: norm.whatsappUrgencia,
             ownerUid: uid,
-            mascotId: uid,
+            mascotId: resolveMascotDocId(),
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
           })
             .then(function () {
@@ -4071,6 +4351,32 @@
                   mascotData.mascotSurfaceTheme || currentMascotSurfaceTheme || "cloud_cream"
                 ).trim();
                 mascotData.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+                var db = firebase.firestore();
+                if (ecMascotCreationMode) {
+                  var email = ecNormalizeOwnerEmail(u.email);
+                  var nm = String(mascotData.nombre || "").trim() || "Mi mascota";
+                  return db
+                    .collection("tarjetas")
+                    .add({
+                      ownerUid: u.uid,
+                      ownerEmail: email,
+                      mascotaNombre: nm,
+                      publicCardId: mascotDocId,
+                      tipo: "mascotbook",
+                      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    })
+                    .then(function (tRef) {
+                      currentTarjetaDocId = tRef.id;
+                      ecMascotCreationMode = false;
+                      try {
+                        sessionStorage.setItem("ec_sel_mascot_tarjeta_doc_" + uid, tRef.id);
+                      } catch (eSt) {}
+                      return writeMascotBookFirestore(mascotData).then(function () {
+                        bindFirestore();
+                        refreshPreview();
+                      });
+                    });
+                }
                 return writeMascotBookFirestore(mascotData).then(function () {
                   refreshPreview();
                 });
@@ -4147,7 +4453,7 @@
             var shareUrl =
               window.location.origin +
               "/card.html?id=" +
-              encodeURIComponent(String(uid || "").trim()) +
+              encodeURIComponent(String(resolveMascotDocId() || uid || "").trim()) +
               "&view=pet";
             if (navigator.share) {
               navigator
@@ -4648,6 +4954,8 @@
               hideProductAccessDeniedModal();
               uid = "";
               ecMascotTarjetasList = [];
+              ecMascotCreationMode = false;
+              currentTarjetaDocId = "";
               clearDashboardSkeletonClasses();
               clearAccountListeners();
               if (unsub) {

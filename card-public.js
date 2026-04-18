@@ -1426,8 +1426,8 @@
     modal.addEventListener("click", function (ev) {
       if (ev.target === modal) {
         markGpsModalSkippedForSession();
-        hideGpsPermissionModal();
-      }
+      hideGpsPermissionModal();
+    }
     });
     var panel = modal.querySelector(".mb-gps-modal-panel");
     if (panel) {
@@ -2369,98 +2369,98 @@
     }
 
     function loadFromSiloAndAccount() {
-      Promise.all([siloRef.get(), rootRef.get()])
-        .then(function (pair) {
-          var siloSnap = pair[0];
-          var acctSnap = pair[1];
-          var accountRaw = acctSnap.exists ? acctSnap.data() || {} : {};
-          if (mascot) {
-            if (siloSnap.exists) {
-              finishMascotBook(siloSnap, accountRaw);
-              return;
-            }
-            if (!acctSnap.exists) {
-              if (isEcAdminMascotPreview()) {
-                showLoading(true);
-              } else {
-                showLoading(false);
-                showNotFound();
-              }
-              return;
-            }
-            var rawMascot = acctSnap.data() || {};
-            finishMascotBook(siloSnap, rawMascot);
-            return;
-          }
+    Promise.all([siloRef.get(), rootRef.get()])
+      .then(function (pair) {
+        var siloSnap = pair[0];
+        var acctSnap = pair[1];
+        var accountRaw = acctSnap.exists ? acctSnap.data() || {} : {};
+        if (mascot) {
           if (siloSnap.exists) {
-            finishMascotOrElite(siloSnap, accountRaw);
+            finishMascotBook(siloSnap, accountRaw);
             return;
           }
           if (!acctSnap.exists) {
-            if (isEcAdminElitePreview()) {
-              showLoading(false);
-              var leHold = document.getElementById("layout-elite");
-              var lmHold = document.getElementById("layout-mascot");
-              if (lmHold) lmHold.classList.add("hidden");
-              var ceHold = document.getElementById("card-empty");
-              if (ceHold) ceHold.classList.add("hidden");
-              var nfHold = document.getElementById("card-not-found");
-              if (nfHold) nfHold.classList.add("hidden");
-              if (leHold) leHold.classList.remove("hidden");
-              var syncPl = {
-                user_nombre: "Vista previa en vivo",
-                user_cargo: "Sincronizando con el panel…",
-                user_empresa: "",
-                user_bgColor: "#000000",
-                user_bgPreset: "matte",
-                redes: {
-                  linkedin: "https://www.linkedin.com/",
-                  whatsappNumero: "5490000000000",
-                },
-              };
-              try {
-                var nSync = window.normalizePersonalCard
-                  ? window.normalizePersonalCard(syncPl)
-                  : syncPl;
-                applyElitePreviewOverrides(nSync);
-                renderElite(nSync);
-              } catch (eSync) {}
-              return;
-            }
-            showLoading(false);
-            showNotFound();
-            return;
-          }
-          var rawAll = acctSnap.data() || {};
-          finishMascotOrElite(siloSnap, rawAll);
-        })
-        .catch(function (err) {
-          console.error("Error Firestore:", err);
-          if (mascot) {
             if (isEcAdminMascotPreview()) {
               showLoading(true);
-              return;
+            } else {
+              showLoading(false);
+              showNotFound();
             }
-            showLoading(false);
-            setCardEmptyMessage(
-              "No se pudo cargar el perfil. Si sos el dueño, revisá las reglas de Firestore."
-            );
-            var leEr = document.getElementById("layout-elite");
-            if (leEr) leEr.classList.add("hidden");
-            var lmEr = document.getElementById("layout-mascot");
-            if (lmEr) lmEr.classList.add("hidden");
-            var nfEr = document.getElementById("card-not-found");
-            if (nfEr) nfEr.classList.add("hidden");
-            var emptyErr = document.getElementById("card-empty");
-            if (emptyErr) emptyErr.classList.remove("hidden");
             return;
           }
-          if (isEcAdminPreview()) {
+          var rawMascot = acctSnap.data() || {};
+          finishMascotBook(siloSnap, rawMascot);
+          return;
+        }
+        if (siloSnap.exists) {
+          finishMascotOrElite(siloSnap, accountRaw);
+          return;
+        }
+        if (!acctSnap.exists) {
+          if (isEcAdminElitePreview()) {
+            showLoading(false);
+            var leHold = document.getElementById("layout-elite");
+            var lmHold = document.getElementById("layout-mascot");
+            if (lmHold) lmHold.classList.add("hidden");
+            var ceHold = document.getElementById("card-empty");
+            if (ceHold) ceHold.classList.add("hidden");
+            var nfHold = document.getElementById("card-not-found");
+            if (nfHold) nfHold.classList.add("hidden");
+            if (leHold) leHold.classList.remove("hidden");
+            var syncPl = {
+              user_nombre: "Vista previa en vivo",
+              user_cargo: "Sincronizando con el panel…",
+              user_empresa: "",
+              user_bgColor: "#000000",
+              user_bgPreset: "matte",
+              redes: {
+                linkedin: "https://www.linkedin.com/",
+                whatsappNumero: "5490000000000",
+              },
+            };
+            try {
+              var nSync = window.normalizePersonalCard
+                ? window.normalizePersonalCard(syncPl)
+                : syncPl;
+              applyElitePreviewOverrides(nSync);
+              renderElite(nSync);
+            } catch (eSync) {}
+            return;
+          }
+          showLoading(false);
+          showNotFound();
+          return;
+        }
+        var rawAll = acctSnap.data() || {};
+        finishMascotOrElite(siloSnap, rawAll);
+      })
+      .catch(function (err) {
+        console.error("Error Firestore:", err);
+        if (mascot) {
+          if (isEcAdminMascotPreview()) {
             showLoading(true);
             return;
           }
-          showNotFound();
-        });
+          showLoading(false);
+          setCardEmptyMessage(
+            "No se pudo cargar el perfil. Si sos el dueño, revisá las reglas de Firestore."
+          );
+          var leEr = document.getElementById("layout-elite");
+          if (leEr) leEr.classList.add("hidden");
+          var lmEr = document.getElementById("layout-mascot");
+          if (lmEr) lmEr.classList.add("hidden");
+          var nfEr = document.getElementById("card-not-found");
+          if (nfEr) nfEr.classList.add("hidden");
+          var emptyErr = document.getElementById("card-empty");
+          if (emptyErr) emptyErr.classList.remove("hidden");
+          return;
+        }
+        if (isEcAdminPreview()) {
+          showLoading(true);
+          return;
+        }
+        showNotFound();
+      });
     }
 
     if (mascot && uid) {
