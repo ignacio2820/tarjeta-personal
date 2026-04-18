@@ -1825,6 +1825,43 @@ details.vcf-details summary {
   display: block;
 }
 
+/* Selector multi-tarjeta MascotBook */
+.ec-mascot-tarjeta-bar {
+  margin: 0.75rem 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--ae-border, #e2e8f0);
+  background: rgba(248, 250, 252, 0.95);
+}
+.ec-mascot-tarjeta-bar__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+}
+.ec-mascot-tarjeta-bar__row label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #334155;
+}
+.ec-mascot-tarjeta-select {
+  flex: 1;
+  min-width: 12rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.88rem;
+}
+.ec-mascot-tarjeta-bar__hint {
+  margin: 0.55rem 0 0;
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+.ec-mascot-tarjeta-bar__hint code {
+  font-size: 0.7rem;
+}
+
 .mascot-lost-switch-row {
   margin: 0.75rem 0 1rem;
 }
@@ -2805,6 +2842,7 @@ details.vcf-details summary {
 .m-gallery-slot-filename {
   display: block;
   width: 100%;
+  max-width: 200px;
   font-size: 0.78rem;
   color: #475569;
   overflow: hidden;

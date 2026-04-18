@@ -2,7 +2,13 @@
  * Carga perezosa de firebase-admin: evita timeout del CLI al analizar el backend
  * ("User code failed to load... Timeout after 10000").
  */
-const functions = require("firebase-functions");
+const { setGlobalOptions } = require("firebase-functions/v2");
+const { onRequest } = require("firebase-functions/v2/https");
+const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+
+setGlobalOptions({ region: "us-east1" });
+
+const functionsV1 = require("firebase-functions/v1");
 
 function getAdmin() {
   const admin = require("firebase-admin");
@@ -52,6 +58,20 @@ async function readDisplayForManifest(uid, appMode) {
       logo: String(s.logoUrl || "").trim(),
       bio: String(s.bio || "").trim(),
     };
+  }
+
+  if (isPet) {
+    const mascotaSnap = await db.collection("mascotas").doc(uid).get();
+    if (mascotaSnap.exists) {
+      const m = mascotaSnap.data() || {};
+      return {
+        nombre: String(m.nombre || "").trim(),
+        subtitulo: String(m.raza || "").trim(),
+        foto: String(m.fotoPerfilUrl || "").trim(),
+        logo: "",
+        bio: String(m.muro || m.historia || "").trim(),
+      };
+    }
   }
 
   const rootSnap = await userRef.get();
@@ -105,6 +125,20 @@ async function readDisplayForOg(uid, isMascotView) {
     };
   }
 
+  if (isMascotView) {
+    const mascotaSnap = await db.collection("mascotas").doc(uid).get();
+    if (mascotaSnap.exists) {
+      const m = mascotaSnap.data() || {};
+      return {
+        nombre: String(m.nombre || "").trim(),
+        cargo: String(m.raza || "").trim(),
+        bio: String(m.muro || m.historia || "").trim(),
+        foto: String(m.fotoPerfilUrl || "").trim(),
+        logo: "",
+      };
+    }
+  }
+
   const rootSnap = await userRef.get();
   if (!rootSnap.exists) {
     return { nombre: "", cargo: "", bio: "", foto: "", logo: "" };
@@ -131,9 +165,7 @@ async function readDisplayForOg(uid, isMascotView) {
 /**
  * GET /manifest-user?id=UID
  */
-exports.manifest = functions
-  .region("us-east1")
-  .https.onRequest(async (req, res) => {
+exports.manifest = onRequest(async (req, res) => {
     res.set("Access-Control-Allow-Origin", "*");
     res.set("Cache-Control", "public, max-age=300, s-maxage=300");
 
@@ -210,9 +242,7 @@ exports.manifest = functions
 /**
  * GET /card?id=UID
  */
-exports.card = functions
-  .region("us-east1")
-  .https.onRequest(async (req, res) => {
+exports.card = onRequest(async (req, res) => {
     res.set("Cache-Control", "public, max-age=60, s-maxage=60");
 
     const uid = String(req.query.id || "").trim();
@@ -310,11 +340,9 @@ try {
   nodemailer = null;
 }
 
-exports.onMascotLostScanNotify = functions
-  .region("us-east1")
-  .firestore.document("usuarios/{uid}/mascot_lost_scans/{scanId}")
-  .onCreate(async (snap, context) => {
-    const uid = context.params.uid;
+exports.onMascotLostScanNotify = onDocumentCreated("usuarios/{uid}/mascot_lost_scans/{scanId}", async (event) => {
+    const uid = event.params.uid;
+    const snap = event.data;
     const adminApp = getAdmin();
     let toEmail = "";
     try {
@@ -328,7 +356,7 @@ exports.onMascotLostScanNotify = functions
       console.log("[lost-scan] sin email en Auth para", uid);
       return null;
     }
-    const cfg = functions.config().smtp || {};
+    const cfg = functionsV1.config().smtp || {};
     if (!cfg.host) {
       console.log("[lost-scan] smtp.host no configurado; no se envía email.");
       return null;

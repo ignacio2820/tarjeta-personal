@@ -255,6 +255,17 @@
               placeholder="Repetir contraseña"
             />
           </div>
+          <div id="reg-mascota-nombre-wrap" class="hidden">
+            <label class="sr-only" for="reg-mascota-nombre">Nombre de la mascota</label>
+            <input
+              id="reg-mascota-nombre"
+              type="text"
+              class="apple-input"
+              maxlength="120"
+              placeholder="Nombre de la mascota (para identificar la tarjeta)"
+              autocomplete="off"
+            />
+          </div>
           <p id="register-error" class="hidden pt-1 text-[13px] text-red-600" role="alert"></p>
           <button type="submit" id="btn-register" class="apple-submit mt-6 w-full rounded-full py-3.5 text-[15px]">
             Crear cuenta y entrar
@@ -296,6 +307,8 @@
           try {
             var q = new URLSearchParams(window.location.search);
             var apRaw = String(q.get("app") || "").trim().toLowerCase();
+            var wrapMn = document.getElementById("reg-mascota-nombre-wrap");
+            if (wrapMn && apRaw === "mascotbook") wrapMn.classList.remove("hidden");
             var next = q.get("next");
             var loginA = document.getElementById("link-login");
             if (!loginA) return;
@@ -472,31 +485,81 @@
                 })
                 .then(function () {
                   logFsStep("paso 3/3: setDoc '" + eliteCol + "/" + user.uid + "' (users_elite)");
-                  try {
-                    localStorage.setItem("ec_current_app", initialApp);
-                    localStorage.setItem(
-                      "ec_view_mode",
-                      initialApp === "mascotbook" ? "mascot" : "personal"
-                    );
-                  } catch (eLs) {}
-                  var redirect =
-                    "admin.html?viewMode=" +
-                    (initialApp === "mascotbook" ? "mascot" : "personal") +
-                    "&panel=contenido";
-                  try {
-                    var qn = new URLSearchParams(window.location.search);
-                    var nx = qn.get("next");
-                    if (
-                      nx &&
-                      nx.indexOf("://") === -1 &&
-                      nx.indexOf("//") === -1 &&
-                      String(nx).trim()
-                    ) {
-                      redirect = String(nx).trim();
-                    }
-                  } catch (eNx) {}
-                  window.location.href =
-                    "verificar-email.html?next=" + encodeURIComponent(redirect);
+                  var emailNorm = String(user.email || email).trim().toLowerCase();
+                  function finishRegisterRedirect() {
+                    try {
+                      localStorage.setItem("ec_current_app", initialApp);
+                      localStorage.setItem(
+                        "ec_view_mode",
+                        initialApp === "mascotbook" ? "mascot" : "personal"
+                      );
+                    } catch (eLs) {}
+                    var redirect =
+                      "admin.html?viewMode=" +
+                      (initialApp === "mascotbook" ? "mascot" : "personal") +
+                      "&panel=contenido";
+                    try {
+                      var qn = new URLSearchParams(window.location.search);
+                      var nx = qn.get("next");
+                      if (
+                        nx &&
+                        nx.indexOf("://") === -1 &&
+                        nx.indexOf("//") === -1 &&
+                        String(nx).trim()
+                      ) {
+                        redirect = String(nx).trim();
+                      }
+                    } catch (eNx) {}
+                    window.location.href =
+                      "verificar-email.html?next=" + encodeURIComponent(redirect);
+                  }
+                  if (initialApp === "mascotbook") {
+                    var mnameEl = document.getElementById("reg-mascota-nombre");
+                    var mname = mnameEl ? String(mnameEl.value || "").trim() : "";
+                    if (!mname) mname = "Mi mascota";
+                    var cardId = db.collection("mascotas").doc().id;
+                    var tId = db.collection("tarjetas").doc().id;
+                    var batch = db.batch();
+                    batch.set(db.collection("tarjetas").doc(tId), {
+                      ownerUid: user.uid,
+                      ownerEmail: emailNorm,
+                      mascotaNombre: mname,
+                      publicCardId: cardId,
+                      tipo: "mascotbook",
+                      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    });
+                    batch.set(db.collection("mascotas").doc(cardId), {
+                      ownerUid: user.uid,
+                      ownerEmail: emailNorm,
+                      mascotId: cardId,
+                      nombre: mname,
+                      visitas: 0,
+                      likes: 0,
+                      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    });
+                    return batch
+                      .commit()
+                      .then(function () {
+                        logFsStep("paso 4: tarjetas + mascotas (MascotBook)");
+                        finishRegisterRedirect();
+                      });
+                  }
+                  var tIdE = db.collection("tarjetas").doc().id;
+                  return db
+                    .collection("tarjetas")
+                    .doc(tIdE)
+                    .set({
+                      ownerUid: user.uid,
+                      ownerEmail: emailNorm,
+                      mascotaNombre: "Mi EliteCard",
+                      publicCardId: user.uid,
+                      tipo: "elitecard",
+                      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    })
+                    .then(function () {
+                      logFsStep("paso 4: tarjeta índice (EliteCard)");
+                      finishRegisterRedirect();
+                    });
                 })
                 .catch(function (fsErr) {
                   logFsStep("abortado tras error", fsErr);
@@ -508,7 +571,8 @@
             .catch(function (err) {
               console.error("[register] Error en flujo registro:", err && err.code, err && err.message, err);
               var map = {
-                "auth/email-already-in-use": "Ese correo ya está registrado. Probá iniciar sesión.",
+                "auth/email-already-in-use":
+                  "Ese correo ya tiene cuenta en Firebase. Iniciá sesión; para otra MascotBook usá «Nueva mascota» en el panel (misma cuenta).",
                 "auth/invalid-email": "Correo no válido.",
                 "auth/weak-password": "Contraseña demasiado débil.",
                 "auth/operation-not-allowed": "Registro con email/contraseña no habilitado en Firebase.",

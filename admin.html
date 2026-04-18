@@ -416,6 +416,19 @@
               </button>
             </div>
 
+            <div id="ec-mascot-tarjeta-bar" class="ec-mascot-tarjeta-bar hidden" aria-label="Selector de tarjeta MascotBook">
+              <div class="ec-mascot-tarjeta-bar__row">
+                <label for="ec-mascot-tarjeta-select">Tarjeta activa</label>
+                <select id="ec-mascot-tarjeta-select" class="ec-mascot-tarjeta-select"></select>
+                <button type="button" class="btn-outline btn-ec-mascot-nueva" id="btn-ec-mascot-nueva-tarjeta">
+                  + Nueva mascota
+                </button>
+              </div>
+              <p class="ec-mascot-tarjeta-bar__hint">
+                El enlace público usa el ID del perfil en <code>mascotas</code>. Los QR antiguos con tu UID de usuario siguen funcionando.
+              </p>
+            </div>
+
             <div class="mb-work-tabs" role="tablist" aria-label="Secciones MascotBook">
               <button type="button" class="mb-tab-btn active" data-mb-tab="identidad" role="tab">Identidad</button>
               <button type="button" class="mb-tab-btn" data-mb-tab="salud" role="tab">Salud</button>
@@ -433,6 +446,7 @@
                   <div class="field field-upload field-upload--mascot-primary">
                     <div class="compact-image-list" aria-label="Foto de perfil y banner">
                       <div class="compact-image-item m-gallery-slot">
+                        <div style="font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 6px;">Foto Perfil</div>
                         <div class="m-gallery-slot-row">
                           <span class="m-gallery-slot-idx" aria-hidden="true">1</span>
                           <label class="file-upload-box file-upload-box--compact file-upload-box--slot m-gallery-slot-change">
@@ -440,7 +454,7 @@
                             <input id="m-foto" type="file" class="file-input-hidden" accept="image/*" />
                           </label>
                           <div class="m-gallery-slot-filename-wrap">
-                            <span id="m-foto-filename" class="m-gallery-slot-filename" aria-live="polite">Sin foto</span>
+                            <span id="m-foto-filename" class="m-gallery-slot-filename" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block;" aria-live="polite">Sin foto</span>
                           </div>
                           <button type="button" class="btn-outline m-gallery-slot-delete" id="m-foto-remove" disabled aria-label="Quitar foto">
                             <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
@@ -448,6 +462,7 @@
                         </div>
                       </div>
                       <div class="compact-image-item m-gallery-slot">
+                        <div style="font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 6px;">Banner</div>
                         <div class="m-gallery-slot-row">
                           <span class="m-gallery-slot-idx" aria-hidden="true">2</span>
                           <label class="file-upload-box file-upload-box--compact file-upload-box--slot m-gallery-slot-change">
@@ -455,7 +470,7 @@
                             <input id="m-cabecera" type="file" class="file-input-hidden" accept="image/*" />
                           </label>
                           <div class="m-gallery-slot-filename-wrap">
-                            <span id="m-cabecera-filename" class="m-gallery-slot-filename" aria-live="polite">Sin foto</span>
+                            <span id="m-cabecera-filename" class="m-gallery-slot-filename" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block;" aria-live="polite">Sin foto</span>
                           </div>
                           <button type="button" class="btn-outline m-gallery-slot-delete" id="m-cabecera-remove" disabled aria-label="Quitar banner">
                             <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
@@ -877,6 +892,8 @@
         var currentMascotProTheme = "classic_paws";
         var currentMascotSurfaceTheme = "cloud_cream";
         var currentMascotShareId = "";
+        /** Índice Firestore tarjetas (MascotBook) para multi-perfil. */
+        var ecMascotTarjetasList = [];
         var MAX_MASCOT_GALLERY_SLOTS = 9;
         var lastMascotCabecera = "";
         var __mascotRescueUrl = "";
@@ -1252,7 +1269,7 @@
           var db = firebase.firestore();
           var u = String(uid || "").trim();
           var mid = String(resolveMascotDocId() || "").trim();
-          if (!u || mid !== u) {
+          if (!u || !mid) {
             return Promise.reject(new Error("No se puede eliminar este perfil con la sesión actual."));
           }
           var urls = [];
@@ -1264,18 +1281,56 @@
           return db
             .collection("mascotas")
             .doc(mid)
-            .delete()
-            .then(function () {
-              return window.EC_SILO.mascotCardRef(db, u).delete();
-            })
-            .then(function () {
-              urls.forEach(function (url) {
-                try {
-                  firebase.storage().refFromURL(url).delete().catch(function () {});
-                } catch (e) {}
-              });
-              showToast("Perfil MascotBook eliminado", true);
-              window.location.reload();
+            .get()
+            .then(function (ms) {
+              if (!ms.exists) {
+                return Promise.reject(new Error("Perfil no encontrado."));
+              }
+              var md = ms.data() || {};
+              var owner = String(md.ownerUid || "").trim();
+              if (owner && owner !== u) {
+                return Promise.reject(new Error("No tenés permiso para eliminar este perfil."));
+              }
+              if (!owner && mid !== u) {
+                return Promise.reject(new Error("No tenés permiso para eliminar este perfil."));
+              }
+              return db
+                .collection("tarjetas")
+                .where("ownerUid", "==", u)
+                .get()
+                .then(function (ts) {
+                  var batch = db.batch();
+                  var n = 0;
+                  ts.forEach(function (d) {
+                    var x = d.data() || {};
+                    if (String(x.publicCardId || "").trim() === mid) {
+                      batch.delete(d.ref);
+                      n++;
+                    }
+                  });
+                  if (n === 0) return Promise.resolve();
+                  return batch.commit();
+                })
+                .then(function () {
+                  return db.collection("mascotas").doc(mid).delete();
+                })
+                .then(function () {
+                  if (mid === u) {
+                    return window.EC_SILO.mascotCardRef(db, u).delete().catch(function () {});
+                  }
+                })
+                .then(function () {
+                  urls.forEach(function (url) {
+                    try {
+                      firebase.storage().refFromURL(url).delete().catch(function () {});
+                    } catch (e) {}
+                  });
+                  try {
+                    sessionStorage.removeItem("ec_sel_mascot_public_id_" + u);
+                  } catch (e2) {}
+                  showToast("Perfil MascotBook eliminado", true);
+                  window.location.reload();
+                });
             });
         }
 
@@ -2979,7 +3034,10 @@
               .doc(mascotDocId)
               .set(safePatch, { merge: true })
               .then(function () {
-                return window.EC_SILO.mascotCardRef(db, u.uid).set(safePatch, { merge: true });
+                if (String(mascotDocId) === String(u.uid)) {
+                  return window.EC_SILO.mascotCardRef(db, u.uid).set(safePatch, { merge: true });
+                }
+                return Promise.resolve();
               })
               .then(function () {});
           } catch (eW) {
@@ -3500,7 +3558,190 @@
           };
         }
 
+        function ecNormalizeOwnerEmail(e) {
+          return String(e || "").trim().toLowerCase();
+        }
+
+        function renderMascotTarjetaBar(list) {
+          var bar = document.getElementById("ec-mascot-tarjeta-bar");
+          var sel = document.getElementById("ec-mascot-tarjeta-select");
+          if (!bar || !sel) return;
+          if (!list || list.length < 2) {
+            bar.classList.add("hidden");
+            return;
+          }
+          bar.classList.remove("hidden");
+          var cur = String(currentMascotShareId || "").trim();
+          sel.innerHTML = "";
+          list.forEach(function (t) {
+            var opt = document.createElement("option");
+            opt.value = t.publicCardId;
+            var label = t.mascotaNombre || "Sin nombre";
+            if (t.publicCardId && t.publicCardId.length > 6) {
+              label += " · …" + t.publicCardId.slice(-6);
+            }
+            opt.textContent = label;
+            sel.appendChild(opt);
+          });
+          if (cur) {
+            try {
+              sel.value = cur;
+            } catch (eSv) {}
+          }
+        }
+
+        function ensureMascotTarjetasThenBind(done) {
+          var user = firebase.auth().currentUser;
+          if (!user || !uid || currentApp !== "mascotbook") {
+            done();
+            return;
+          }
+          var db = firebase.firestore();
+          var email = ecNormalizeOwnerEmail(user.email);
+          db.collection("tarjetas")
+            .where("ownerEmail", "==", email)
+            .get()
+            .then(function (snap) {
+              var list = [];
+              snap.forEach(function (d) {
+                var x = d.data() || {};
+                if (String(x.tipo || "mascotbook") === "elitecard") return;
+                var pid = String(x.publicCardId || "").trim();
+                if (!pid) return;
+                list.push({
+                  docId: d.id,
+                  publicCardId: pid,
+                  mascotaNombre: String(x.mascotaNombre || "").trim() || "Sin nombre",
+                });
+              });
+              if (list.length === 0) {
+                return db.collection("mascotas").doc(uid).get().then(function (ms) {
+                  if (!ms.exists) {
+                    ecMascotTarjetasList = [];
+                    currentMascotShareId = uid;
+                    done();
+                    return;
+                  }
+                  var tId = db.collection("tarjetas").doc().id;
+                  var batch = db.batch();
+                  batch.set(db.collection("tarjetas").doc(tId), {
+                    ownerUid: uid,
+                    ownerEmail: email,
+                    mascotaNombre: "Mi mascota",
+                    publicCardId: uid,
+                    tipo: "mascotbook",
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                  });
+                  var md = ms.data() || {};
+                  if (!md.ownerUid) {
+                    batch.set(
+                      db.collection("mascotas").doc(uid),
+                      { ownerUid: uid, ownerEmail: email },
+                      { merge: true }
+                    );
+                  }
+                  return batch
+                    .commit()
+                    .catch(function () {})
+                    .then(function () {
+                      ensureMascotTarjetasThenBind(done);
+                    });
+                });
+              }
+              ecMascotTarjetasList = list;
+              var saved = "";
+              try {
+                saved = sessionStorage.getItem("ec_sel_mascot_public_id_" + uid) || "";
+              } catch (eSs) {}
+              var pick = list[0].publicCardId;
+              for (var i = 0; i < list.length; i++) {
+                if (list[i].publicCardId === saved) {
+                  pick = list[i].publicCardId;
+                  break;
+                }
+              }
+              if (pick) currentMascotShareId = pick;
+              renderMascotTarjetaBar(list);
+              done();
+            })
+            .catch(function () {
+              done();
+            });
+        }
+
+        function wireEcMascotTarjetaBarOnce() {
+          if (wireEcMascotTarjetaBarOnce._ok) return;
+          wireEcMascotTarjetaBarOnce._ok = true;
+          var sel = document.getElementById("ec-mascot-tarjeta-select");
+          if (sel) {
+            sel.addEventListener("change", function () {
+              var v = String(sel.value || "").trim();
+              if (!v || !uid) return;
+              currentMascotShareId = v;
+              try {
+                sessionStorage.setItem("ec_sel_mascot_public_id_" + uid, v);
+              } catch (e1) {}
+              bindFirestore();
+            });
+          }
+          var btnNew = document.getElementById("btn-ec-mascot-nueva-tarjeta");
+          if (btnNew) {
+            btnNew.addEventListener("click", function () {
+              if (!uid || demoModeActive) return;
+              if (isSavingBlockedByMembership()) {
+                showToast("Membresía vencida o suspendida.", false);
+                return;
+              }
+              var nm = window.prompt("Nombre de la mascota (etiqueta en el panel):", "Nueva mascota");
+              if (nm == null) return;
+              nm = String(nm || "").trim() || "Nueva mascota";
+              var user = firebase.auth().currentUser;
+              if (!user) return;
+              var db = firebase.firestore();
+              var email = ecNormalizeOwnerEmail(user.email);
+              var cardId = db.collection("mascotas").doc().id;
+              var tId = db.collection("tarjetas").doc().id;
+              var batch = db.batch();
+              batch.set(db.collection("tarjetas").doc(tId), {
+                ownerUid: uid,
+                ownerEmail: email,
+                mascotaNombre: nm,
+                publicCardId: cardId,
+                tipo: "mascotbook",
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+              });
+              batch.set(db.collection("mascotas").doc(cardId), {
+                ownerUid: uid,
+                ownerEmail: email,
+                mascotId: cardId,
+                nombre: nm,
+                visitas: 0,
+                likes: 0,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+              });
+              btnNew.disabled = true;
+              batch
+                .commit()
+                .then(function () {
+                  currentMascotShareId = cardId;
+                  try {
+                    sessionStorage.setItem("ec_sel_mascot_public_id_" + uid, cardId);
+                  } catch (e2) {}
+                  showToast("Nueva tarjeta creada. Podés editarla y generar su QR.", true);
+                  bindFirestore();
+                })
+                .catch(function (e) {
+                  showToast(e.message || "No se pudo crear la tarjeta", false);
+                })
+                .then(function () {
+                  btnNew.disabled = false;
+                });
+            });
+          }
+        }
+
         function bindFirestore() {
+          wireEcMascotTarjetaBarOnce();
           if (unsub) {
             unsub();
             unsub = null;
@@ -3512,63 +3753,72 @@
           if (!uid) return;
           setDashboardDataLoading(true);
           var db = firebase.firestore();
-          var mascotDocId = resolveMascotDocId();
-          if (mascotDocId) currentMascotShareId = mascotDocId;
-          var ref =
-            currentApp === "mascotbook"
-              ? db.collection("mascotas").doc(mascotDocId || uid)
-              : window.EC_SILO.personalCardRef(db, uid);
-          var triedMascotasLegacyMigrate = false;
-          unsub = ref.onSnapshot(
-            function (snap) {
-              if (currentApp === "mascotbook") {
-                if (!snap.exists && !triedMascotasLegacyMigrate) {
-                  triedMascotasLegacyMigrate = true;
-                  window.EC_SILO
-                    .mascotCardRef(db, uid)
-                    .get()
-                    .then(function (leg) {
-                      if (!leg.exists) return;
-                      var d = leg.data() || {};
-                      return writeMascotBookFirestore(
-                        Object.assign({}, d, {
-                          ownerUid: uid,
-                          mascotId: uid,
-                          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        })
-                      );
-                    })
-                    .catch(function () {});
-                }
-                fillMascot(snap.exists ? snap.data() : {});
-              } else {
-                fillPersonal(snap.exists ? snap.data() : {});
-              }
-            },
-            function () {
-              setDashboardDataLoading(false);
-              showToast("Error al leer Firestore", false);
-            }
-          );
-          if (currentApp === "mascotbook") {
-            var lostInit = true;
-            unsubLostScans = window.EC_SILO.mascotLostScansRef(db, uid)
-              .orderBy("at", "desc")
-              .limit(5)
-              .onSnapshot(
-                function (snap) {
-                  if (lostInit) {
-                    lostInit = false;
-                    return;
+
+          function attachMascotAndPersonalListeners() {
+            var mascotDocId = resolveMascotDocId();
+            if (mascotDocId) currentMascotShareId = mascotDocId;
+            var ref =
+              currentApp === "mascotbook"
+                ? db.collection("mascotas").doc(mascotDocId || uid)
+                : window.EC_SILO.personalCardRef(db, uid);
+            var triedMascotasLegacyMigrate = false;
+            unsub = ref.onSnapshot(
+              function (snap) {
+                if (currentApp === "mascotbook") {
+                  if (!snap.exists && !triedMascotasLegacyMigrate) {
+                    triedMascotasLegacyMigrate = true;
+                    window.EC_SILO
+                      .mascotCardRef(db, uid)
+                      .get()
+                      .then(function (leg) {
+                        if (!leg.exists) return;
+                        var d = leg.data() || {};
+                        return writeMascotBookFirestore(
+                          Object.assign({}, d, {
+                            ownerUid: uid,
+                            mascotId: mascotDocId || uid,
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                          })
+                        );
+                      })
+                      .catch(function () {});
                   }
-                  snap.docChanges().forEach(function (ch) {
-                    if (ch.type === "added") {
-                      showToast("Nueva ubicación compartida (Modo mascota perdida).", true);
+                  fillMascot(snap.exists ? snap.data() : {});
+                } else {
+                  fillPersonal(snap.exists ? snap.data() : {});
+                }
+              },
+              function () {
+                setDashboardDataLoading(false);
+                showToast("Error al leer Firestore", false);
+              }
+            );
+            if (currentApp === "mascotbook") {
+              var lostInit = true;
+              unsubLostScans = window.EC_SILO.mascotLostScansRef(db, uid)
+                .orderBy("at", "desc")
+                .limit(5)
+                .onSnapshot(
+                  function (snap) {
+                    if (lostInit) {
+                      lostInit = false;
+                      return;
                     }
-                  });
-                },
-                function () {}
-              );
+                    snap.docChanges().forEach(function (ch) {
+                      if (ch.type === "added") {
+                        showToast("Nueva ubicación compartida (Modo mascota perdida).", true);
+                      }
+                    });
+                  },
+                  function () {}
+                );
+            }
+          }
+
+          if (currentApp === "mascotbook") {
+            ensureMascotTarjetasThenBind(attachMascotAndPersonalListeners);
+          } else {
+            attachMascotAndPersonalListeners();
           }
         }
 
@@ -4397,6 +4647,7 @@
               }
               hideProductAccessDeniedModal();
               uid = "";
+              ecMascotTarjetasList = [];
               clearDashboardSkeletonClasses();
               clearAccountListeners();
               if (unsub) {

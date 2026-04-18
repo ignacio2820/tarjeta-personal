@@ -72,7 +72,7 @@ service cloud.firestore {
     function mascotAllowedKeys() {
       return [
         'nombre', 'raza', 'sexo', 'salud', 'historia', 'personalidad',
-        'mascotId', 'ownerUid',
+        'mascotId', 'ownerUid', 'ownerEmail', 'email',
         'themeId', 'textureId', 'mascotProTheme', 'tema', 'mascotSurfaceTheme', 'accentColor', 'textColor',
         'fotoPerfilUrl', 'fotoCabeceraUrl', 'galeria', 'galeriaSlots', 'muro',
         'vacunas', 'dueno', 'veterinario', 'fichaCritica', 'visitas', 'likes', 'mascotaPerdida', 'alertaExtravioActiva', 'whatsappUrgencia',
@@ -131,11 +131,15 @@ service cloud.firestore {
         && (get(p).data.mascotaPerdida == true || get(p).data.alertaExtravioActiva == true);
     }
 
+    function lostAlertOnMascotaDoc(cardId) {
+      let m = /databases/$(database)/documents/mascotas/$(cardId);
+      return exists(m)
+        && (get(m).data.mascotaPerdida == true || get(m).data.alertaExtravioActiva == true);
+    }
+
     /** Ping de ubicación desde visitante (sin auth) solo si modo perdido activo. */
     function lostScanCreateOk(userId) {
-      return mascotPerdidaActiva(userId)
-        && request.resource.data.keys().hasAll(['lat', 'lng', 'at'])
-        && request.resource.data.keys().hasOnly(['lat', 'lng', 'at', 'accuracy'])
+      return request.resource.data.keys().hasAll(['lat', 'lng', 'at'])
         && request.resource.data.lat is number
         && request.resource.data.lng is number
         && request.resource.data.lat >= -90.0
@@ -143,7 +147,38 @@ service cloud.firestore {
         && request.resource.data.lng >= -180.0
         && request.resource.data.lng <= 180.0
         && (!('accuracy' in request.resource.data) || request.resource.data.accuracy is number)
-        && request.resource.data.at is timestamp;
+        && request.resource.data.at is timestamp
+        && (
+          (
+            (request.resource.data.keys().hasOnly(['lat', 'lng', 'at'])
+              || request.resource.data.keys().hasOnly(['lat', 'lng', 'at', 'accuracy']))
+            && mascotPerdidaActiva(userId)
+          )
+          || (
+            (request.resource.data.keys().hasOnly(['lat', 'lng', 'at', 'mascotaCardId'])
+              || request.resource.data.keys().hasOnly(['lat', 'lng', 'at', 'accuracy', 'mascotaCardId']))
+            && request.resource.data.mascotaCardId is string
+            && exists(/databases/$(database)/documents/mascotas/$(request.resource.data.mascotaCardId))
+            && get(/databases/$(database)/documents/mascotas/$(request.resource.data.mascotaCardId)).data.ownerUid == userId
+            && lostAlertOnMascotaDoc(request.resource.data.mascotaCardId)
+          )
+        );
+    }
+
+    function mascotaDocAuthWriteOk(mascotaId) {
+      return request.auth != null
+        && (
+          (request.resource.data.ownerUid == request.auth.uid)
+          || (request.auth.uid == mascotaId && !('ownerUid' in request.resource.data))
+        );
+    }
+
+    function mascotaDocAuthMutateOk(mascotaId) {
+      return request.auth != null
+        && (
+          (resource.data.keys().hasAny(['ownerUid']) && resource.data.ownerUid == request.auth.uid)
+          || (!('ownerUid' in resource.data) && request.auth.uid == mascotaId)
+        );
     }
 
     /**
@@ -217,6 +252,25 @@ service cloud.firestore {
       allow write: if isOwner(userId);
     }
 
+    /**
+     * tarjetas — índice de tarjetas por cuenta (varias MascotBook / EliteCard por mismo dueño).
+     * ownerEmail + ownerUid replicados desde Auth; publicCardId = id público en URL / mascotas/{id}.
+     */
+    match /tarjetas/{tarjetaId} {
+      allow read: if request.auth != null && resource.data.ownerUid == request.auth.uid;
+      allow create: if request.auth != null
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.ownerEmail is string
+        && request.resource.data.mascotaNombre is string
+        && request.resource.data.publicCardId is string
+        && request.resource.data.tipo is string;
+      allow update: if request.auth != null
+        && resource.data.ownerUid == request.auth.uid
+        && request.resource.data.ownerUid == resource.data.ownerUid;
+      allow delete: if request.auth != null
+        && resource.data.ownerUid == request.auth.uid;
+    }
+
     match /usuarios/{userId}/personal_card/{docId} {
       allow read: if true;
       allow create: if isOwner(userId) && personalCardKeysOk();
@@ -244,9 +298,9 @@ service cloud.firestore {
      */
     match /mascotas/{mascotaId} {
       allow read: if true;
-      allow create, delete: if request.auth != null && request.auth.uid == mascotaId;
-      allow update: if (request.auth != null && request.auth.uid == mascotaId)
-        || publicMascotCounterUpdateOk();
+      allow create: if mascotaDocAuthWriteOk(mascotaId);
+      allow delete: if mascotaDocAuthMutateOk(mascotaId);
+      allow update: if mascotaDocAuthMutateOk(mascotaId) || publicMascotCounterUpdateOk();
     }
 
     match /vetPasses/{token} {

@@ -416,6 +416,7 @@
       mascotaPerdida: lostMode,
       alertaExtravioActiva: alertaExtravioActiva,
       whatsappUrgencia: waU,
+      ownerEmail: String(d.ownerEmail || d.email || "").trim(),
     };
   };
 
