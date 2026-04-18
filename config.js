@@ -96,6 +96,8 @@
     visitas: 0,
     likes: 0,
     mascotaPerdida: false,
+    /** Si está activa, la tarjeta pública puede solicitar GPS al abrir (QR). */
+    alertaExtravioActiva: false,
     whatsappUrgencia: "",
   };
 
@@ -355,6 +357,9 @@
     var waU = String(d.whatsappUrgencia || "").replace(/\D/g, "");
     if (waU.length > 18) waU = waU.slice(0, 18);
     var perdida = !!d.mascotaPerdida;
+    var exAlert = d.alertaExtravioActiva;
+    var alertaExtravioActiva = exAlert === true || (exAlert == null && perdida);
+    var lostMode = perdida || exAlert === true;
     var visitas = Number(d.visitas);
     if (!isFinite(visitas) || visitas < 0) visitas = 0;
     visitas = Math.floor(visitas);
@@ -408,7 +413,8 @@
       },
       visitas: visitas,
       likes: likes,
-      mascotaPerdida: perdida,
+      mascotaPerdida: lostMode,
+      alertaExtravioActiva: alertaExtravioActiva,
       whatsappUrgencia: waU,
     };
   };

@@ -156,6 +156,12 @@
           transform: translateY(0);
         }
       }
+      #reset-modal[hidden] {
+        display: none !important;
+      }
+      #reset-modal:not([hidden]) {
+        display: flex;
+      }
     </style>
   </head>
   <body class="antialiased">
@@ -173,7 +179,18 @@
         <p class="mt-2 text-sm text-slate-500">Accedé al panel profesional para gestionar EliteCard y MascotBook.</p>
         <form id="login-form" class="mt-6 space-y-3">
           <input id="email" type="email" class="in" placeholder="Email" required />
-          <input id="password" type="password" class="in" placeholder="Contraseña" required />
+          <div>
+            <input id="password" type="password" class="in" placeholder="Contraseña" required />
+            <div class="flex justify-end pt-1.5">
+              <button
+                type="button"
+                id="link-forgot"
+                class="text-sm font-semibold text-[#b8922d] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#b8922d]/40 rounded"
+              >
+                ¿Olvidaste tu contraseña?
+              </button>
+            </div>
+          </div>
           <p id="err" class="hidden text-sm text-red-600"></p>
           <button id="btn-login" type="submit" class="btn-gold">Entrar</button>
         </form>
@@ -198,6 +215,55 @@
         </div>
       </aside>
     </main>
+    <div
+      id="reset-modal"
+      class="fixed inset-0 z-[100] hidden items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="reset-modal-title"
+      hidden
+    >
+      <button
+        type="button"
+        id="reset-backdrop"
+        class="absolute inset-0 bg-slate-900/55 backdrop-blur-[2px]"
+        aria-label="Cerrar"
+      ></button>
+      <div class="relative z-10 w-full max-w-md rounded-[20px] border border-[#e2e8f0] bg-white p-7 shadow-[0_18px_46px_rgba(15,23,42,0.12)]">
+        <div class="flex items-start justify-between gap-3">
+          <h2 id="reset-modal-title" class="text-lg font-semibold text-slate-900">Recuperar contraseña</h2>
+          <button
+            type="button"
+            id="btn-close-reset"
+            class="shrink-0 rounded-lg p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb]/40"
+            aria-label="Cerrar"
+          >
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path
+                fill-rule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+        </div>
+        <p class="mt-2 text-sm text-slate-500">
+          Ingresá el correo de tu cuenta y te enviaremos un enlace para restablecer la contraseña.
+        </p>
+        <div class="mt-5 space-y-3">
+          <label class="sr-only" for="reset-email">Correo electrónico</label>
+          <input
+            id="reset-email"
+            type="email"
+            class="in"
+            placeholder="Correo electrónico"
+            autocomplete="email"
+          />
+          <p id="reset-feedback" class="hidden text-sm leading-snug" role="status"></p>
+          <button id="btn-send-reset" type="button" class="btn-gold">Enviar instrucciones</button>
+        </div>
+      </div>
+    </div>
     <script src="firebase-config.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
@@ -250,8 +316,17 @@
           firebase.initializeApp(cfg);
         } catch (e4) {}
         var auth = firebase.auth();
+        function destinationAfterLogin(u) {
+          if (!u.emailVerified) {
+            window.location.replace(
+              "verificar-email.html?next=" + encodeURIComponent(getNextHref())
+            );
+            return;
+          }
+          window.location.replace(getNextHref());
+        }
         auth.onAuthStateChanged(function (u) {
-          if (u) window.location.replace(getNextHref());
+          if (u) destinationAfterLogin(u);
         });
         try {
           var ah = readAppHint();
@@ -278,6 +353,126 @@
               btn.disabled = false;
             });
         });
+
+        var resetModal = document.getElementById("reset-modal");
+        var linkForgot = document.getElementById("link-forgot");
+        var resetBackdrop = document.getElementById("reset-backdrop");
+        var btnCloseReset = document.getElementById("btn-close-reset");
+        var resetEmail = document.getElementById("reset-email");
+        var resetFeedback = document.getElementById("reset-feedback");
+        var btnSendReset = document.getElementById("btn-send-reset");
+        var loginEmail = document.getElementById("email");
+
+        function mapResetError(ex) {
+          var code = ex && ex.code ? String(ex.code) : "";
+          if (code === "auth/invalid-email") {
+            return "El correo no tiene un formato válido.";
+          }
+          if (code === "auth/missing-email") {
+            return "Ingresá un correo electrónico.";
+          }
+          if (code === "auth/network-request-failed") {
+            return "Error de red. Verificá tu conexión e intentá de nuevo.";
+          }
+          if (code === "auth/too-many-requests") {
+            return "Demasiados intentos. Esperá unos minutos e intentá de nuevo.";
+          }
+          return "No se pudo enviar el correo. Intentá de nuevo en unos minutos.";
+        }
+
+        function clearResetFeedback() {
+          if (!resetFeedback) return;
+          resetFeedback.textContent = "";
+          resetFeedback.classList.add("hidden");
+          resetFeedback.classList.remove("text-red-600", "text-emerald-800");
+        }
+
+        function showResetFeedback(ok, message) {
+          if (!resetFeedback) return;
+          resetFeedback.textContent = message;
+          resetFeedback.classList.remove("hidden", "text-red-600", "text-emerald-800");
+          resetFeedback.classList.add(ok ? "text-emerald-800" : "text-red-600");
+        }
+
+        function openResetModal() {
+          if (!resetModal || !resetEmail) return;
+          clearResetFeedback();
+          var fromLogin = String(loginEmail && loginEmail.value ? loginEmail.value : "").trim();
+          if (fromLogin && !String(resetEmail.value || "").trim()) {
+            resetEmail.value = fromLogin;
+          }
+          resetModal.removeAttribute("hidden");
+          document.body.style.overflow = "hidden";
+          setTimeout(function () {
+            try {
+              resetEmail.focus();
+            } catch (ef) {}
+          }, 0);
+        }
+
+        function closeResetModal() {
+          if (!resetModal) return;
+          resetModal.setAttribute("hidden", "");
+          document.body.style.overflow = "";
+        }
+
+        if (linkForgot) {
+          linkForgot.addEventListener("click", function () {
+            openResetModal();
+          });
+        }
+        if (resetBackdrop) {
+          resetBackdrop.addEventListener("click", closeResetModal);
+        }
+        if (btnCloseReset) {
+          btnCloseReset.addEventListener("click", closeResetModal);
+        }
+        document.addEventListener("keydown", function (ev) {
+          if (ev.key === "Escape" && resetModal && !resetModal.hasAttribute("hidden")) {
+            closeResetModal();
+          }
+        });
+
+        if (btnSendReset) {
+          btnSendReset.addEventListener("click", function () {
+            clearResetFeedback();
+            var email = String(resetEmail ? resetEmail.value : "").trim();
+            if (!email) {
+              showResetFeedback(false, "Ingresá el correo de tu cuenta.");
+              try {
+                resetEmail.focus();
+              } catch (ef2) {}
+              return;
+            }
+            btnSendReset.disabled = true;
+            auth
+              .sendPasswordResetEmail(email)
+              .then(function () {
+                showResetFeedback(
+                  true,
+                  "Si el correo existe en nuestra base de datos, recibirás instrucciones para restablecer tu contraseña en unos minutos."
+                );
+              })
+              .catch(function (ex) {
+                showResetFeedback(false, mapResetError(ex));
+              })
+              .then(function () {
+                btnSendReset.disabled = false;
+              });
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>
+   .catch(function (ex) {
+                showResetFeedback(false, mapResetError(ex));
+              })
+              .finally(function () {
+                btnSendReset.disabled = false;
+              });
+          });
+        }
       })();
     </script>
   </body>

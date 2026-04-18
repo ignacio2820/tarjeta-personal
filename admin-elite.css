@@ -165,10 +165,6 @@ body {
   color: #991b1b;
 }
 
-.mascot-media-remove-row .field-media-actions {
-  min-height: 1.25rem;
-}
-
 .mascot-danger-zone {
   margin-top: 1.25rem;
   padding: 1rem 1.1rem;
@@ -2309,6 +2305,8 @@ details.vcf-details summary {
   max-width: none;
   margin: 0;
   width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .mb-work-tabs {
@@ -2418,16 +2416,22 @@ details.vcf-details summary {
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
+  overflow-x: hidden;
+  /* Margen interno lateral para que botones (p. ej. papelera) no queden bajo el borde */
+  padding: 2rem clamp(1rem, 2.5vw, 1.5rem) 2rem clamp(1rem, 2.5vw, 1.75rem);
 }
 
-/* Mismo patrón que Salud (mascot-table-wrap): recorta desborde horizontal */
+/* Mismo patrón que Salud: sin scroll horizontal (el texto del archivo debe truncarse con ellipsis) */
 .mascot-panel-card--identity .mascot-identidad-body.mascot-table-wrap {
   min-width: 0;
   max-width: 100%;
+  overflow-x: hidden;
 }
 
 .mascot-panel-card--identity .mascot-identidad-body .field-grid,
 .mascot-panel-card--identity .mascot-identidad-body .field-upload,
+.mascot-panel-card--identity .mascot-identidad-body .field-upload--mascot-primary,
+.mascot-panel-card--identity .mascot-identidad-body .compact-image-list,
 .mascot-panel-card--identity .mascot-identidad-body .mascot-gallery-slots-wrap {
   min-width: 0;
   max-width: 100%;
@@ -2449,6 +2453,74 @@ details.vcf-details summary {
   max-width: 100%;
   min-width: 0;
   box-sizing: border-box;
+}
+
+/* MascotBook · foto perfil + banner: misma lista compacta que el muro de galería */
+
+.compact-image-list {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.compact-image-item.m-gallery-slot {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+}
+
+.compact-image-item.m-gallery-slot:last-child {
+  margin-bottom: 0;
+}
+
+/* Número en círculo (perfil = 1, banner = 2), coherente con lista numerada del muro */
+.compact-image-list .m-gallery-slot-idx {
+  width: 1.65rem;
+  height: 1.65rem;
+  min-width: 1.65rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #faf5ff 0%, #f3e8ff 100%);
+  border: 1px solid rgba(139, 92, 246, 0.28);
+  box-sizing: border-box;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #7c3aed;
+  line-height: 1;
+}
+
+/* Renglones perfil/banner: el nombre de archivo cede espacio; Subir y papelera siempre visibles */
+.mascot-panel-card--identity .compact-image-item .m-gallery-slot-row {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.mascot-panel-card--identity .compact-image-item .m-gallery-slot-filename-wrap {
+  flex: 1 1 0%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.mascot-panel-card--identity .compact-image-item .m-gallery-slot-delete {
+  flex-shrink: 0;
+}
+
+.mascot-panel-card--identity .compact-image-item .file-upload-box--slot {
+  flex-shrink: 0;
+}
+
+@media (max-width: 520px) {
+  .mascot-panel-card--identity .compact-image-item .m-gallery-slot-row {
+    gap: 6px;
+  }
 }
 
 .mascot-panel-card--health {
@@ -2576,6 +2648,17 @@ details.vcf-details summary {
 .field-upload {
   display: grid;
   gap: 0.55rem;
+}
+
+/* Apila verticalmente foto de perfil + banner (sobrescribe grid de .field-upload) */
+.field-upload.field-upload--mascot-primary {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  gap: 0;
 }
 
 .file-input-hidden {

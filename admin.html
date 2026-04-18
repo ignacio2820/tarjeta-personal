@@ -112,7 +112,9 @@
             <button type="button" class="nav-tab hidden" data-panel="control" id="nav-tab-control" role="tab">
               Administración
             </button>
-            <button type="button" class="nav-tab nav-tab-passive" aria-disabled="true">Configuración</button>
+            <button type="button" class="nav-tab hidden" id="nav-tab-config" role="tab">
+              Configuración
+            </button>
           </div>
           <div id="theme-panel" class="theme-panel hidden">
             <div class="mascot-side-brand">
@@ -428,28 +430,38 @@
                   </h3>
                   <p class="mascot-panel-card__hint">Datos principales del perfil en formato compacto para escritorio.</p>
                   <div class="mascot-table-wrap mascot-identidad-body">
-                  <div class="field-grid field-grid--two">
-                    <div class="field field-upload">
-                      <input id="m-foto" class="file-input-hidden" type="file" accept="image/*" />
-                      <label for="m-foto" class="file-upload-box file-upload-box--compact">
-                        <i class="fa-solid fa-camera" aria-hidden="true"></i>
-                        <span>Foto perfil</span>
-                      </label>
-                    </div>
-                    <div class="field field-upload">
-                      <input id="m-cabecera" class="file-input-hidden" type="file" accept="image/*" />
-                      <label for="m-cabecera" class="file-upload-box file-upload-box--compact">
-                        <i class="fa-solid fa-image" aria-hidden="true"></i>
-                        <span>Banner</span>
-                      </label>
-                    </div>
-                  </div>
-                  <div class="field-grid field-grid--two mascot-media-remove-row">
-                    <div class="field-media-actions">
-                      <button type="button" class="btn-text-media-remove hidden" id="m-foto-remove">Quitar foto</button>
-                    </div>
-                    <div class="field-media-actions">
-                      <button type="button" class="btn-text-media-remove hidden" id="m-cabecera-remove">Quitar banner</button>
+                  <div class="field field-upload field-upload--mascot-primary">
+                    <div class="compact-image-list" aria-label="Foto de perfil y banner">
+                      <div class="compact-image-item m-gallery-slot">
+                        <div class="m-gallery-slot-row">
+                          <span class="m-gallery-slot-idx" aria-hidden="true">1</span>
+                          <label class="file-upload-box file-upload-box--compact file-upload-box--slot m-gallery-slot-change">
+                            <i class="fa-solid fa-upload" aria-hidden="true"></i><span>Subir</span>
+                            <input id="m-foto" type="file" class="file-input-hidden" accept="image/*" />
+                          </label>
+                          <div class="m-gallery-slot-filename-wrap">
+                            <span id="m-foto-filename" class="m-gallery-slot-filename" aria-live="polite">Sin foto</span>
+                          </div>
+                          <button type="button" class="btn-outline m-gallery-slot-delete" id="m-foto-remove" disabled aria-label="Quitar foto">
+                            <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="compact-image-item m-gallery-slot">
+                        <div class="m-gallery-slot-row">
+                          <span class="m-gallery-slot-idx" aria-hidden="true">2</span>
+                          <label class="file-upload-box file-upload-box--compact file-upload-box--slot m-gallery-slot-change">
+                            <i class="fa-solid fa-upload" aria-hidden="true"></i><span>Subir</span>
+                            <input id="m-cabecera" type="file" class="file-input-hidden" accept="image/*" />
+                          </label>
+                          <div class="m-gallery-slot-filename-wrap">
+                            <span id="m-cabecera-filename" class="m-gallery-slot-filename" aria-live="polite">Sin foto</span>
+                          </div>
+                          <button type="button" class="btn-outline m-gallery-slot-delete" id="m-cabecera-remove" disabled aria-label="Quitar banner">
+                            <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div class="field-grid field-grid--three">
@@ -1119,6 +1131,37 @@
           if (bl) bl.classList.toggle("hidden", !show || !ecIsCloudMediaUrl(lastPersonalMedia.logoUrl));
         }
 
+        /** Mismo criterio que el muro de galería: "Sin foto" o último segmento de la URL en Storage. */
+        function displayNameFromStorageUrl(url) {
+          if (!ecIsCloudMediaUrl(url)) return "Sin foto";
+          try {
+            var pathPart = String(url).split("?")[0];
+            var seg = pathPart.split("/").pop();
+            if (seg) return decodeURIComponent(seg);
+          } catch (e) {}
+          return "Imagen";
+        }
+
+        function refreshMascotPrimaryMediaUploadLabels() {
+          var elF = document.getElementById("m-foto-filename");
+          var elC = document.getElementById("m-cabecera-filename");
+          var emptyLabel = "Sin foto";
+          var fotoIn = document.getElementById("m-foto");
+          var cabIn = document.getElementById("m-cabecera");
+          var pendingF = fotoIn && fotoIn.files && fotoIn.files[0];
+          var pendingC = cabIn && cabIn.files && cabIn.files[0];
+          var tF = displayNameFromStorageUrl(lastMascotFoto);
+          var tC = displayNameFromStorageUrl(lastMascotCabecera);
+          if (elF && !pendingF) {
+            elF.textContent = tF;
+            elF.title = tF === emptyLabel ? "" : tF;
+          }
+          if (elC && !pendingC) {
+            elC.textContent = tC;
+            elC.title = tC === emptyLabel ? "" : tC;
+          }
+        }
+
         function syncMascotMediaRemoveButtons() {
           var bf = document.getElementById("m-foto-remove");
           var bc = document.getElementById("m-cabecera-remove");
@@ -1126,9 +1169,10 @@
           var mid = String(resolveMascotDocId() || "").trim();
           var u = String(uid || "").trim();
           var canMedia = !!uid && !demoModeActive && mid && mid === u;
-          if (bf) bf.classList.toggle("hidden", !canMedia || !ecIsCloudMediaUrl(lastMascotFoto));
-          if (bc) bc.classList.toggle("hidden", !canMedia || !ecIsCloudMediaUrl(lastMascotCabecera));
+          if (bf) bf.disabled = !canMedia || !ecIsCloudMediaUrl(lastMascotFoto);
+          if (bc) bc.disabled = !canMedia || !ecIsCloudMediaUrl(lastMascotCabecera);
           if (dz) dz.classList.toggle("hidden", !canMedia);
+          refreshMascotPrimaryMediaUploadLabels();
         }
 
         function runRemovePersonalPrimaryMedia(kind) {
@@ -1302,6 +1346,14 @@
           } catch (eL) {}
           demoModeActive = !logged;
           if (ban) ban.classList.toggle("hidden", logged || currentApp !== "mascotbook");
+          updateGlobalConfigNavVisibility();
+        }
+
+        function updateGlobalConfigNavVisibility() {
+          var btn = document.getElementById("nav-tab-config");
+          if (!btn) return;
+          var show = !!uid && !demoModeActive;
+          btn.classList.toggle("hidden", !show);
         }
 
         function openDemoSaveModal() {
@@ -3409,7 +3461,10 @@
           };
           var dashLost = document.getElementById("dash-mascota-perdida");
           var dashWa = document.getElementById("dash-m-whatsapp-urgencia");
-          if (dashLost) raw.mascotaPerdida = dashLost.checked;
+          if (dashLost) {
+            raw.mascotaPerdida = dashLost.checked;
+            raw.alertaExtravioActiva = dashLost.checked;
+          }
           if (dashWa) raw.whatsappUrgencia = dashWa.value;
           var n = window.normalizeMascotData(raw);
           return {
@@ -3439,6 +3494,7 @@
             veterinario: n.veterinario,
             fichaCritica: n.fichaCritica,
             mascotaPerdida: n.mascotaPerdida,
+            alertaExtravioActiva: n.alertaExtravioActiva,
             whatsappUrgencia: n.whatsappUrgencia,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
           };
@@ -3530,10 +3586,12 @@
           var dashW = document.getElementById("dash-m-whatsapp-urgencia");
           var norm = window.normalizeMascotData({
             mascotaPerdida: dashP ? dashP.checked : false,
+            alertaExtravioActiva: dashP ? dashP.checked : false,
             whatsappUrgencia: dashW ? dashW.value : "",
           });
           return writeMascotBookFirestore({
             mascotaPerdida: norm.mascotaPerdida,
+            alertaExtravioActiva: norm.alertaExtravioActiva,
             whatsappUrgencia: norm.whatsappUrgencia,
             ownerUid: uid,
             mascotId: uid,
@@ -3568,6 +3626,7 @@
           }
           if (isSavingBlockedByMembership()) {
             showToast("Membresía vencida o suspendida: no se pueden subir imágenes.", false);
+            syncMascotMediaRemoveButtons();
             return Promise.resolve();
           }
           var isProfile = kind === "foto";
@@ -3589,6 +3648,8 @@
               return writeMascotBookFirestore(patch).then(function () {
                 if (isProfile) lastMascotFoto = url;
                 else lastMascotCabecera = url;
+                var inpClear = document.getElementById(isProfile ? "m-foto" : "m-cabecera");
+                if (inpClear) inpClear.value = "";
                 refreshPreview();
                 showToast(isProfile ? "Foto de perfil actualizada" : "Banner actualizado", true);
                 if (oldUrl && oldUrl !== url) {
@@ -3601,6 +3662,9 @@
             })
             .catch(function (e) {
               showToast(e.message || "No se pudo subir la imagen", false);
+              var inpFail = document.getElementById(isProfile ? "m-foto" : "m-cabecera");
+              if (inpFail) inpFail.value = "";
+              syncMascotMediaRemoveButtons();
             });
         }
 
@@ -3765,6 +3829,7 @@
                 document.getElementById("m-foto").value = "";
                 var cIn = document.getElementById("m-cabecera");
                 if (cIn) cIn.value = "";
+                syncMascotMediaRemoveButtons();
                 lastMascotGaleria = compactMascotGalleryFromSlots(lastMascotGallerySlots);
                 showToast("MascotBook guardado", true);
                 setButtonBusy(btnSaveMascot, false, "Guardando...", "Guardar MascotBook");
@@ -3807,6 +3872,13 @@
         renderMascotGallerySlots();
         setMascotTab("identidad");
         setPersonalTab("identidad");
+
+        var navTabConfig = document.getElementById("nav-tab-config");
+        if (navTabConfig) {
+          navTabConfig.addEventListener("click", function () {
+            window.location.href = "configuracion-global.html";
+          });
+        }
 
         var goEliteContact = document.getElementById("btn-mascot-goto-elite-contact");
         if (goEliteContact) {
@@ -3985,9 +4057,12 @@
           mFotoInput.addEventListener("change", function () {
             var f = mFotoInput.files && mFotoInput.files[0] ? mFotoInput.files[0] : null;
             if (!f) return;
-            uploadMascotPrimaryMedia("foto", f).then(function () {
-              mFotoInput.value = "";
-            });
+            var fnEl = document.getElementById("m-foto-filename");
+            if (fnEl) {
+              fnEl.textContent = f.name;
+              fnEl.title = f.name;
+            }
+            uploadMascotPrimaryMedia("foto", f);
           });
         }
         var mCabInput = document.getElementById("m-cabecera");
@@ -3995,9 +4070,12 @@
           mCabInput.addEventListener("change", function () {
             var f = mCabInput.files && mCabInput.files[0] ? mCabInput.files[0] : null;
             if (!f) return;
-            uploadMascotPrimaryMedia("cabecera", f).then(function () {
-              mCabInput.value = "";
-            });
+            var fnEl = document.getElementById("m-cabecera-filename");
+            if (fnEl) {
+              fnEl.textContent = f.name;
+              fnEl.title = f.name;
+            }
+            uploadMascotPrimaryMedia("cabecera", f);
           });
         }
 
@@ -4342,6 +4420,18 @@
               refreshAdminSigPreview();
               refreshPreview();
               fitPhonePreview();
+              return;
+            }
+            if (!user.emailVerified) {
+              try {
+                var _nextVerify = (location.pathname + location.search).trim();
+                if (!_nextVerify) _nextVerify = "admin.html";
+                location.replace(
+                  "verificar-email.html?next=" + encodeURIComponent(_nextVerify)
+                );
+              } catch (eVerify) {
+                location.replace("verificar-email.html");
+              }
               return;
             }
             uid = user.uid;

@@ -376,6 +376,21 @@
             .createUserWithEmailAndPassword(email, p1)
             .then(function (cred) {
               var user = cred.user;
+              return user
+                .sendEmailVerification()
+                .catch(function (evErr) {
+                  console.warn(
+                    "[register] sendEmailVerification:",
+                    evErr && evErr.code,
+                    evErr && evErr.message
+                  );
+                })
+                .then(function () {
+                  return cred;
+                });
+            })
+            .then(function (cred) {
+              var user = cred.user;
               console.log("[register] Auth OK, uid:", user && user.uid, "→ iniciando escrituras Firestore");
               var col = usersCollection();
               var initialApp = "elitecard";
@@ -480,7 +495,8 @@
                       redirect = String(nx).trim();
                     }
                   } catch (eNx) {}
-                  window.location.href = redirect;
+                  window.location.href =
+                    "verificar-email.html?next=" + encodeURIComponent(redirect);
                 })
                 .catch(function (fsErr) {
                   logFsStep("abortado tras error", fsErr);

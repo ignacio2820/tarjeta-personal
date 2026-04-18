@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Verificá tu correo | EliteCard</title>
+    <meta name="theme-color" content="#f8fafc" />
+    <script>
+      (function () {
+        window.__EC_PAGE_LOAD_TS = Date.now();
+      })();
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", system-ui, sans-serif;
+        color: #0f172a;
+        background: linear-gradient(168deg, #f8fafc 0%, #eef2f7 42%, #f8fafc 100%);
+        min-height: 100dvh;
+      }
+      .auth-shell-page {
+        opacity: 0;
+        animation: authFadeIn 0.55s ease forwards;
+      }
+      .glass {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        box-shadow: 0 18px 46px rgba(15, 23, 42, 0.08), 0 2px 8px rgba(15, 23, 42, 0.04);
+      }
+      .btn-gold {
+        width: 100%;
+        border: none;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #caa230, #d4af37 55%, #e4c760);
+        color: #111827;
+        padding: 0.82rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .btn-gold:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+      .btn-outline {
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #fff;
+        color: #0f172a;
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: background 0.2s, border-color 0.2s;
+      }
+      .btn-outline:hover:not(:disabled) {
+        background: #f8fafc;
+        border-color: #94a3b8;
+      }
+      .btn-outline:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+      @keyframes authFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body class="antialiased auth-shell-page">
+    <main class="min-h-[100dvh] flex items-center justify-center px-4 py-10">
+      <div class="w-full max-w-[440px]">
+        <div class="text-center mb-6">
+          <div
+            class="w-14 h-14 rounded-2xl mx-auto mb-3 flex items-center justify-center text-white font-extrabold text-lg tracking-tight"
+            style="background: linear-gradient(145deg, #0f172a, #2563eb)"
+            aria-hidden="true"
+          >
+            E
+          </div>
+          <strong class="font-['Montserrat'] block text-[1.02rem] tracking-tight text-slate-900"
+            >EliteCard · MascotBook</strong
+          >
+          <small class="text-[0.72rem] text-slate-500 uppercase tracking-[0.08em]">Agencia WebElite</small>
+        </div>
+
+        <section class="glass w-full p-8">
+          <p class="text-[11px] uppercase tracking-[0.28em] text-[#b8922d]">Verificación</p>
+          <h1 class="mt-3 text-2xl font-semibold text-slate-900">Revisá tu correo</h1>
+          <p id="verify-msg" class="mt-4 text-[15px] leading-relaxed text-slate-600">
+            ¡Casi listo! Te hemos enviado un correo de verificación. Por favor, revisá tu bandeja de entrada (y la
+            carpeta de spam) y hacé clic en el enlace para activar tu cuenta.
+          </p>
+          <p id="verify-no-session" class="hidden mt-4 text-sm text-slate-600">
+            No hay una sesión activa.
+            <a class="text-[#b8922d] font-semibold underline" href="login.html">Iniciar sesión</a>
+          </p>
+          <p id="verify-feedback" class="hidden mt-3 text-sm" role="status"></p>
+          <p id="verify-err" class="hidden mt-3 text-sm text-red-600" role="alert"></p>
+
+          <div class="mt-8 space-y-3">
+            <button type="button" id="btn-resend" class="btn-outline">Reenviar correo de verificación</button>
+            <button type="button" id="btn-recheck" class="btn-gold">Ya verifiqué, continuar</button>
+          </div>
+
+          <p class="mt-6 text-center text-sm text-slate-500">
+            ¿No es tu correo?
+            <button type="button" id="btn-signout" class="text-[#b8922d] font-semibold underline bg-transparent border-0 cursor-pointer p-0">
+              Cerrar sesión
+            </button>
+          </p>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      (function () {
+        var t = window.__EC_PAGE_LOAD_TS || Date.now();
+        document.write('<script src="firebase-config.js?v=' + t + '"><\/script>');
+      })();
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script>
+      (function () {
+        function safeNext(raw) {
+          var fallback = "admin.html?viewMode=personal&panel=contenido";
+          try {
+            if (!raw || typeof raw !== "string") return fallback;
+            var t = raw.trim();
+            if (!t) return fallback;
+            if (t.indexOf("://") !== -1 || t.indexOf("//") === 0) return fallback;
+            return t;
+          } catch (e) {
+            return fallback;
+          }
+        }
+
+        function readNextParam() {
+          try {
+            var q = new URLSearchParams(window.location.search);
+            return safeNext(q.get("next"));
+          } catch (e2) {
+            return "admin.html?viewMode=personal&panel=contenido";
+          }
+        }
+
+        var nextHref = readNextParam();
+        var fbCfg = window.FIREBASE_WEB_CONFIG;
+        var fbReady =
+          fbCfg &&
+          fbCfg.apiKey &&
+          String(fbCfg.apiKey).indexOf("REEMPLAZAR") === -1 &&
+          String(fbCfg.appId || "").indexOf("REEMPLAZAR") === -1;
+
+        var elNoSession = document.getElementById("verify-no-session");
+        var elFeedback = document.getElementById("verify-feedback");
+        var elErr = document.getElementById("verify-err");
+        var btnResend = document.getElementById("btn-resend");
+        var btnRecheck = document.getElementById("btn-recheck");
+        var btnSignout = document.getElementById("btn-signout");
+
+        function showError(msg) {
+          if (elFeedback) elFeedback.classList.add("hidden");
+          if (elErr) {
+            elErr.textContent = msg || "";
+            elErr.classList.toggle("hidden", !msg);
+          }
+        }
+
+        function showSuccess(msg) {
+          if (elErr) elErr.classList.add("hidden");
+          if (elFeedback) {
+            elFeedback.textContent = msg || "";
+            elFeedback.classList.remove("hidden");
+            elFeedback.classList.add("text-emerald-700");
+          }
+        }
+
+        function clearInlineMessages() {
+          if (elErr) elErr.classList.add("hidden");
+          if (elFeedback) elFeedback.classList.add("hidden");
+        }
+
+        if (!fbReady) {
+          showError("Configurá firebase-config.js con los datos de tu app web.");
+          if (btnResend) btnResend.disabled = true;
+          if (btnRecheck) btnRecheck.disabled = true;
+          return;
+        }
+
+        try {
+          firebase.initializeApp(fbCfg);
+        } catch (e) {
+          if (e.code !== "app/duplicate-app") {
+            showError("No se pudo inicializar Firebase.");
+            return;
+          }
+        }
+
+        var auth = firebase.auth();
+        var resendCooldown = false;
+
+        function tryRedirectIfVerified(user) {
+          if (!user) return;
+          return user.reload().then(function () {
+            if (firebase.auth().currentUser && firebase.auth().currentUser.emailVerified) {
+              window.location.replace(nextHref);
+            }
+          });
+        }
+
+        function updateSessionUi(user) {
+          if (!elNoSession) return;
+          var show = !user;
+          elNoSession.classList.toggle("hidden", !show);
+          if (btnResend) btnResend.disabled = show || resendCooldown;
+          if (btnRecheck) btnRecheck.disabled = show;
+          if (btnSignout) btnSignout.disabled = show;
+        }
+
+        auth.onAuthStateChanged(function (user) {
+          updateSessionUi(user);
+          if (user && user.emailVerified) {
+            window.location.replace(nextHref);
+          }
+        });
+
+        if (btnRecheck) {
+          btnRecheck.addEventListener("click", function () {
+            var u = auth.currentUser;
+            if (!u) {
+              showError("Iniciá sesión para continuar.");
+              return;
+            }
+            clearInlineMessages();
+            btnRecheck.disabled = true;
+            tryRedirectIfVerified(u)
+              .then(function () {
+                var cu = firebase.auth().currentUser;
+                if (cu && !cu.emailVerified) {
+                  showError(
+                    "Todavía no detectamos la verificación. Abrí el enlace del correo o esperá unos segundos e intentá de nuevo."
+                  );
+                }
+              })
+              .catch(function () {
+                showError("No se pudo comprobar el estado. Intentá de nuevo.");
+              })
+              .then(function () {
+                btnRecheck.disabled = false;
+              });
+          });
+        }
+
+        if (btnResend) {
+          btnResend.addEventListener("click", function () {
+            var u = auth.currentUser;
+            if (!u) {
+              showError("No hay sesión activa.");
+              return;
+            }
+            if (u.emailVerified) {
+              window.location.replace(nextHref);
+              return;
+            }
+            clearInlineMessages();
+            btnResend.disabled = true;
+            resendCooldown = true;
+            u.sendEmailVerification()
+              .then(function () {
+                showSuccess("Te enviamos otro correo de verificación.");
+              })
+              .catch(function (err) {
+                var msg =
+                  (err && err.code === "auth/too-many-requests"
+                    ? "Demasiados intentos. Esperá unos minutos e intentá de nuevo."
+                    : null) ||
+                  (err && err.message) ||
+                  "No se pudo reenviar el correo.";
+                showError(msg);
+              })
+              .then(function () {
+                window.setTimeout(function () {
+                  resendCooldown = false;
+                  if (auth.currentUser && !auth.currentUser.emailVerified && btnResend) {
+                    btnResend.disabled = false;
+                  }
+                }, 60000);
+              });
+          });
+        }
+
+        if (btnSignout) {
+          btnSignout.addEventListener("click", function () {
+            auth.signOut().catch(function () {});
+          });
+        }
+
+        window.setInterval(function () {
+          var u = auth.currentUser;
+          if (u && !u.emailVerified) {
+            tryRedirectIfVerified(u).catch(function () {});
+          }
+        }, 5000);
+
+        document.addEventListener("visibilitychange", function () {
+          if (document.visibilityState === "visible") {
+            var u = auth.currentUser;
+            if (u && !u.emailVerified) {
+              tryRedirectIfVerified(u).catch(function () {});
+            }
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

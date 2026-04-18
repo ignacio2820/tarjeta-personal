@@ -134,6 +134,7 @@
     if (sids && sids.indexOf(ms) >= 0) m.mascotSurfaceTheme = ms;
     if (qs("ec_admin_preview") === "1" && qs("ec_preview_lost") === "1") {
       m.mascotaPerdida = true;
+      m.alertaExtravioActiva = true;
       var rawW = qs("ec_preview_wa");
       if (rawW) {
         try {
@@ -223,6 +224,8 @@
       muro: String(d.mascotaUltimaAventura || d.mascotaBio || "").trim(),
       vacunas: vac,
       mascotaPerdida: !!d.mascotaPerdida,
+      alertaExtravioActiva:
+        d.alertaExtravioActiva === true || (d.alertaExtravioActiva == null && !!d.mascotaPerdida),
       whatsappUrgencia: String(d.mascotaWhatsapp || "").trim(),
       fotoCabeceraUrl: String(d.mascotaBannerUrl || "").trim(),
       mascotSurfaceTheme: "cloud_cream",
@@ -1277,7 +1280,187 @@
     return;
   }
 
+  var __EC_GPS_PRE_MODAL_WIRED = false;
+
+  function lostGpsSessionPrefix(ownerUid) {
+    return "ec_mb_gps_" + String(ownerUid || "").trim();
+  }
+
+  function markGpsModalSkippedForSession() {
+    var uid = String(window.__EC_GPS_MODAL_OWNER_UID || window.__EC_CARD_UID || "").trim();
+    if (!uid) return;
+    try {
+      sessionStorage.setItem(lostGpsSessionPrefix(uid) + "_skip", "1");
+    } catch (e) {}
+  }
+
+  function markGpsModalCompletedForSession() {
+    var uid = String(window.__EC_GPS_MODAL_OWNER_UID || window.__EC_CARD_UID || "").trim();
+    if (!uid) return;
+    try {
+      sessionStorage.setItem(lostGpsSessionPrefix(uid) + "_done", "1");
+    } catch (e) {}
+  }
+
+  function shouldOfferAutoGpsModal(ownerUid) {
+    if (!ownerUid || qs("ec_admin_preview") === "1") return false;
+    try {
+      var p = lostGpsSessionPrefix(ownerUid);
+      if (sessionStorage.getItem(p + "_done") === "1") return false;
+      if (sessionStorage.getItem(p + "_skip") === "1") return false;
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
+
+  function hideGpsPermissionModal() {
+    var m = document.getElementById("gps-permission-modal");
+    if (m) {
+      m.classList.add("hidden");
+      m.setAttribute("aria-hidden", "true");
+    }
+    try {
+      document.body.style.overflow = "";
+    } catch (e) {}
+    try {
+      document.removeEventListener("keydown", __onGpsModalEscape);
+    } catch (e2) {}
+  }
+
+  function __onGpsModalEscape(ev) {
+    if (ev.key === "Escape") {
+      markGpsModalSkippedForSession();
+      hideGpsPermissionModal();
+    }
+  }
+
+  function showGpsPermissionModal(petName) {
+    wireGpsPermissionModalOnce();
+    var textEl = document.getElementById("gps-permission-text");
+    var name = String(petName || "esta mascota").trim() || "esta mascota";
+    if (textEl) {
+      textEl.textContent =
+        "¡Gracias por encontrar a " +
+        name +
+        "! La alerta de extravío está activa. Si continuás, el navegador puede pedir permiso para enviar una ubicación aproximada al dueño. Solo se usa para este aviso.";
+    }
+    var m = document.getElementById("gps-permission-modal");
+    if (m) {
+      m.classList.remove("hidden");
+      m.setAttribute("aria-hidden", "false");
+      try {
+        document.body.style.overflow = "hidden";
+      } catch (e3) {}
+      try {
+        document.addEventListener("keydown", __onGpsModalEscape);
+      } catch (e4) {}
+    }
+  }
+
+  function performLostLocationShare(ownerUid, opts) {
+    opts = opts || {};
+    var locBtn = opts.locBtn || document.getElementById("mascot-lost-share-loc");
+    var msg = opts.msg || document.getElementById("mascot-lost-msg");
+    var markSessionOnSuccess = !!opts.markSessionOnSuccess;
+    if (!ownerUid || !window.EC_SILO || !window.EC_SILO.mascotLostScansRef) return;
+    if (!navigator.geolocation) {
+      if (msg) {
+        msg.textContent = "Tu navegador no permite geolocalización.";
+        msg.classList.remove("hidden");
+      }
+      return;
+    }
+    if (locBtn) locBtn.disabled = true;
+    if (msg) msg.classList.add("hidden");
+    navigator.geolocation.getCurrentPosition(
+      function (pos) {
+        try {
+          pushLostScanLocation(ownerUid, pos, false)
+            .then(function () {
+              if (markSessionOnSuccess) markGpsModalCompletedForSession();
+              if (locBtn) locBtn.disabled = false;
+              if (msg) {
+                msg.textContent =
+                  "Ubicación enviada. El dueño recibirá un aviso por correo si está configurado.";
+                msg.classList.remove("hidden");
+              }
+            })
+            .catch(function () {
+              if (locBtn) locBtn.disabled = false;
+              if (msg) {
+                msg.textContent = "No pudimos guardar la ubicación. Intentá de nuevo.";
+                msg.classList.remove("hidden");
+              }
+            });
+        } catch (e) {
+          if (locBtn) locBtn.disabled = false;
+          if (msg) {
+            msg.textContent = "Error al enviar. Intentá de nuevo.";
+            msg.classList.remove("hidden");
+          }
+        }
+      },
+      function (err) {
+        if (locBtn) locBtn.disabled = false;
+        if (msg) {
+          var denied = err && Number(err.code) === 1;
+          msg.textContent = denied
+            ? "Parece que se denegó el permiso de ubicación. Podés recargar la página o revisar los permisos del sitio en el navegador."
+            : "No se obtuvo permiso o ubicación. Podés intentar de nuevo.";
+          msg.classList.remove("hidden");
+        }
+      },
+      { enableHighAccuracy: true, timeout: 14000, maximumAge: 0 }
+    );
+  }
+
+  function wireGpsPermissionModalOnce() {
+    if (__EC_GPS_PRE_MODAL_WIRED) return;
+    __EC_GPS_PRE_MODAL_WIRED = true;
+    var modal = document.getElementById("gps-permission-modal");
+    var okBtn = document.getElementById("gps-permission-confirm");
+    var noBtn = document.getElementById("gps-permission-decline");
+    if (!modal || !okBtn || !noBtn) return;
+    modal.addEventListener("click", function (ev) {
+      if (ev.target === modal) {
+        markGpsModalSkippedForSession();
+        hideGpsPermissionModal();
+      }
+    });
+    var panel = modal.querySelector(".mb-gps-modal-panel");
+    if (panel) {
+      panel.addEventListener("click", function (ev) {
+        ev.stopPropagation();
+      });
+    }
+    okBtn.addEventListener("click", function () {
+      var uid = String(window.__EC_GPS_MODAL_OWNER_UID || "").trim();
+      hideGpsPermissionModal();
+      if (!uid) return;
+      var locBtn = document.getElementById("mascot-lost-share-loc");
+      var msg = document.getElementById("mascot-lost-msg");
+      performLostLocationShare(uid, { locBtn: locBtn, msg: msg, markSessionOnSuccess: true });
+    });
+    noBtn.addEventListener("click", function () {
+      markGpsModalSkippedForSession();
+      hideGpsPermissionModal();
+    });
+  }
+
+  function maybeOpenAutoGpsModal(ownerUid, nm) {
+    if (!nm || !nm.alertaExtravioActiva) return;
+    if (!ownerUid || !window.EC_SILO || !window.EC_SILO.mascotLostScansRef) return;
+    if (!shouldOfferAutoGpsModal(ownerUid)) return;
+    window.__EC_GPS_MODAL_OWNER_UID = ownerUid;
+    var petName = String((nm && nm.nombre) || "").trim() || "esta mascota";
+    setTimeout(function () {
+      showGpsPermissionModal(petName);
+    }, 0);
+  }
+
   function hideMascotLostUi() {
+    hideGpsPermissionModal();
     var b = document.getElementById("mascot-lost-banner");
     var wrap = document.getElementById("mascot-lost-actions");
     var panic = document.getElementById("mascot-panic-btn");
@@ -1375,66 +1558,12 @@
     if (msg) msg.classList.add("hidden");
     locBtn.disabled = false;
     locBtn.onclick = function () {
-      if (!ownerUid || !window.EC_SILO || !window.EC_SILO.mascotLostScansRef) return;
-      if (!navigator.geolocation) {
-        if (msg) {
-          msg.textContent = "Tu navegador no permite geolocalización.";
-          msg.classList.remove("hidden");
-        }
-        return;
-      }
-      locBtn.disabled = true;
-      if (msg) msg.classList.add("hidden");
-      navigator.geolocation.getCurrentPosition(
-        function (pos) {
-          try {
-            pushLostScanLocation(ownerUid, pos, false)
-              .then(function () {
-                locBtn.disabled = false;
-                if (msg) {
-                  msg.textContent = "Ubicación enviada. El dueño recibirá un aviso por correo si está configurado.";
-                  msg.classList.remove("hidden");
-                }
-              })
-              .catch(function () {
-                locBtn.disabled = false;
-                if (msg) {
-                  msg.textContent = "No pudimos guardar la ubicación. Intentá de nuevo.";
-                  msg.classList.remove("hidden");
-                }
-              });
-          } catch (e) {
-            locBtn.disabled = false;
-            if (msg) {
-              msg.textContent = "Error al enviar. Intentá de nuevo.";
-              msg.classList.remove("hidden");
-            }
-          }
-        },
-        function () {
-          locBtn.disabled = false;
-          if (msg) {
-            msg.textContent = "No se obtuvo permiso o ubicación. Podés intentar de nuevo.";
-            msg.classList.remove("hidden");
-          }
-        },
-        { enableHighAccuracy: true, timeout: 14000, maximumAge: 0 }
-      );
+      performLostLocationShare(ownerUid, { locBtn: locBtn, msg: msg, markSessionOnSuccess: false });
     };
 
     var isPreview = qs("ec_admin_preview") === "1";
-    if (!isPreview && ownerUid && !window.__EC_LOST_PASSIVE_TRIED) {
-      window.__EC_LOST_PASSIVE_TRIED = true;
-      setTimeout(function () {
-        if (!navigator.geolocation) return;
-        navigator.geolocation.getCurrentPosition(
-          function (pos) {
-            pushLostScanLocation(ownerUid, pos, true).catch(function () {});
-          },
-          function () {},
-          { enableHighAccuracy: false, timeout: 12000, maximumAge: 120000 }
-        );
-      }, 2400);
+    if (!isPreview && ownerUid && nm && nm.alertaExtravioActiva) {
+      maybeOpenAutoGpsModal(ownerUid, nm);
     }
   }
 

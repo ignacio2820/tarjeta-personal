@@ -1642,6 +1642,103 @@ html:has(.ec-pet-mode) body {
   vertical-align: middle;
 }
 
+/* Pre-pop-up: permiso GPS antes de navigator.geolocation (modo mascota perdida) */
+.mb-gps-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 6500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
+    max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+  box-sizing: border-box;
+}
+
+.mb-gps-modal.hidden {
+  display: none !important;
+}
+
+.mb-gps-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+}
+
+.mb-gps-modal__panel {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 22rem;
+  border-radius: 1.15rem;
+  padding: 1.35rem 1.2rem 1.2rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  color: #0f172a;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.08),
+    0 24px 48px rgba(15, 23, 42, 0.28);
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  font-family: "Poppins", system-ui, sans-serif;
+  text-align: center;
+}
+
+.mb-gps-modal__title {
+  margin: 0 0 0.75rem;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #5b21b6;
+}
+
+.mb-gps-modal__text {
+  margin: 0 0 1.1rem;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: #334155;
+  text-align: left;
+}
+
+.mb-gps-modal__btn {
+  display: block;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: none;
+  border-radius: 0.85rem;
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 800;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(180deg, #7c3aed, #5b21b6);
+  box-shadow: 0 8px 24px rgba(91, 33, 182, 0.35);
+  box-sizing: border-box;
+}
+
+.mb-gps-modal__btn:hover {
+  filter: brightness(1.05);
+}
+
+.mb-gps-modal__cancel {
+  display: block;
+  width: 100%;
+  margin-top: 0.65rem;
+  padding: 0.5rem;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 #layout-mascot .mascot-photo,
 #layout-mascot .gallery-item {
   cursor: zoom-in;
