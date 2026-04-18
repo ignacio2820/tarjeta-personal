@@ -376,6 +376,7 @@
             .createUserWithEmailAndPassword(email, p1)
             .then(function (cred) {
               var user = cred.user;
+              console.log("[register] Auth OK, uid:", user && user.uid, "→ iniciando escrituras Firestore");
               var col = usersCollection();
               var initialApp = "elitecard";
               try {
@@ -386,26 +387,21 @@
               var trialUntil = firebase.firestore.Timestamp.fromMillis(
                 Date.now() + 7 * 24 * 60 * 60 * 1000
               );
+              var trialStartDate = firebase.firestore.Timestamp.fromMillis(Date.now());
               var doc = {
                 plan_status: "trial",
                 status: "trial",
                 premiumUntil: trialUntil,
+                trialStartDate: trialStartDate,
                 fecha_registro: firebase.firestore.FieldValue.serverTimestamp(),
                 email: user.email || email,
                 role: "user",
+                elitecard_status: "trial",
+                mascotbook_status: "trial",
+                hasEliteCard: true,
+                hasMascotBook: true,
+                activeProducts: ["elitecard", "mascotbook"],
               };
-              if (initialApp === "mascotbook") {
-                doc.mascotbook_status = "trial";
-                doc.elitecard_status = "inactive";
-                doc.hasMascotBook = true;
-                doc.hasEliteCard = false;
-              } else {
-                doc.elitecard_status = "trial";
-                doc.mascotbook_status = "inactive";
-                doc.hasEliteCard = true;
-                doc.hasMascotBook = false;
-              }
-              doc.activeProducts = initialApp === "mascotbook" ? ["mascotbook"] : ["elitecard"];
               var memCol = (window.FIRESTORE_MEMBERSHIP_COLLECTION || "users").trim() || "users";
               var eliteCol =
                 (window.FIRESTORE_ELITE_MEMBERSHIP_COLLECTION || "users_elite").trim() || "users_elite";
@@ -416,9 +412,10 @@
                 status: "trial",
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 premiumUntil: trialUntil,
-                hasMascotBook: initialApp === "mascotbook",
-                hasEliteCard: initialApp !== "mascotbook",
-                activeProducts: initialApp === "mascotbook" ? ["mascotbook"] : ["elitecard"],
+                trialStartDate: trialStartDate,
+                hasMascotBook: true,
+                hasEliteCard: true,
+                activeProducts: ["elitecard", "mascotbook"],
               };
               var eliteDoc = {
                 email: user.email || email,
@@ -428,12 +425,38 @@
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 premiumUntil: trialUntil,
               };
-              return Promise.all([
-                db.collection(col).doc(user.uid).set(doc, { merge: true }),
-                db.collection(memCol).doc(user.uid).set(memDoc, { merge: true }),
-                db.collection(eliteCol).doc(user.uid).set(eliteDoc, { merge: true }),
-              ])
+
+              function logFsStep(label, err) {
+                if (err) {
+                  console.error(
+                    "[register] Firestore FAIL:",
+                    label,
+                    "| code:",
+                    err.code,
+                    "| message:",
+                    err.message,
+                    err
+                  );
+                } else {
+                  console.log("[register] Firestore OK:", label);
+                }
+              }
+
+              /** Tras createUserWithEmailAndPassword: escrituras en orden (usuarios → users → users_elite). */
+              return db
+                .collection(col)
+                .doc(user.uid)
+                .set(doc, { merge: true })
                 .then(function () {
+                  logFsStep("paso 1/3: setDoc '" + col + "/" + user.uid + "' (perfil legacy)");
+                  return db.collection(memCol).doc(user.uid).set(memDoc, { merge: true });
+                })
+                .then(function () {
+                  logFsStep("paso 2/3: setDoc '" + memCol + "/" + user.uid + "' (membresía)");
+                  return db.collection(eliteCol).doc(user.uid).set(eliteDoc, { merge: true });
+                })
+                .then(function () {
+                  logFsStep("paso 3/3: setDoc '" + eliteCol + "/" + user.uid + "' (users_elite)");
                   try {
                     localStorage.setItem("ec_current_app", initialApp);
                     localStorage.setItem(
@@ -460,17 +483,21 @@
                   window.location.href = redirect;
                 })
                 .catch(function (fsErr) {
+                  logFsStep("abortado tras error", fsErr);
                   return auth.signOut().then(function () {
                     throw fsErr;
                   });
                 });
             })
             .catch(function (err) {
+              console.error("[register] Error en flujo registro:", err && err.code, err && err.message, err);
               var map = {
                 "auth/email-already-in-use": "Ese correo ya está registrado. Probá iniciar sesión.",
                 "auth/invalid-email": "Correo no válido.",
                 "auth/weak-password": "Contraseña demasiado débil.",
                 "auth/operation-not-allowed": "Registro con email/contraseña no habilitado en Firebase.",
+                "permission-denied":
+                  "No se pudo guardar el perfil (permisos). Revisá la consola: [register] Firestore FAIL indica la colección.",
               };
               showErr(
                 map[err.code] ||

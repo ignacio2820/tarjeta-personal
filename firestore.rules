@@ -17,8 +17,56 @@ service cloud.firestore {
         && get(usersMembershipPath(request.auth.uid)).data.role == 'admin';
     }
 
+    /** Campos permitidos en /users/{uid} (membresía + productos activos). */
     function membershipProfileKeys() {
-      return ['email', 'displayName', 'role', 'status', 'createdAt', 'premiumUntil', 'updatedAt'];
+      return [
+        'email', 'displayName', 'role', 'status', 'createdAt', 'premiumUntil', 'updatedAt',
+        'hasEliteCard', 'hasMascotBook', 'activeProducts', 'trialStartDate'
+      ];
+    }
+
+    /** Documento paralelo /users_elite/{uid} (trial EliteCard / estado lado élite). */
+    function usersEliteProfileKeys() {
+      return [
+        'email', 'displayName', 'role', 'status', 'createdAt', 'premiumUntil', 'updatedAt'
+      ];
+    }
+
+    function membershipTrialSingleProductOk() {
+      return request.resource.data.activeProducts.size() == 1
+        && (
+          (request.resource.data.hasEliteCard == true
+            && request.resource.data.hasMascotBook == false
+            && request.resource.data.activeProducts[0] == 'elitecard')
+          || (request.resource.data.hasEliteCard == false
+            && request.resource.data.hasMascotBook == true
+            && request.resource.data.activeProducts[0] == 'mascotbook')
+        );
+    }
+
+    function membershipTrialDualProductOk() {
+      return request.resource.data.activeProducts.size() == 2
+        && request.resource.data.hasEliteCard == true
+        && request.resource.data.hasMascotBook == true
+        && request.resource.data.activeProducts[0] is string
+        && request.resource.data.activeProducts[1] is string
+        && request.resource.data.activeProducts[0] != request.resource.data.activeProducts[1]
+        && (request.resource.data.activeProducts[0] == 'elitecard'
+          || request.resource.data.activeProducts[0] == 'mascotbook')
+        && (request.resource.data.activeProducts[1] == 'elitecard'
+          || request.resource.data.activeProducts[1] == 'mascotbook');
+    }
+
+    function membershipTrialProductFieldsOk() {
+      return request.resource.data.hasEliteCard is bool
+        && request.resource.data.hasMascotBook is bool
+        && request.resource.data.activeProducts is list
+        && (membershipTrialSingleProductOk() || membershipTrialDualProductOk());
+    }
+
+    function membershipTrialStartOk() {
+      return !('trialStartDate' in request.resource.data)
+        || request.resource.data.trialStartDate is timestamp;
     }
 
     function mascotAllowedKeys() {
@@ -109,7 +157,9 @@ service cloud.firestore {
         && request.resource.data.keys().hasAll(['email', 'role', 'status', 'createdAt', 'premiumUntil'])
         && request.resource.data.keys().hasOnly(membershipProfileKeys())
         && request.resource.data.role == 'user'
-        && request.resource.data.status == 'trial';
+        && request.resource.data.status == 'trial'
+        && membershipTrialProductFieldsOk()
+        && membershipTrialStartOk();
       allow update: if isMembershipAdmin()
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(membershipProfileKeys());
       /** El dueño puede pasar a expired cuando ya venció premiumUntil (sincroniza estado en cliente). */
@@ -120,6 +170,37 @@ service cloud.firestore {
         && resource.data.premiumUntil is timestamp
         && resource.data.premiumUntil < request.time
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(membershipProfileKeys());
+      allow update: if request.auth != null
+        && isOwner(userId)
+        && request.resource.data.diff(resource.data).changedKeys().hasOnly(['email', 'displayName', 'updatedAt'])
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.status == resource.data.status
+        && request.resource.data.premiumUntil == resource.data.premiumUntil
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isMembershipAdmin();
+    }
+
+    /**
+     * /users_elite/{uid} — estado de membresía EliteCard (sidecar).
+     * Alta: el usuario autenticado crea su doc (mismo patrón que /users).
+     */
+    match /users_elite/{userId} {
+      allow read: if request.auth != null && (isOwner(userId) || isMembershipAdmin());
+      allow create: if request.auth != null
+        && isOwner(userId)
+        && request.resource.data.keys().hasAll(['email', 'role', 'status', 'createdAt', 'premiumUntil'])
+        && request.resource.data.keys().hasOnly(usersEliteProfileKeys())
+        && request.resource.data.role == 'user'
+        && request.resource.data.status == 'trial';
+      allow update: if isMembershipAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(usersEliteProfileKeys());
+      allow update: if request.auth != null
+        && isOwner(userId)
+        && request.resource.data.status == 'expired'
+        && resource.data.status != 'expired'
+        && resource.data.premiumUntil is timestamp
+        && resource.data.premiumUntil < request.time
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(usersEliteProfileKeys());
       allow update: if request.auth != null
         && isOwner(userId)
         && request.resource.data.diff(resource.data).changedKeys().hasOnly(['email', 'displayName', 'updatedAt'])

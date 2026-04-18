@@ -91,6 +91,9 @@
             </button>
           </div>
           <span id="admin-badge-perpetual" class="admin-badge-perpetual hidden">ACCESO PERPETUO - AGENCIA WEBELITE</span>
+          <span id="user-display-name-wrap" class="admin-header-user-wrap hidden" aria-live="polite">
+            <span id="user-display-name" class="admin-header-user-name"></span>
+          </span>
           <button type="button" class="btn-logout hidden" id="btn-logout">Cerrar sesión</button>
         </div>
       </header>
@@ -243,7 +246,12 @@
 
           <div id="panel-contenido" class="hidden">
           <div id="form-personal" class="form-panel">
-            <h2 class="form-personal-title">Tu EliteCard</h2>
+            <div class="elite-admin-hero">
+              <h2 class="form-personal-title">Tu EliteCard</h2>
+              <button type="button" class="btn-outline btn-elite-share-card" id="btn-elite-share-card">
+                <i class="fa-solid fa-share-nodes" aria-hidden="true"></i> Compartir Tarjeta
+              </button>
+            </div>
             <div class="pc-work-tabs" role="tablist" aria-label="Secciones EliteCard">
               <button type="button" class="pc-tab-btn active" data-p-tab="identidad" role="tab">Identidad</button>
               <button type="button" class="pc-tab-btn" data-p-tab="redes" role="tab">Redes Sociales</button>
@@ -252,10 +260,13 @@
 
             <div class="admin-card" data-p-tab-panel="identidad">
               <h3 class="admin-card-title">Identidad</h3>
-              <p class="admin-card-hint">Foto, banner/logo, datos profesionales y biografía: lo primero que ve tu cliente.</p>
+              <p class="admin-card-hint">Foto de perfil y datos profesionales: lo primero que ve tu cliente. El logo institucional se carga en <strong>Ajustes y Diseño</strong>.</p>
               <div class="field">
                 <label for="p-foto">Foto de perfil</label>
                 <input id="p-foto" type="file" accept="image/*" />
+                <div class="field-media-actions">
+                  <button type="button" class="btn-text-media-remove hidden" id="p-foto-remove">Quitar foto actual</button>
+                </div>
               </div>
               <div class="field">
                 <label for="p-nombre">Nombre</label>
@@ -269,14 +280,7 @@
                 <label for="p-empresa">Empresa</label>
                 <input id="p-empresa" type="text" />
               </div>
-              <div class="field">
-                <label class="field-label-row" for="p-bio"><i class="fa-solid fa-align-left" aria-hidden="true"></i> Biografía / Resumen</label>
-                <textarea id="p-bio"></textarea>
-              </div>
-              <div class="field">
-                <label for="p-logo">Banner / Logo institucional</label>
-                <input id="p-logo" type="file" accept="image/*" />
-              </div>
+              <input type="hidden" id="p-bio" value="" aria-hidden="true" />
               <details class="vcf-details">
                 <summary>VCF / Guardar contacto (avanzado)</summary>
                 <div class="field" style="margin-top: 0.75rem">
@@ -370,6 +374,16 @@
                 <label for="p-bg-color">Color personalizado</label>
                 <input id="p-bg-color" type="color" value="#000000" />
               </div>
+              <div class="field">
+                <label class="field-label-row" for="p-logo"
+                  ><i class="fa-regular fa-image" aria-hidden="true"></i> Logo institucional</label
+                >
+                <input id="p-logo" type="file" accept="image/*" />
+                <div class="field-media-actions">
+                  <button type="button" class="btn-text-media-remove hidden" id="p-logo-remove">Quitar logo</button>
+                </div>
+                <p class="admin-card-hint" style="margin-top: 0.35rem">Se sube al instante a la nube y actualiza la vista previa.</p>
+              </div>
             </div>
 
             <div class="admin-card admin-tools-card pc-tab-panel-hidden" data-p-tab-panel="ajustes">
@@ -428,6 +442,14 @@
                         <i class="fa-solid fa-image" aria-hidden="true"></i>
                         <span>Banner</span>
                       </label>
+                    </div>
+                  </div>
+                  <div class="field-grid field-grid--two mascot-media-remove-row">
+                    <div class="field-media-actions">
+                      <button type="button" class="btn-text-media-remove hidden" id="m-foto-remove">Quitar foto</button>
+                    </div>
+                    <div class="field-media-actions">
+                      <button type="button" class="btn-text-media-remove hidden" id="m-cabecera-remove">Quitar banner</button>
                     </div>
                   </div>
                   <div class="field-grid field-grid--three">
@@ -618,6 +640,19 @@
               </aside>
             </div>
 
+            <div class="mascot-danger-zone admin-card" id="mascot-danger-zone">
+              <h3 class="mascot-danger-zone__title">
+                <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Zona crítica
+              </h3>
+              <p class="mascot-danger-zone__hint">
+                Eliminar el perfil borra los datos de MascotBook en la nube (documento público y espejo en tu usuario). Esta acción no se
+                puede deshacer.
+              </p>
+              <button type="button" class="btn-outline btn-admin-chip--danger" id="btn-delete-mascot-profile">
+                Eliminar perfil MascotBook
+              </button>
+            </div>
+
             <div class="actions-row actions-row--mascot">
               <button type="button" class="btn-save" id="btn-save-mascot">Guardar MascotBook</button>
             </div>
@@ -780,6 +815,25 @@
       </div>
     </div>
 
+    <div
+      id="admin-confirm-modal"
+      class="admin-modal admin-modal--blocking hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="admin-confirm-title"
+    >
+      <div class="admin-modal-panel admin-modal-panel--confirm" id="admin-confirm-panel">
+        <button type="button" class="admin-modal-close" id="admin-confirm-close" aria-label="Cerrar">×</button>
+        <p id="admin-confirm-eyebrow" class="ec-confirm-eyebrow hidden" aria-hidden="true"></p>
+        <h4 id="admin-confirm-title">Confirmar</h4>
+        <div id="admin-confirm-body" class="admin-modal-confirm-body"></div>
+        <div class="admin-modal-confirm-actions">
+          <button type="button" class="btn-outline" id="admin-confirm-cancel">Cancelar</button>
+          <button type="button" class="btn-solid" id="admin-confirm-ok">Confirmar</button>
+        </div>
+      </div>
+    </div>
+
     <div id="toast" class="toast" role="status"></div>
 
     <script>
@@ -788,6 +842,7 @@
         document.write('<script src="firebase-config.js?v=' + t + '"><\/script>');
         document.write('<script src="config.js?v=' + t + '"><\/script>');
         document.write('<script src="ec-silos.js?v=' + t + '"><\/script>');
+        document.write('<script src="auth-navbar-user.js?v=' + t + '"><\/script>');
         document.write('<script src="admin.js?v=' + t + '"><\/script>');
         document.write('<script src="elite-mail-sig.js?v=' + t + '"><\/script>');
       })();
@@ -831,8 +886,7 @@
           telefono: "+54 9 11 5555 7788",
           whatsappNumero: "+54 9 11 5555 7788",
           fotoUrl: "assets/image_1.png",
-          bannerUrl: "assets/image_2.png",
-          logoUrl: "",
+          logoUrl: "assets/logo_redondo_abogacia.png",
           instagram: "https://instagram.com/estudio.schwindt",
           linkedin: "https://www.linkedin.com/in/valentina-schwindt-abogada",
           sitioWeb: "https://estudioschwindt.demo",
@@ -925,6 +979,262 @@
           }, 2600);
         }
 
+        function ecSkeletonFieldByInputId(inputId) {
+          var el = document.getElementById(inputId);
+          return el && el.closest ? el.closest(".field") : null;
+        }
+
+        function clearDashboardSkeletonClasses() {
+          if (formPersonal) {
+            formPersonal.querySelectorAll(".skeleton-loading").forEach(function (n) {
+              n.classList.remove("skeleton-loading");
+            });
+          }
+          if (formMascot) {
+            formMascot.querySelectorAll(".skeleton-loading").forEach(function (n) {
+              n.classList.remove("skeleton-loading");
+            });
+          }
+        }
+
+        /** Solo usuario logueado con Firestore real (no demo sin sesión / Valentina). */
+        function setDashboardDataLoading(loading) {
+          if (!uid || demoModeActive) {
+            clearDashboardSkeletonClasses();
+            return;
+          }
+          if (!loading) {
+            clearDashboardSkeletonClasses();
+            var af = currentApp === "mascotbook" ? formMascot : formPersonal;
+            if (af) af.removeAttribute("aria-busy");
+            return;
+          }
+          clearDashboardSkeletonClasses();
+          var nodes =
+            currentApp === "mascotbook"
+              ? [
+                  ecSkeletonFieldByInputId("m-nombre"),
+                  ecSkeletonFieldByInputId("m-historia"),
+                  ecSkeletonFieldByInputId("m-owner-tel"),
+                  ecSkeletonFieldByInputId("m-owner-email"),
+                  ecSkeletonFieldByInputId("m-foto"),
+                  ecSkeletonFieldByInputId("m-cabecera"),
+                  document.querySelector("#form-mascot .mb-work-tabs"),
+                ]
+              : [
+                  ecSkeletonFieldByInputId("p-nombre"),
+                  ecSkeletonFieldByInputId("p-cargo"),
+                  ecSkeletonFieldByInputId("p-email"),
+                  ecSkeletonFieldByInputId("p-telefono"),
+                  ecSkeletonFieldByInputId("p-foto"),
+                  ecSkeletonFieldByInputId("p-logo"),
+                  document.querySelector("#form-personal .pc-work-tabs"),
+                ];
+          nodes.forEach(function (node) {
+            if (node) node.classList.add("skeleton-loading");
+          });
+          var activeForm = currentApp === "mascotbook" ? formMascot : formPersonal;
+          if (activeForm) activeForm.setAttribute("aria-busy", "true");
+        }
+
+        function openAdminConfirmModal(opts) {
+          opts = opts || {};
+          return new Promise(function (resolve) {
+            var m = document.getElementById("admin-confirm-modal");
+            var panel = document.getElementById("admin-confirm-panel");
+            var eyebrow = document.getElementById("admin-confirm-eyebrow");
+            var title = document.getElementById("admin-confirm-title");
+            var body = document.getElementById("admin-confirm-body");
+            var btnOk = document.getElementById("admin-confirm-ok");
+            var btnCancel = document.getElementById("admin-confirm-cancel");
+            var btnClose = document.getElementById("admin-confirm-close");
+            if (!m || !title || !body || !btnOk || !btnCancel) {
+              resolve(false);
+              return;
+            }
+            var danger = !!opts.danger;
+            if (panel) panel.classList.toggle("admin-modal-panel--confirm-danger", danger);
+            if (eyebrow) {
+              var ew = String(opts.eyebrow || "").trim();
+              eyebrow.textContent = ew;
+              eyebrow.classList.toggle("hidden", !ew);
+              eyebrow.setAttribute("aria-hidden", ew ? "false" : "true");
+            }
+            title.textContent = opts.title || "¿Confirmar?";
+            body.innerHTML = opts.bodyHtml || "";
+            btnOk.classList.toggle("btn-admin-confirm-danger", danger);
+            btnOk.textContent = opts.confirmText || "Confirmar";
+            function cleanup() {
+              btnOk.onclick = null;
+              btnCancel.onclick = null;
+              if (btnClose) btnClose.onclick = null;
+              m.onclick = null;
+              document.removeEventListener("keydown", onKey);
+              m.classList.add("hidden");
+              if (panel) panel.classList.remove("admin-modal-panel--confirm-danger");
+              if (eyebrow) {
+                eyebrow.textContent = "";
+                eyebrow.classList.add("hidden");
+                eyebrow.setAttribute("aria-hidden", "true");
+              }
+            }
+            function onDone(ok) {
+              cleanup();
+              resolve(!!ok);
+            }
+            function onKey(ev) {
+              if (ev.key === "Escape") onDone(false);
+            }
+            btnOk.onclick = function () {
+              onDone(true);
+            };
+            btnCancel.onclick = function () {
+              onDone(false);
+            };
+            if (btnClose) {
+              btnClose.onclick = function () {
+                onDone(false);
+              };
+            }
+            m.onclick = function (ev) {
+              if (ev.target === m) onDone(false);
+            };
+            document.addEventListener("keydown", onKey);
+            m.classList.remove("hidden");
+            try {
+              btnOk.focus();
+            } catch (eF) {}
+          });
+        }
+
+        function ecIsCloudMediaUrl(u) {
+          return /^https?:\/\//i.test(String(u || "").trim());
+        }
+
+        function syncPersonalMediaRemoveButtons() {
+          var bf = document.getElementById("p-foto-remove");
+          var bl = document.getElementById("p-logo-remove");
+          var show = !!uid && !demoModeActive;
+          if (bf) bf.classList.toggle("hidden", !show || !ecIsCloudMediaUrl(lastPersonalMedia.fotoUrl));
+          if (bl) bl.classList.toggle("hidden", !show || !ecIsCloudMediaUrl(lastPersonalMedia.logoUrl));
+        }
+
+        function syncMascotMediaRemoveButtons() {
+          var bf = document.getElementById("m-foto-remove");
+          var bc = document.getElementById("m-cabecera-remove");
+          var dz = document.getElementById("mascot-danger-zone");
+          var mid = String(resolveMascotDocId() || "").trim();
+          var u = String(uid || "").trim();
+          var canMedia = !!uid && !demoModeActive && mid && mid === u;
+          if (bf) bf.classList.toggle("hidden", !canMedia || !ecIsCloudMediaUrl(lastMascotFoto));
+          if (bc) bc.classList.toggle("hidden", !canMedia || !ecIsCloudMediaUrl(lastMascotCabecera));
+          if (dz) dz.classList.toggle("hidden", !canMedia);
+        }
+
+        function runRemovePersonalPrimaryMedia(kind) {
+          if (!uid || demoModeActive) return;
+          if (isPersonalSavingBlockedByEliteMembership()) {
+            showToast("Suscripción EliteCard vencida. Renová para modificar imágenes.", false);
+            return;
+          }
+          if (isSavingBlockedByMembership()) {
+            showToast("Membresía vencida o suspendida: no se pueden quitar imágenes.", false);
+            return;
+          }
+          var fv = firebase.firestore.FieldValue;
+          var field = kind === "foto" ? "fotoUrl" : "logoUrl";
+          var oldUrl = kind === "foto" ? String(lastPersonalMedia.fotoUrl || "") : String(lastPersonalMedia.logoUrl || "");
+          var patch = { updatedAt: fv.serverTimestamp() };
+          patch[field] = fv.delete();
+          return writePersonalCardFirestore(patch)
+            .then(function () {
+              if (kind === "foto") lastPersonalMedia.fotoUrl = "";
+              else lastPersonalMedia.logoUrl = "";
+              if (ecIsCloudMediaUrl(oldUrl)) {
+                try {
+                  firebase.storage().refFromURL(oldUrl).delete().catch(function () {});
+                } catch (eSt) {}
+              }
+              try {
+                postElitePreviewToIframe();
+              } catch (ePv) {}
+              try {
+                refreshAdminSigPreview();
+              } catch (eSig) {}
+              refreshPreview();
+              showToast(kind === "foto" ? "Foto de perfil quitada" : "Logo quitado", true);
+              syncPersonalMediaRemoveButtons();
+            })
+            .catch(function (e) {
+              showToast(e.message || "No se pudo quitar la imagen", false);
+            });
+        }
+
+        function runRemoveMascotPrimaryMedia(kind) {
+          if (!uid || demoModeActive) return;
+          if (isSavingBlockedByMembership()) {
+            showToast("Membresía vencida o suspendida: no se pueden quitar imágenes.", false);
+            return;
+          }
+          var fv = firebase.firestore.FieldValue;
+          var isProfile = kind === "foto";
+          var oldUrl = isProfile ? String(lastMascotFoto || "") : String(lastMascotCabecera || "");
+          var patch = {
+            ownerUid: uid,
+            mascotId: resolveMascotDocId(),
+            updatedAt: fv.serverTimestamp(),
+          };
+          if (isProfile) patch.fotoPerfilUrl = fv.delete();
+          else patch.fotoCabeceraUrl = fv.delete();
+          return writeMascotBookFirestore(patch)
+            .then(function () {
+              if (isProfile) lastMascotFoto = "";
+              else lastMascotCabecera = "";
+              if (ecIsCloudMediaUrl(oldUrl)) {
+                try {
+                  firebase.storage().refFromURL(oldUrl).delete().catch(function () {});
+                } catch (eSt) {}
+              }
+              refreshPreview();
+              showToast(isProfile ? "Foto de perfil quitada" : "Banner quitado", true);
+              syncMascotMediaRemoveButtons();
+            })
+            .catch(function (e) {
+              showToast(e.message || "No se pudo quitar la imagen", false);
+            });
+        }
+
+        function runDeleteMascotBookProfile() {
+          var db = firebase.firestore();
+          var u = String(uid || "").trim();
+          var mid = String(resolveMascotDocId() || "").trim();
+          if (!u || mid !== u) {
+            return Promise.reject(new Error("No se puede eliminar este perfil con la sesión actual."));
+          }
+          var urls = [];
+          if (ecIsCloudMediaUrl(lastMascotFoto)) urls.push(lastMascotFoto);
+          if (ecIsCloudMediaUrl(lastMascotCabecera)) urls.push(lastMascotCabecera);
+          (lastMascotGallerySlots || []).forEach(function (x) {
+            if (ecIsCloudMediaUrl(x)) urls.push(x);
+          });
+          return db
+            .collection("mascotas")
+            .doc(mid)
+            .delete()
+            .then(function () {
+              return window.EC_SILO.mascotCardRef(db, u).delete();
+            })
+            .then(function () {
+              urls.forEach(function (url) {
+                try {
+                  firebase.storage().refFromURL(url).delete().catch(function () {});
+                } catch (e) {}
+              });
+              showToast("Perfil MascotBook eliminado", true);
+              window.location.reload();
+            });
+        }
+
         function ensurePhonePrefixOnEmpty(inputEl) {
           if (!inputEl) return;
           var v = String(inputEl.value || "").trim();
@@ -975,6 +1285,12 @@
           if (guestHint) guestHint.classList.toggle("hidden", loggedIn);
           if (guestCtas) guestCtas.classList.toggle("hidden", loggedIn);
           if (btnLogout) btnLogout.classList.toggle("hidden", !loggedIn);
+          var userDisplayWrap = document.getElementById("user-display-name-wrap");
+          if (userDisplayWrap) userDisplayWrap.classList.toggle("hidden", !loggedIn);
+          if (!loggedIn) {
+            var udn = document.getElementById("user-display-name");
+            if (udn) udn.textContent = "";
+          }
           updateDemoChrome();
         }
 
@@ -1061,7 +1377,8 @@
         }
 
         function mergeAndPublishAccount() {
-          lastAccountData = Object.assign({}, lastLegacyAccountData, lastMembershipData);
+          /** `users` primero, `usuarios` después: en claves repetidas gana Firestore legacy (p. ej. trialStartDate editado en consola). */
+          lastAccountData = Object.assign({}, lastMembershipData, lastLegacyAccountData);
           maybeMarkMembershipExpired();
           updateSubscriptionUi(lastAccountData);
           scheduleProductAccessEnforcement();
@@ -1171,6 +1488,9 @@
               function (snap) {
                 lastEliteMembershipData = snap.exists ? snap.data() || {} : {};
                 maybeMarkEliteMembershipExpired();
+                try {
+                  updateSubscriptionUi(lastAccountData);
+                } catch (eElSubUi) {}
                 scheduleProductAccessEnforcement();
               },
               function () {}
@@ -1210,12 +1530,20 @@
           return lastEliteMembershipData;
         }
 
+        /** Igual criterio que MascotBook + trial Elite: solo bloquea si no hay acceso premium/trial válido. */
         function isPersonalSavingBlockedByEliteMembership() {
           if (!uid) return false;
-          var m = getEffectiveEliteMembership();
-          if (!m) return false;
-          var st = String(m.status || "").toLowerCase();
-          return st === "expired" || st === "suspended";
+          var Sub = window.EliteCardAdminSubscription;
+          if (!Sub || typeof Sub.canEliteCardPremiumUi !== "function") {
+            var m = getEffectiveEliteMembership();
+            if (!m) return false;
+            var st = String(m.status || "").toLowerCase();
+            return st === "expired" || st === "suspended";
+          }
+          var user = firebase.auth && firebase.auth().currentUser;
+          var email = user && user.email ? user.email : "";
+          var merged = Object.assign({}, lastLegacyAccountData, lastMembershipData);
+          return !Sub.canEliteCardPremiumUi(merged, lastEliteMembershipData || {}, uid, email);
         }
 
         function maybeMarkMembershipExpired() {
@@ -1301,6 +1629,30 @@
           return getTrialDaysRemaining();
         }
 
+        /**
+         * Días de prueba según trialStartDate (Timestamp) + EC_TRIAL_DAYS para elitecard o mascotbook.
+         * Alineado con EliteCardAdminSubscription.getFechaRegistroMs / isTrialPeriodExpired.
+         * Datos solo desde mergedAccountDoc (Firestore en vivo; sin mocks).
+         */
+        function getDashboardTrialDaysRemainingFromStart(mergedAccountDoc, appKey) {
+          var Sub = window.EliteCardAdminSubscription;
+          if (!Sub || !mergedAccountDoc || typeof mergedAccountDoc !== "object") return null;
+          if (typeof Sub.getPlanStatusFromDoc !== "function" || typeof Sub.getFechaRegistroMs !== "function") {
+            return null;
+          }
+          var app = String(appKey || "elitecard").trim().toLowerCase() === "mascotbook" ? "mascotbook" : "elitecard";
+          if (String(Sub.getPlanStatusFromDoc(mergedAccountDoc, app) || "").trim() !== "trial") {
+            return null;
+          }
+          var startMs = Sub.getFechaRegistroMs(mergedAccountDoc);
+          if (startMs == null) return null;
+          var dayMs = 86400000;
+          var elapsedDays = Math.floor((Date.now() - startMs) / dayMs);
+          var total =
+            typeof Sub.EC_TRIAL_DAYS === "number" && isFinite(Sub.EC_TRIAL_DAYS) ? Sub.EC_TRIAL_DAYS : 7;
+          return total - elapsedDays;
+        }
+
         function dismissTrialWelcomeModal() {
           try {
             sessionStorage.setItem(EC_TRIAL_WELCOME_SESSION_KEY, "1");
@@ -1348,17 +1700,29 @@
             strip.classList.add("hidden");
             return;
           }
-          if (st !== "trial" && st !== "premium") {
+          if (st === "premium") {
             strip.classList.add("hidden");
             return;
           }
-          var days = getMembershipDaysRemaining();
-          if (days === null) {
+          if (st !== "trial") {
             strip.classList.add("hidden");
             return;
           }
-          strip.classList.remove("hidden");
-          badge.textContent = "Te quedan " + days + " días de tu membresía";
+          var mergedBilling = Object.assign({}, lastAccountData, lastEliteMembershipData || {});
+          var appKey = currentApp === "personal" ? "elitecard" : "mascotbook";
+          var productPlan = Sub ? String(Sub.getPlanStatusFromDoc(mergedBilling, appKey) || "").trim() : "";
+          if (productPlan === "trial") {
+            var dRem = getDashboardTrialDaysRemainingFromStart(mergedBilling, appKey);
+            if (dRem === null) {
+              strip.classList.add("hidden");
+              return;
+            }
+            strip.classList.remove("hidden");
+            badge.textContent =
+              dRem <= 0 ? "Prueba vencida - Pasá a Premium" : "Te quedan " + dRem + " días de prueba";
+            return;
+          }
+          strip.classList.add("hidden");
         }
 
         function openPremiumUpgrade() {
@@ -1579,18 +1943,25 @@
               return;
             }
             if (ac === "delete-user") {
-              if (
-                !confirm(
-                  "¿Eliminar el documento de membresía en users? No borra tarjetas en usuarios ni mascotas."
-                )
-              )
-                return;
-              ref
-                .delete()
-                .then(function () {
-                  okToast("Registro de membresía eliminado");
-                })
-                .catch(errToast);
+              openAdminConfirmModal({
+                title: "Eliminar registro de membresía",
+                bodyHtml:
+                  "<p>" +
+                  escapeHtmlClients(
+                    "¿Eliminar el documento de membresía en users? No borra tarjetas en usuarios ni mascotas."
+                  ) +
+                  "</p>",
+                danger: true,
+                confirmText: "Eliminar",
+              }).then(function (ok) {
+                if (!ok) return;
+                ref
+                  .delete()
+                  .then(function () {
+                    okToast("Registro de membresía eliminado");
+                  })
+                  .catch(errToast);
+              });
             }
           });
         }
@@ -1622,6 +1993,7 @@
 
         function setMascotTab(tab) {
           var next = tab === "salud" || tab === "seguridad" ? tab : "identidad";
+          var prevMascotTab = currentMascotTab;
           currentMascotTab = next;
           document.querySelectorAll(".mb-tab-btn[data-mb-tab]").forEach(function (btn) {
             btn.classList.toggle("active", btn.getAttribute("data-mb-tab") === next);
@@ -1629,10 +2001,16 @@
           document.querySelectorAll("#form-mascot [data-mb-tab-panel]").forEach(function (panel) {
             panel.classList.toggle("mb-tab-panel-hidden", panel.getAttribute("data-mb-tab-panel") !== next);
           });
+          if (prevMascotTab !== next) {
+            try {
+              notifyPreviewDashboardTabChange();
+            } catch (ePvTab) {}
+          }
         }
 
         function setPersonalTab(tab) {
           var next = tab === "redes" || tab === "ajustes" ? tab : "identidad";
+          var prevPersonalTab = currentPersonalTab;
           currentPersonalTab = next;
           document.querySelectorAll(".pc-tab-btn[data-p-tab]").forEach(function (btn) {
             btn.classList.toggle("active", btn.getAttribute("data-p-tab") === next);
@@ -1641,6 +2019,16 @@
             panel.classList.toggle("pc-tab-panel-hidden", panel.getAttribute("data-p-tab-panel") !== next);
           });
           fitPhonePreview();
+          if (uid && currentApp === "personal") {
+            try {
+              updateSubscriptionUi(lastAccountData);
+            } catch (ePcTabUi) {}
+          }
+          if (prevPersonalTab !== next) {
+            try {
+              notifyPreviewDashboardTabChange();
+            } catch (ePvTab2) {}
+          }
         }
 
         function bindAccountMeta() {
@@ -1686,10 +2074,14 @@
             var banner = document.getElementById("admin-banner-rescue");
             var styleCard = document.getElementById("admin-card-style-pro");
             if (badge) badge.classList.toggle("hidden", !perpetual);
-            var paid = Sub.getPlanStatusFromDoc(docData, "elitecard") === "active";
+            var eliteUnlocked = Sub.canEliteCardPremiumUi
+              ? Sub.canEliteCardPremiumUi(docData, lastEliteMembershipData || {}, uid, email)
+              : Sub.isPremiumOrActiveTrial
+                ? Sub.isPremiumOrActiveTrial(docData, "elitecard", uid, email)
+                : Sub.getPlanStatusFromDoc(docData, "elitecard") === "active";
             var expired = Sub.isTrialPeriodExpired(docData, "elitecard", uid, email);
             var showRescue =
-              expired && !paid && !perpetual && currentApp === "personal" && gst !== "expired";
+              expired && !eliteUnlocked && !perpetual && currentApp === "personal" && gst !== "expired";
             if (banner) banner.classList.toggle("hidden", !showRescue);
             if (styleCard) {
               if (showRescue) styleCard.classList.add("is-locked");
@@ -1995,6 +2387,20 @@
           var eliteD = lastEliteMembershipData || {};
           var okMb = Sub.hasMascotBookDashboardAccess(doc, uid, email);
           var okEl = Sub.hasEliteCardDashboardAccess(doc, eliteD, uid, email);
+          console.log(
+            "[admin] Product gate — requested:",
+            requested,
+            "| okMb:",
+            okMb,
+            "| okEl:",
+            okEl,
+            "| activeProducts:",
+            doc.activeProducts,
+            "| hasMascotBook:",
+            doc.hasMascotBook,
+            "| mascotbook_status:",
+            doc.mascotbook_status
+          );
           var ok = requested === "mascotbook" ? okMb : okEl;
 
           if (ok) {
@@ -2027,6 +2433,16 @@
           var eliteD = lastEliteMembershipData || {};
           var okMb = Sub.hasMascotBookDashboardAccess(doc, uid, email);
           var okEl = Sub.hasEliteCardDashboardAccess(doc, eliteD, uid, email);
+          console.log(
+            "[admin] Hub product gate — want:",
+            currentApp,
+            "| okMb:",
+            okMb,
+            "| okEl:",
+            okEl,
+            "| activeProducts:",
+            doc.activeProducts
+          );
           var want = currentApp;
           var ok = want === "mascotbook" ? okMb : okEl;
           if (ok) return true;
@@ -2152,7 +2568,6 @@
           if (pick(p.whatsappNumero)) return false;
           if (pick(p.fotoUrl)) return false;
           if (pick(p.logoUrl)) return false;
-          if (pick(p.user_bio || p.bio)) return false;
           var r = p.redes || {};
           if (pick(r.instagram || p.instagram)) return false;
           if (pick(r.linkedin || p.linkedin)) return false;
@@ -2171,24 +2586,33 @@
             loggedIn = !!(firebase.auth && firebase.auth().currentUser);
           } catch (eLg) {}
           var needDemo = demoModeActive || (loggedIn && personalIdentityLooksEmpty(form));
-          if (!needDemo) return form;
-          var base = JSON.parse(JSON.stringify(mockEliteData));
-          var redB = base.redes && typeof base.redes === "object" ? base.redes : {};
-          var redF = form.redes && typeof form.redes === "object" ? form.redes : {};
-          base.redes = Object.assign({}, redB, redF);
-          Object.keys(form).forEach(function (k) {
-            if (k === "redes") return;
-            var v = form[k];
-            if (typeof v === "string" && v.trim()) base[k] = v.trim();
-          });
-          Object.keys(redF).forEach(function (rk) {
-            var rv = redF[rk];
-            if (typeof rv === "string" && rv.trim()) base.redes[rk] = rv.trim();
-          });
-          if (form.fotoUrl && String(form.fotoUrl).trim()) base.fotoUrl = String(form.fotoUrl).trim();
-          if (form.logoUrl && String(form.logoUrl).trim()) base.logoUrl = String(form.logoUrl).trim();
-          if (form.bannerUrl && String(form.bannerUrl).trim()) base.bannerUrl = String(form.bannerUrl).trim();
-          return window.normalizePersonalCard ? window.normalizePersonalCard(base) : base;
+          var out;
+          if (!needDemo) {
+            out = form;
+          } else {
+            var base = JSON.parse(JSON.stringify(mockEliteData));
+            var redB = base.redes && typeof base.redes === "object" ? base.redes : {};
+            var redF = form.redes && typeof form.redes === "object" ? form.redes : {};
+            base.redes = Object.assign({}, redB, redF);
+            Object.keys(form).forEach(function (k) {
+              if (k === "redes") return;
+              var v = form[k];
+              if (typeof v === "string" && v.trim()) base[k] = v.trim();
+            });
+            Object.keys(redF).forEach(function (rk) {
+              var rv = redF[rk];
+              if (typeof rv === "string" && rv.trim()) base.redes[rk] = rv.trim();
+            });
+            if (form.fotoUrl && String(form.fotoUrl).trim()) base.fotoUrl = String(form.fotoUrl).trim();
+            if (form.logoUrl && String(form.logoUrl).trim()) base.logoUrl = String(form.logoUrl).trim();
+            out = window.normalizePersonalCard ? window.normalizePersonalCard(base) : base;
+          }
+          try {
+            delete out.user_bio;
+            delete out.bio;
+            delete out.bannerUrl;
+          } catch (eStrip) {}
+          return out;
         }
 
         function postElitePreviewToIframe() {
@@ -2208,6 +2632,23 @@
           } catch (ePe) {}
         }
 
+        var __personalElitePreviewDebounce = null;
+        function schedulePersonalEliteLivePreview() {
+          if (currentApp !== "personal") return;
+          clearTimeout(__personalElitePreviewDebounce);
+          __personalElitePreviewDebounce = setTimeout(function () {
+            __personalElitePreviewDebounce = null;
+            try {
+              postElitePreviewToIframe();
+            } catch (ePvl) {}
+          }, 70);
+        }
+
+        function onPersonalFieldInputForPreview() {
+          refreshAdminSigPreview();
+          schedulePersonalEliteLivePreview();
+        }
+
         function postMascotPreviewToIframe() {
           var previewUid = getPreviewAuthUid();
           if (currentApp !== "mascotbook" || !previewUid || !previewFrame) return;
@@ -2224,6 +2665,26 @@
               window.location.origin
             );
           } catch (ePm) {}
+        }
+
+        /** Aviso al iframe: animación fade al cambiar solapa (Identidad / Redes / …); re-sincroniza datos a mitad del fade. */
+        function notifyPreviewDashboardTabChange() {
+          var previewUid = getPreviewAuthUid();
+          if (!previewUid || !previewFrame) return;
+          try {
+            var w = previewFrame.contentWindow;
+            if (!w || typeof w.postMessage !== "function") return;
+            w.postMessage(
+              { type: "EC_ADMIN_PREVIEW_UI", action: "dashboardTabChange" },
+              window.location.origin
+            );
+          } catch (eNpv) {}
+          setTimeout(function () {
+            try {
+              if (currentApp === "personal") postElitePreviewToIframe();
+              else if (currentApp === "mascotbook") postMascotPreviewToIframe();
+            } catch (eNpv2) {}
+          }, 150);
         }
 
         function refreshPreview() {
@@ -2328,7 +2789,8 @@
           document.getElementById("p-web").value = (n.redes && n.redes.sitioWeb) || n.sitioWeb || "";
           document.getElementById("p-maps").value = n.mapsUrl || "";
           document.getElementById("p-calendly").value = n.calendlyUrl || "";
-          document.getElementById("p-bio").value = n.user_bio || n.bio || "";
+          var bioHidden = document.getElementById("p-bio");
+          if (bioHidden) bioHidden.value = n.user_bio || n.bio || "";
           document.getElementById("p-vn").value = n.vcardNombres || "";
           document.getElementById("p-va").value = n.vcardApellidos || "";
           document.getElementById("p-vo").value = n.vcardOrganizacion || "";
@@ -2345,6 +2807,8 @@
             b.classList.toggle("active", b.getAttribute("data-preset") === (n.user_bgPreset || "matte"));
           });
           refreshAdminSigPreview();
+          syncPersonalMediaRemoveButtons();
+          if (uid && !demoModeActive) setDashboardDataLoading(false);
         }
 
         function readPersonalPayload() {
@@ -2369,7 +2833,10 @@
             sitioWeb: document.getElementById("p-web").value,
             mapsUrl: document.getElementById("p-maps").value,
             calendlyUrl: document.getElementById("p-calendly").value,
-            user_bio: document.getElementById("p-bio").value,
+            user_bio: (function () {
+              var h = document.getElementById("p-bio");
+              return h && h.value != null ? h.value : "";
+            })(),
             vcardNombres: document.getElementById("p-vn").value,
             vcardApellidos: document.getElementById("p-va").value,
             vcardOrganizacion: document.getElementById("p-vo").value,
@@ -2466,6 +2933,20 @@
           } catch (eW) {
             console.error("Error al guardar:", eW);
             return Promise.reject(eW);
+          }
+        }
+
+        /** EliteCard: documento `usuarios/{uid}/personal_card/profile` (mismo esquema que al guardar con el botón). */
+        function writePersonalCardFirestore(patch) {
+          try {
+            var u = firebase.auth && firebase.auth().currentUser;
+            if (!u || !u.uid) return Promise.reject(new Error("Sin sesión"));
+            uid = u.uid;
+            var db = firebase.firestore();
+            var safePatch = Object.assign({}, patch || {});
+            return window.EC_SILO.personalCardRef(db, u.uid).set(safePatch, { merge: true });
+          } catch (eWp) {
+            return Promise.reject(eWp);
           }
         }
 
@@ -2693,19 +3174,27 @@
         function removeMascotGallerySlot(idx) {
           var oldUrl = String(lastMascotGallerySlots[idx] || "").trim();
           if (!oldUrl) return;
-          var next = lastMascotGallerySlots.slice();
-          next[idx] = "";
-          var delJob = Promise.resolve();
-          try {
-            delJob = firebase.storage().refFromURL(oldUrl).delete().catch(function () {});
-          } catch (e) {}
-          delJob
-            .then(function () {
-              return persistMascotGallerySlots(next, "Foto eliminada del slot " + (idx + 1));
-            })
-            .catch(function (e) {
-              showToast(e.message || "No se pudo eliminar la foto", false);
-            });
+          openAdminConfirmModal({
+            title: "Eliminar imagen",
+            bodyHtml: "<p>¿Deseas eliminar esta foto del muro? Se quitará del perfil y del almacenamiento.</p>",
+            danger: true,
+            confirmText: "Eliminar foto",
+          }).then(function (ok) {
+            if (!ok) return;
+            var next = lastMascotGallerySlots.slice();
+            next[idx] = "";
+            var delJob = Promise.resolve();
+            try {
+              delJob = firebase.storage().refFromURL(oldUrl).delete().catch(function () {});
+            } catch (e) {}
+            delJob
+              .then(function () {
+                return persistMascotGallerySlots(next, "Foto eliminada del slot " + (idx + 1));
+              })
+              .catch(function (e) {
+                showToast(e.message || "No se pudo eliminar la foto", false);
+              });
+          });
         }
 
         function refreshVacunaRowOverdue(tr) {
@@ -2839,6 +3328,8 @@
           if (dLost) dLost.checked = !!n.mascotaPerdida;
           if (dWa) dWa.value = n.whatsappUrgencia || "";
           if (currentApp === "mascotbook") refreshPreview();
+          syncMascotMediaRemoveButtons();
+          if (uid && !demoModeActive) setDashboardDataLoading(false);
         }
 
         function buildCanonicalMascotDataForFirestore(saveUid, fotoPerfilUrl, fotoCabeceraUrl) {
@@ -2963,6 +3454,7 @@
             unsubLostScans = null;
           }
           if (!uid) return;
+          setDashboardDataLoading(true);
           var db = firebase.firestore();
           var mascotDocId = resolveMascotDocId();
           if (mascotDocId) currentMascotShareId = mascotDocId;
@@ -2998,6 +3490,7 @@
               }
             },
             function () {
+              setDashboardDataLoading(false);
               showToast("Error al leer Firestore", false);
             }
           );
@@ -3103,6 +3596,68 @@
                     firebase.storage().refFromURL(oldUrl).delete().catch(function () {});
                   } catch (e) {}
                 }
+                syncMascotMediaRemoveButtons();
+              });
+            })
+            .catch(function (e) {
+              showToast(e.message || "No se pudo subir la imagen", false);
+            });
+        }
+
+        /** Misma idea que uploadMascotPrimaryMedia: Storage con ruta versionada + merge en Firestore + preview en vivo. */
+        function uploadPersonalPrimaryMedia(kind, file) {
+          if (!uid || !file) {
+            if (!uid) showToast("Iniciá sesión para subir imágenes.", false);
+            return Promise.resolve();
+          }
+          if (isPersonalSavingBlockedByEliteMembership()) {
+            showToast("Suscripción EliteCard vencida. Renová para subir imágenes.", false);
+            return Promise.resolve();
+          }
+          if (isSavingBlockedByMembership()) {
+            showToast("Membresía vencida o suspendida: no se pueden subir imágenes.", false);
+            return Promise.resolve();
+          }
+          var safe = String(file.name || "imagen").replace(/\W/g, "_");
+          var ts = Date.now();
+          var path;
+          var field;
+          var oldUrl = "";
+          if (kind === "foto") {
+            oldUrl = String(lastPersonalMedia.fotoUrl || "");
+            path = "usuarios/" + uid + "/personal/fotoPerfil_" + ts + "_" + safe;
+            field = "fotoUrl";
+          } else if (kind === "logo") {
+            oldUrl = String(lastPersonalMedia.logoUrl || "");
+            path = "usuarios/" + uid + "/personal/logo_" + ts + "_" + safe;
+            field = "logoUrl";
+          } else {
+            return Promise.resolve();
+          }
+          showToast("Guardando imagen...", true);
+          return putFile(path, file)
+            .then(function (url) {
+              var patch = {
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+              };
+              patch[field] = url;
+              return writePersonalCardFirestore(patch).then(function () {
+                if (field === "fotoUrl") lastPersonalMedia.fotoUrl = url;
+                else lastPersonalMedia.logoUrl = url;
+                try {
+                  postElitePreviewToIframe();
+                } catch (ePv) {}
+                try {
+                  refreshAdminSigPreview();
+                } catch (eSig) {}
+                var okMsg = kind === "foto" ? "Foto de perfil actualizada" : "Logo actualizado";
+                showToast(okMsg, true);
+                if (oldUrl && oldUrl !== url) {
+                  try {
+                    firebase.storage().refFromURL(oldUrl).delete().catch(function () {});
+                  } catch (eDel) {}
+                }
+                syncPersonalMediaRemoveButtons();
               });
             })
             .catch(function (e) {
@@ -3124,39 +3679,23 @@
             showToast("Tu plan venció o la cuenta está suspendida. Renová o contactá soporte para guardar.", false);
             return;
           }
-          var payload = readPersonalPayload();
-          var jobs = [];
-          var foto = document.getElementById("p-foto").files[0];
-          var logo = document.getElementById("p-logo").files[0];
-          if (foto) {
-            jobs.push(
-              putFile("usuarios/" + uid + "/personal/fotoPerfil", foto).then(function (url) {
-                payload.fotoUrl = url;
+          openAdminConfirmModal({
+            title: "Guardar cambios",
+            bodyHtml: "<p>¿Deseas guardar los cambios realizados?</p>",
+          }).then(function (ok) {
+            if (!ok) return;
+            var payload = readPersonalPayload();
+            window.EC_SILO
+              .personalCardRef(firebase.firestore(), uid)
+              .set(payload, { merge: true })
+              .then(function () {
+                showToast("EliteCard guardada", true);
+                refreshPreview();
               })
-            );
-          }
-          if (logo) {
-            jobs.push(
-              putFile("usuarios/" + uid + "/personal/logoInstitucional", logo).then(function (url) {
-                payload.logoUrl = url;
-              })
-            );
-          }
-          Promise.all(jobs)
-            .then(function () {
-              return window.EC_SILO.personalCardRef(firebase.firestore(), uid).set(payload, {
-                merge: true,
+              .catch(function (e) {
+                showToast(e.message || "Error al guardar", false);
               });
-            })
-            .then(function () {
-              document.getElementById("p-foto").value = "";
-              document.getElementById("p-logo").value = "";
-              showToast("EliteCard guardada", true);
-              refreshPreview();
-            })
-            .catch(function (e) {
-              showToast(e.message || "Error al guardar", false);
-            });
+          });
         });
 
         document.getElementById("btn-save-mascot").addEventListener("click", function () {
@@ -3170,66 +3709,72 @@
             showToast("Tu plan venció o la cuenta está suspendida. Renová o contactá soporte para guardar.", false);
             return;
           }
-          setButtonBusy(btnSaveMascot, true, "Guardando...", "Guardar MascotBook");
-          showToast("Guardando cambios...", true);
-          var jobs = [];
-          var foto = document.getElementById("m-foto").files[0];
-          var cab = document.getElementById("m-cabecera") ? document.getElementById("m-cabecera").files[0] : null;
-          if (foto) {
-            jobs.push(
-              putFile("usuarios/" + uid + "/mascot/fotoPerfil", foto).then(function (url) {
-                lastMascotFoto = url;
+          openAdminConfirmModal({
+            title: "Guardar cambios",
+            bodyHtml: "<p>¿Deseas guardar los cambios realizados?</p>",
+          }).then(function (ok) {
+            if (!ok) return;
+            setButtonBusy(btnSaveMascot, true, "Guardando...", "Guardar MascotBook");
+            showToast("Guardando cambios...", true);
+            var jobs = [];
+            var foto = document.getElementById("m-foto").files[0];
+            var cab = document.getElementById("m-cabecera") ? document.getElementById("m-cabecera").files[0] : null;
+            if (foto) {
+              jobs.push(
+                putFile("usuarios/" + uid + "/mascot/fotoPerfil", foto).then(function (url) {
+                  lastMascotFoto = url;
+                })
+              );
+            }
+            if (cab) {
+              jobs.push(
+                putFile("usuarios/" + uid + "/mascot/cabecera_" + Date.now(), cab).then(function (url) {
+                  lastMascotCabecera = url;
+                })
+              );
+            }
+            Promise.all(jobs)
+              .then(function () {
+                var u = firebase.auth().currentUser;
+                if (!u || !u.uid) throw new Error("Sin sesión");
+                uid = u.uid;
+                var mascotDocId = resolveMascotDocId();
+                if (!mascotDocId) throw new Error("Falta mascotId");
+                currentMascotShareId = mascotDocId;
+                var mascotData = readMascotPayload();
+                mascotData.ownerUid = u.uid;
+                mascotData.mascotId = mascotDocId;
+                mascotData.nombre = String(mascotData.nombre || document.getElementById("m-nombre").value || "").trim();
+                mascotData.fotoPerfilUrl = String(mascotData.fotoPerfilUrl || lastMascotFoto || "").trim();
+                mascotData.fotoCabeceraUrl = String(
+                  mascotData.fotoCabeceraUrl || lastMascotCabecera || ""
+                ).trim();
+                mascotData.mascotProTheme = String(
+                  mascotData.mascotProTheme || currentMascotProTheme || "classic_paws"
+                ).trim();
+                mascotData.tema = String(mascotData.tema || mascotData.mascotProTheme || "").trim();
+                mascotData.mascotSurfaceTheme = String(
+                  mascotData.mascotSurfaceTheme || currentMascotSurfaceTheme || "cloud_cream"
+                ).trim();
+                mascotData.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+                return writeMascotBookFirestore(mascotData).then(function () {
+                  refreshPreview();
+                });
               })
-            );
-          }
-          if (cab) {
-            jobs.push(
-              putFile("usuarios/" + uid + "/mascot/cabecera_" + Date.now(), cab).then(function (url) {
-                lastMascotCabecera = url;
+              .then(function () {
+                document.getElementById("m-foto").value = "";
+                var cIn = document.getElementById("m-cabecera");
+                if (cIn) cIn.value = "";
+                lastMascotGaleria = compactMascotGalleryFromSlots(lastMascotGallerySlots);
+                showToast("MascotBook guardado", true);
+                setButtonBusy(btnSaveMascot, false, "Guardando...", "Guardar MascotBook");
               })
-            );
-          }
-          Promise.all(jobs)
-            .then(function () {
-              var u = firebase.auth().currentUser;
-              if (!u || !u.uid) throw new Error("Sin sesión");
-              uid = u.uid;
-              var mascotDocId = resolveMascotDocId();
-              if (!mascotDocId) throw new Error("Falta mascotId");
-              currentMascotShareId = mascotDocId;
-              var mascotData = readMascotPayload();
-              mascotData.ownerUid = u.uid;
-              mascotData.mascotId = mascotDocId;
-              mascotData.nombre = String(mascotData.nombre || document.getElementById("m-nombre").value || "").trim();
-              mascotData.fotoPerfilUrl = String(mascotData.fotoPerfilUrl || lastMascotFoto || "").trim();
-              mascotData.fotoCabeceraUrl = String(
-                mascotData.fotoCabeceraUrl || lastMascotCabecera || ""
-              ).trim();
-              mascotData.mascotProTheme = String(
-                mascotData.mascotProTheme || currentMascotProTheme || "classic_paws"
-              ).trim();
-              mascotData.tema = String(mascotData.tema || mascotData.mascotProTheme || "").trim();
-              mascotData.mascotSurfaceTheme = String(
-                mascotData.mascotSurfaceTheme || currentMascotSurfaceTheme || "cloud_cream"
-              ).trim();
-              mascotData.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
-              return writeMascotBookFirestore(mascotData).then(function () {
-                refreshPreview();
+              .catch(function (e) {
+                console.error("Error al guardar:", e);
+                showToast(e.message || "Error al guardar", false);
+                setButtonBusy(btnSaveMascot, false, "Guardando...", "Guardar MascotBook");
               });
-            })
-            .then(function () {
-              document.getElementById("m-foto").value = "";
-              var cIn = document.getElementById("m-cabecera");
-              if (cIn) cIn.value = "";
-              lastMascotGaleria = compactMascotGalleryFromSlots(lastMascotGallerySlots);
-              showToast("MascotBook guardado", true);
-              setButtonBusy(btnSaveMascot, false, "Guardando...", "Guardar MascotBook");
-            })
-            .catch(function (e) {
-              console.error("Error al guardar:", e);
-              showToast(e.message || "Error al guardar", false);
-              setButtonBusy(btnSaveMascot, false, "Guardando...", "Guardar MascotBook");
-            });
+          });
         });
 
         document.querySelectorAll(".hub-card[data-app]").forEach(function (btn) {
@@ -3287,6 +3832,45 @@
                 .share({
                   title: "MascotBook",
                   text: "Te comparto la tarjeta de esta mascota",
+                  url: shareUrl,
+                })
+                .then(function () {
+                  showToast("Tarjeta compartida", true);
+                })
+                .catch(function () {});
+              return;
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard
+                .writeText(shareUrl)
+                .then(function () {
+                  showToast("Enlace copiado al portapapeles", true);
+                })
+                .catch(function () {
+                  showToast("No se pudo copiar el enlace", false);
+                });
+              return;
+            }
+            showToast("Copiá este enlace: " + shareUrl, true);
+          });
+        }
+
+        var shareEliteBtn = document.getElementById("btn-elite-share-card");
+        if (shareEliteBtn) {
+          shareEliteBtn.addEventListener("click", function () {
+            if (!uid) {
+              showToast("Iniciá sesión para compartir la tarjeta.", false);
+              return;
+            }
+            var shareUrl =
+              window.location.origin +
+              "/card.html?id=" +
+              encodeURIComponent(String(uid || "").trim());
+            if (navigator.share) {
+              navigator
+                .share({
+                  title: "EliteCard",
+                  text: "Te comparto mi tarjeta profesional",
                   url: shareUrl,
                 })
                 .then(function () {
@@ -3413,6 +3997,116 @@
             if (!f) return;
             uploadMascotPrimaryMedia("cabecera", f).then(function () {
               mCabInput.value = "";
+            });
+          });
+        }
+
+        var pFotoInput = document.getElementById("p-foto");
+        if (pFotoInput) {
+          pFotoInput.addEventListener("change", function () {
+            var f = pFotoInput.files && pFotoInput.files[0] ? pFotoInput.files[0] : null;
+            if (!f) return;
+            uploadPersonalPrimaryMedia("foto", f).then(function () {
+              pFotoInput.value = "";
+            });
+          });
+        }
+        var pLogoInput = document.getElementById("p-logo");
+        if (pLogoInput) {
+          pLogoInput.addEventListener("change", function () {
+            var f = pLogoInput.files && pLogoInput.files[0] ? pLogoInput.files[0] : null;
+            if (!f) return;
+            uploadPersonalPrimaryMedia("logo", f).then(function () {
+              pLogoInput.value = "";
+            });
+          });
+        }
+
+        var pFotoRemove = document.getElementById("p-foto-remove");
+        if (pFotoRemove) {
+          pFotoRemove.addEventListener("click", function () {
+            if (!ecIsCloudMediaUrl(lastPersonalMedia.fotoUrl)) return;
+            openAdminConfirmModal({
+              title: "Quitar foto de perfil",
+              bodyHtml: "<p>¿Deseas eliminar la foto de perfil actual? Se borrará de tu tarjeta y del almacenamiento.</p>",
+              danger: true,
+              confirmText: "Quitar foto",
+            }).then(function (ok) {
+              if (!ok) return;
+              runRemovePersonalPrimaryMedia("foto");
+            });
+          });
+        }
+        var pLogoRemove = document.getElementById("p-logo-remove");
+        if (pLogoRemove) {
+          pLogoRemove.addEventListener("click", function () {
+            if (!ecIsCloudMediaUrl(lastPersonalMedia.logoUrl)) return;
+            openAdminConfirmModal({
+              title: "Quitar logo",
+              bodyHtml: "<p>¿Deseas eliminar el logo institucional? Se borrará de tu tarjeta y del almacenamiento.</p>",
+              danger: true,
+              confirmText: "Quitar logo",
+            }).then(function (ok) {
+              if (!ok) return;
+              runRemovePersonalPrimaryMedia("logo");
+            });
+          });
+        }
+
+        var mFotoRemove = document.getElementById("m-foto-remove");
+        if (mFotoRemove) {
+          mFotoRemove.addEventListener("click", function () {
+            if (!ecIsCloudMediaUrl(lastMascotFoto)) return;
+            openAdminConfirmModal({
+              title: "Quitar foto de perfil",
+              bodyHtml: "<p>¿Deseas eliminar la foto de perfil de la mascota?</p>",
+              danger: true,
+              confirmText: "Quitar foto",
+            }).then(function (ok) {
+              if (!ok) return;
+              runRemoveMascotPrimaryMedia("foto");
+            });
+          });
+        }
+        var mCabRemove = document.getElementById("m-cabecera-remove");
+        if (mCabRemove) {
+          mCabRemove.addEventListener("click", function () {
+            if (!ecIsCloudMediaUrl(lastMascotCabecera)) return;
+            openAdminConfirmModal({
+              title: "Quitar banner",
+              bodyHtml: "<p>¿Deseas eliminar la imagen de portada (banner)?</p>",
+              danger: true,
+              confirmText: "Quitar banner",
+            }).then(function (ok) {
+              if (!ok) return;
+              runRemoveMascotPrimaryMedia("cabecera");
+            });
+          });
+        }
+
+        var btnDelMascot = document.getElementById("btn-delete-mascot-profile");
+        if (btnDelMascot) {
+          btnDelMascot.addEventListener("click", function () {
+            var mid = String(resolveMascotDocId() || "").trim();
+            var u = String(uid || "").trim();
+            if (!u || mid !== u) {
+              showToast("No se puede eliminar este perfil.", false);
+              return;
+            }
+            openAdminConfirmModal({
+              eyebrow: "Acción irreversible",
+              title: "¿Eliminar perfil MascotBook?",
+              bodyHtml:
+                "<p>Se eliminarán los datos del perfil en Firestore (colección <strong>mascotas</strong> y espejo en tu usuario). " +
+                "El enlace público dejará de mostrar la mascota.</p>" +
+                "<p>Los archivos en almacenamiento se borran en segundo plano cuando es posible.</p>",
+              danger: true,
+              confirmText: "Eliminar perfil",
+            }).then(function (ok) {
+              if (!ok) return;
+              runDeleteMascotBookProfile().catch(function (e) {
+                showToast(e.message || "No se pudo eliminar el perfil", false);
+              });
             });
           });
         }
@@ -3576,15 +4270,23 @@
           "p-cargo",
           "p-empresa",
           "p-email",
+          "p-email-insti",
           "p-telefono",
           "p-web",
           "p-insta",
           "p-li",
+          "p-whatsapp",
+          "p-maps",
+          "p-calendly",
+          "p-vn",
+          "p-va",
+          "p-vo",
+          "p-vt",
         ].forEach(function (id) {
           var el = document.getElementById(id);
           if (!el) return;
-          el.addEventListener("input", refreshAdminSigPreview);
-          el.addEventListener("change", refreshAdminSigPreview);
+          el.addEventListener("input", onPersonalFieldInputForPreview);
+          el.addEventListener("change", onPersonalFieldInputForPreview);
         });
 
         applyBrandLogo();
@@ -3603,6 +4305,11 @@
           currentMascotShareId = resolveMascotDocId();
           firebase.auth().onAuthStateChanged(function (user) {
             if (!user) {
+              try {
+                if (typeof window.EC_applyNavbarUserDisplay === "function") {
+                  window.EC_applyNavbarUserDisplay(null);
+                }
+              } catch (eNavOut) {}
               clearTimeout(productAccessTimer);
               productAccessDeniedShown = false;
               if (gateLoading) {
@@ -3612,6 +4319,7 @@
               }
               hideProductAccessDeniedModal();
               uid = "";
+              clearDashboardSkeletonClasses();
               clearAccountListeners();
               if (unsub) {
                 unsub();
@@ -3638,6 +4346,11 @@
             }
             uid = user.uid;
             setAuthChrome(true);
+            try {
+              if (typeof window.EC_applyNavbarUserDisplay === "function") {
+                window.EC_applyNavbarUserDisplay(user);
+              }
+            } catch (eNavUser) {}
             productAccessDeniedShown = false;
             if (gateLoading) {
               gateLoading.classList.remove("hidden");

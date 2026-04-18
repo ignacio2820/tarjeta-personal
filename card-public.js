@@ -724,13 +724,17 @@
 
     var logoFoot = document.getElementById("elite-logo-footer");
     var logoFootImg = document.getElementById("elite-logo-footer-img");
+    var footBar = root.querySelector(".ec-footer");
     if (logoFoot && logoFootImg) {
       if (logoUrl) {
         logoFootImg.src = logoUrl;
         logoFoot.classList.remove("hidden");
+        logoFoot.setAttribute("aria-hidden", "true");
+        if (footBar) footBar.classList.remove("ec-footer--no-logo");
       } else {
         logoFoot.classList.add("hidden");
         logoFootImg.removeAttribute("src");
+        if (footBar) footBar.classList.add("ec-footer--no-logo");
       }
     }
 
@@ -1830,8 +1834,7 @@
         telefono: "+54 9 11 5555 7788",
         whatsappNumero: "+54 9 11 5555 7788",
         fotoUrl: "assets/image_1.png",
-        bannerUrl: "assets/image_2.png",
-        logoUrl: "",
+        logoUrl: "assets/logo_redondo_abogacia.png",
         instagram: "https://instagram.com/estudio.schwindt",
         linkedin: "https://www.linkedin.com/in/valentina-schwindt-abogada",
         sitioWeb: "https://estudioschwindt.demo",
@@ -1999,7 +2002,7 @@
           email: "valentina.schwindt@estudioschwindt.demo",
           telefono: "+54 9 11 5555 7788",
           fotoUrl: "assets/image_1.png",
-          bannerUrl: "assets/image_2.png",
+          logoUrl: "assets/logo_redondo_abogacia.png",
           user_bgColor: "#000000",
           user_bgPreset: "matte",
           redes: {
@@ -2201,6 +2204,34 @@
       });
   }
 
+  var __ecPreviewTabFadeTimer = null;
+  function getAdminPreviewTransitionRoot() {
+    if (!isEcAdminPreview()) return null;
+    if (isMascotView()) {
+      var lm = document.getElementById("layout-mascot");
+      if (!lm || lm.classList.contains("hidden")) return null;
+      return document.getElementById("mascot-shell") || lm;
+    }
+    var le = document.getElementById("layout-elite");
+    if (!le || le.classList.contains("hidden")) return null;
+    return le;
+  }
+
+  function runPreviewDashboardTabTransition() {
+    var root = getAdminPreviewTransitionRoot();
+    if (!root) return;
+    if (__ecPreviewTabFadeTimer) {
+      clearTimeout(__ecPreviewTabFadeTimer);
+      __ecPreviewTabFadeTimer = null;
+    }
+    root.classList.add("ec-preview-tab-fade-out");
+    var fadeMs = 280;
+    __ecPreviewTabFadeTimer = setTimeout(function () {
+      __ecPreviewTabFadeTimer = null;
+      root.classList.remove("ec-preview-tab-fade-out");
+    }, fadeMs);
+  }
+
   window.addEventListener("message", function (ev) {
     if (String(qs("ec_admin_preview") || "") !== "1") return;
     try {
@@ -2209,6 +2240,13 @@
     } catch (eOrig) {}
     var data = ev.data;
     if (!data || typeof data !== "object") return;
+
+    if (data.type === "EC_ADMIN_PREVIEW_UI") {
+      if (data.action === "dashboardTabChange") {
+        runPreviewDashboardTabTransition();
+      }
+      return;
+    }
 
     if (data.type === "EC_ELITE_PREVIEW" && !isMascotView()) {
       var ep = data.payload;

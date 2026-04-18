@@ -37,7 +37,7 @@
 .elite-shell .ec-wrap {
   max-width: 28rem;
   margin: 0 auto;
-  padding: 1.35rem 0.95rem calc(7.25rem + env(safe-area-inset-bottom, 0px));
+  padding: 1.35rem 0.95rem calc(5.15rem + env(safe-area-inset-bottom, 0px));
   position: relative;
   z-index: 2;
   flex: 1;
@@ -181,32 +181,32 @@
   gap: 0.55rem;
 }
 
-/* Logo institucional: mismo eje horizontal que el footer, centrado entre los dos botones, por encima de la barra */
-.elite-shell .ec-logo-footer-float {
-  position: fixed;
-  left: 50%;
-  bottom: env(safe-area-inset-bottom, 0px);
-  transform: translateX(-50%);
-  z-index: 60;
-  pointer-events: none;
+/* Logo institucional: celda central fija entre Guardar contacto y Compartir */
+.elite-shell .ec-footer-logo-center {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 5.25rem;
-  height: 4.1rem;
+  padding: 0 0.4rem;
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  pointer-events: none;
+  min-width: 4.25rem;
+}
+
+.elite-shell .ec-footer-logo-center.hidden {
+  display: none;
 }
 
 .elite-shell .ec-logo-footer-img {
-  width: 4.6rem;
-  height: 4.6rem;
-  margin-top: -1.4rem;
+  width: 3rem;
+  height: 3rem;
   object-fit: contain;
   border-radius: 50%;
-  border: none;
+  border: 2px solid rgba(255, 255, 255, 0.95);
   padding: 0;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.96);
   box-sizing: border-box;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
 }
 
 /* Superficies claras / azul */
@@ -368,9 +368,22 @@
   background: #d1d1d1;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: stretch;
   z-index: 40;
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.elite-shell .ec-footer.ec-footer--no-logo {
+  grid-template-columns: 1fr 1fr;
+}
+
+.elite-shell .ec-footer.ec-footer--no-logo .ec-footer-logo-center {
+  display: none !important;
+}
+
+.elite-shell .ec-footer.ec-footer--no-logo .ec-foot-btn:last-child {
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .elite-shell .ec-foot-btn {
@@ -386,10 +399,6 @@
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
-}
-
-.elite-shell .ec-foot-btn + .ec-foot-btn {
-  border-left: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .elite-shell .ec-foot-avatar-wrap {
@@ -620,4 +629,63 @@
 
 .elite-shell.ec-admin-preview .ec-btn .ec-btn-text {
   font-size: 0.95rem;
+}
+
+/* Vista previa admin: transiciones fluidas y hover en acciones (solo iframe del panel) */
+.elite-shell.ec-admin-preview {
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out, filter 0.3s ease-in-out;
+}
+
+.elite-shell.ec-admin-preview.ec-preview-tab-fade-out {
+  opacity: 0;
+  transform: scale(0.98);
+  pointer-events: none;
+}
+
+.elite-shell.ec-admin-preview .ec-wrap,
+.elite-shell.ec-admin-preview .ec-head,
+.elite-shell.ec-admin-preview .ec-name,
+.elite-shell.ec-admin-preview .ec-role,
+.elite-shell.ec-admin-preview .ec-co,
+.elite-shell.ec-admin-preview .ec-action-stack,
+.elite-shell.ec-admin-preview .ec-actions,
+.elite-shell.ec-admin-preview .ec-btn,
+.elite-shell.ec-admin-preview .ec-photo,
+.elite-shell.ec-admin-preview .ec-photo-fallback,
+.elite-shell.ec-admin-preview .ec-mail-sig,
+.elite-shell.ec-admin-preview .ec-footer,
+.elite-shell.ec-admin-preview .ec-hero-banner:not(.hidden) {
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out, color 0.3s ease-in-out,
+    background-color 0.3s ease-in-out, border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.elite-shell.ec-admin-preview .ec-btn .ec-btn-icon {
+  transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out, background 0.3s ease-in-out,
+    color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+/* Hover tipo “app”: solo acciones de redes / presencia web en la vista previa */
+.elite-shell.ec-admin-preview .ec-btn.ec-ig:hover .ec-btn-icon,
+.elite-shell.ec-admin-preview .ec-btn.ec-li:hover .ec-btn-icon,
+.elite-shell.ec-admin-preview .ec-btn.ec-web:hover .ec-btn-icon,
+.elite-shell.ec-admin-preview .ec-btn.ec-mail-inst:hover .ec-btn-icon,
+.elite-shell.ec-admin-preview .ec-btn.ec-map:hover .ec-btn-icon {
+  transform: scale(1.05);
+  filter: brightness(1.12) saturate(1.05);
+}
+
+.elite-shell.ec-admin-preview .ec-btn.ec-ig:hover,
+.elite-shell.ec-admin-preview .ec-btn.ec-li:hover,
+.elite-shell.ec-admin-preview .ec-btn.ec-web:hover,
+.elite-shell.ec-admin-preview .ec-btn.ec-mail-inst:hover,
+.elite-shell.ec-admin-preview .ec-btn.ec-map:hover {
+  transform: translateY(-1px);
+}
+
+.elite-shell.ec-admin-preview .ec-foot-btn {
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.elite-shell.ec-admin-preview .ec-foot-btn:hover {
+  transform: scale(1.03);
 }

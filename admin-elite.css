@@ -37,6 +37,162 @@ body {
   display: none !important;
 }
 
+/* —— Skeleton loading (dashboard datos reales) —— */
+.skeleton-loading {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  min-height: 2.75rem;
+  --ec-sk-base: #e2e8f0;
+  --ec-sk-shine: #f8fafc;
+  background: linear-gradient(
+    110deg,
+    var(--ec-sk-base) 0%,
+    var(--ec-sk-shine) 42%,
+    var(--ec-sk-base) 84%
+  );
+  background-size: 220% 100%;
+  animation: ec-skeleton-shimmer 1.15s ease-in-out infinite;
+}
+
+.skeleton-loading > * {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+#form-mascot .mb-tab-btn.skeleton-loading,
+#form-personal .pc-tab-btn.skeleton-loading {
+  min-height: 2.5rem;
+  min-width: 5.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes ec-skeleton-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+/* Modal confirmación (acciones críticas) */
+.admin-modal-panel--confirm {
+  text-align: left;
+  max-width: 24rem;
+}
+
+.admin-modal-panel--confirm h4 {
+  text-align: left;
+  margin-bottom: 0.65rem;
+}
+
+.admin-modal-confirm-body {
+  margin: 0 0 1.25rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--ae-muted);
+}
+
+.admin-modal-confirm-body p {
+  margin: 0 0 0.65rem;
+}
+
+.admin-modal-confirm-body p:last-child {
+  margin-bottom: 0;
+}
+
+.admin-modal-confirm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  justify-content: flex-end;
+}
+
+.admin-modal-confirm-actions .btn-outline,
+.admin-modal-confirm-actions .btn-solid {
+  margin: 0;
+  width: auto;
+  min-width: 7rem;
+}
+
+.btn-admin-confirm-danger {
+  background: #b91c1c !important;
+  border: 1px solid #991b1b !important;
+  color: #fff !important;
+}
+
+.btn-admin-confirm-danger:hover {
+  background: #991b1b !important;
+  filter: brightness(1.05);
+}
+
+.admin-modal-panel--confirm-danger {
+  border: 2px solid rgba(185, 28, 28, 0.42);
+  box-shadow:
+    0 0 0 1px rgba(185, 28, 28, 0.12),
+    0 18px 40px rgba(15, 23, 42, 0.18);
+}
+
+.ec-confirm-eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #b91c1c;
+}
+
+.field-media-actions {
+  margin-top: 0.35rem;
+}
+
+.btn-text-media-remove {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.82rem;
+  color: #b91c1c;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.btn-text-media-remove:hover {
+  color: #991b1b;
+}
+
+.mascot-media-remove-row .field-media-actions {
+  min-height: 1.25rem;
+}
+
+.mascot-danger-zone {
+  margin-top: 1.25rem;
+  padding: 1rem 1.1rem;
+  border-radius: 0.9rem;
+  border: 1px dashed rgba(185, 28, 28, 0.45);
+  background: rgba(254, 242, 242, 0.55);
+}
+
+.mascot-danger-zone__title {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #991b1b;
+}
+
+.mascot-danger-zone__hint {
+  margin: 0 0 0.85rem;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--ae-muted);
+}
+
 /* —— Gate (sin sesión) —— */
 #gate-loading,
 #gate-marketing {
@@ -211,6 +367,29 @@ body {
   gap: 0.5rem;
   flex-wrap: wrap;
   justify-content: flex-end;
+}
+
+.admin-header-user-wrap {
+  margin-right: 0.35rem;
+  max-width: 15rem;
+}
+
+.admin-header-user-name {
+  display: inline-block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ae-text);
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+@media (max-width: 560px) {
+  .admin-header-user-wrap {
+    max-width: 10rem;
+  }
 }
 
 .admin-guest-hint {
@@ -567,6 +746,28 @@ body {
   font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: -0.03em;
+}
+
+.elite-admin-hero {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.elite-admin-hero .form-personal-title {
+  margin-bottom: 0;
+}
+
+.btn-elite-share-card {
+  width: auto;
+  margin-left: auto;
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .admin-card {

@@ -169,8 +169,22 @@
     return false;
   }
 
+  function timestampFieldMs(val) {
+    if (val == null) return null;
+    if (typeof val === "number" && isFinite(val)) return val;
+    if (val && typeof val.toMillis === "function") {
+      try {
+        return val.toMillis();
+      } catch (e0) {}
+    }
+    if (val && typeof val.seconds === "number") return val.seconds * 1000;
+    return null;
+  }
+
   function getFechaRegistroMs(docData) {
     if (!docData) return null;
+    var ts0 = timestampFieldMs(docData.trialStartDate);
+    if (ts0 != null) return ts0;
     if (docData.createdAt != null) {
       var c = docData.createdAt;
       if (typeof c === "number" && isFinite(c)) return c;
@@ -188,16 +202,43 @@
   function isTrialPeriodExpired(docData, app, uid, email) {
     if (isPerpetualAccess(uid, email, docData)) return false;
     if (getPlanStatusFromDoc(docData, app) !== "trial") return false;
+    var puMs = timestampFieldMs(docData && docData.premiumUntil);
+    if (puMs != null && Date.now() <= puMs) return false;
     var ms = getFechaRegistroMs(docData);
     if (ms == null) return false;
     return Date.now() - ms > EC_TRIAL_DAYS * 24 * 60 * 60 * 1000;
   }
 
+  /** Trial vigente o premium: misma experiencia de UI que pago. */
+  function isPremiumOrActiveTrial(docData, app, uid, email) {
+    var st = getPlanStatusFromDoc(docData, app);
+    if (st === "active") return true;
+    if (st === "trial" && !isTrialPeriodExpired(docData, app, uid, email)) return true;
+    return false;
+  }
+
+  /**
+   * EliteCard — UI y guardado “como Premium”: premium global, trial Elite vigente
+   * (elitecard_status + trialStartDate / premiumUntil) o trial vigente en users_elite.
+   * Paralelo a MascotBook: isSavingBlockedByMembership solo corta por suspended/expired global;
+   * acá sumamos el lado Elite sin bloquear trial activo.
+   */
+  function canEliteCardPremiumUi(docData, eliteCollData, uid, email) {
+    if (!docData || typeof docData !== "object") docData = {};
+    if (isPerpetualAccess(uid, email, docData)) return true;
+    if (globalMembershipBlocksProductAccess(docData)) return false;
+    if (getPlanStatusFromDoc(docData, "elitecard") === "active") return true;
+    if (isPremiumOrActiveTrial(docData, "elitecard", uid, email)) return true;
+    return eliteSidecarGrantsAccess(eliteCollData);
+  }
+
   function isEmailSignatureLocked(docData, app, uid, email) {
     if (isPerpetualAccess(uid, email, docData)) return false;
     if (normalizeApp(app) === "mascotbook") return true;
+    if (isPremiumOrActiveTrial(docData, "elitecard", uid, email)) return false;
     var st = getPlanStatusFromDoc(docData, "elitecard");
-    return st === "trial" || st === "inactive";
+    if (st === "trial" && isTrialPeriodExpired(docData, "elitecard", uid, email)) return true;
+    return st === "inactive";
   }
 
   global.EliteCardAdminSubscription = {
@@ -210,6 +251,8 @@
     getPlanStatusFromDoc: getPlanStatusFromDoc,
     getFechaRegistroMs: getFechaRegistroMs,
     isTrialPeriodExpired: isTrialPeriodExpired,
+    isPremiumOrActiveTrial: isPremiumOrActiveTrial,
+    canEliteCardPremiumUi: canEliteCardPremiumUi,
     isEmailSignatureLocked: isEmailSignatureLocked,
     activeProductsList: activeProductsList,
     hasMascotBookDashboardAccess: hasMascotBookDashboardAccess,

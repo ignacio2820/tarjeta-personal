@@ -585,3 +585,14 @@
   padding: 0.55rem 1rem;
   font-size: 0.82rem;
 }
+
+/* Vista previa admin (iframe): transición al cambiar solapa en el panel */
+.mb-social.ec-mascot-preview {
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.mb-social.ec-mascot-preview.ec-preview-tab-fade-out {
+  opacity: 0;
+  transform: scale(0.98);
+  pointer-events: none;
+}
