@@ -48,6 +48,9 @@ window.EC_PREMIUM_UPGRADE_URL = "";
 window.EC_PREMIUM_CONTACT_MESSAGE =
   "Contactá a tu agencia para activar Premium: indicá email, WhatsApp o link de pago aquí.";
 
+/** false u omitido: «Pasar a Premium» abre Checkout Pro (createMercadoPagoPreference). true = solo modal de contacto. */
+window.EC_PREMIUM_MANUAL_CONTACT_ONLY = false;
+
 /**
  * Links de pago por producto (p. ej. checkout Mercado Pago).
  * Se cargan antes de config.js: allí se fusionan con los valores por defecto.

@@ -2303,6 +2303,28 @@
           }, 700);
         }
 
+        /**
+         * Asegura el cliente de Callable Functions (región FIREBASE_FUNCTIONS_REGION).
+         * Útil si el primer intento falló o el script corrió antes de initializeApp.
+         */
+        function ecEnsureFirebaseFunctions() {
+          if (window.__ecFirebaseFunctions) return true;
+          try {
+            if (typeof firebase === "undefined" || !firebase.apps || !firebase.apps.length) return false;
+            var regFn = String(window.FIREBASE_FUNCTIONS_REGION || "us-east1").trim() || "us-east1";
+            window.__ecFirebaseFunctions = firebase.app().functions(regFn);
+            return true;
+          } catch (e1) {
+            try {
+              window.__ecFirebaseFunctions = firebase.functions();
+              return !!window.__ecFirebaseFunctions;
+            } catch (e2) {
+              window.__ecFirebaseFunctions = null;
+              return false;
+            }
+          }
+        }
+
         function ecGetMercadoPagoReturnBase() {
           var b = String(window.EC_MERCADOPAGO_RETURN_BASE || "").trim().replace(/\/$/, "");
           if (b && /^https?:\/\//i.test(b)) return b;
@@ -2311,7 +2333,7 @@
 
         function generarPreferenciaPago(idPerfil, tipoPlan, mpOpts) {
           mpOpts = mpOpts || {};
-          if (!window.__ecFirebaseFunctions) {
+          if (!ecEnsureFirebaseFunctions() || !window.__ecFirebaseFunctions) {
             return Promise.reject(new Error("Firebase Functions no inicializado"));
           }
           var fn = window.__ecFirebaseFunctions.httpsCallable("createMercadoPagoPreference");
@@ -2338,6 +2360,7 @@
         } catch (eGenPref) {}
 
         function ecTryMercadoPagoCheckout(tipoPlan, idPerfil, fallbackUrl, mpOpts) {
+          ecEnsureFirebaseFunctions();
           if (!uid || !window.__ecFirebaseFunctions) {
             var f = String(fallbackUrl || "").trim();
             if (f && /^https?:\/\//i.test(f)) window.open(f, "_blank", "noopener,noreferrer");
@@ -3322,29 +3345,46 @@
         }
 
         function openPremiumUpgrade() {
+          if (!uid) {
+            showToast("Iniciá sesión para activar Premium.", false);
+            return;
+          }
+          if (window.EC_PREMIUM_MANUAL_CONTACT_ONLY === true) {
+            var modalManual = document.getElementById("admin-premium-contact-modal");
+            var bodyManual = document.getElementById("admin-premium-contact-body");
+            if (!modalManual || !bodyManual) return;
+            bodyManual.innerHTML =
+              String(window.EC_PREMIUM_CONTACT_MESSAGE || "").trim() || "Contactá a soporte para activar Premium.";
+            modalManual.classList.remove("hidden");
+            return;
+          }
+
+          ecEnsureFirebaseFunctions();
           var appKey = currentApp === "mascotbook" ? "mascotbook" : "elitecard";
-          var fb = ecPreciosLinkForApp(appKey) || String(window.EC_PREMIUM_UPGRADE_URL || "").trim();
-          if (uid && window.__ecFirebaseFunctions) {
+          var fallbackHttp = ecPreciosLinkForApp(appKey) || String(window.EC_PREMIUM_UPGRADE_URL || "").trim();
+
+          if (window.__ecFirebaseFunctions) {
             if (appKey === "elitecard") {
-              ecTryMercadoPagoCheckout("elitecard", "", /^https?:\/\//i.test(fb) ? fb : "", {
+              ecTryMercadoPagoCheckout("elitecard", "", fallbackHttp, {
                 producto: "elite_suscripcion",
                 eliteBilling: "once",
               });
               return;
             }
-            var pidMb = String(currentMascotShareId || "").trim();
-            ecTryMercadoPagoCheckout("mascotbook", pidMb, /^https?:\/\//i.test(fb) ? fb : "", {});
+            ecTryMercadoPagoCheckout("mascotbook", String(currentMascotShareId || "").trim(), fallbackHttp, {});
             return;
           }
-          if (fb && /^https?:\/\//i.test(fb)) {
-            window.open(fb, "_blank", "noopener,noreferrer");
+
+          if (fallbackHttp && /^https?:\/\//i.test(fallbackHttp)) {
+            window.open(fallbackHttp, "_blank", "noopener,noreferrer");
+            showToast("Se abrió un enlace de pago alternativo. Para Checkout Pro integrado, desplegá Firebase Functions.", true);
             return;
           }
-          var modal = document.getElementById("admin-premium-contact-modal");
-          var body = document.getElementById("admin-premium-contact-body");
-          if (!modal || !body) return;
-          body.innerHTML = String(window.EC_PREMIUM_CONTACT_MESSAGE || "").trim() || "Contactá a soporte para activar Premium.";
-          modal.classList.remove("hidden");
+
+          showToast(
+            "No se pudo abrir Mercado Pago: comprobá que Cloud Functions esté desplegado, la región en FIREBASE_FUNCTIONS_REGION y el secret MP_ACCESS_TOKEN.",
+            false
+          );
         }
 
         function closePremiumContactModal() {
@@ -7460,6 +7500,9 @@
               window.__ecFirebaseFunctions = null;
             }
           }
+          try {
+            ecEnsureFirebaseFunctions();
+          } catch (eEcFnPrime) {}
           currentApp = readCurrentAppFromUrl();
           activePanel = readPanelFromUrl();
           currentMascotShareId = resolveMascotDocId();

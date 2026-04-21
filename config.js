@@ -67,6 +67,11 @@
    */
   window.EC_MERCADOPAGO_RETURN_BASE = window.EC_MERCADOPAGO_RETURN_BASE || "";
 
+  /** false por defecto: checkout Mercado Pago vía Cloud Function; true = solo modal EC_PREMIUM_CONTACT_MESSAGE. */
+  if (typeof window.EC_PREMIUM_MANUAL_CONTACT_ONLY !== "boolean") {
+    window.EC_PREMIUM_MANUAL_CONTACT_ONLY = false;
+  }
+
   function onlyDigits(s) {
     return String(s || "").replace(/\D/g, "");
   }
