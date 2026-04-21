@@ -303,14 +303,92 @@ body {
 }
 
 /* —— App shell —— */
-#admin-banner-rescue {
-  background: linear-gradient(90deg, #fef3c7, #fde68a);
-  border-bottom: 1px solid rgba(180, 83, 9, 0.25);
-  color: #78350f;
-  padding: 0.65rem 1.25rem;
+/* Banner trial EliteCard vencido + CTA pago (premium dark / oro) */
+.admin-banner-rescue-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem 1.25rem;
+  margin: 0 1.25rem 0.65rem;
+  padding: 0.85rem 1.1rem;
+  border-radius: 0.85rem;
   font-size: 0.82rem;
+  line-height: 1.45;
+  color: rgba(248, 250, 252, 0.94);
+  background: linear-gradient(125deg, rgba(12, 10, 24, 0.98), rgba(15, 23, 42, 0.99));
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(212, 175, 55, 0.12),
+    0 16px 40px rgba(0, 0, 0, 0.45);
+}
+
+.admin-banner-rescue__inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  max-width: 42rem;
+  text-align: left;
+}
+
+.admin-banner-rescue__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 0.55rem;
+  flex-shrink: 0;
+  color: #0a0a0c;
+  background: linear-gradient(145deg, #f4e4a6, #d4af37 50%, #b8860b);
+  border: 1px solid rgba(212, 175, 55, 0.95);
+  box-shadow: 0 4px 18px rgba(212, 175, 55, 0.35);
+}
+
+.admin-banner-rescue__textblock {
+  min-width: 0;
+}
+
+.admin-banner-rescue__title {
+  margin: 0 0 0.2rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: rgba(252, 250, 255, 0.98);
+}
+
+.admin-banner-rescue__sub {
+  margin: 0;
+  font-weight: 500;
+  color: rgba(226, 232, 240, 0.88);
+}
+
+.admin-banner-rescue__price {
+  margin: 0.45rem 0 0;
+  font-size: 0.78rem;
   font-weight: 600;
-  text-align: center;
+  color: rgba(233, 196, 106, 0.95);
+}
+
+.admin-banner-rescue__pay-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.48rem 1.15rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  color: #0a0a0a;
+  background: linear-gradient(145deg, #f4e4a6, #d4af37 45%, #b8860b);
+  border: 1px solid rgba(212, 175, 55, 0.95);
+  box-shadow: 0 4px 22px rgba(212, 175, 55, 0.4);
+  transition: filter 0.15s ease, transform 0.12s ease;
+}
+
+.admin-banner-rescue__pay-cta:hover {
+  filter: brightness(1.06);
 }
 
 .admin-header {
@@ -1132,23 +1210,27 @@ details.vcf-details summary {
 }
 
 .admin-membership-banner--expired {
-  color: #7c2d12;
-  background: linear-gradient(135deg, #fff7ed, #ffedd5);
-  border: 1px solid rgba(234, 88, 12, 0.35);
+  color: rgba(248, 250, 252, 0.94);
+  background: linear-gradient(125deg, rgba(12, 10, 24, 0.97), rgba(15, 23, 42, 0.99));
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  box-shadow:
+    0 0 0 1px rgba(212, 175, 55, 0.1),
+    0 12px 32px rgba(0, 0, 0, 0.35);
 }
 
 .admin-membership-banner--expired i {
-  color: #c2410c;
+  color: #e9c46a;
 }
 
 .admin-membership-banner--suspended {
-  color: #4c1d95;
-  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
-  border: 1px solid rgba(109, 40, 217, 0.35);
+  color: rgba(248, 250, 252, 0.92);
+  background: linear-gradient(125deg, rgba(30, 27, 55, 0.98), rgba(30, 41, 59, 0.98));
+  border: 1px solid rgba(167, 139, 250, 0.45);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.32);
 }
 
 .admin-membership-banner--suspended i {
-  color: #6d28d9;
+  color: #c4b5fd;
 }
 
 .admin-membership-banner__body {
@@ -1496,6 +1578,62 @@ details.vcf-details summary {
   background: linear-gradient(135deg, #c9a132, #d4af37 50%, #e0bc4a);
   color: #0f172a;
   box-shadow: 0 6px 20px rgba(212, 175, 55, 0.35);
+}
+
+/* Modal éxito pago Mercado Pago — premium dark + oro */
+#admin-mp-success-modal.admin-modal--mp-success-gate {
+  background: rgba(6, 8, 12, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.admin-modal-panel--mp-success {
+  max-width: 24rem;
+  text-align: center;
+  background: linear-gradient(165deg, #0c0a12 0%, #0f172a 55%, #111827 100%);
+  color: rgba(248, 250, 252, 0.94);
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  border-radius: 1.25rem;
+  box-shadow:
+    0 0 0 1px rgba(212, 175, 55, 0.14),
+    0 28px 56px rgba(0, 0, 0, 0.55);
+}
+
+.admin-mp-success-eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(233, 196, 106, 0.92);
+}
+
+.admin-mp-success-title {
+  margin: 0 0 0.65rem;
+  font-size: 1.28rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: rgba(252, 250, 255, 0.98);
+}
+
+.admin-modal-panel--mp-success .admin-modal-sub.admin-mp-success-sub {
+  margin: 0 0 1.25rem;
+  line-height: 1.55;
+  color: rgba(226, 232, 240, 0.88);
+}
+
+.admin-modal-panel--mp-success .admin-mp-success-ok {
+  max-width: none;
+  width: 100%;
+  background: linear-gradient(145deg, #f4e4a6, #d4af37 45%, #b8860b);
+  color: #0a0a0a;
+  font-weight: 700;
+  border: 1px solid rgba(212, 175, 55, 0.95);
+  box-shadow: 0 6px 24px rgba(212, 175, 55, 0.38);
+}
+
+.admin-modal-panel--mp-success .admin-mp-success-ok:hover {
+  filter: brightness(1.06);
 }
 
 .admin-card--control {
@@ -2360,6 +2498,104 @@ details.vcf-details summary {
   font-size: 1rem;
   font-weight: 700;
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+/* Modal premium — activación perfil MascotBook (pago antes de Firestore) */
+.admin-modal-panel--mb-protect {
+  max-width: 26rem;
+  padding: 2rem 1.75rem 1.75rem;
+  text-align: center;
+  border-radius: 22px;
+  background: radial-gradient(120% 90% at 50% -10%, rgba(251, 191, 36, 0.22), transparent 55%),
+    linear-gradient(165deg, #0f172a 0%, #020617 48%, #0b1220 100%);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  color: #e2e8f0;
+}
+.ec-mb-protect-icon {
+  width: 3.75rem;
+  height: 3.75rem;
+  margin: 0 auto 1rem;
+  border-radius: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.65rem;
+  color: #fff;
+  background: linear-gradient(135deg, #f59e0b, #d946ef 55%, #6366f1);
+  box-shadow: 0 12px 28px rgba(217, 70, 239, 0.35);
+}
+.ec-mb-protect-eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(251, 191, 36, 0.92);
+}
+.ec-mb-protect-title {
+  margin: 0 0 0.85rem;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #f8fafc;
+}
+.ec-mb-protect-lead {
+  margin: 0 0 0.75rem;
+  font-size: 1.02rem;
+  line-height: 1.55;
+  color: rgba(226, 232, 240, 0.95);
+  font-weight: 500;
+}
+.ec-mb-protect-price-hint {
+  margin: 0 0 1.1rem;
+  font-size: 0.88rem;
+  color: rgba(148, 163, 184, 0.95);
+}
+.ec-mb-protect-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+.admin-modal-panel--mb-protect .btn-ec-pay-gold {
+  width: 100%;
+  justify-content: center;
+  font-weight: 800;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  box-shadow: 0 10px 28px rgba(245, 158, 11, 0.35);
+}
+.ec-mb-protect-foot {
+  margin: 1.1rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: rgba(148, 163, 184, 0.88);
+}
+
+/* Mensaje de rescate tras 60s en el modal de pago MascotBook */
+.ec-mb-protect-rescue {
+  margin: 0 0 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  text-align: left;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  font-weight: 600;
+  color: #fefce8;
+  background: linear-gradient(135deg, rgba(180, 83, 9, 0.45), rgba(127, 29, 29, 0.5));
+  border: 1px solid rgba(251, 191, 36, 0.55);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06) inset, 0 8px 24px rgba(0, 0, 0, 0.35);
+  animation: ecMbRescueIn 0.45s ease-out both;
+}
+@keyframes ecMbRescueIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .mascot-lost-switch-row {

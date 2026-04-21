@@ -6,6 +6,7 @@ const { setGlobalOptions } = require("firebase-functions/v2");
 const { onRequest, onCall, HttpsError } = require("firebase-functions/v2/https");
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const { defineSecret } = require("firebase-functions/params");
+const { MercadoPagoConfig, Preference } = require("mercadopago");
 
 setGlobalOptions({ region: "us-east1" });
 
@@ -13,6 +14,10 @@ const functionsV1 = require("firebase-functions/v1");
 
 /** Token de producción / test de Mercado Pago (nunca en el frontend). */
 const mpAccessToken = defineSecret("MP_ACCESS_TOKEN");
+
+/** Copy unificado tras pago aprobado (retorno Checkout / feedback HTTP). */
+const EC_MP_SUCCESS_FEEDBACK_COPY =
+  "¡Pago procesado con éxito! Tu activo digital ya está totalmente operativo";
 
 function membershipCollectionName() {
   return String(process.env.FIRESTORE_MEMBERSHIP_COLLECTION || "users").trim() || "users";
@@ -33,34 +38,100 @@ function timestampMsFromFirestoreVal(v) {
   return null;
 }
 
-function parseExternalReference(ref) {
+function sanitizeMpSegment(s) {
+  return String(s || "")
+    .trim()
+    .replace(/\|/g, "_")
+    .slice(0, 120);
+}
+
+/**
+ * external_reference: siempre incluye el UID en el segmento 1.
+ * - ec|UID|elite_suscripcion|once|monthly
+ * - ec|UID|mascota_adicional|MASCOT_ID|CANT o ec|UID|mascota_adicional|nueva_mascota|CANT
+ * - ec|UID|mascotbook|idPerfil (legacy) · ec|UID|elitecard|idPerfil (legacy)
+ */
+function buildMercadoPagoExternalReference(payload) {
+  const uid = sanitizeMpSegment(payload && payload.uid);
+  if (!uid) return null;
+  const producto = String((payload && payload.producto) || "").trim().toLowerCase();
+  if (producto === "elite_suscripcion") {
+    const billing = String((payload && payload.eliteBilling) || "once").toLowerCase() === "monthly" ? "monthly" : "once";
+    return ["ec", uid, "elite_suscripcion", billing].join("|");
+  }
+  if (producto === "mascota_adicional") {
+    const qty = Math.max(1, Math.min(999, Math.floor(Number((payload && payload.cantidad) || 1) || 1)));
+    const nueva = !!(payload && payload.nuevaMascota);
+    const token = nueva ? "nueva_mascota" : sanitizeMpSegment(payload && payload.mascotId) || "nueva_mascota";
+    return ["ec", uid, "mascota_adicional", token, String(qty)].join("|");
+  }
+  const plan = String((payload && payload.tipoPlan) || "mascotbook").toLowerCase() === "elitecard" ? "elitecard" : "mascotbook";
+  const idPerfil = sanitizeMpSegment(payload && payload.idPerfil);
+  return ["ec", uid, plan, idPerfil].join("|");
+}
+
+/**
+ * @returns {null | { kind: string, uid: string, [k: string]: any }}
+ */
+function parseMercadoPagoExternalReference(ref) {
   const raw = String(ref || "").trim();
   if (!raw) return null;
   const parts = raw.split("|");
-  if (parts[0] !== "ec" || parts.length < 4) return null;
+  if (parts[0] !== "ec" || parts.length < 3) return null;
   const uid = String(parts[1] || "").trim();
-  const plan = String(parts[2] || "").trim().toLowerCase();
-  const idPerfil = String(parts.slice(3).join("|") || "").trim();
-  if (!uid || (plan !== "mascotbook" && plan !== "elitecard")) return null;
-  return { uid, plan, idPerfil };
+  if (!uid) return null;
+  const tag = String(parts[2] || "").trim().toLowerCase();
+  if (tag === "elite_suscripcion") {
+    const billing = String(parts[3] || "once").toLowerCase() === "monthly" ? "monthly" : "once";
+    return { kind: "elite_suscripcion", uid, eliteBilling: billing };
+  }
+  if (tag === "mascota_adicional") {
+    const tok = String(parts[3] || "").trim();
+    const qtyRaw = parseInt(String(parts[4] || "1"), 10);
+    const quantity = Number.isFinite(qtyRaw) ? Math.max(1, Math.min(999, qtyRaw)) : 1;
+    const nuevaMascota = !tok || tok === "nueva_mascota";
+    const mascotId = nuevaMascota ? "" : tok;
+    return { kind: "mascota_adicional", uid, nuevaMascota, mascotId, quantity };
+  }
+  if (tag === "mascotbook" || tag === "elitecard") {
+    const idPerfil = parts.slice(3).join("|").trim();
+    return { kind: "legacy_suscripcion", uid, plan: tag, idPerfil };
+  }
+  return null;
 }
 
-function buildExternalReference(uid, plan, idPerfil) {
-  const pid = String(idPerfil || "")
-    .trim()
-    .replace(/\|/g, "_")
-    .slice(0, 200);
-  return ["ec", uid, plan, pid].join("|");
-}
-
-function unitPriceForPlan(plan) {
+function unitPriceLegacyPlan(plan) {
   const mb = Number(process.env.MP_UNIT_PRICE_MASCOTBOOK || 24999);
   const el = Number(process.env.MP_UNIT_PRICE_ELITECARD || 19999);
   return plan === "mascotbook" ? mb : el;
 }
 
-function itemTitleForPlan(plan) {
-  return plan === "mascotbook" ? "MascotBook · Suscripción anual" : "WebElite / EliteCard · Suscripción anual";
+function unitPriceEliteSuscripcion(billing) {
+  const once = Number(process.env.MP_PRICE_ELITECARD_ONCE || process.env.MP_UNIT_PRICE_ELITECARD || 19999);
+  const monthly = Number(
+    process.env.MP_PRICE_ELITECARD_MONTHLY || process.env.MP_PRICE_ELITECARD_ONCE || process.env.MP_UNIT_PRICE_ELITECARD || 19999
+  );
+  return billing === "monthly" ? monthly : once;
+}
+
+function unitPriceMascotaAdicional() {
+  return Number(process.env.MP_PRICE_MASCOTA_ADICIONAL || process.env.MP_UNIT_PRICE_MASCOTBOOK || 24999);
+}
+
+/**
+ * Crea una preferencia de Checkout Pro en Mercado Pago (SDK oficial).
+ * @param {string} accessToken
+ * @param {Record<string, unknown>} body Cuerpo según referencia MP (items, external_reference, back_urls, …).
+ * @param {string} idempotencyKey
+ * @returns {Promise<Record<string, unknown>>}
+ */
+async function crearPreferenciaMercadoPago(accessToken, body, idempotencyKey) {
+  const client = new MercadoPagoConfig({ accessToken: String(accessToken || "").trim() });
+  const preference = new Preference(client);
+  return preference.create({
+    body,
+    requestOptions: { idempotencyKey: String(idempotencyKey || "").trim() || `ec-mp-${Date.now()}` },
+  });
 }
 
 async function mpGetPayment(paymentId, accessToken) {
@@ -485,37 +556,135 @@ exports.onMascotLostScanNotify = onDocumentCreated("usuarios/{uid}/mascot_lost_s
   });
 
 /**
- * Mercado Pago — activa membresía 365 días tras pago aprobado.
- * external_reference formato: ec|uid|mascotbook|elitecard|idPerfil
+ * Acredita créditos de perfil MascotBook o marca pago en mascotas/{id} (idempotente por payment id).
+ */
+async function fulfillMascotaAdicionalApprovedPayment(payment, parsed) {
+  if (!parsed || parsed.kind !== "mascota_adicional") {
+    return { ok: false, reason: "not_addon" };
+  }
+  const admin = getAdmin();
+  const db = admin.firestore();
+  const payId = String(payment.id || "").trim();
+  if (!payId) return { ok: false, reason: "no_payment_id" };
+  const col = membershipCollectionName();
+  const memRef = db.collection(col).doc(parsed.uid);
+  const qty = Math.max(1, Math.min(999, Number(parsed.quantity) || 1));
+
+  if (parsed.nuevaMascota) {
+    await db.runTransaction(async (tx) => {
+      const snap = await tx.get(memRef);
+      const d = snap.exists ? snap.data() : {};
+      const arr = Array.isArray(d.mpMascotAddonPaymentIds) ? d.mpMascotAddonPaymentIds : [];
+      if (arr.indexOf(payId) >= 0) return;
+      const next = (arr.length > 90 ? arr.slice(-70) : arr.slice()).concat([payId]);
+      tx.set(
+        memRef,
+        {
+          mascotbookExtraProfileCredits: admin.firestore.FieldValue.increment(qty),
+          mascotas_permitidas: admin.firestore.FieldValue.increment(qty),
+          mpMascotAddonPaymentIds: next,
+          lastMercadoPagoPaymentId: payId,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+    });
+    console.log("[mp] créditos perfil mascota +", qty, parsed.uid);
+    return { ok: true, nuevaMascota: true };
+  }
+
+  if (parsed.mascotId) {
+    const petRef = db.collection("mascotas").doc(parsed.mascotId);
+    const petSnap = await petRef.get();
+    if (!petSnap.exists || String((petSnap.data() || {}).ownerUid || "") !== parsed.uid) {
+      console.warn("[mp] mascota_adicional mascotId inválido", parsed.mascotId, parsed.uid);
+      return { ok: false, reason: "invalid_pet" };
+    }
+    await db.runTransaction(async (tx) => {
+      const memSnap = await tx.get(memRef);
+      const md = memSnap.exists ? memSnap.data() : {};
+      const arr = Array.isArray(md.mpMascotAddonPaymentIds) ? md.mpMascotAddonPaymentIds : [];
+      if (arr.indexOf(payId) >= 0) return;
+      const next = (arr.length > 90 ? arr.slice(-70) : arr.slice()).concat([payId]);
+      tx.set(
+        petRef,
+        {
+          mbProfilePaid: true,
+          mbProfilePaidPaymentId: payId,
+          pago: true,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+      tx.set(
+        memRef,
+        {
+          mpMascotAddonPaymentIds: next,
+          lastMercadoPagoPaymentId: payId,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+    });
+    return { ok: true, mascotId: parsed.mascotId };
+  }
+  return { ok: false, reason: "unknown_addon" };
+}
+
+/**
+ * Mercado Pago — activa membresía de larga duración tras pago aprobado (suscripciones / EliteCard).
+ * Duración: env `MP_MEMBERSHIP_YEARS` (default 30). "mascota_adicional" acredita créditos o marca perfil pagado.
  */
 async function applyMembershipAfterApproved(payment) {
-  const parsed = parseExternalReference(payment.external_reference);
+  const parsed = parseMercadoPagoExternalReference(payment.external_reference);
   if (!parsed) {
     console.warn("[mp] external_reference inválida", payment.external_reference);
     return false;
+  }
+  if (parsed.kind === "mascota_adicional") {
+    const r = await fulfillMascotaAdicionalApprovedPayment(payment, parsed);
+    return !!r.ok;
   }
   const admin = getAdmin();
   const db = admin.firestore();
   const col = membershipCollectionName();
   const ref = db.collection(col).doc(parsed.uid);
-  const ms365 = Date.now() + 365 * 24 * 60 * 60 * 1000;
-  const due = admin.firestore.Timestamp.fromMillis(ms365);
+  const years = Math.max(1, Math.min(80, Math.floor(Number(process.env.MP_MEMBERSHIP_YEARS || 30) || 30)));
+  const msDue = Date.now() + years * 365 * 24 * 60 * 60 * 1000;
+  const due = admin.firestore.Timestamp.fromMillis(msDue);
   const patch = {
     isPremium: true,
-    status: "active",
     plan_status: "active",
     vencimientoMembresia: due,
     lastMercadoPagoPaymentId: String(payment.id || ""),
     updatedAt: admin.firestore.FieldValue.serverTimestamp(),
   };
-  if (parsed.plan === "mascotbook") {
+  let planKey = "";
+  if (parsed.kind === "elite_suscripcion") {
+    planKey = "elitecard";
+    patch.elitecard_billing = parsed.eliteBilling === "monthly" ? "monthly" : "once";
+  } else if (parsed.kind === "legacy_suscripcion") {
+    planKey = parsed.plan;
+  }
+  if (planKey === "elitecard") {
+    patch.status = "premium";
+  } else {
+    patch.status = "active";
+  }
+  if (planKey === "mascotbook") {
     patch.mascotbook_status = "active";
     patch.mascotbook_multi_unlocked = true;
-  } else {
+    if (parsed.kind === "legacy_suscripcion") {
+      patch.mascotas_permitidas = admin.firestore.FieldValue.increment(1);
+    }
+  } else if (planKey === "elitecard") {
     patch.elitecard_status = "active";
+  } else {
+    console.warn("[mp] tipo sin rama de membresía", parsed);
+    return false;
   }
   await ref.set(patch, { merge: true });
-  console.log("[mp] membresía activada", parsed.uid, parsed.plan);
+  console.log("[mp] membresía activada", parsed.uid, planKey, parsed.kind);
   return true;
 }
 
@@ -562,44 +731,291 @@ exports.webhookMercadoPago = onRequest({ secrets: [mpAccessToken] }, async (req,
   res.status(200).send("ok");
 });
 
-/** Callable — crea preferencia Checkout Pro (nunca expongas el token en el cliente). */
+function feedbackOriginFromReq(req) {
+  const proto = String(req.get("x-forwarded-proto") || "https").split(",")[0].trim() || "https";
+  const host = String(req.get("x-forwarded-host") || req.get("host") || "").split(",")[0].trim();
+  return host ? `${proto}://${host}` : "";
+}
+
+function appendQueryToAbsoluteUrl(fullUrl, additions) {
+  const u = new URL(fullUrl);
+  Object.entries(additions).forEach(([k, v]) => {
+    if (v == null || v === undefined) return;
+    const s = String(v);
+    if (!s) return;
+    u.searchParams.set(k, s);
+  });
+  return u.toString();
+}
+
+async function touchMembershipMpFeedback(uid, patch) {
+  const u = String(uid || "").trim();
+  if (!u) return;
+  const admin = getAdmin();
+  await admin
+    .firestore()
+    .collection(membershipCollectionName())
+    .doc(u)
+    .set(patch, { merge: true });
+}
+
+/**
+ * Retorno navegador Checkout Pro (success / pending / failure): sincroniza Firestore y redirige al panel con mensaje.
+ * Configurá en Hosting: rewrite `/mp/feedback` → esta función (misma región que el resto).
+ */
+exports.mercadoPagoFeedback = onRequest({ secrets: [mpAccessToken] }, async (req, res) => {
+  if (req.method !== "GET") {
+    res.status(405).send("Method Not Allowed");
+    return;
+  }
+  const adm = getAdmin();
+  const tsNow = () => adm.firestore.FieldValue.serverTimestamp();
+  const origin = feedbackOriginFromReq(req);
+  if (!origin) {
+    res.status(500).send("Missing host");
+    return;
+  }
+
+  const nextEnc = String(req.query.next || "").trim();
+  let baseUrl = `${origin}/admin.html`;
+  if (nextEnc) {
+    try {
+      const dec = decodeURIComponent(nextEnc);
+      const nu = new URL(dec);
+      if (nu.origin === origin) baseUrl = nu.toString();
+    } catch (e1) {
+      // mantener default
+    }
+  }
+
+  const redirectWith = (extra) => {
+    res.redirect(302, appendQueryToAbsoluteUrl(baseUrl, extra));
+  };
+
+  const paymentId = String(req.query.payment_id || req.query.collection_id || "").trim();
+  const extRef = String(req.query.external_reference || "").trim();
+  const parsed = extRef ? parseMercadoPagoExternalReference(extRef) : null;
+  const uid = parsed && parsed.uid ? String(parsed.uid) : "";
+  const selfPhase = String(req.query.mp_phase || "").toLowerCase();
+
+  if (selfPhase === "failure" || selfPhase === "fail") {
+    redirectWith({ pago: "fallido", ec_mp_feedback: "failure" });
+    return;
+  }
+  if (selfPhase === "pending") {
+    redirectWith({ pago: "pendiente", ec_mp_feedback: "pending" });
+    return;
+  }
+
+  if (!paymentId) {
+    const qs = String(req.query.status || req.query.collection_status || "").toLowerCase();
+    if ((qs === "pending" || qs === "in_process") && uid) {
+      try {
+        await touchMembershipMpFeedback(uid, {
+          lastMercadoPagoStatus: qs,
+          updatedAt: tsNow(),
+        });
+      } catch (e2) {
+        console.warn("[mp feedback] pending sin id", e2.message);
+      }
+    }
+    redirectWith({
+      pago: qs === "pending" || qs === "in_process" ? "pendiente" : "fallido",
+      ec_mp_feedback: qs || "no_payment_id",
+      external_reference: extRef || undefined,
+    });
+    return;
+  }
+
+  const token = mpAccessToken.value();
+  const payment = await mpGetPayment(paymentId, token);
+  if (!payment) {
+    redirectWith({ pago: "fallido", ec_mp_feedback: "payment_not_found", payment_id: paymentId });
+    return;
+  }
+
+  const ps = String(payment.status || "").toLowerCase();
+
+  if (ps === "approved") {
+    try {
+      await applyMembershipAfterApproved(payment);
+    } catch (err) {
+      console.error("[mp feedback] apply", err);
+    }
+    redirectWith({
+      pago: "exitoso",
+      ec_mp_msg: EC_MP_SUCCESS_FEEDBACK_COPY,
+      payment_id: paymentId,
+      external_reference: String(payment.external_reference || extRef || "") || undefined,
+    });
+    return;
+  }
+
+  if (ps === "pending" || ps === "in_process" || ps === "authorized") {
+    if (uid) {
+      try {
+        await touchMembershipMpFeedback(uid, {
+          lastMercadoPagoStatus: ps,
+          lastMercadoPagoPaymentId: paymentId,
+          updatedAt: tsNow(),
+        });
+      } catch (e3) {
+        console.warn("[mp feedback] pending", e3.message);
+      }
+    }
+    redirectWith({
+      pago: "pendiente",
+      ec_mp_feedback: ps,
+      payment_id: paymentId,
+    });
+    return;
+  }
+
+  if (uid) {
+    try {
+      await touchMembershipMpFeedback(uid, {
+        lastMercadoPagoStatus: ps || "failure",
+        lastMercadoPagoPaymentId: paymentId,
+        updatedAt: tsNow(),
+      });
+    } catch (e4) {
+      console.warn("[mp feedback] failure touch", e4.message);
+    }
+  }
+  redirectWith({
+    pago: "fallido",
+    ec_mp_feedback: ps || "failure",
+    payment_id: paymentId,
+  });
+});
+
+/** Callable — crea preferencia Checkout Pro con SDK oficial (token solo en servidor). */
 exports.createMercadoPagoPreference = onCall({ secrets: [mpAccessToken], cors: true }, async (request) => {
   if (!request.auth || !request.auth.uid) {
     throw new HttpsError("unauthenticated", "Sesión requerida");
   }
   const uid = request.auth.uid;
-  const idPerfil = String((request.data && request.data.idPerfil) || "").trim();
-  const tipoPlanRaw = String((request.data && request.data.tipoPlan) || "mascotbook").toLowerCase();
+  const data = request.data && typeof request.data === "object" ? request.data : {};
+  const idPerfil = String(data.idPerfil || "").trim();
+  const tipoPlanRaw = String(data.tipoPlan || "mascotbook").toLowerCase();
   const tipoPlan = tipoPlanRaw === "elitecard" ? "elitecard" : "mascotbook";
-  const returnBase = String((request.data && request.data.returnBase) || "").trim().replace(/\/$/, "");
+  const returnBase = String(data.returnBase || "").trim().replace(/\/$/, "");
   if (!returnBase || !/^https?:\/\//i.test(returnBase)) {
     throw new HttpsError("invalid-argument", "returnBase debe ser una URL http(s) absoluta");
   }
-  const ext = buildExternalReference(uid, tipoPlan, idPerfil);
-  const token = mpAccessToken.value();
-  const unit = unitPriceForPlan(tipoPlan);
-  const q = returnBase.indexOf("?") >= 0 ? "&" : "?";
-  const successUrl =
-    returnBase +
-    q +
-    "pago=exitoso&id=" +
-    encodeURIComponent(uid) +
-    "&plan=" +
-    encodeURIComponent(tipoPlan) +
-    (idPerfil ? "&perfil=" + encodeURIComponent(idPerfil) : "");
-  const pendUrl = returnBase + q + "pago=pendiente";
-  const failUrl = returnBase + q + "pago=fallido";
-  const prefBody = {
-    items: [
+  const productoRaw = String(data.producto || "").trim().toLowerCase();
+
+  let ext = "";
+  let items = [];
+  let metaProducto = "";
+
+  if (productoRaw === "elite_suscripcion") {
+    const eliteBilling = String(data.eliteBilling || "once").toLowerCase() === "monthly" ? "monthly" : "once";
+    ext = buildMercadoPagoExternalReference({ producto: "elite_suscripcion", uid, eliteBilling });
+    const unit = unitPriceEliteSuscripcion(eliteBilling);
+    const title =
+      eliteBilling === "monthly" ? "Suscripción EliteCard (mensual)" : "Suscripción EliteCard (pago único)";
+    items = [
       {
-        title: itemTitleForPlan(tipoPlan),
-        description: "Activación 365 días",
+        title,
+        description: "EliteCard — WebElite",
         quantity: 1,
         currency_id: "ARS",
         unit_price: Number(unit) || 1,
       },
-    ],
+    ];
+    metaProducto = "elite_suscripcion";
+  } else if (productoRaw === "mascota_adicional") {
+    const cantidad = Math.max(1, Math.min(999, Math.floor(Number(data.cantidad) || 1)));
+    const mascotId = String(data.mascotId || "").trim();
+    const nuevaMascota = !!data.nuevaMascota || !mascotId;
+    ext = buildMercadoPagoExternalReference({ producto: "mascota_adicional", uid, cantidad, nuevaMascota, mascotId });
+    const unit = unitPriceMascotaAdicional();
+    items = [
+      {
+        title: "Mascota Adicional · MascotBook",
+        description: "Unidad adicional MascotBook",
+        quantity: cantidad,
+        currency_id: "ARS",
+        unit_price: Number(unit) || 1,
+      },
+    ];
+    metaProducto = "mascota_adicional";
+  } else {
+    ext = buildMercadoPagoExternalReference({ producto: "legacy", uid, tipoPlan, idPerfil });
+    const unit = unitPriceLegacyPlan(tipoPlan);
+    const title =
+      tipoPlan === "mascotbook" ? "MascotBook · Suscripción anual" : "WebElite / EliteCard · Suscripción anual";
+    items = [
+      {
+        title,
+        description: "Activación premium (acceso extendido)",
+        quantity: 1,
+        currency_id: "ARS",
+        unit_price: Number(unit) || 1,
+      },
+    ];
+    metaProducto = "legacy_" + tipoPlan;
+  }
+
+  if (!ext) {
+    throw new HttpsError("internal", "No se pudo armar external_reference");
+  }
+
+  const token = mpAccessToken.value();
+  const q = returnBase.indexOf("?") >= 0 ? "&" : "?";
+  const planQuery =
+    productoRaw === "elite_suscripcion" ? "elitecard" : productoRaw === "mascota_adicional" ? "mascotbook" : tipoPlan;
+  const eliteBillingQ =
+    productoRaw === "elite_suscripcion"
+      ? String(data.eliteBilling || "once").toLowerCase() === "monthly"
+        ? "monthly"
+        : "once"
+      : "";
+  let successUrl;
+  let pendUrl;
+  let failUrl;
+  try {
+    const ru = new URL(returnBase);
+    const o = ru.origin;
+    const aug = new URL(returnBase);
+    aug.searchParams.set("id", uid);
+    aug.searchParams.set("plan", planQuery);
+    if (idPerfil) aug.searchParams.set("perfil", idPerfil);
+    aug.searchParams.set("mp_producto", metaProducto);
+    if (eliteBillingQ) aug.searchParams.set("elite_billing", eliteBillingQ);
+    const nextEnc = encodeURIComponent(aug.toString());
+    const fb = `${o}/mp/feedback?next=${nextEnc}`;
+    successUrl = fb;
+    pendUrl = `${fb}&mp_phase=pending`;
+    failUrl = `${fb}&mp_phase=failure`;
+  } catch (eFb) {
+    successUrl =
+      returnBase +
+      q +
+      "pago=exitoso&id=" +
+      encodeURIComponent(uid) +
+      "&plan=" +
+      encodeURIComponent(planQuery) +
+      (idPerfil ? "&perfil=" + encodeURIComponent(idPerfil) : "") +
+      "&mp_producto=" +
+      encodeURIComponent(metaProducto) +
+      (eliteBillingQ ? "&elite_billing=" + encodeURIComponent(eliteBillingQ) : "");
+    pendUrl = returnBase + q + "pago=pendiente";
+    failUrl = returnBase + q + "pago=fallido";
+  }
+  /**
+   * Checkout Pro: redirección automática solo cuando el pago queda approved.
+   * Mercado Pago agrega a la URL de éxito (p. ej. /mp/feedback o returnBase) query params como payment_id y status.
+   * La activación en Firestore no depende del webhook: el cliente llama verifyMercadoPagoPayment con ese payment_id.
+   */
+  const prefBody = {
+    items,
     external_reference: ext,
+    metadata: {
+      ec_uid: uid,
+      ec_producto: metaProducto,
+    },
     back_urls: {
       success: successUrl,
       pending: pendUrl,
@@ -611,32 +1027,185 @@ exports.createMercadoPagoPreference = onCall({ secrets: [mpAccessToken], cors: t
     prefBody.payer = { email: String(request.auth.token.email).slice(0, 256) };
   }
   const idem =
-    String((request.data && request.data.idempotencyKey) || "").trim() ||
+    String(data.idempotencyKey || "").trim() ||
     `ec-pref-${uid}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-  const r = await fetch("https://api.mercadopago.com/checkout/preferences", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-      "X-Idempotency-Key": idem,
-    },
-    body: JSON.stringify(prefBody),
-  });
-  let j = {};
+
+  let j;
   try {
-    j = await r.json();
-  } catch (e) {
-    j = {};
-  }
-  if (!r.ok) {
-    console.error("[mp] preference error", r.status, j);
-    throw new HttpsError("internal", (j && j.message) || "Error creando preferencia MP");
+    j = await crearPreferenciaMercadoPago(token, prefBody, idem);
+  } catch (err) {
+    const msg = (err && (err.message || err.cause || err.error)) || String(err);
+    console.error("[mp] preference SDK error", err);
+    throw new HttpsError("internal", typeof msg === "string" ? msg.slice(0, 300) : "Error creando preferencia MP");
   }
   const initPoint = j.init_point || j.sandbox_init_point;
   if (!initPoint) {
     throw new HttpsError("internal", "Respuesta MP sin init_point");
   }
   return { init_point: initPoint, preference_id: j.id || null, external_reference: ext };
+});
+
+/**
+ * Crea tarjetas/{id} + mascotas/{id} en servidor: primer perfil gratis, plan activo/premium sin consumir crédito,
+ * perfil extra requiere mascotbookExtraProfileCredits >= 1 (se descuenta 1).
+ */
+exports.allocateNewMascotProfile = onCall({ cors: true }, async (request) => {
+  if (!request.auth || !request.auth.uid) {
+    throw new HttpsError("unauthenticated", "Sesión requerida");
+  }
+  const uid = request.auth.uid;
+  const initialName = String((request.data && request.data.initialName) || "")
+    .trim()
+    .slice(0, 200) || "Mi mascota";
+  const admin = getAdmin();
+  const db = admin.firestore();
+  const countSnap = await db.collection("mascotas").where("ownerUid", "==", uid).get();
+  const n = countSnap.size;
+  if (n >= 5) {
+    throw new HttpsError("resource-exhausted", "Alcanzaste el límite de 5 perfiles MascotBook.");
+  }
+  const col = membershipCollectionName();
+  const memRef = db.collection(col).doc(uid);
+  const memSnap = await memRef.get();
+  const m = memSnap.exists ? memSnap.data() || {} : {};
+  const hasSubscription =
+    m.isPremium === true ||
+    m.mascotbook_multi_unlocked === true ||
+    String(m.mascotbook_status || "").toLowerCase() === "active";
+  const credits = Number(m.mascotbookExtraProfileCredits || 0);
+  let useCredit = false;
+  if (n < 1) {
+    useCredit = false;
+  } else if (hasSubscription) {
+    useCredit = false;
+  } else if (credits >= 1) {
+    useCredit = true;
+  } else {
+    throw new HttpsError("failed-precondition", "Se requiere activar un perfil adicional (pago pendiente).");
+  }
+
+  const tarRef = db.collection("tarjetas").doc();
+  const mascRef = db.collection("mascotas").doc();
+  const email = request.auth.token && request.auth.token.email ? String(request.auth.token.email).slice(0, 256) : "";
+  const ts = admin.firestore.FieldValue.serverTimestamp();
+
+  await db.runTransaction(async (tx) => {
+    if (useCredit) {
+      const s = await tx.get(memRef);
+      const md = s.exists ? s.data() || {} : {};
+      const cr = Number(md.mascotbookExtraProfileCredits || 0);
+      if (cr < 1) {
+        throw new HttpsError("failed-precondition", "Sin créditos de perfil disponibles.");
+      }
+      tx.set(
+        memRef,
+        {
+          mascotbookExtraProfileCredits: cr - 1,
+          updatedAt: ts,
+        },
+        { merge: true }
+      );
+    }
+    tx.set(tarRef, {
+      ownerUid: uid,
+      ownerEmail: email,
+      mascotaNombre: initialName,
+      publicCardId: mascRef.id,
+      tipo: "mascotbook",
+      createdAt: ts,
+    });
+    tx.set(
+      mascRef,
+      {
+        nombre: initialName,
+        ownerUid: uid,
+        ownerEmail: email,
+        mascotId: mascRef.id,
+        createdAt: ts,
+        updatedAt: ts,
+      },
+      { merge: false }
+    );
+  });
+
+  return { tarjetaDocId: tarRef.id, mascotDocId: mascRef.id };
+});
+
+/**
+ * Verificación explícita desde el cliente tras volver del Checkout (no depende del webhook).
+ * Consulta GET /v1/payments/:id con el token de servidor y aplica Firestore si está approved.
+ */
+exports.verifyMercadoPagoPayment = onCall({ secrets: [mpAccessToken], cors: true }, async (request) => {
+  if (!request.auth || !request.auth.uid) {
+    throw new HttpsError("unauthenticated", "Sesión requerida");
+  }
+  const uid = request.auth.uid;
+  const paymentId = String((request.data && request.data.paymentId) || "").trim();
+  if (!paymentId) {
+    throw new HttpsError("invalid-argument", "paymentId requerido");
+  }
+  const token = mpAccessToken.value();
+  const payment = await mpGetPayment(paymentId, token);
+  if (!payment) {
+    throw new HttpsError("not-found", "No se encontró el pago en Mercado Pago");
+  }
+  const parsed = parseMercadoPagoExternalReference(payment.external_reference);
+  if (!parsed || String(parsed.uid) !== String(uid)) {
+    throw new HttpsError("permission-denied", "Este pago no corresponde a tu cuenta");
+  }
+  const ps = String(payment.status || "").toLowerCase();
+  if (ps !== "approved") {
+    return {
+      ok: true,
+      status: ps || "unknown",
+      applied: false,
+      paymentId,
+      kind: parsed.kind,
+      external_reference: String(payment.external_reference || ""),
+    };
+  }
+  try {
+    const applied = await applyMembershipAfterApproved(payment);
+    return {
+      ok: true,
+      status: "approved",
+      applied: !!applied,
+      paymentId,
+      kind: parsed.kind,
+      external_reference: String(payment.external_reference || ""),
+    };
+  } catch (err) {
+    console.error("[mp verify] apply", err);
+    throw new HttpsError("internal", err.message || "No se pudo aplicar el pago");
+  }
+});
+
+/** Confirma pago MP desde el retorno (callback) y acredita igual que el webhook (idempotente). */
+exports.confirmMascotAddonPayment = onCall({ secrets: [mpAccessToken], cors: true }, async (request) => {
+  if (!request.auth || !request.auth.uid) {
+    throw new HttpsError("unauthenticated", "Sesión requerida");
+  }
+  const paymentId = String((request.data && request.data.paymentId) || "").trim();
+  if (!paymentId) {
+    throw new HttpsError("invalid-argument", "paymentId requerido");
+  }
+  const token = mpAccessToken.value();
+  const payment = await mpGetPayment(paymentId, token);
+  if (!payment) {
+    throw new HttpsError("not-found", "Pago no encontrado");
+  }
+  if (String(payment.status || "").toLowerCase() !== "approved") {
+    throw new HttpsError("failed-precondition", "El pago no está aprobado");
+  }
+  const parsed = parseMercadoPagoExternalReference(payment.external_reference);
+  if (!parsed || parsed.kind !== "mascota_adicional" || parsed.uid !== request.auth.uid) {
+    throw new HttpsError("permission-denied", "Este pago no corresponde a un perfil adicional de tu cuenta");
+  }
+  const r = await fulfillMascotaAdicionalApprovedPayment(payment, parsed);
+  if (!r.ok) {
+    throw new HttpsError("internal", String(r.reason || "No se pudo acreditar el pago"));
+  }
+  return { success: true, ...r };
 });
 
 /** Marca membresía vencida si vencimientoMembresia ya pasó (hora del servidor en la función). */

@@ -56,8 +56,19 @@
     </div>
 
     <div id="app" class="hidden">
-      <div id="admin-banner-rescue" class="hidden" role="status">
-        Tu período de prueba terminó. Tu tarjeta está en Modo Rescate (Funciones básicas activas).
+      <div id="admin-banner-rescue" class="admin-banner-rescue-wrap hidden" role="status">
+        <div class="admin-banner-rescue__inner">
+          <span class="admin-banner-rescue__icon" aria-hidden="true"><i class="fa-solid fa-crown"></i></span>
+          <div class="admin-banner-rescue__textblock">
+            <p class="admin-banner-rescue__title">Tu período de prueba terminó</p>
+            <p class="admin-banner-rescue__sub">
+              Tu tarjeta está en Modo Rescate (funciones básicas activas). Activá la membresía para desbloquear el panel
+              completo.
+            </p>
+            <p id="ec-rescue-pay-price" class="admin-banner-rescue__price hidden" aria-live="polite"></p>
+          </div>
+        </div>
+        <a href="#" id="ec-rescue-pay-cta" class="admin-banner-rescue__pay-cta hidden">Pagar membresía EliteCard</a>
       </div>
       <div id="admin-banner-membership-expired" class="admin-membership-banner admin-membership-banner--expired hidden" role="alert">
         <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
@@ -150,7 +161,7 @@
             <div id="ec-sidebar-mis-perfiles-list" class="ec-sidebar-mis-perfiles__list" role="list"></div>
             <p id="ec-sidebar-active-mascot-name" class="ec-sidebar-mis-perfiles__active-caption hidden" aria-live="polite"></p>
             <button type="button" class="ec-sidebar-mis-perfiles__new" id="ec-sidebar-btn-nueva-mascota">
-              + Nueva Mascota
+              + Agregar Mascota
             </button>
           </div>
           <div id="theme-panel" class="theme-panel hidden">
@@ -203,7 +214,7 @@
                 <button type="button" class="btn-solid" id="btn-ec-dash-goto-mascot-contenido">
                   Ir a Contenido MascotBook
                 </button>
-                <button type="button" class="btn-outline" onclick="crearNuevaMascotaWorkflow()">+ Nueva Mascota</button>
+                <button type="button" class="btn-outline" onclick="crearNuevaMascotaWorkflow()">+ Agregar Mascota</button>
               </div>
             </div>
 
@@ -919,7 +930,7 @@
         <div class="admin-modal-header-icon">
           <i class="fa-solid fa-paw" aria-hidden="true"></i>
         </div>
-        <h4 id="admin-mascot-new-title" class="admin-modal-title-premium">Nueva Mascota</h4>
+        <h4 id="admin-mascot-new-title" class="admin-modal-title-premium">Agregar Mascota</h4>
         <p class="admin-modal-sub">Creá un nuevo perfil independiente. Ingresá el nombre de tu mascota para comenzar.</p>
         <div class="field">
           <label for="admin-mascot-new-name">Nombre de la mascota</label>
@@ -928,6 +939,36 @@
         <div class="admin-modal-actions-premium">
           <button type="button" class="btn-solid btn-premium-action" id="admin-mascot-new-confirm">Crear Perfil</button>
         </div>
+      </div>
+    </div>
+
+    <div
+      id="admin-mascot-protect-modal"
+      class="admin-modal admin-modal--blocking hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="admin-mascot-protect-title"
+    >
+      <div class="admin-modal-panel admin-modal-panel--mb-protect">
+        <button type="button" class="admin-modal-close admin-modal-close--light" id="admin-mascot-protect-close" aria-label="Cerrar">
+          ×
+        </button>
+        <div class="ec-mb-protect-icon" aria-hidden="true">
+          <i class="fa-solid fa-shield-heart"></i>
+        </div>
+        <p class="ec-mb-protect-eyebrow">MascotBook · Protección premium</p>
+        <h4 id="admin-mascot-protect-title" class="ec-mb-protect-title">Activá el perfil de tu mascota</h4>
+        <p id="admin-mascot-protect-lead" class="ec-mb-protect-lead"></p>
+        <p id="admin-mascot-protect-price-hint" class="ec-mb-protect-price-hint" aria-live="polite"></p>
+        <div id="admin-mascot-protect-rescue" class="ec-mb-protect-rescue hidden" role="status" aria-live="polite"></div>
+        <div class="ec-mb-protect-actions">
+          <button type="button" class="btn-ec-pay-gold ec-mb-protect-pay" id="admin-mascot-protect-pay">
+            Pagar con Mercado Pago
+          </button>
+        </div>
+        <p class="ec-mb-protect-foot">
+          Tras el pago aprobado podrás guardar el perfil en la nube. También podés verificar el pago al volver de Mercado Pago.
+        </p>
       </div>
     </div>
 
@@ -1011,16 +1052,19 @@
 
     <div
       id="admin-mp-success-modal"
-      class="admin-modal admin-modal--blocking hidden"
+      class="admin-modal admin-modal--blocking admin-modal--mp-success-gate hidden"
       role="dialog"
       aria-modal="true"
       aria-labelledby="admin-mp-success-title"
     >
-      <div class="admin-modal-panel admin-modal-panel--premium-contact">
-        <button type="button" class="admin-modal-close" id="admin-mp-success-close" aria-label="Cerrar">×</button>
-        <h4 id="admin-mp-success-title" class="admin-premium-contact-title">¡Membresía Activada!</h4>
-        <p class="admin-modal-sub">Tu perfil ya es Pro por 365 días.</p>
-        <button type="button" class="btn-solid btn-trial-welcome-cta" id="admin-mp-success-ok">Continuar</button>
+      <div class="admin-modal-panel admin-modal-panel--mp-success">
+        <button type="button" class="admin-modal-close admin-modal-close--light" id="admin-mp-success-close" aria-label="Cerrar">
+          ×
+        </button>
+        <p class="admin-mp-success-eyebrow">Pago confirmado</p>
+        <h4 id="admin-mp-success-title" class="admin-mp-success-title">¡Membresía activada!</h4>
+        <p class="admin-modal-sub admin-mp-success-sub">Tu acceso premium quedó registrado de forma permanente en tu cuenta.</p>
+        <button type="button" class="btn-solid btn-trial-welcome-cta admin-mp-success-ok" id="admin-mp-success-ok">Continuar</button>
       </div>
     </div>
 
@@ -1210,6 +1254,11 @@
             var payBlocking = !!(payModal && !payModal.classList.contains("hidden"));
             if (payBlocking) on = false;
           } catch (ePm) {}
+          try {
+            var protModal = document.getElementById("admin-mascot-protect-modal");
+            var protBlocking = !!(protModal && !protModal.classList.contains("hidden"));
+            if (protBlocking) on = false;
+          } catch (ePr) {}
           formMascot.querySelectorAll("input,textarea,select,button").forEach(function (el) {
             var id = el && el.id ? String(el.id) : "";
             var keep =
@@ -1338,13 +1387,10 @@
               var idxCount = (ecMascotTarjetasList || []).length;
               var n = Math.max(typeof fsCount === "number" ? fsCount : 0, idxCount);
               if (n >= 1 && !ecMbCanAddAdditionalMascota(n)) {
-                openAdminMascotSecondPetPaywallModal();
+                openAdminMascotProtectCheckoutModal("tu nuevo compañero");
                 return;
               }
-              ecShowPetSelectorPreparingState();
-              hardResetMascotLocalState();
-              ecWireMascotPaywallLinks();
-              openMascotPaywallModal();
+              openAdminMascotNewModal();
             });
         }
 
@@ -1414,6 +1460,12 @@
         window.ejecutarNuevaMascotaPizarraLimpia = ejecutarNuevaMascotaPizarraLimpia;
 
         function continuarNuevaMascotaDev() {
+          var user = firebase.auth().currentUser;
+          var em = user ? ecNormalizeOwnerEmail(user.email) : "";
+          if (ecNormalizeOwnerEmail(EC_SUPER_ADMIN_EMAIL) !== em) {
+            showToast("El acceso sin pago está restringido al equipo interno.", false);
+            return Promise.resolve(false);
+          }
           return ejecutarNuevaMascotaPizarraLimpia({ focusNombre: true, showToastOk: true }).then(
             function (ok) {
               if (ok) {
@@ -2257,16 +2309,23 @@
           return String(window.location.origin || "").replace(/\/$/, "") + (window.location.pathname || "/admin.html").replace(/\/$/, "");
         }
 
-        function generarPreferenciaPago(idPerfil, tipoPlan) {
+        function generarPreferenciaPago(idPerfil, tipoPlan, mpOpts) {
+          mpOpts = mpOpts || {};
           if (!window.__ecFirebaseFunctions) {
             return Promise.reject(new Error("Firebase Functions no inicializado"));
           }
           var fn = window.__ecFirebaseFunctions.httpsCallable("createMercadoPagoPreference");
-          return fn({
+          var payload = {
             idPerfil: String(idPerfil || "").trim(),
             tipoPlan: String(tipoPlan || "mascotbook").toLowerCase() === "elitecard" ? "elitecard" : "mascotbook",
             returnBase: ecGetMercadoPagoReturnBase(),
-          }).then(function (res) {
+          };
+          if (mpOpts.producto) payload.producto = String(mpOpts.producto);
+          if (mpOpts.eliteBilling) payload.eliteBilling = String(mpOpts.eliteBilling);
+          if (mpOpts.cantidad != null) payload.cantidad = Number(mpOpts.cantidad) || 1;
+          if (mpOpts.nuevaMascota) payload.nuevaMascota = true;
+          if (mpOpts.mascotId) payload.mascotId = String(mpOpts.mascotId);
+          return fn(payload).then(function (res) {
             var data = res && res.data ? res.data : {};
             var url = data.init_point || (data.data && data.data.init_point);
             if (!url) throw new Error("Sin init_point");
@@ -2278,13 +2337,13 @@
           window.generarPreferenciaPago = generarPreferenciaPago;
         } catch (eGenPref) {}
 
-        function ecTryMercadoPagoCheckout(tipoPlan, idPerfil, fallbackUrl) {
+        function ecTryMercadoPagoCheckout(tipoPlan, idPerfil, fallbackUrl, mpOpts) {
           if (!uid || !window.__ecFirebaseFunctions) {
             var f = String(fallbackUrl || "").trim();
             if (f && /^https?:\/\//i.test(f)) window.open(f, "_blank", "noopener,noreferrer");
             return Promise.resolve(false);
           }
-          return generarPreferenciaPago(idPerfil, tipoPlan).catch(function (e) {
+          return generarPreferenciaPago(idPerfil, tipoPlan, mpOpts).catch(function (e) {
             console.warn("[MP]", e);
             var f2 = String(fallbackUrl || "").trim();
             if (f2 && /^https?:\/\//i.test(f2)) window.open(f2, "_blank", "noopener,noreferrer");
@@ -2294,46 +2353,317 @@
         }
 
         var _ecMpSuccessHandled = false;
+        var _ecMpVerifyInFlight = false;
+
+        function ecStripMercadoPagoReturnParams(u) {
+          try {
+            u.delete("pago");
+            u.delete("id");
+            u.delete("plan");
+            u.delete("perfil");
+            u.delete("mp_producto");
+            u.delete("elite_billing");
+            u.delete("collection_id");
+            u.delete("collection_status");
+            u.delete("payment_id");
+            u.delete("paymentId");
+            u.delete("status");
+            u.delete("preference_id");
+            u.delete("external_reference");
+            u.delete("payment_type");
+            u.delete("ec_mp_msg");
+            u.delete("ec_mp_feedback");
+            var q = u.toString();
+            var path = window.location.pathname || "";
+            var newUrl = path + (q ? "?" + q : "") + (window.location.hash || "");
+            window.history.replaceState({}, "", newUrl);
+          } catch (eH) {}
+        }
+
+        function ecShowMercadoPagoSuccessCelebration(uParams) {
+          try {
+            var rawMsg = String(uParams.get("ec_mp_msg") || "").trim();
+            if (rawMsg) {
+              var decMsg = rawMsg;
+              try {
+                decMsg = decodeURIComponent(rawMsg.replace(/\+/g, " "));
+              } catch (eDec) {}
+              showToast(decMsg, true);
+            }
+          } catch (eMpMsg) {}
+          if (typeof confetti === "function") {
+            confetti({ particleCount: 140, spread: 70, origin: { y: 0.62 } });
+            setTimeout(function () {
+              confetti({ particleCount: 50, angle: 60, spread: 55, origin: { x: 0, y: 0.7 } });
+            }, 180);
+            setTimeout(function () {
+              confetti({ particleCount: 50, angle: 120, spread: 55, origin: { x: 1, y: 0.7 } });
+            }, 360);
+          }
+          var ms = document.getElementById("admin-mp-success-modal");
+          if (ms) ms.classList.remove("hidden");
+          ecStripMercadoPagoReturnParams(uParams);
+          try {
+            actualizarListaSelectorMascotas({ skipBootPet: true });
+          } catch (eL) {}
+          try {
+            cargarSidebarMisPerfiles();
+          } catch (eSb) {}
+        }
+
+        /** payment_id lo envía Mercado Pago al volver del Checkout (auto_return approved + back_urls.success). */
+        function ecGetMercadoPagoPaymentIdFromUrl() {
+          try {
+            var u = new URLSearchParams(window.location.search || "");
+            var p = String(u.get("payment_id") || u.get("paymentId") || "").trim();
+            if (p) return p;
+            return "";
+          } catch (eG) {
+            return "";
+          }
+        }
+
+        function ecToastForVerifiedMpKind(kind, uParams) {
+          var hasMsg = uParams && String(uParams.get("ec_mp_msg") || "").trim();
+          if (hasMsg) return;
+          var k = String(kind || "").toLowerCase();
+          if (k === "mascota_adicional") {
+            var petLab = "";
+            try {
+              petLab = String(sessionStorage.getItem("ec_mb_pending_pet_label") || "").trim();
+            } catch (e1) {}
+            showToast(
+              petLab
+                ? "Pago confirmado. Ya podés crear el perfil de " + petLab + "."
+                : "Pago confirmado. Ya podés crear tu nueva mascota.",
+              true
+            );
+            try {
+              sessionStorage.removeItem("ec_mb_pending_mp_create");
+              sessionStorage.removeItem("ec_mb_pending_pet_label");
+            } catch (e2) {}
+            return;
+          }
+          if (k === "elite_suscripcion" || k === "legacy_suscripcion") {
+            showToast("Pago confirmado. Tu acceso premium ya está activo.", true);
+          }
+        }
+
+        var _ecMpPollTimer = null;
+        function ecClearMercadoPagoPoll() {
+          if (_ecMpPollTimer != null) {
+            clearTimeout(_ecMpPollTimer);
+            _ecMpPollTimer = null;
+          }
+        }
+
+        function ecMercadoPagoPollVerify(paymentId, attemptsLeft, uParams) {
+          if (!paymentId || !window.__ecFirebaseFunctions || attemptsLeft <= 0) return;
+          ecClearMercadoPagoPoll();
+          _ecMpPollTimer = setTimeout(function () {
+            _ecMpPollTimer = null;
+            window.__ecFirebaseFunctions
+              .httpsCallable("verifyMercadoPagoPayment")({ paymentId: paymentId })
+              .then(function (res) {
+                var d = res && res.data ? res.data : {};
+                if (d.applied && String(d.status || "").toLowerCase() === "approved") {
+                  try {
+                    sessionStorage.setItem("ec_mp_client_verified_" + paymentId, "1");
+                  } catch (ePs) {}
+                  _ecMpSuccessHandled = true;
+                  ecToastForVerifiedMpKind(d.kind, uParams);
+                  ecShowMercadoPagoSuccessCelebration(uParams);
+                  return;
+                }
+                if (String(d.status || "").toLowerCase() === "approved" && !d.applied) {
+                  try {
+                    sessionStorage.setItem("ec_mp_client_verified_" + paymentId, "1");
+                  } catch (ePs2) {}
+                  _ecMpSuccessHandled = true;
+                  ecToastForVerifiedMpKind(d.kind, uParams);
+                  ecShowMercadoPagoSuccessCelebration(uParams);
+                  return;
+                }
+                var st = String(d.status || "").toLowerCase();
+                if (st === "pending" || st === "in_process" || st === "authorized") {
+                  ecMercadoPagoPollVerify(paymentId, attemptsLeft - 1, uParams);
+                } else {
+                  showToast(
+                    "El pago aún no figura como aprobado en Mercado Pago. Revisá tu cuenta o reintentá en unos minutos.",
+                    false
+                  );
+                }
+              })
+              .catch(function () {
+                ecMercadoPagoPollVerify(paymentId, attemptsLeft - 1, uParams);
+              });
+          }, 3000);
+        }
+
+        /**
+         * Client-side verification: con payment_id en la URL (retorno Checkout Pro + auto_return approved),
+         * llama a verifyMercadoPagoPayment → API MP en servidor → Firestore (sin depender del webhook).
+         */
+        function ecHandleMercadoPagoReturnAfterAuth() {
+          if (_ecMpSuccessHandled) return;
+          if (!uid || !window.__ecFirebaseFunctions) {
+            ecMaybeHandleMercadoPagoSuccessReturn();
+            return;
+          }
+          var payId = ecGetMercadoPagoPaymentIdFromUrl();
+          var u = new URLSearchParams(window.location.search || "");
+          var pagoFlag = String(u.get("pago") || "").toLowerCase();
+          var mpProd = String(u.get("mp_producto") || "").trim().toLowerCase();
+
+          if (payId) {
+            var syncKey = "ec_mp_client_verified_" + payId;
+            try {
+              if (sessionStorage.getItem(syncKey) === "1") {
+                if (pagoFlag === "exitoso" && !_ecMpSuccessHandled) {
+                  _ecMpSuccessHandled = true;
+                  ecShowMercadoPagoSuccessCelebration(u);
+                }
+                return;
+              }
+            } catch (eS0) {}
+
+            if (_ecMpVerifyInFlight) return;
+            _ecMpVerifyInFlight = true;
+
+            window.__ecFirebaseFunctions
+              .httpsCallable("verifyMercadoPagoPayment")({ paymentId: payId })
+              .then(function (res) {
+                var d = res && res.data ? res.data : {};
+
+                if (d.applied && String(d.status || "").toLowerCase() === "approved") {
+                  try {
+                    sessionStorage.setItem(syncKey, "1");
+                  } catch (eS1) {}
+                  _ecMpSuccessHandled = true;
+                  ecToastForVerifiedMpKind(d.kind, u);
+                  ecShowMercadoPagoSuccessCelebration(u);
+                  return;
+                }
+                if (String(d.status || "").toLowerCase() === "approved" && !d.applied) {
+                  try {
+                    sessionStorage.setItem(syncKey, "1");
+                  } catch (eS2) {}
+                  _ecMpSuccessHandled = true;
+                  ecToastForVerifiedMpKind(d.kind, u);
+                  ecShowMercadoPagoSuccessCelebration(u);
+                  return;
+                }
+
+                var st = String(d.status || "").toLowerCase();
+                if (st === "pending" || st === "in_process" || st === "authorized") {
+                  showToast("Tu pago está pendiente de confirmación. Verificando automáticamente…", true);
+                  ecMercadoPagoPollVerify(payId, 10, u);
+                  return;
+                }
+
+                if (pagoFlag === "exitoso") {
+                  if (mpProd === "mascota_adicional") {
+                    window.__ecFirebaseFunctions
+                      .httpsCallable("confirmMascotAddonPayment")({ paymentId: payId })
+                      .then(function () {
+                        try {
+                          sessionStorage.setItem(syncKey, "1");
+                        } catch (eS3) {}
+                        _ecMpSuccessHandled = true;
+                        try {
+                          sessionStorage.removeItem("ec_mb_pending_mp_create");
+                        } catch (eC0) {}
+                        var petLab = "";
+                        try {
+                          petLab = String(sessionStorage.getItem("ec_mb_pending_pet_label") || "").trim();
+                        } catch (eC1) {}
+                        try {
+                          sessionStorage.removeItem("ec_mb_pending_pet_label");
+                        } catch (eC2) {}
+                        ecShowMercadoPagoSuccessCelebration(u);
+                        showToast(
+                          petLab
+                            ? "Pago confirmado. Ya podés crear el perfil de " + petLab + "."
+                            : "Pago confirmado. Ya podés crear tu nueva mascota.",
+                          true
+                        );
+                      })
+                      .catch(function () {
+                        ecMaybeHandleMercadoPagoSuccessReturn();
+                      });
+                      return;
+                  }
+                  try {
+                    sessionStorage.setItem(syncKey, "1");
+                  } catch (eS4) {}
+                  _ecMpSuccessHandled = true;
+                  ecShowMercadoPagoSuccessCelebration(u);
+                  return;
+                }
+
+                if (st === "rejected" || st === "cancelled" || st === "refunded" || st === "charged_back") {
+                  try {
+                    sessionStorage.setItem(syncKey, "1");
+                  } catch (eS5) {}
+                  showToast("El pago no fue aprobado. Si hubo un cargo, revisá el estado en Mercado Pago.", false);
+                }
+              })
+              .catch(function (err) {
+                console.warn("[MP verify]", err);
+                ecMaybeHandleMercadoPagoSuccessReturn();
+              })
+              .then(function () {
+                _ecMpVerifyInFlight = false;
+              });
+            return;
+          }
+
+          ecMaybeHandleMercadoPagoSuccessReturn();
+        }
 
         function ecMaybeHandleMercadoPagoSuccessReturn() {
           if (_ecMpSuccessHandled) return false;
           try {
             var u = new URLSearchParams(window.location.search || "");
             if (String(u.get("pago") || "").toLowerCase() !== "exitoso") return false;
-            _ecMpSuccessHandled = true;
-            if (typeof confetti === "function") {
-              confetti({ particleCount: 140, spread: 70, origin: { y: 0.62 } });
-              setTimeout(function () {
-                confetti({ particleCount: 50, angle: 60, spread: 55, origin: { x: 0, y: 0.7 } });
-              }, 180);
-              setTimeout(function () {
-                confetti({ particleCount: 50, angle: 120, spread: 55, origin: { x: 1, y: 0.7 } });
-              }, 360);
+            var mpProd = String(u.get("mp_producto") || "").trim().toLowerCase();
+            var payId = String(u.get("payment_id") || "").trim();
+            if (mpProd === "mascota_adicional" && payId && window.__ecFirebaseFunctions) {
+              _ecMpSuccessHandled = true;
+              window.__ecFirebaseFunctions
+                .httpsCallable("confirmMascotAddonPayment")({ paymentId: payId })
+                .then(function () {
+                  try {
+                    sessionStorage.removeItem("ec_mb_pending_mp_create");
+                  } catch (eR0) {}
+                  var petLab = "";
+                  try {
+                    petLab = String(sessionStorage.getItem("ec_mb_pending_pet_label") || "").trim();
+                  } catch (eR1) {}
+                  try {
+                    sessionStorage.removeItem("ec_mb_pending_pet_label");
+                  } catch (eR2) {}
+                  ecShowMercadoPagoSuccessCelebration(u);
+                  showToast(
+                    petLab
+                      ? "Pago confirmado. Ya podés crear el perfil de " + petLab + "."
+                      : "Pago confirmado. Ya podés crear tu nueva mascota.",
+                    true
+                  );
+                })
+                .catch(function (err) {
+                  _ecMpSuccessHandled = false;
+                  console.warn("[MP confirm]", err);
+                  showToast(
+                    (err && err.message) ||
+                      "No se pudo verificar el pago aún. Si ya pagaste, esperá unos segundos o recargá la página.",
+                    false
+                  );
+                });
+              return true;
             }
-            var ms = document.getElementById("admin-mp-success-modal");
-            if (ms) ms.classList.remove("hidden");
-            try {
-              u.delete("pago");
-              u.delete("id");
-              u.delete("plan");
-              u.delete("perfil");
-              u.delete("collection_id");
-              u.delete("collection_status");
-              u.delete("payment_id");
-              u.delete("status");
-              u.delete("preference_id");
-              u.delete("external_reference");
-              var q = u.toString();
-              var path = window.location.pathname || "";
-              var newUrl = path + (q ? "?" + q : "") + (window.location.hash || "");
-              window.history.replaceState({}, "", newUrl);
-            } catch (eH) {}
-            try {
-              actualizarListaSelectorMascotas({ skipBootPet: true });
-            } catch (eL) {}
-            try {
-              cargarSidebarMisPerfiles();
-            } catch (eSb) {}
+            _ecMpSuccessHandled = true;
+            ecShowMercadoPagoSuccessCelebration(u);
             return true;
           } catch (e) {
             return false;
@@ -2343,25 +2673,50 @@
         function ecWireMercadoPagoPayAnchorsOnce() {
           if (ecWireMercadoPagoPayAnchorsOnce._ok) return;
           ecWireMercadoPagoPayAnchorsOnce._ok = true;
-          function bindPayLink(el, plan, getPid) {
+          function bindPayLink(el, plan, getPid, mpOpts) {
             if (!el) return;
             el.addEventListener("click", function (ev) {
               if (!window.__ecFirebaseFunctions) return;
               ev.preventDefault();
               var pid = typeof getPid === "function" ? String(getPid() || "").trim() : "";
               var fb = String(el.getAttribute("href") || "").trim();
-              ecTryMercadoPagoCheckout(plan, pid, fb && fb !== "#" ? fb : "");
+              var o = {};
+              if (mpOpts && typeof mpOpts === "object") {
+                for (var k in mpOpts) {
+                  if (Object.prototype.hasOwnProperty.call(mpOpts, k)) o[k] = mpOpts[k];
+                }
+              }
+              if (o.producto === "mascota_adicional") {
+                if (pid) o.mascotId = pid;
+                o.nuevaMascota = !pid;
+              }
+              ecTryMercadoPagoCheckout(plan, pid, fb && fb !== "#" ? fb : "", o);
             });
           }
-          bindPayLink(document.getElementById("admin-mascot-second-pet-pay"), "mascotbook", function () {
-            return String(currentMascotShareId || currentTarjetaDocId || "").trim();
-          });
-          bindPayLink(document.getElementById("admin-mascot-paywall-pay"), "mascotbook", function () {
-            return String(currentMascotShareId || currentTarjetaDocId || "").trim();
-          });
-          bindPayLink(document.getElementById("admin-mascot-demo-pay-cta"), "mascotbook", function () {
-            return String(currentMascotShareId || "").trim();
-          });
+          bindPayLink(
+            document.getElementById("admin-mascot-second-pet-pay"),
+            "mascotbook",
+            function () {
+              return String(currentMascotShareId || currentTarjetaDocId || "").trim();
+            },
+            { producto: "mascota_adicional" }
+          );
+          bindPayLink(
+            document.getElementById("admin-mascot-paywall-pay"),
+            "mascotbook",
+            function () {
+              return String(currentMascotShareId || currentTarjetaDocId || "").trim();
+            },
+            { producto: "mascota_adicional" }
+          );
+          bindPayLink(
+            document.getElementById("admin-mascot-demo-pay-cta"),
+            "mascotbook",
+            function () {
+              return String(currentMascotShareId || "").trim();
+            },
+            { producto: "mascota_adicional" }
+          );
           var payEx = document.getElementById("ec-expired-pay-cta");
           if (payEx) {
             payEx.addEventListener("click", function (ev) {
@@ -2369,7 +2724,24 @@
               ev.preventDefault();
               var plan = currentApp === "mascotbook" ? "mascotbook" : "elitecard";
               var fb = String(payEx.getAttribute("href") || "").trim();
-              ecTryMercadoPagoCheckout(plan, String(currentMascotShareId || "").trim(), fb);
+              var pidEx = String(currentMascotShareId || "").trim();
+              if (plan === "elitecard") {
+                ecTryMercadoPagoCheckout(plan, pidEx, fb, { producto: "elite_suscripcion", eliteBilling: "once" });
+              } else {
+                ecTryMercadoPagoCheckout(plan, pidEx, fb, pidEx ? { producto: "mascota_adicional", mascotId: pidEx } : {});
+              }
+            });
+          }
+          var rescuePay = document.getElementById("ec-rescue-pay-cta");
+          if (rescuePay) {
+            rescuePay.addEventListener("click", function (ev) {
+              if (!window.__ecFirebaseFunctions) return;
+              ev.preventDefault();
+              var fb = String(rescuePay.getAttribute("href") || "").trim();
+              ecTryMercadoPagoCheckout("elitecard", "", fb && fb !== "#" ? fb : "", {
+                producto: "elite_suscripcion",
+                eliteBilling: "once",
+              });
             });
           }
           var payGate = document.getElementById("admin-product-access-pay");
@@ -2379,8 +2751,16 @@
               ev.preventDefault();
               var plan = String(payGate.getAttribute("data-ec-mp-plan") || "mascotbook").toLowerCase();
               if (plan !== "elitecard") plan = "mascotbook";
+              var bill = String(payGate.getAttribute("data-ec-mp-elite-billing") || "once").toLowerCase();
               var fb = String(payGate.getAttribute("href") || "").trim();
-              ecTryMercadoPagoCheckout(plan, "", fb);
+              if (plan === "elitecard") {
+                ecTryMercadoPagoCheckout(plan, "", fb, {
+                  producto: "elite_suscripcion",
+                  eliteBilling: bill === "monthly" ? "monthly" : "once",
+                });
+              } else {
+                ecTryMercadoPagoCheckout(plan, "", fb);
+              }
             });
           }
           var msOk = document.getElementById("admin-mp-success-ok");
@@ -2396,10 +2776,20 @@
               if (ev.target === msM) closeMpOk();
             });
           }
+          wireAdminMascotProtectModalOnce();
         }
 
         function ecMbMergedAccountDoc() {
           return Object.assign({}, lastLegacyAccountData || {}, lastMembershipData || {});
+        }
+
+        /** Créditos de perfil MascotBook adicional (acreditados vía Mercado Pago / webhook). */
+        function ecMbProfileCredits() {
+          try {
+            return Math.max(0, Math.floor(Number(ecMbMergedAccountDoc().mascotbookExtraProfileCredits || 0) || 0));
+          } catch (eCr) {
+            return 0;
+          }
         }
 
         /** Cuenta documentos en `mascotas` con ownerUid (fuente de verdad para perfil adicional / trial). */
@@ -2450,6 +2840,7 @@
           if (merged.isPremium === true) return true;
           if (merged.mascotbook_multi_unlocked === true) return true;
           if (Sub.getPlanStatusFromDoc(merged, "mascotbook") === "active") return true;
+          if (Number(merged.mascotbookExtraProfileCredits || 0) >= 1) return true;
           return false;
         }
 
@@ -2544,8 +2935,9 @@
           var pay = document.getElementById("admin-mascot-paywall-pay");
           var url = ecPreciosLinkForApp("mascotbook");
           if (!url) url = String(window.EC_PREMIUM_UPGRADE_URL || "").trim();
-          if (pay && url && /^https?:\/\//i.test(url)) {
-            pay.href = url;
+          var http = url && /^https?:\/\//i.test(url);
+          if (pay && (window.__ecFirebaseFunctions || http)) {
+            pay.href = http ? url : "#";
             pay.style.display = "";
           } else if (pay) {
             pay.style.display = "none";
@@ -2553,24 +2945,160 @@
         }
 
         function openAdminMascotSecondPetPaywallModal() {
-          var m = document.getElementById("admin-mascot-second-pet-modal");
-          var a = document.getElementById("admin-mascot-second-pet-pay");
-          var url = ecPreciosLinkForApp("mascotbook");
-          ecSyncMascotPaywallPreciosUi();
-          if (a) {
-            if (url) {
-              a.href = url;
-              a.classList.remove("hidden");
-            } else {
-              a.classList.add("hidden");
-            }
+          openAdminMascotProtectCheckoutModal("tu nuevo compañero");
+        }
+
+        var __ecMbProtectRescueTimer = null;
+
+        function ecClearMascotProtectRescueSchedule() {
+          if (__ecMbProtectRescueTimer != null) {
+            clearTimeout(__ecMbProtectRescueTimer);
+            __ecMbProtectRescueTimer = null;
           }
-          if (m) m.classList.remove("hidden");
+        }
+
+        function ecHideMascotProtectRescueUi() {
+          var rescue = document.getElementById("admin-mascot-protect-rescue");
+          if (rescue) {
+            rescue.classList.add("hidden");
+            rescue.textContent = "";
+          }
+        }
+
+        function ecShowMascotProtectRescueIfOpen() {
+          var mod = document.getElementById("admin-mascot-protect-modal");
+          if (!mod || mod.classList.contains("hidden")) return;
+          var rescue = document.getElementById("admin-mascot-protect-rescue");
+          if (!rescue || !rescue.classList.contains("hidden")) return;
+          var nm = String(mod.getAttribute("data-ec-pet-label") || "").trim() || "tu compañero";
+          rescue.textContent =
+            "No dejes a " +
+            nm +
+            " desprotegido. Si ocurre un extravío, cada segundo cuenta. Activa su seguridad ahora y obtén un 15% de descuento en tu primer año.";
+          rescue.classList.remove("hidden");
+        }
+
+        function ecScheduleMascotProtectRescueMessage() {
+          ecClearMascotProtectRescueSchedule();
+          var mod = document.getElementById("admin-mascot-protect-modal");
+          if (mod) {
+            try {
+              mod.setAttribute("data-ec-opened-ms", String(Date.now()));
+            } catch (eMs) {}
+          }
+          __ecMbProtectRescueTimer = setTimeout(function () {
+            __ecMbProtectRescueTimer = null;
+            ecShowMascotProtectRescueIfOpen();
+          }, 60000);
+        }
+
+        (function ecBindMascotProtectUnloadOnce() {
+          if (ecBindMascotProtectUnloadOnce._ok) return;
+          ecBindMascotProtectUnloadOnce._ok = true;
+          window.addEventListener("pagehide", function () {
+            ecClearMascotProtectRescueSchedule();
+          });
+        })();
+
+        (function ecBindMascotProtectVisibilityOnce() {
+          if (ecBindMascotProtectVisibilityOnce._ok) return;
+          ecBindMascotProtectVisibilityOnce._ok = true;
+          document.addEventListener("visibilitychange", function () {
+            if (document.visibilityState !== "visible") return;
+            var mod = document.getElementById("admin-mascot-protect-modal");
+            if (!mod || mod.classList.contains("hidden")) return;
+            var opened = parseInt(String(mod.getAttribute("data-ec-opened-ms") || "0"), 10);
+            if (!opened || !isFinite(opened)) return;
+            if (Date.now() - opened < 60000) return;
+            ecShowMascotProtectRescueIfOpen();
+          });
+        })();
+
+        function wireAdminMascotProtectModalOnce() {
+          if (wireAdminMascotProtectModalOnce._ok) return;
+          wireAdminMascotProtectModalOnce._ok = true;
+          var modal = document.getElementById("admin-mascot-protect-modal");
+          var closeBtn = document.getElementById("admin-mascot-protect-close");
+          var payBtn = document.getElementById("admin-mascot-protect-pay");
+          function hideProtectModal() {
+            ecClearMascotProtectRescueSchedule();
+            ecHideMascotProtectRescueUi();
+            if (modal) modal.classList.add("hidden");
+          }
+          if (closeBtn) closeBtn.addEventListener("click", hideProtectModal);
+          if (modal) {
+            modal.addEventListener("click", function (ev) {
+              if (ev.target === modal) hideProtectModal();
+            });
+          }
+          if (payBtn) {
+            payBtn.addEventListener("click", function (ev) {
+              ev.preventDefault();
+              if (!uid) {
+                showToast("Iniciá sesión.", false);
+                return;
+              }
+              if (!window.__ecFirebaseFunctions) {
+                showToast("Firebase Functions no está listo. Reintentá o recargá la página.", false);
+                return;
+              }
+              try {
+                sessionStorage.setItem("ec_mb_pending_mp_create", "1");
+                var lab = modal ? String(modal.getAttribute("data-ec-pet-label") || "").trim() : "";
+                if (lab) sessionStorage.setItem("ec_mb_pending_pet_label", lab);
+              } catch (eSt) {}
+              generarPreferenciaPago("", "mascotbook", {
+                producto: "mascota_adicional",
+                nuevaMascota: true,
+                cantidad: 1,
+              }).catch(function (e) {
+                console.warn(e);
+                try {
+                  sessionStorage.removeItem("ec_mb_pending_mp_create");
+                  sessionStorage.removeItem("ec_mb_pending_pet_label");
+                } catch (e2) {}
+              });
+            });
+          }
+        }
+
+        /**
+         * Modal premium: cobro perfil adicional antes de escribir en Firestore.
+         * @param {string} displayName - Nombre para el copy (ej. desde el formulario de nueva mascota).
+         */
+        function openAdminMascotProtectCheckoutModal(displayName) {
+          wireAdminMascotProtectModalOnce();
+          var m = document.getElementById("admin-mascot-protect-modal");
+          var lead = document.getElementById("admin-mascot-protect-lead");
+          var hint = document.getElementById("admin-mascot-protect-price-hint");
+          var nm = String(displayName || "").trim() || "tu compañero";
+          var price = ecPrecioVentaForApp("mascotbook");
+          if (!price) price = "el precio del checkout";
+          if (m) {
+            try {
+              m.setAttribute("data-ec-pet-label", nm);
+            } catch (eAt) {}
+            m.classList.remove("hidden");
+          }
+          if (lead) {
+            lead.textContent =
+              "Asegura la protección de tu nuevo compañero. Activa el perfil de " + nm + " por solo " + price + ".";
+          }
+          if (hint) {
+            hint.textContent = price ? "Total referido: " + price + " (ARS, Mercado Pago)." : "";
+            hint.classList.toggle("hidden", !price);
+          }
+          ecHideMascotProtectRescueUi();
+          ecScheduleMascotProtectRescueMessage();
         }
 
         function closeAdminMascotSecondPetPaywallModal() {
           var m = document.getElementById("admin-mascot-second-pet-modal");
           if (m) m.classList.add("hidden");
+          var prot = document.getElementById("admin-mascot-protect-modal");
+          if (prot) prot.classList.add("hidden");
+          ecClearMascotProtectRescueSchedule();
+          ecHideMascotProtectRescueUi();
         }
 
         function ecEnterSecondPetReadOnlyDemo() {
@@ -2591,8 +3119,9 @@
           if (ban) ban.classList.toggle("hidden", !show);
           if (cta) {
             var url = ecPreciosLinkForApp("mascotbook");
-            if (url && show) {
-              cta.href = url;
+            var http = url && /^https?:\/\//i.test(url);
+            if (show && (window.__ecFirebaseFunctions || http)) {
+              cta.href = http ? url : "#";
               cta.classList.remove("hidden");
             } else {
               cta.classList.add("hidden");
@@ -2794,9 +3323,21 @@
 
         function openPremiumUpgrade() {
           var appKey = currentApp === "mascotbook" ? "mascotbook" : "elitecard";
-          var url = ecPreciosLinkForApp(appKey) || String(window.EC_PREMIUM_UPGRADE_URL || "").trim();
-          if (url && /^https?:\/\//i.test(url)) {
-            window.open(url, "_blank", "noopener,noreferrer");
+          var fb = ecPreciosLinkForApp(appKey) || String(window.EC_PREMIUM_UPGRADE_URL || "").trim();
+          if (uid && window.__ecFirebaseFunctions) {
+            if (appKey === "elitecard") {
+              ecTryMercadoPagoCheckout("elitecard", "", /^https?:\/\//i.test(fb) ? fb : "", {
+                producto: "elite_suscripcion",
+                eliteBilling: "once",
+              });
+              return;
+            }
+            var pidMb = String(currentMascotShareId || "").trim();
+            ecTryMercadoPagoCheckout("mascotbook", pidMb, /^https?:\/\//i.test(fb) ? fb : "", {});
+            return;
+          }
+          if (fb && /^https?:\/\//i.test(fb)) {
+            window.open(fb, "_blank", "noopener,noreferrer");
             return;
           }
           var modal = document.getElementById("admin-premium-contact-modal");
@@ -3138,8 +3679,9 @@
           if (payEx) {
             var appKeyPay = currentApp === "mascotbook" ? "mascotbook" : "elitecard";
             var payUrl = ecPreciosLinkForApp(appKeyPay) || String(window.EC_PREMIUM_UPGRADE_URL || "").trim();
-            if (gst === "expired" && uid && payUrl && /^https?:\/\//i.test(payUrl)) {
-              payEx.href = payUrl;
+            var payHttp = payUrl && /^https?:\/\//i.test(payUrl);
+            if (gst === "expired" && uid && (window.__ecFirebaseFunctions || payHttp)) {
+              payEx.href = payHttp ? payUrl : "#";
               payEx.classList.remove("hidden");
             } else {
               payEx.classList.add("hidden");
@@ -3174,6 +3716,39 @@
             var showRescue =
               expired && !eliteUnlocked && !perpetual && currentApp === "personal" && gst !== "expired";
             if (banner) banner.classList.toggle("hidden", !showRescue);
+            var rescuePay = document.getElementById("ec-rescue-pay-cta");
+            var rescuePr = document.getElementById("ec-rescue-pay-price");
+            if (rescuePay) {
+              if (showRescue && uid) {
+                var eliteUrl = ecPreciosLinkForApp("elitecard") || String(window.EC_PREMIUM_UPGRADE_URL || "").trim();
+                var hasEliteLink = eliteUrl && /^https?:\/\//i.test(eliteUrl);
+                if (window.__ecFirebaseFunctions || hasEliteLink) {
+                  rescuePay.href = hasEliteLink ? eliteUrl : "#";
+                  if (hasEliteLink && !window.__ecFirebaseFunctions) {
+                    rescuePay.target = "_blank";
+                    rescuePay.rel = "noopener noreferrer";
+                  } else {
+                    rescuePay.removeAttribute("target");
+                    rescuePay.removeAttribute("rel");
+                  }
+                  rescuePay.classList.remove("hidden");
+                } else {
+                  rescuePay.classList.add("hidden");
+                }
+              } else {
+                rescuePay.classList.add("hidden");
+              }
+            }
+            if (rescuePr) {
+              var labR = ecPrecioVentaForApp("elitecard");
+              if (showRescue && uid && labR) {
+                rescuePr.textContent = "Plan referido: " + labR;
+                rescuePr.classList.remove("hidden");
+              } else {
+                rescuePr.textContent = "";
+                rescuePr.classList.add("hidden");
+              }
+            }
             if (styleCard) {
               if (showRescue) styleCard.classList.add("is-locked");
               else styleCard.classList.remove("is-locked");
@@ -3398,7 +3973,7 @@
             setPanel("contenido", { skipUrl: true });
           } catch (eA) {}
           setTimeout(function () {
-            ejecutarNuevaMascotaPizarraLimpia({ skipModal: true, focusNombre: true });
+            crearNuevaMascotaWorkflow();
           }, 100);
         }
 
@@ -3455,9 +4030,26 @@
             if (!payGate) return;
             payGate.setAttribute("data-ec-mp-plan", appKey === "mascotbook" ? "mascotbook" : "elitecard");
             var url = ecPreciosLinkForApp(appKey) || String(window.EC_PREMIUM_UPGRADE_URL || "").trim();
-            if (url && /^https?:\/\//i.test(url)) {
-              payGate.href = url;
+            var http = url && /^https?:\/\//i.test(url);
+            if (window.__ecFirebaseFunctions) {
+              payGate.href = http ? url : "#";
+              if (http) {
+                payGate.setAttribute("target", "_blank");
+                payGate.setAttribute("rel", "noopener noreferrer");
+              } else {
+                payGate.removeAttribute("target");
+                payGate.removeAttribute("rel");
+              }
+              payGate.textContent = http ? "Ver precios y pagar" : "Pagar membresía (Mercado Pago)";
               payGate.classList.remove("hidden");
+            } else if (http) {
+              payGate.href = url;
+              payGate.setAttribute("target", "_blank");
+              payGate.setAttribute("rel", "noopener noreferrer");
+              payGate.textContent = "Pagar membresía";
+              payGate.classList.remove("hidden");
+            } else {
+              payGate.classList.add("hidden");
             }
           }
           if (crossSell) {
@@ -5455,7 +6047,7 @@
             );
             if (ecMascotTarjetasList && ecMascotTarjetasList.length > 0) {
               if (!isPrem && nEff >= 1 && !ecMbCanAddAdditionalMascota(nEff)) {
-                openAdminMascotSecondPetPaywallModal();
+                openAdminMascotProtectCheckoutModal(String(initialName || "").trim() || "tu compañero");
                 return;
               }
               if (isPrem && ecMascotTarjetasList.length >= 5) {
@@ -5497,9 +6089,36 @@
                 });
             }
             if (!currentTarjetaDocId || !currentMascotShareId) {
-              allocateAndWriteMascotStubs(nm0).then(mergeNameFirestoreThenBind).catch(function (e) {
+              function startAllocateThenMerge() {
+                if (!window.__ecFirebaseFunctions) {
+                  return allocateAndWriteMascotStubs(nm0).then(mergeNameFirestoreThenBind);
+                }
+                return window.__ecFirebaseFunctions
+                  .httpsCallable("allocateNewMascotProfile")({ initialName: nm0 })
+                  .then(function (res) {
+                    var d = (res && res.data) || {};
+                    currentTarjetaDocId = String(d.tarjetaDocId || "").trim();
+                    currentMascotShareId = String(d.mascotDocId || "").trim();
+                    try {
+                      window.__ecTarjetaDocId = String(currentTarjetaDocId || "");
+                      window.currentDocId = String(currentMascotShareId || "");
+                      window.__ecActiveMascotCardId = String(currentMascotShareId || "");
+                    } catch (eW) {}
+                    return mergeNameFirestoreThenBind();
+                  });
+              }
+              startAllocateThenMerge().catch(function (e) {
+                var raw = (e && (e.message || (e.details && e.details.message))) || String(e || "");
+                var msg = String(raw || "No se pudo crear el perfil");
+                var code = String((e && e.code) || "");
+                if (
+                  code.indexOf("failed-precondition") >= 0 ||
+                  /Se requiere|Sin créditos|pago pendiente/i.test(msg)
+                ) {
+                  openAdminMascotProtectCheckoutModal(String(initialName || "").trim() || "tu compañero");
+                }
                 console.error(e);
-                showToast(e.message || "No se pudo crear el perfil", false);
+                showToast(msg, false);
               });
               return;
             }
@@ -6167,6 +6786,16 @@
             bodyHtml: "<p>¿Deseas guardar los cambios realizados?</p>",
           }).then(function (ok) {
             if (!ok) return;
+            if (currentApp === "mascotbook" && ecMascotCreationMode) {
+              if (!String(currentTarjetaDocId || "").trim() || !String(currentMascotShareId || "").trim()) {
+                var nmBlock = String(
+                  (document.getElementById("m-nombre") && document.getElementById("m-nombre").value) || ""
+                ).trim();
+                openAdminMascotProtectCheckoutModal(nmBlock || "tu compañero");
+                showToast("Activá el perfil con Mercado Pago antes de guardar en la nube.", false);
+                return;
+              }
+            }
             setButtonBusy(btnSaveMascot, true, "Guardando...", "Guardar MascotBook");
             showToast("Guardando cambios...", true);
             var jobs = [];
@@ -6935,12 +7564,19 @@
                   actualizarListaSelectorMascotas({ fromAuthBoot: true });
                 } catch (ePet) {}
                 try {
-                  ecMaybeHandleMercadoPagoSuccessReturn();
+                  ecHandleMercadoPagoReturnAfterAuth();
                 } catch (eMpRet) {}
                 setTimeout(function () {
                   try {
                     if (firebase.auth().currentUser && app.classList.contains("hidden")) {
                       scheduleProductAccessEnforcement();
+                    }
+                    if (
+                      firebase.auth().currentUser &&
+                      ecGetMercadoPagoPaymentIdFromUrl() &&
+                      !_ecMpSuccessHandled
+                    ) {
+                      ecHandleMercadoPagoReturnAfterAuth();
                     }
                   } catch (eRetry) {}
                 }, 2200);

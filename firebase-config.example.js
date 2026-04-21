@@ -24,11 +24,21 @@ window.FIREBASE_FUNCTIONS_REGION = "us-east1";
  */
 window.EC_MERCADOPAGO_RETURN_BASE = "";
 
+/** Public Key de Mercado Pago (solo Bricks / SDK cliente). El Access Token va únicamente en Secret MP_ACCESS_TOKEN. */
+window.MERCADOPAGO_PUBLIC_KEY = "";
+
 /**
  * Backend (solo en Firebase, nunca en el cliente):
  * - Secret: firebase functions:secrets:set MP_ACCESS_TOKEN
  * - Webhook en Mercado Pago → URL HTTPS de `webhookMercadoPago` (misma región que arriba).
  * - Opcional: MP_UNIT_PRICE_MASCOTBOOK, MP_UNIT_PRICE_ELITECARD, FIRESTORE_MEMBERSHIP_COLLECTION
+ * - Vigencia en Firestore tras pago (membresía legada / Elite): MP_MEMBERSHIP_YEARS (default 30 en Cloud Functions).
+ * - Precios por SKU: MP_PRICE_MASCOTA_ADICIONAL, MP_PRICE_ELITECARD_ONCE, MP_PRICE_ELITECARD_MONTHLY
+ * - Public Key (solo si usás Bricks en el cliente): window.MERCADOPAGO_PUBLIC_KEY en firebase-config.js — nunca el Access Token.
+ * - Tras pago «mascota adicional», Cloud Functions escribe `mascotbookExtraProfileCredits` en el doc de membresía (`users` o el que definas).
+ * - Retorno Checkout: rewrite Hosting `/mp/feedback` → función `mercadoPagoFeedback` (success/pending/failure).
+ * - Sin webhook: la preferencia usa auto_return "approved"; al volver, la URL trae payment_id y el panel llama
+ *   `verifyMercadoPagoPayment` (confirma en la API de MP y escribe Firestore).
  */
 
 /** Sin ?user=, tarjeta pública usa este UID (admin principal). Vacío → documento "perfil". */

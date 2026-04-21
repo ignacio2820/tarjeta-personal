@@ -41,6 +41,11 @@
         "region": "us-east1"
       },
       {
+        "source": "/mp/feedback",
+        "function": "mercadoPagoFeedback",
+        "region": "us-east1"
+      },
+      {
         "source": "/admin",
         "destination": "/admin.html"
       },
