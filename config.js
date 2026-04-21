@@ -5,8 +5,33 @@
 (function () {
   "use strict";
 
-  /** Emails en minúsculas: acceso perpetuo panel (dueño Agencia WebElite). Rellenar con tu correo. */
-  window.EC_AGENCY_OWNER_EMAILS = [];
+  /**
+   * Acceso perpetuo (suscripción/trial en admin.js). Siempre incluye el correo del dueño;
+   * se fusiona con lo definido antes en firebase-config.js (sin pisarlo).
+   */
+  window.EC_AGENCY_OWNER_EMAILS = (function () {
+    var preset = ["ignacio2820@gmail.com"];
+    var prev = window.EC_AGENCY_OWNER_EMAILS;
+    var list = Array.isArray(prev) ? prev.slice() : [];
+    function norm(s) {
+      return String(s || "")
+        .trim()
+        .toLowerCase();
+    }
+    for (var i = 0; i < preset.length; i++) {
+      var p = norm(preset[i]);
+      if (!p) continue;
+      var dupe = false;
+      for (var j = 0; j < list.length; j++) {
+        if (norm(list[j]) === p) {
+          dupe = true;
+          break;
+        }
+      }
+      if (!dupe) list.push(preset[i]);
+    }
+    return list;
+  })();
 
   /** UIDs con acceso perpetuo (opcional). */
   window.EC_PERPETUAL_UIDS = [];

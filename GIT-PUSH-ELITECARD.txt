@@ -1,0 +1,21 @@
+# Conectar este proyecto al repositorio nuevo "EliteCard-App" en GitHub
+
+1) Creá en GitHub el repo vacío "EliteCard-App" (sin README si ya tenés commits locales).
+
+2) Desde la carpeta del proyecto:
+
+   git remote -v
+
+   Si el remoto anterior ya no lo vas a usar:
+   git remote rename origin origen-anterior
+
+3) Añadí el nuevo remoto (reemplazá USUARIO y la URL si usás HTTPS):
+
+   git remote add origin git@github.com:USUARIO/EliteCard-App.git
+
+4) Subí la rama principal:
+
+   git push -u origin main
+
+5) Hostinger: subí los archivos del proyecto a la carpeta del subdominio elitecard
+   (la que crea el panel en Dominios → Subdominios). Incluí .htaccess en esa raíz.

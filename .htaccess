@@ -1,0 +1,35 @@
+# EliteCard / MascotBook — Apache (Hostinger, subdominio elitecard.webelitesolution.com.ar)
+# Raíz del subdominio: misma carpeta donde está index.html (vhost apunta aquí; región del DC irrelevante para Firebase).
+# Si el sitio no está en la raíz del dominio, ajustá RewriteBase (p. ej. /elitecard/).
+
+AddDefaultCharset UTF-8
+
+# Evitar listado de directorios (compatible con Hostinger; sin +FollowSymLinks para evitar 500 en algunos planes)
+Options -Indexes
+
+DirectoryIndex index.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Opcional: forzar HTTPS si el panel no lo redirige ya (descomentar si hace falta)
+  # RewriteCond %{HTTPS} !=on
+  # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+  # Servir tal cual archivos y carpetas que existan (HTML, CSS, JS, assets)
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Rutas sin extensión: /admin -> admin.html, /login -> login.html, /card -> card.html, etc.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI}.html -f
+  RewriteRule ^ %{REQUEST_URI}.html [L]
+</IfModule>
+
+# Compresión (si mod_deflate está habilitado en el servidor)
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain application/javascript application/json image/svg+xml
+</IfModule>
