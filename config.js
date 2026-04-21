@@ -14,6 +14,34 @@
   /** Logo del dashboard; vacío = marca SVG inline en admin. */
   window.EC_BRAND_LOGO_URL = "";
 
+  /**
+   * Links de cobro (Mercado Pago u otra pasarela). Pegá URLs https:// completas.
+   * Podés definir valores iniciales en firebase-config.js antes de cargar este script;
+   * aquí se fusionan con los vacíos por defecto.
+   */
+  window.PRECIOS_LINKS = Object.assign(
+    { elitecard: "", mascotbook: "" },
+    window.PRECIOS_LINKS && typeof window.PRECIOS_LINKS === "object" ? window.PRECIOS_LINKS : {}
+  );
+
+  /**
+   * Precios de referencia (solo UI). Fusiona con firebase-config.js si definís PRECIOS_VENTA allí.
+   * elitecard = WebElite / EliteCard; mascotbook = MascotBook.
+   */
+  window.PRECIOS_VENTA = Object.assign(
+    { elitecard: "$ 19.999", mascotbook: "$ 24.999" },
+    window.PRECIOS_VENTA && typeof window.PRECIOS_VENTA === "object" ? window.PRECIOS_VENTA : {}
+  );
+
+  /** Región de Cloud Functions (misma que en `firebase.json` / despliegue). */
+  window.FIREBASE_FUNCTIONS_REGION = window.FIREBASE_FUNCTIONS_REGION || "us-east1";
+
+  /**
+   * URL base para back_urls de Mercado Pago (sin ?). Por defecto: origen + ruta actual (p. ej. …/admin.html).
+   * Definila si usás dominio distinto al de Firebase Hosting.
+   */
+  window.EC_MERCADOPAGO_RETURN_BASE = window.EC_MERCADOPAGO_RETURN_BASE || "";
+
   function onlyDigits(s) {
     return String(s || "").replace(/\D/g, "");
   }

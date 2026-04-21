@@ -26,6 +26,17 @@ window.FIRESTORE_ELITE_MEMBERSHIP_COLLECTION = "users_elite";
  */
 window.FIRESTORE_DEFAULT_CARD_UID = "";
 
+/** Links Mercado Pago (u otra pasarela) por producto; se fusionan en config.js. */
+window.PRECIOS_LINKS = {
+  elitecard: "",
+  mascotbook: "",
+};
+
+window.PRECIOS_VENTA = {
+  elitecard: "$ 19.999",
+  mascotbook: "$ 24.999",
+};
+
 /** Si tiene URL (https://…), "Pasar a Premium" abre esa página; si está vacío, se muestra el modal de contacto. */
 window.EC_PREMIUM_UPGRADE_URL = "";
 

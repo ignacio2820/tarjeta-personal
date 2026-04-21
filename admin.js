@@ -53,7 +53,7 @@
   function resolveStatusField(docData, app) {
     var g = docData && docData.status != null ? String(docData.status).trim().toLowerCase() : "";
     if (g === "suspended" || g === "expired") return g;
-    if (g === "premium" || g === "active") return "active";
+    if (g === "premium" || g === "active" || g === "activo") return "active";
     if (g === "trial") return "trial";
     var a = normalizeApp(app);
     if (a === "mascotbook") {
@@ -71,13 +71,15 @@
   }
 
   function getPlanStatusFromDoc(docData, app) {
+    if (!docData || typeof docData !== "object") docData = {};
+    if (isVencimientoMembresiaPast(docData)) return "inactive";
     var gs = docData && docData.status != null ? String(docData.status).trim().toLowerCase() : "";
     if (gs === "suspended" || gs === "expired") return "inactive";
-    if (gs === "premium") return "active";
+    if (gs === "premium" || gs === "activo" || gs === "active") return "active";
     var s = String(resolveStatusField(docData, app) || "trial")
       .trim()
       .toLowerCase();
-    if (s === "active" || s === "pro" || s === "paid" || s === "premium") return "active";
+    if (s === "active" || s === "pro" || s === "paid" || s === "premium" || s === "activo") return "active";
     if (s === "suspended" || s === "expired") return "inactive";
     if (s === "inactive" || s === "none" || s === "disabled") return "inactive";
     return "trial";
@@ -181,6 +183,13 @@
     return null;
   }
 
+  function isVencimientoMembresiaPast(docData) {
+    if (!docData || typeof docData !== "object") return false;
+    var ms = timestampFieldMs(docData.vencimientoMembresia);
+    if (ms == null) return false;
+    return Date.now() > ms;
+  }
+
   function getFechaRegistroMs(docData) {
     if (!docData) return null;
     var ts0 = timestampFieldMs(docData.trialStartDate);
@@ -232,6 +241,29 @@
     return eliteSidecarGrantsAccess(eliteCollData);
   }
 
+  /**
+   * Acceso / edición MascotBook: bloqueo si la membresía pagada venció (vencimientoMembresia &lt; ahora).
+   * shouldExpireRemote: conviene invocar Cloud Function expireMembershipIfDue para persistir status expired.
+   */
+  function checkMascotaAccess(docData, app, uid, email) {
+    if (!docData || typeof docData !== "object") docData = {};
+    if (isPerpetualAccess(uid, email, docData)) {
+      return { ok: true, blocked: false, shouldExpireRemote: false, reason: "" };
+    }
+    if (isVencimientoMembresiaPast(docData)) {
+      return { ok: false, blocked: true, shouldExpireRemote: true, reason: "vencimiento_membresia" };
+    }
+    var a = normalizeApp(app);
+    var st = getPlanStatusFromDoc(docData, a);
+    if (st === "active") {
+      return { ok: true, blocked: false, shouldExpireRemote: false, reason: "" };
+    }
+    if (st === "trial" && !isTrialPeriodExpired(docData, a, uid, email)) {
+      return { ok: true, blocked: false, shouldExpireRemote: false, reason: "" };
+    }
+    return { ok: false, blocked: true, shouldExpireRemote: false, reason: "plan" };
+  }
+
   function isEmailSignatureLocked(docData, app, uid, email) {
     if (isPerpetualAccess(uid, email, docData)) return false;
     if (normalizeApp(app) === "mascotbook") return true;
@@ -243,6 +275,8 @@
 
   global.EliteCardAdminSubscription = {
     EC_TRIAL_DAYS: EC_TRIAL_DAYS,
+    isVencimientoMembresiaPast: isVencimientoMembresiaPast,
+    checkMascotaAccess: checkMascotaAccess,
     normalizeApp: normalizeApp,
     isDocAdmin: isDocAdmin,
     isAgencyOwnerEmail: isAgencyOwnerEmail,
