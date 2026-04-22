@@ -16,7 +16,7 @@
     <meta name="ec-asset-version" content="1776363335793" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EliteCard · Agencia WebElite</title>
-    <meta name="theme-color" content="#f8fafc" />
+    <meta name="theme-color" content="#ffffff" />
     <link rel="icon" type="image/png" href="assets/logo10.png?v=1" />
     <link rel="shortcut icon" href="assets/logo10.png?v=1" />
     <link rel="apple-touch-icon" href="assets/logo10.png?v=1" />
@@ -38,10 +38,11 @@
     <link rel="stylesheet" href="mascot-book-pro.css" id="ec-link-mascot-book-pro" />
     <link rel="stylesheet" href="admin-elite.css" id="ec-link-admin-elite" />
     <link rel="stylesheet" href="styles.css?v=6.0" id="ec-link-styles-mascot" />
+    <link rel="stylesheet" href="site-global.css?v=2" id="ec-site-global-css" />
     <script>
       (function () {
         var v = window.__EC_ADMIN_ASSET_TS || Date.now();
-        var vCss = "4.2";
+        var vCss = "4.4";
         var a = document.getElementById("ec-link-mascot-themes");
         var c = document.getElementById("ec-link-mascot-book-pro");
         var b = document.getElementById("ec-link-admin-elite");
@@ -53,7 +54,15 @@
       })();
     </script>
   </head>
-  <body>
+  <body class="ec-with-support-fab">
+    <a
+      class="ec-support-fab"
+      href="mailto:contacto@webelitesolution.io"
+      aria-label="Soporte: escribir a contacto@webelitesolution.io"
+    >
+      <span class="ec-support-fab__prefix">Soporte:</span>
+      <span class="ec-support-fab__mail">contacto@webelitesolution.io</span>
+    </a>
     <div id="gate-loading">
       <p style="color: rgba(17,24,39,0.5); font-size:0.9rem">Cargando panel…</p>
     </div>
@@ -109,10 +118,18 @@
       </div>
       <header class="admin-header">
         <a class="admin-brand" href="index.html" aria-label="Ir al inicio">
-          <img id="header-logo-img" src="assets/logo10.png?v=1" alt="Logo Agencia WebElite" width="44" height="44" />
+          <img
+            id="header-logo-img"
+            class="admin-brand-logo"
+            src="assets/logo10.png?v=3"
+            alt="Logo Agencia WebElite"
+            width="380"
+            height="120"
+          />
           <div class="admin-brand-text">
             <h1>EliteCard</h1>
             <small>Panel profesional · Agencia WebElite</small>
+            <p class="admin-brand-slogan">Tu conexión inteligente, siempre.</p>
           </div>
         </a>
         <div class="admin-header-actions">
@@ -133,9 +150,25 @@
           <span id="user-display-name-wrap" class="admin-header-user-wrap hidden" aria-live="polite">
             <span id="user-display-name" class="admin-header-user-name"></span>
           </span>
+          <a
+            id="admin-header-mail"
+            class="admin-header-mail hidden"
+            href="mailto:contacto@webelitesolution.io"
+            title="Escribinos ante cualquier duda"
+          >
+            <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+            <span>contacto@webelitesolution.io</span>
+          </a>
           <button type="button" class="btn-logout hidden" id="btn-logout">Cerrar sesión</button>
         </div>
       </header>
+
+      <div id="admin-logged-contact-bar" class="admin-logged-contact-bar hidden" role="region" aria-label="Contacto con la agencia">
+        <a href="mailto:contacto@webelitesolution.io"
+          ><i class="fa-solid fa-paper-plane" aria-hidden="true"></i> ¿Dudas con tu cuenta o tu tarjeta?
+          <strong>contacto@webelitesolution.io</strong></a
+        >
+      </div>
 
       <div id="admin-demo-banner" class="admin-demo-banner hidden" role="status">
         <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
@@ -182,6 +215,13 @@
               <button type="button" class="mb-pro-pick" data-mb-pro="organic_leaf">Organic Leaf</button>
             </div>
             <p class="theme-panel-hint theme-panel-hint--accent">Estilo visual estandarizado por tema MascotBook Pro.</p>
+          </div>
+          <div id="admin-sidebar-mail" class="sidebar-agency-contact hidden" aria-label="Soporte por correo">
+            <a class="sidebar-agency-mail" href="mailto:contacto@webelitesolution.io">
+              <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+              <span>contacto@webelitesolution.io</span>
+            </a>
+            <p class="sidebar-agency-hint">Ante cualquier duda, escribinos. Respondemos lo antes posible.</p>
           </div>
         </aside>
 
@@ -774,6 +814,11 @@
         <aside class="preview-col">
           <h3>Vista previa móvil</h3>
           <p class="preview-spec">390 × 844 px · escala real</p>
+          <p id="admin-preview-mail" class="preview-col-mail hidden">
+            <a href="mailto:contacto@webelitesolution.io"
+              ><i class="fa-solid fa-envelope" aria-hidden="true"></i> Soporte: contacto@webelitesolution.io</a
+            >
+          </p>
           <div class="phone-stage" id="phone-stage">
             <div class="phone-scale-wrap" id="phone-scale-wrap">
               <div class="phone device-390">
@@ -796,6 +841,9 @@
           <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
           <span>Agencia WebElite</span>
         </div>
+        <a class="admin-footer-mail" href="mailto:contacto@webelitesolution.io"
+          ><i class="fa-solid fa-envelope" aria-hidden="true"></i> contacto@webelitesolution.io</a
+        >
         <small>Sello de calidad en diseño y experiencia digital para EliteCard y MascotBook.</small>
       </footer>
     </div>
@@ -1208,7 +1256,7 @@
           telefono: "+54 9 11 5555 7788",
           whatsappNumero: "+54 9 11 5555 7788",
           fotoUrl: "assets/image_1.png",
-          logoUrl: "assets/logo_redondo_abogacia.png",
+          logoUrl: "assets/logo10.png?v=3",
           instagram: "https://instagram.com/estudio.schwindt",
           linkedin: "https://www.linkedin.com/in/valentina-schwindt-abogada",
           sitioWeb: "https://estudioschwindt.demo",
@@ -1980,7 +2028,7 @@
         function applyBrandLogo() {
           var hImg = document.getElementById("header-logo-img");
           if (!hImg) return;
-          hImg.src = "assets/logo10.png?v=1";
+          hImg.src = "assets/logo10.png?v=3";
         }
 
         function setAuthChrome(loggedIn) {
@@ -1993,6 +2041,15 @@
             var udn = document.getElementById("user-display-name");
             if (udn) udn.textContent = "";
           }
+          document.body.classList.toggle("ec-admin-authed", !!loggedIn);
+          var headerMail = document.getElementById("admin-header-mail");
+          if (headerMail) headerMail.classList.toggle("hidden", !loggedIn);
+          var contactBar = document.getElementById("admin-logged-contact-bar");
+          if (contactBar) contactBar.classList.toggle("hidden", !loggedIn);
+          var sideMail = document.getElementById("admin-sidebar-mail");
+          if (sideMail) sideMail.classList.toggle("hidden", !loggedIn);
+          var previewMail = document.getElementById("admin-preview-mail");
+          if (previewMail) previewMail.classList.toggle("hidden", !loggedIn);
           updateDemoChrome();
         }
 

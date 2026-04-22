@@ -105,6 +105,7 @@
     <link rel="stylesheet" href="mascot-book-pro.css" id="ec-css-mascot-pro" />
     <link rel="stylesheet" href="mascot-theme-engine.css" id="ec-css-mascot-theme-engine" />
     <link rel="stylesheet" href="styles.css?v=6.1" id="ec-css-mascot-styles" />
+    <link rel="stylesheet" href="site-global.css?v=2" id="ec-site-global-css" />
     <script>
       (function () {
         var v = window.__EC_PAGE_LOAD_TS || Date.now();
@@ -368,7 +369,15 @@
       }
     </style>
   </head>
-  <body>
+  <body class="ec-with-support-fab">
+    <a
+      class="ec-support-fab"
+      href="mailto:contacto@webelitesolution.io"
+      aria-label="Soporte: escribir a contacto@webelitesolution.io"
+    >
+      <span class="ec-support-fab__prefix">Soporte:</span>
+      <span class="ec-support-fab__mail">contacto@webelitesolution.io</span>
+    </a>
     <div id="card-render">
     <div id="card-loading" aria-busy="true">
       <div class="card-spinner" aria-hidden="true"></div>
@@ -530,11 +539,12 @@
           </div>
         </div>
         <footer class="mb-brand-footer" aria-label="Marca MascotBook">
-          <img src="/assets/logo10.png" alt="Logo MascotBook" width="38" height="38" />
-          <div>
+          <img src="/assets/logo10.png?v=3" alt="Logo MascotBook" width="56" height="56" />
+          <div class="mb-brand-footer-text">
             <strong>MascotBook</strong>
             <small>Agencia WebElite</small>
           </div>
+          <a class="mb-brand-footer-mail" href="mailto:contacto@webelitesolution.io">contacto@webelitesolution.io</a>
         </footer>
       </div>
     </div>

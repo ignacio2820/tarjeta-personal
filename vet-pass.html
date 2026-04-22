@@ -8,6 +8,7 @@
     <link rel="icon" type="image/png" href="assets/logo10.png?v=1" />
     <link rel="shortcut icon" href="assets/logo10.png?v=1" />
     <link rel="apple-touch-icon" href="assets/logo10.png?v=1" />
+    <link rel="stylesheet" href="site-global.css?v=2" id="ec-site-global-css" />
     <style>
       :root {
         --bg: #0c0a0a;
@@ -118,7 +119,15 @@
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
   </head>
-  <body>
+  <body class="ec-with-support-fab">
+    <a
+      class="ec-support-fab"
+      href="mailto:contacto@webelitesolution.io"
+      aria-label="Soporte: escribir a contacto@webelitesolution.io"
+    >
+      <span class="ec-support-fab__prefix">Soporte:</span>
+      <span class="ec-support-fab__mail">contacto@webelitesolution.io</span>
+    </a>
     <div class="wrap">
       <div id="vp-state-loading">
         <h1>Pase veterinario</h1>

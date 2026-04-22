@@ -399,16 +399,33 @@
   border: 1px solid rgba(255, 255, 255, 0.16);
   background: rgba(255, 255, 255, 0.06);
   display: inline-flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.65rem;
   width: calc(100% - 2rem);
   justify-content: center;
 }
 
 .mb-brand-footer img {
-  width: 34px;
-  height: 34px;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
+}
+
+.mb-brand-footer-mail {
+  flex-basis: 100%;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #93c5fd !important;
+  text-decoration: none !important;
+  margin-top: 0.15rem;
+}
+
+.mb-brand-footer-mail:hover {
+  text-decoration: underline !important;
+  color: #bfdbfe !important;
 }
 
 .mb-brand-footer strong {

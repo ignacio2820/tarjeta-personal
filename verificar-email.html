@@ -20,6 +20,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="site-global.css?v=2" id="ec-site-global-css" />
     <style>
       body {
         font-family: "Inter", system-ui, sans-serif;
@@ -84,21 +85,32 @@
       }
     </style>
   </head>
-  <body class="antialiased auth-shell-page">
+  <body class="antialiased auth-shell-page ec-with-support-fab">
+    <a
+      class="ec-support-fab"
+      href="mailto:contacto@webelitesolution.io"
+      aria-label="Soporte: escribir a contacto@webelitesolution.io"
+    >
+      <span class="ec-support-fab__prefix">Soporte:</span>
+      <span class="ec-support-fab__mail">contacto@webelitesolution.io</span>
+    </a>
     <main class="min-h-[100dvh] flex items-center justify-center px-4 py-10">
       <div class="w-full max-w-[440px]">
         <div class="text-center mb-6">
-          <div
-            class="w-14 h-14 rounded-2xl mx-auto mb-3 flex items-center justify-center text-white font-extrabold text-lg tracking-tight"
-            style="background: linear-gradient(145deg, #0f172a, #2563eb)"
-            aria-hidden="true"
-          >
-            E
-          </div>
+          <a href="index.html" class="inline-block mb-3" aria-label="Inicio Agencia WebElite">
+            <img
+              src="assets/logo10.png?v=3"
+              alt="Agencia WebElite"
+              width="380"
+              height="120"
+              class="mx-auto h-auto max-h-[76px] w-auto max-w-[min(260px,78vw)] object-contain rounded-xl shadow-md shadow-blue-500/15"
+            />
+          </a>
           <strong class="font-['Montserrat'] block text-[1.02rem] tracking-tight text-slate-900"
             >EliteCard · MascotBook</strong
           >
-          <small class="text-[0.72rem] text-slate-500 uppercase tracking-[0.08em]">Agencia WebElite</small>
+          <small class="mt-1 block text-[0.72rem] text-slate-500 uppercase tracking-[0.08em]">Agencia WebElite</small>
+          <p class="mt-2 text-[0.74rem] font-medium italic tracking-wide text-slate-500">Tu conexión inteligente, siempre.</p>
         </div>
 
         <section class="glass w-full p-8">

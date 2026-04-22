@@ -2055,7 +2055,7 @@
         telefono: "+54 9 11 5555 7788",
         whatsappNumero: "+54 9 11 5555 7788",
         fotoUrl: "assets/image_1.png",
-        logoUrl: "assets/logo_redondo_abogacia.png",
+        logoUrl: "assets/logo10.png?v=3",
         instagram: "https://instagram.com/estudio.schwindt",
         linkedin: "https://www.linkedin.com/in/valentina-schwindt-abogada",
         sitioWeb: "https://estudioschwindt.demo",
@@ -2223,7 +2223,7 @@
           email: "valentina.schwindt@estudioschwindt.demo",
           telefono: "+54 9 11 5555 7788",
           fotoUrl: "assets/image_1.png",
-          logoUrl: "assets/logo_redondo_abogacia.png",
+          logoUrl: "assets/logo10.png?v=3",
           user_bgColor: "#000000",
           user_bgPreset: "matte",
           redes: {

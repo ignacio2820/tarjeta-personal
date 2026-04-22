@@ -20,11 +20,14 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="admin-elite.css" id="ec-link-admin-elite" />
+    <link rel="stylesheet" href="site-global.css?v=2" id="ec-site-global-css" />
     <script>
       (function () {
         var v = Date.now();
         var b = document.getElementById("ec-link-admin-elite");
         if (b) b.href = "admin-elite.css?v=" + v;
+        var g = document.getElementById("ec-site-global-css");
+        if (g) g.href = "site-global.css?v=" + v;
       })();
     </script>
     <style>
@@ -76,21 +79,56 @@
         color: rgba(17, 24, 39, 0.55);
         font-size: 0.9rem;
       }
+      .ec-config-mail-strip {
+        padding: 0.55rem 1.25rem;
+        text-align: center;
+        background: linear-gradient(90deg, rgba(0, 102, 255, 0.08), rgba(96, 165, 250, 0.12));
+        border-bottom: 1px solid rgba(37, 99, 235, 0.12);
+      }
+      .ec-config-mail-strip a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #0066ff;
+        text-decoration: none;
+      }
+      .ec-config-mail-strip a:hover {
+        text-decoration: underline;
+      }
     </style>
   </head>
-  <body>
+  <body class="ec-with-support-fab">
+    <a
+      class="ec-support-fab"
+      href="mailto:contacto@webelitesolution.io"
+      aria-label="Soporte: escribir a contacto@webelitesolution.io"
+    >
+      <span class="ec-support-fab__prefix">Soporte:</span>
+      <span class="ec-support-fab__mail">contacto@webelitesolution.io</span>
+    </a>
     <div id="ec-config-gate">
       <p>Comprobando sesión…</p>
     </div>
 
     <div id="ec-config-app" class="ec-config-page hidden">
       <header class="ec-config-header">
-        <div class="ec-config-brand">
-          <i class="fa-solid fa-gear" aria-hidden="true"></i>
-          <span>Configuración global</span>
-        </div>
+        <a class="ec-config-brand ec-config-brand--home" href="index.html" aria-label="Inicio Agencia WebElite">
+          <img class="ec-config-brand-logo" src="assets/logo10.png?v=3" alt="" width="400" height="140" />
+          <span class="ec-config-brand-meta">
+            <span class="ec-config-brand-title">Configuración global</span>
+            <span class="ec-config-slogan">Tu conexión inteligente, siempre.</span>
+          </span>
+        </a>
         <a class="btn-outline" href="admin.html">← Volver al panel</a>
       </header>
+      <div class="ec-config-mail-strip" role="region" aria-label="Contacto con la agencia">
+        <a href="mailto:contacto@webelitesolution.io"
+          ><i class="fa-solid fa-envelope" aria-hidden="true"></i> Soporte: contacto@webelitesolution.io</a
+        >
+      </div>
       <main class="ec-config-main">
         <h1 style="font-size: 1.35rem; margin: 0 0 0.5rem">Cuenta y seguridad</h1>
         <p class="ec-config-lead">
@@ -302,6 +340,7 @@
             }
             if (gate) gate.classList.add("hidden");
             if (app) app.classList.remove("hidden");
+            document.body.classList.add("ec-admin-authed");
             bindPasswordForm();
           });
         }

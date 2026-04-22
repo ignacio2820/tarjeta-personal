@@ -15,6 +15,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="site-global.css?v=2" id="ec-site-global-css" />
     <style>
       body {
         font-family: "Inter", system-ui, sans-serif;
@@ -83,18 +84,23 @@
         text-align: center;
         margin-bottom: 1rem;
       }
-      .auth-mark {
-        width: 56px;
-        height: 56px;
-        border-radius: 16px;
-        margin: 0 auto 0.65rem;
-        background: linear-gradient(145deg, #0f172a, #2563eb);
-        color: #fff;
+      .auth-brand--home {
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
-        font-weight: 800;
-        letter-spacing: -0.03em;
+        text-decoration: none;
+        color: inherit;
+      }
+      .auth-brand-logo {
+        width: auto;
+        height: auto;
+        max-width: min(260px, 78vw);
+        max-height: 76px;
+        object-fit: contain;
+        margin: 0 auto 0.55rem;
+        display: block;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(37, 99, 235, 0.2);
       }
       .auth-brand strong {
         font-family: "Montserrat", "Inter", system-ui, sans-serif;
@@ -107,6 +113,15 @@
         color: #64748b;
         letter-spacing: 0.08em;
         text-transform: uppercase;
+      }
+      .auth-brand-slogan {
+        display: block;
+        margin-top: 0.35rem;
+        font-size: 0.74rem;
+        font-weight: 500;
+        font-style: italic;
+        letter-spacing: 0.03em;
+        color: #64748b;
       }
       .glass {
         background: #fff;
@@ -167,15 +182,24 @@
       }
     </style>
   </head>
-  <body class="antialiased">
+  <body class="antialiased ec-with-support-fab">
+    <a
+      class="ec-support-fab"
+      href="mailto:contacto@webelitesolution.io"
+      aria-label="Soporte: escribir a contacto@webelitesolution.io"
+    >
+      <span class="ec-support-fab__prefix">Soporte:</span>
+      <span class="ec-support-fab__mail">contacto@webelitesolution.io</span>
+    </a>
     <main class="auth-split auth-shell-page">
       <section class="auth-left">
         <div class="auth-shell">
-        <div class="auth-brand">
-          <div class="auth-mark" aria-hidden="true">E</div>
+        <a class="auth-brand auth-brand--home" href="index.html" aria-label="Inicio Agencia WebElite">
+          <img class="auth-brand-logo" src="assets/logo10.png?v=3" alt="Agencia WebElite" width="400" height="140" />
           <strong>EliteCard · MascotBook</strong>
           <small>Agencia WebElite</small>
-        </div>
+          <span class="auth-brand-slogan">Tu conexión inteligente, siempre.</span>
+        </a>
       <section class="glass w-full p-8">
         <p class="text-[11px] uppercase tracking-[0.28em] text-[#b8922d]">Acceso</p>
         <h1 class="mt-3 text-3xl font-semibold text-slate-900">Iniciar sesión</h1>
@@ -208,8 +232,8 @@
         <div class="auth-right-copy">
           <img
             class="auth-right-image"
-            src="assets/Gemini_Generated_Image_5h8njw5h8njw5h8n.png"
-            alt="Vista corporativa EliteCard"
+            src="assets/logo10.png?v=3"
+            alt="Agencia WebElite — identidad digital"
           />
           <strong>Diseñá tu presencia digital profesional en minutos</strong>
           <p>
