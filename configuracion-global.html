@@ -20,7 +20,7 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="admin-elite.css" id="ec-link-admin-elite" />
-    <link rel="stylesheet" href="site-global.css?v=2" id="ec-site-global-css" />
+    <link rel="stylesheet" href="site-global.css?v=3" id="ec-site-global-css" />
     <script>
       (function () {
         var v = Date.now();
@@ -100,15 +100,7 @@
       }
     </style>
   </head>
-  <body class="ec-with-support-fab">
-    <a
-      class="ec-support-fab"
-      href="mailto:contacto@webelitesolution.io"
-      aria-label="Soporte: escribir a contacto@webelitesolution.io"
-    >
-      <span class="ec-support-fab__prefix">Soporte:</span>
-      <span class="ec-support-fab__mail">contacto@webelitesolution.io</span>
-    </a>
+  <body>
     <div id="ec-config-gate">
       <p>Comprobando sesión…</p>
     </div>
@@ -340,7 +332,6 @@
             }
             if (gate) gate.classList.add("hidden");
             if (app) app.classList.remove("hidden");
-            document.body.classList.add("ec-admin-authed");
             bindPasswordForm();
           });
         }

@@ -1,5 +1,5 @@
 /**
- * Landing pública — Agencia WebElite · EliteCard / MascotBook (v4.2)
+ * Landing pública — Agencia WebElite · EliteCard / MascotBook (v4.3)
  */
 :root {
   --le-white: #ffffff;
@@ -138,6 +138,120 @@ a {
 
 .nav-actions--header {
   gap: 0.4rem;
+}
+
+.site-nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.55rem;
+  height: 2.55rem;
+  border-radius: 0.85rem;
+  border: 1px solid var(--le-border);
+  background: var(--le-white);
+  color: var(--le-ink);
+  cursor: pointer;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.site-nav-toggle:hover {
+  border-color: rgba(37, 99, 235, 0.35);
+  color: var(--le-electric);
+}
+
+.site-nav-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  pointer-events: none;
+}
+
+.site-nav-drawer:not(.hidden) {
+  pointer-events: auto;
+}
+
+.site-nav-drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  margin: 0;
+  padding: 0;
+  background: rgba(15, 23, 42, 0.45);
+  cursor: pointer;
+}
+
+.site-nav-drawer-sheet {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(18rem, 88vw);
+  height: 100%;
+  background: var(--le-white);
+  box-shadow: -8px 0 28px rgba(15, 23, 42, 0.12);
+  display: flex;
+  flex-direction: column;
+}
+
+.site-nav-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--le-border);
+  font-family: var(--le-font-display);
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+.site-nav-drawer-close {
+  border: none;
+  background: transparent;
+  font-size: 1.45rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--le-muted);
+  padding: 0.15rem 0.35rem;
+}
+
+.site-nav-drawer-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.85rem;
+}
+
+.site-nav-drawer-link {
+  display: block;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.85rem;
+  border: 1px solid var(--le-border);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--le-ink);
+  background: var(--le-white);
+}
+
+.site-nav-drawer-link:hover {
+  border-color: rgba(37, 99, 235, 0.35);
+  color: var(--le-electric);
+}
+
+.site-nav-drawer-link--primary {
+  background: linear-gradient(135deg, var(--le-electric), var(--le-blue));
+  color: #fff !important;
+  border-color: transparent;
+}
+
+@media (max-width: 720px) {
+  .site-nav-toggle {
+    display: inline-flex;
+  }
+
+  .nav-actions--header {
+    display: none !important;
+  }
 }
 
 .btn-nav-mini {
@@ -916,6 +1030,20 @@ a {
   box-shadow: 0 12px 30px rgba(0, 102, 255, 0.15);
 }
 
+@media (max-width: 480px) {
+  .help-mail {
+    font-size: 0.78rem;
+    padding: 0.5rem 0.85rem;
+    max-width: 100%;
+    box-sizing: border-box;
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+    word-break: break-word;
+    white-space: normal;
+  }
+}
+
 /* ——— CTA band ——— */
 .cta-band {
   margin: 0 clamp(1.25rem, 4vw, 2rem) clamp(2rem, 4vw, 2.5rem);
@@ -1000,6 +1128,20 @@ a {
 
 .footer-mail:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .footer-mail {
+    font-size: 0.72rem;
+    font-weight: 600;
+    display: block;
+    max-width: 100%;
+    padding: 0 0.75rem;
+    box-sizing: border-box;
+    word-break: break-word;
+    line-height: 1.4;
+    white-space: normal;
+  }
 }
 
 .site-footer small {

@@ -38,11 +38,10 @@
     <link rel="stylesheet" href="mascot-book-pro.css" id="ec-link-mascot-book-pro" />
     <link rel="stylesheet" href="admin-elite.css" id="ec-link-admin-elite" />
     <link rel="stylesheet" href="styles.css?v=6.0" id="ec-link-styles-mascot" />
-    <link rel="stylesheet" href="site-global.css?v=2" id="ec-site-global-css" />
     <script>
       (function () {
         var v = window.__EC_ADMIN_ASSET_TS || Date.now();
-        var vCss = "4.4";
+        var vCss = "4.5";
         var a = document.getElementById("ec-link-mascot-themes");
         var c = document.getElementById("ec-link-mascot-book-pro");
         var b = document.getElementById("ec-link-admin-elite");
@@ -54,15 +53,7 @@
       })();
     </script>
   </head>
-  <body class="ec-with-support-fab">
-    <a
-      class="ec-support-fab"
-      href="mailto:contacto@webelitesolution.io"
-      aria-label="Soporte: escribir a contacto@webelitesolution.io"
-    >
-      <span class="ec-support-fab__prefix">Soporte:</span>
-      <span class="ec-support-fab__mail">contacto@webelitesolution.io</span>
-    </a>
+  <body>
     <div id="gate-loading">
       <p style="color: rgba(17,24,39,0.5); font-size:0.9rem">Cargando panel…</p>
     </div>
@@ -117,58 +108,91 @@
         <span>Tu cuenta está suspendida. Contactá al administrador.</span>
       </div>
       <header class="admin-header">
-        <a class="admin-brand" href="index.html" aria-label="Ir al inicio">
-          <img
-            id="header-logo-img"
-            class="admin-brand-logo"
-            src="assets/logo10.png?v=3"
-            alt="Logo Agencia WebElite"
-            width="380"
-            height="120"
-          />
-          <div class="admin-brand-text">
-            <h1>EliteCard</h1>
-            <small>Panel profesional · Agencia WebElite</small>
-            <p class="admin-brand-slogan">Tu conexión inteligente, siempre.</p>
+        <div class="admin-header-grid">
+          <div class="admin-header-zone admin-header-zone--brand">
+            <a class="admin-brand" href="index.html" aria-label="Ir al inicio">
+              <img
+                id="header-logo-img"
+                class="admin-brand-logo"
+                src="assets/logo10.png?v=3"
+                alt="Agencia WebElite"
+                width="400"
+                height="140"
+              />
+              <div class="admin-brand-text">
+                <h1>EliteCard</h1>
+                <small>Panel profesional · Agencia WebElite</small>
+                <p class="admin-brand-slogan">Tu conexión inteligente, siempre.</p>
+              </div>
+            </a>
           </div>
-        </a>
-        <div class="admin-header-actions">
-          <p id="admin-guest-hint" class="admin-guest-hint hidden">
-            <i class="fa-solid fa-gift" aria-hidden="true"></i> Probá gratis <strong>7 días</strong> · iniciá sesión solo si querés guardar
-          </p>
-          <div id="header-guest-ctas" class="header-guest-ctas hidden">
-            <a class="btn-outline btn-header" id="gate-btn-login" href="#">Iniciar sesión</a>
-            <a class="btn-solid btn-header" id="gate-btn-register" href="#">Crear cuenta</a>
+          <div class="admin-header-zone admin-header-zone--center" id="admin-header-membership">
+            <p id="admin-guest-hint" class="admin-guest-hint hidden">
+              <i class="fa-solid fa-gift" aria-hidden="true"></i> Probá gratis <strong>7 días</strong> · iniciá sesión solo si querés guardar
+            </p>
+            <div id="header-guest-ctas" class="header-guest-ctas hidden">
+              <a class="btn-outline btn-header" id="gate-btn-login" href="#">Iniciar sesión</a>
+              <a class="btn-solid btn-header" id="gate-btn-register" href="#">Crear cuenta</a>
+            </div>
+            <div id="admin-trial-strip" class="admin-trial-strip admin-trial-strip--header hidden" role="status" aria-live="polite">
+              <span id="admin-trial-days-badge" class="admin-trial-days-badge"></span>
+              <button type="button" class="btn-premium-upgrade" id="btn-premium-upgrade">Premium</button>
+            </div>
+            <span id="admin-badge-perpetual" class="admin-badge-perpetual admin-badge-perpetual--header hidden">Perpetuo · Agencia</span>
           </div>
-          <div id="admin-trial-strip" class="admin-trial-strip hidden" role="status" aria-live="polite">
-            <span id="admin-trial-days-badge" class="admin-trial-days-badge"></span>
-            <button type="button" class="btn-premium-upgrade" id="btn-premium-upgrade">
-              Pasar a Premium
+          <div class="admin-header-zone admin-header-zone--actions">
+            <button
+              type="button"
+              class="admin-mobile-menu-btn"
+              id="admin-mobile-menu-btn"
+              aria-label="Abrir menú"
+              aria-expanded="false"
+              aria-controls="admin-mobile-menu-panel"
+            >
+              <i class="fa-solid fa-bars" aria-hidden="true"></i>
             </button>
+            <div class="admin-header-actions">
+              <span id="user-display-name-wrap" class="admin-header-user-wrap hidden" aria-live="polite">
+                <span id="user-display-name" class="admin-header-user-name"></span>
+              </span>
+              <div class="admin-contact-dropdown">
+                <button
+                  type="button"
+                  class="admin-contact-dropdown-btn"
+                  id="admin-contact-dropdown-btn"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  aria-controls="admin-contact-dropdown-panel"
+                  title="Contacto"
+                >
+                  <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+                  <span class="admin-contact-dropdown-label">Contacto</span>
+                </button>
+                <div id="admin-contact-dropdown-panel" class="admin-contact-dropdown-panel hidden" role="menu">
+                  <a href="mailto:contacto@webelitesolution.io" class="admin-contact-dropdown-item" role="menuitem"
+                    >contacto@webelitesolution.io</a
+                  >
+                </div>
+              </div>
+              <button type="button" class="btn-logout hidden" id="btn-logout">Cerrar sesión</button>
+            </div>
           </div>
-          <span id="admin-badge-perpetual" class="admin-badge-perpetual hidden">ACCESO PERPETUO - AGENCIA WEBELITE</span>
-          <span id="user-display-name-wrap" class="admin-header-user-wrap hidden" aria-live="polite">
-            <span id="user-display-name" class="admin-header-user-name"></span>
-          </span>
-          <a
-            id="admin-header-mail"
-            class="admin-header-mail hidden"
-            href="mailto:contacto@webelitesolution.io"
-            title="Escribinos ante cualquier duda"
-          >
-            <i class="fa-solid fa-envelope" aria-hidden="true"></i>
-            <span>contacto@webelitesolution.io</span>
-          </a>
-          <button type="button" class="btn-logout hidden" id="btn-logout">Cerrar sesión</button>
+        </div>
+        <div id="admin-mobile-menu-panel" class="admin-mobile-menu-panel hidden" role="dialog" aria-modal="true" aria-hidden="true">
+          <button type="button" class="admin-mobile-menu-backdrop" id="admin-mobile-menu-backdrop" aria-label="Cerrar menú"></button>
+          <div class="admin-mobile-menu-sheet">
+            <div class="admin-mobile-menu-head">
+              <span class="admin-mobile-menu-title">Menú</span>
+              <button type="button" class="admin-mobile-menu-close" id="admin-mobile-menu-close" aria-label="Cerrar">×</button>
+            </div>
+            <nav class="admin-mobile-menu-nav" aria-label="Accesos rápidos">
+              <a class="admin-mobile-menu-link" href="index.html">Inicio</a>
+              <button type="button" class="admin-mobile-menu-link" id="admin-mobile-go-dashboard">Dashboard</button>
+              <a class="admin-mobile-menu-link" href="mailto:contacto@webelitesolution.io">Contacto (correo)</a>
+            </nav>
+          </div>
         </div>
       </header>
-
-      <div id="admin-logged-contact-bar" class="admin-logged-contact-bar hidden" role="region" aria-label="Contacto con la agencia">
-        <a href="mailto:contacto@webelitesolution.io"
-          ><i class="fa-solid fa-paper-plane" aria-hidden="true"></i> ¿Dudas con tu cuenta o tu tarjeta?
-          <strong>contacto@webelitesolution.io</strong></a
-        >
-      </div>
 
       <div id="admin-demo-banner" class="admin-demo-banner hidden" role="status">
         <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
@@ -215,13 +239,6 @@
               <button type="button" class="mb-pro-pick" data-mb-pro="organic_leaf">Organic Leaf</button>
             </div>
             <p class="theme-panel-hint theme-panel-hint--accent">Estilo visual estandarizado por tema MascotBook Pro.</p>
-          </div>
-          <div id="admin-sidebar-mail" class="sidebar-agency-contact hidden" aria-label="Soporte por correo">
-            <a class="sidebar-agency-mail" href="mailto:contacto@webelitesolution.io">
-              <i class="fa-solid fa-envelope" aria-hidden="true"></i>
-              <span>contacto@webelitesolution.io</span>
-            </a>
-            <p class="sidebar-agency-hint">Ante cualquier duda, escribinos. Respondemos lo antes posible.</p>
           </div>
         </aside>
 
@@ -814,11 +831,6 @@
         <aside class="preview-col">
           <h3>Vista previa móvil</h3>
           <p class="preview-spec">390 × 844 px · escala real</p>
-          <p id="admin-preview-mail" class="preview-col-mail hidden">
-            <a href="mailto:contacto@webelitesolution.io"
-              ><i class="fa-solid fa-envelope" aria-hidden="true"></i> Soporte: contacto@webelitesolution.io</a
-            >
-          </p>
           <div class="phone-stage" id="phone-stage">
             <div class="phone-scale-wrap" id="phone-scale-wrap">
               <div class="phone device-390">
@@ -2041,15 +2053,6 @@
             var udn = document.getElementById("user-display-name");
             if (udn) udn.textContent = "";
           }
-          document.body.classList.toggle("ec-admin-authed", !!loggedIn);
-          var headerMail = document.getElementById("admin-header-mail");
-          if (headerMail) headerMail.classList.toggle("hidden", !loggedIn);
-          var contactBar = document.getElementById("admin-logged-contact-bar");
-          if (contactBar) contactBar.classList.toggle("hidden", !loggedIn);
-          var sideMail = document.getElementById("admin-sidebar-mail");
-          if (sideMail) sideMail.classList.toggle("hidden", !loggedIn);
-          var previewMail = document.getElementById("admin-preview-mail");
-          if (previewMail) previewMail.classList.toggle("hidden", !loggedIn);
           updateDemoChrome();
         }
 
@@ -7294,6 +7297,73 @@
             setPanel(btn.getAttribute("data-panel") || "dashboard");
           });
         });
+
+        (function wireAdminHeaderUi() {
+          var mbBtn = document.getElementById("admin-mobile-menu-btn");
+          var mbPanel = document.getElementById("admin-mobile-menu-panel");
+          var mbClose = document.getElementById("admin-mobile-menu-close");
+          var mbBackdrop = document.getElementById("admin-mobile-menu-backdrop");
+          var mbDash = document.getElementById("admin-mobile-go-dashboard");
+          function openMobileMenu() {
+            if (!mbPanel) return;
+            mbPanel.classList.remove("hidden");
+            mbPanel.setAttribute("aria-hidden", "false");
+            if (mbBtn) mbBtn.setAttribute("aria-expanded", "true");
+            document.body.style.overflow = "hidden";
+          }
+          function closeMobileMenu() {
+            if (!mbPanel) return;
+            mbPanel.classList.add("hidden");
+            mbPanel.setAttribute("aria-hidden", "true");
+            if (mbBtn) mbBtn.setAttribute("aria-expanded", "false");
+            document.body.style.overflow = "";
+          }
+          if (mbBtn && mbPanel) {
+            mbBtn.addEventListener("click", function () {
+              if (mbPanel.classList.contains("hidden")) openMobileMenu();
+              else closeMobileMenu();
+            });
+          }
+          if (mbClose) mbClose.addEventListener("click", closeMobileMenu);
+          if (mbBackdrop) mbBackdrop.addEventListener("click", closeMobileMenu);
+          if (mbDash) {
+            mbDash.addEventListener("click", function () {
+              try {
+                setPanel("dashboard");
+              } catch (eM) {}
+              closeMobileMenu();
+            });
+          }
+
+          var ddBtn = document.getElementById("admin-contact-dropdown-btn");
+          var ddPanel = document.getElementById("admin-contact-dropdown-panel");
+          function closeDd() {
+            if (!ddPanel) return;
+            ddPanel.classList.add("hidden");
+            ddPanel.setAttribute("hidden", "hidden");
+            if (ddBtn) ddBtn.setAttribute("aria-expanded", "false");
+          }
+          function toggleDd() {
+            if (!ddPanel) return;
+            var open = ddPanel.classList.contains("hidden");
+            if (open) {
+              ddPanel.classList.remove("hidden");
+              ddPanel.removeAttribute("hidden");
+              if (ddBtn) ddBtn.setAttribute("aria-expanded", "true");
+            } else closeDd();
+          }
+          if (ddBtn && ddPanel) {
+            ddBtn.addEventListener("click", function (ev) {
+              ev.stopPropagation();
+              toggleDd();
+            });
+            document.addEventListener("click", function (ev) {
+              if (!ddPanel || ddPanel.classList.contains("hidden")) return;
+              if (ddBtn.contains(ev.target) || ddPanel.contains(ev.target)) return;
+              closeDd();
+            });
+          }
+        })();
 
         document.querySelectorAll(".mb-tab-btn[data-mb-tab]").forEach(function (btn) {
           btn.addEventListener("click", function () {

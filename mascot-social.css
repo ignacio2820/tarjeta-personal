@@ -354,17 +354,21 @@
 }
 
 /* —— Marca MascotBook + WebElite —— */
-.mb-topbar-mark {
-  width: 1.65rem;
-  height: 1.65rem;
-  border-radius: 0.45rem;
-  background: linear-gradient(135deg, #ec4899, #2563eb);
+.mb-topbar-brand {
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 0.85rem;
   flex-shrink: 0;
+  text-decoration: none;
+  line-height: 0;
+}
+
+.mb-topbar-logo {
+  height: 1.75rem;
+  width: auto;
+  max-width: 6.5rem;
+  object-fit: contain;
+  display: block;
+  border-radius: 0.35rem;
 }
 
 .mb-ig-topbar {
