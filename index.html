@@ -15,6 +15,9 @@
       content="Tarjeta digital profesional EliteCard y perfil social MascotBook. Probá 7 días gratis. Diseñado por Agencia WebElite."
     />
     <meta name="theme-color" content="#f8fafc" />
+    <link rel="icon" type="image/png" href="assets/logo10.png?v=1" />
+    <link rel="shortcut icon" href="assets/logo10.png?v=1" />
+    <link rel="apple-touch-icon" href="assets/logo10.png?v=1" />
     <script>
       (function () {
         try {
@@ -52,7 +55,9 @@
   <body>
     <header class="site-nav">
       <a class="nav-brand" href="index.html" aria-label="Inicio Agencia WebElite">
-        <span class="nav-brand-mark" id="nav-logo-wrap" aria-hidden="true">E</span>
+        <span class="nav-brand-mark" id="nav-logo-wrap" aria-hidden="true">
+          <img src="assets/logo10.png?v=1" alt="Logo Agencia WebElite" width="44" height="44" />
+        </span>
         <span class="nav-brand-text">
           <strong>EliteCard</strong>
           <span>by Agencia WebElite</span>
@@ -186,21 +191,5 @@
       <small>EliteCard y MascotBook son productos digitales desarrollados y curados por Agencia WebElite.</small>
     </footer>
 
-    <script>
-      (function () {
-        var sc = document.createElement("script");
-        sc.src = "config.js?v=3.0";
-        sc.onload = function () {
-          var url = String(window.EC_BRAND_LOGO_URL || "").trim();
-          var wrap = document.getElementById("nav-logo-wrap");
-          if (!url || !wrap) return;
-          wrap.innerHTML =
-            '<img src="' +
-            url.replace(/"/g, "") +
-            '" alt="EliteCard" width="42" height="42" loading="lazy" />';
-        };
-        document.body.appendChild(sc);
-      })();
-    </script>
   </body>
 </html>

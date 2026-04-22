@@ -1,22 +1,89 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    /**
-     * usuarios/{uid}/personal/* — EliteCard
-     * usuarios/{uid}/mascot/* — MascotBook
-     * Rutas legacy (fotoPerfil, logoInstitucional, etc.) siguen bajo el mismo patrón.
-     */
+
+    function mbFsIsAdmin(m) {
+      return m.keys().hasAny(['role']) && m.role == 'admin';
+    }
+
+    function mbFsSuspendedExpired(m) {
+      return m.keys().hasAny(['status']) && (m.status == 'suspended' || m.status == 'expired');
+    }
+
+    function mbFsVencimientoPast(m) {
+      return m.keys().hasAny(['vencimientoMembresia'])
+        && m.vencimientoMembresia is timestamp
+        && m.vencimientoMembresia < request.time;
+    }
+
+    function mbFsMascotInactive(m) {
+      return (m.keys().hasAny(['mascotbook_status'])
+          && (m.mascotbook_status == 'inactive' || m.mascotbook_status == 'expired' || m.mascotbook_status == 'suspended'))
+        || (m.keys().hasAny(['plan_status'])
+          && (m.plan_status == 'inactive' || m.plan_status == 'none' || m.plan_status == 'disabled' || m.plan_status == 'expired'));
+    }
+
+    function mbFsPaidGrace(m) {
+      return (m.keys().hasAny(['status']) && (m.status == 'active' || m.status == 'premium' || m.status == 'activo'))
+        || (m.keys().hasAny(['mascotbook_status'])
+          && (m.mascotbook_status == 'active' || m.mascotbook_status == 'premium' || m.mascotbook_status == 'activo'))
+        || (m.keys().hasAny(['plan_status'])
+          && (m.plan_status == 'active' || m.plan_status == 'pro' || m.plan_status == 'paid' || m.plan_status == 'premium' || m.plan_status == 'activo'))
+        || (m.keys().hasAny(['premiumUntil']) && m.premiumUntil is timestamp && m.premiumUntil > request.time);
+    }
+
+    function mbFsTrialStart(m) {
+      return (m.keys().hasAny(['trialStartDate']) && m.trialStartDate is timestamp)
+        ? m.trialStartDate
+        : (m.keys().hasAny(['createdAt']) && m.createdAt is timestamp ? m.createdAt : null);
+    }
+
+    function mbFsTrialExpiredBranch(m) {
+      return m.keys().hasAny(['status']) && m.status == 'trial'
+        ? (
+          mbFsTrialStart(m) != null
+          && request.time > mbFsTrialStart(m) + duration.value(7, 'd')
+        )
+        : (
+          mbFsTrialStart(m) != null
+          && request.time > mbFsTrialStart(m) + duration.value(7, 'd')
+        );
+    }
+
+    /** Igual criterio que firestore.rules mbUserMascotbookProContentLocked. */
+    function mbFsLockedFromMem(m) {
+      return !mbFsIsAdmin(m)
+        && (
+          mbFsSuspendedExpired(m)
+          || mbFsVencimientoPast(m)
+          || mbFsMascotInactive(m)
+          || (!mbFsPaidGrace(m) && mbFsTrialExpiredBranch(m))
+        );
+    }
+
+    function mbFsMascotbookLocked(uid) {
+      return firestore.exists(/databases/(default)/documents/users/$(uid))
+        && mbFsLockedFromMem(firestore.get(/databases/(default)/documents/users/$(uid)).data);
+    }
+
+    function mbFsImageOk() {
+      return request.resource == null
+        || (request.resource.size < 8 * 1024 * 1024 && request.resource.contentType.matches('image/.*'));
+    }
+
+    match /usuarios/{userId}/mascot_profiles/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null
+        && request.auth.uid == userId
+        && !mbFsMascotbookLocked(userId)
+        && mbFsImageOk();
+    }
+
     match /usuarios/{userId}/{allPaths=**} {
       allow read: if true;
       allow write: if request.auth != null
         && request.auth.uid == userId
-        && (
-          request.resource == null
-          || (
-            request.resource.size < 8 * 1024 * 1024
-            && request.resource.contentType.matches('image/.*')
-          )
-        );
+        && mbFsImageOk();
     }
   }
 }

@@ -291,5 +291,10 @@
     activeProductsList: activeProductsList,
     hasMascotBookDashboardAccess: hasMascotBookDashboardAccess,
     hasEliteCardDashboardAccess: hasEliteCardDashboardAccess,
+    /** true = trial vencido / sin plan Pro: no guardar salud, fotos ni modo perdido (misma lógica que checkMascotaAccess bloqueado). */
+    mascotbookProContentLocked: function (docData, uid, email) {
+      var chk = checkMascotaAccess(docData, "mascotbook", uid, email);
+      return !!(chk && chk.blocked);
+    },
   };
 })(window);

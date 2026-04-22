@@ -118,6 +118,31 @@ function unitPriceMascotaAdicional() {
   return Number(process.env.MP_PRICE_MASCOTA_ADICIONAL || process.env.MP_UNIT_PRICE_MASCOTBOOK || 24999);
 }
 
+/** Descuento sobre unit_price de Mascota Adicional si ya hay ≥1 mascota con pago registrado (0.5 = 50%). */
+const MP_MASCOTA_ADICIONAL_MULTIMASCOTA_FACTOR = Math.min(
+  1,
+  Math.max(0.01, Number(process.env.MP_MASCOTA_ADICIONAL_MULTIMASCOTA_FACTOR || 0.5) || 0.5)
+);
+
+/**
+ * Cuenta mascotas del usuario con pago confirmado (pago / mbProfilePaid / paid).
+ */
+async function countPaidMascotasForOwner(uid) {
+  const u = String(uid || "").trim();
+  if (!u) return 0;
+  const admin = getAdmin();
+  const db = admin.firestore();
+  const snap = await db.collection("mascotas").where("ownerUid", "==", u).get();
+  let n = 0;
+  snap.forEach((doc) => {
+    const d = doc.data() || {};
+    if (d.pago === true || d.mbProfilePaid === true || d.paid === true) {
+      n += 1;
+    }
+  });
+  return n;
+}
+
 /**
  * Crea una preferencia de Checkout Pro en Mercado Pago (SDK oficial).
  * @param {string} accessToken
@@ -908,6 +933,9 @@ exports.createMercadoPagoPreference = onCall({ secrets: [mpAccessToken], cors: t
   let ext = "";
   let items = [];
   let metaProducto = "";
+  let multimascotaDiscountApplied = false;
+  let paidMascotasCount = 0;
+  let mascotAddonEffectiveUnit = null;
 
   if (productoRaw === "elite_suscripcion") {
     const eliteBilling = String(data.eliteBilling || "once").toLowerCase() === "monthly" ? "monthly" : "once";
@@ -930,14 +958,25 @@ exports.createMercadoPagoPreference = onCall({ secrets: [mpAccessToken], cors: t
     const mascotId = String(data.mascotId || "").trim();
     const nuevaMascota = !!data.nuevaMascota || !mascotId;
     ext = buildMercadoPagoExternalReference({ producto: "mascota_adicional", uid, cantidad, nuevaMascota, mascotId });
-    const unit = unitPriceMascotaAdicional();
+    paidMascotasCount = await countPaidMascotasForOwner(uid);
+    multimascotaDiscountApplied = paidMascotasCount >= 1;
+    const baseUnit = Number(unitPriceMascotaAdicional()) || 1;
+    let unit = baseUnit;
+    if (multimascotaDiscountApplied) {
+      unit = Math.max(1, Math.round(baseUnit * MP_MASCOTA_ADICIONAL_MULTIMASCOTA_FACTOR));
+    }
+    mascotAddonEffectiveUnit = unit;
     items = [
       {
-        title: "Mascota Adicional · MascotBook",
-        description: "Unidad adicional MascotBook",
+        title: multimascotaDiscountApplied
+          ? "Mascota Adicional · MascotBook (50% OFF multi-mascota)"
+          : "Mascota Adicional · MascotBook",
+        description: multimascotaDiscountApplied
+          ? "Beneficio: ya tenés al menos un perfil con pago confirmado"
+          : "Unidad adicional MascotBook",
         quantity: cantidad,
         currency_id: "ARS",
-        unit_price: Number(unit) || 1,
+        unit_price: unit,
       },
     ];
     metaProducto = "mascota_adicional";
@@ -1042,7 +1081,19 @@ exports.createMercadoPagoPreference = onCall({ secrets: [mpAccessToken], cors: t
   if (!initPoint) {
     throw new HttpsError("internal", "Respuesta MP sin init_point");
   }
-  return { init_point: initPoint, preference_id: j.id || null, external_reference: ext };
+  const out = {
+    init_point: initPoint,
+    preference_id: j.id || null,
+    external_reference: ext,
+  };
+  if (productoRaw === "mascota_adicional") {
+    out.mascot_addon_multimascota_discount = multimascotaDiscountApplied;
+    out.mascot_addon_paid_mascotas_count = paidMascotasCount;
+    if (mascotAddonEffectiveUnit != null) {
+      out.mascot_addon_unit_price = mascotAddonEffectiveUnit;
+    }
+  }
+  return out;
 });
 
 /**

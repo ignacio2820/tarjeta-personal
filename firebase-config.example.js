@@ -34,6 +34,7 @@ window.MERCADOPAGO_PUBLIC_KEY = "";
  * - Opcional: MP_UNIT_PRICE_MASCOTBOOK, MP_UNIT_PRICE_ELITECARD, FIRESTORE_MEMBERSHIP_COLLECTION
  * - Vigencia en Firestore tras pago (membresía legada / Elite): MP_MEMBERSHIP_YEARS (default 30 en Cloud Functions).
  * - Precios por SKU: MP_PRICE_MASCOTA_ADICIONAL, MP_PRICE_ELITECARD_ONCE, MP_PRICE_ELITECARD_MONTHLY
+ * - Descuento multi-mascota (≥1 mascota con pago): MP_MASCOTA_ADICIONAL_MULTIMASCOTA_FACTOR (default 0.5 = 50% sobre unit_price)
  * - Public Key (solo si usás Bricks en el cliente): window.MERCADOPAGO_PUBLIC_KEY en firebase-config.js — nunca el Access Token.
  * - Tras pago «mascota adicional», Cloud Functions escribe `mascotbookExtraProfileCredits` en el doc de membresía (`users` o el que definas).
  * - Retorno Checkout: rewrite Hosting `/mp/feedback` → función `mercadoPagoFeedback` (success/pending/failure).

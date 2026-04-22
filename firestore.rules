@@ -181,6 +181,111 @@ service cloud.firestore {
         );
     }
 
+    /** Membresía /users/{uid} — alineado con admin.js checkMascotaAccess (trial 7d + premiumUntil + vencimiento). */
+    function mbMembershipData(uid) {
+      return exists(usersMembershipPath(uid)) ? get(usersMembershipPath(uid)).data : null;
+    }
+
+    function mbMemIsAdmin(m) {
+      return m != null && m.keys().hasAny(['role']) && m.role == 'admin';
+    }
+
+    function mbMemGlobalSuspendedExpired(m) {
+      return m != null && m.keys().hasAny(['status'])
+        && (m.status == 'suspended' || m.status == 'expired');
+    }
+
+    function mbMemVencimientoPast(m) {
+      return m != null
+        && m.keys().hasAny(['vencimientoMembresia'])
+        && m.vencimientoMembresia is timestamp
+        && m.vencimientoMembresia < request.time;
+    }
+
+    function mbMemMascotbookInactive(m) {
+      return m != null && (
+        (m.keys().hasAny(['mascotbook_status'])
+          && (m.mascotbook_status == 'inactive' || m.mascotbook_status == 'expired' || m.mascotbook_status == 'suspended'))
+        || (m.keys().hasAny(['plan_status'])
+          && (m.plan_status == 'inactive' || m.plan_status == 'none' || m.plan_status == 'disabled' || m.plan_status == 'expired'))
+      );
+    }
+
+    function mbMemPlanPaidGrace(m) {
+      return m != null && (
+        (m.keys().hasAny(['status']) && (m.status == 'active' || m.status == 'premium' || m.status == 'activo'))
+        || (m.keys().hasAny(['mascotbook_status'])
+          && (m.mascotbook_status == 'active' || m.mascotbook_status == 'premium' || m.mascotbook_status == 'activo'))
+        || (m.keys().hasAny(['plan_status'])
+          && (m.plan_status == 'active' || m.plan_status == 'pro' || m.plan_status == 'paid' || m.plan_status == 'premium' || m.plan_status == 'activo'))
+        || (m.keys().hasAny(['premiumUntil']) && m.premiumUntil is timestamp && m.premiumUntil > request.time)
+      );
+    }
+
+    function mbMemTrialStartTs(m) {
+      return m != null && (m.keys().hasAny(['trialStartDate']) && m.trialStartDate is timestamp)
+        ? m.trialStartDate
+        : (m != null && m.keys().hasAny(['createdAt']) && m.createdAt is timestamp ? m.createdAt : null);
+    }
+
+    function mbMemTrialExpiredAfterGrace(m) {
+      return mbMemTrialStartTs(m) != null
+        && request.time > mbMemTrialStartTs(m) + duration.value(7, 'd');
+    }
+
+    function mbUserLockedFromMem(m) {
+      return !mbMemIsAdmin(m)
+        && (
+          mbMemGlobalSuspendedExpired(m)
+          || mbMemVencimientoPast(m)
+          || mbMemMascotbookInactive(m)
+          || (!mbMemPlanPaidGrace(m) && mbMemTrialExpiredAfterGrace(m))
+        );
+    }
+
+    function mbUserMascotbookProContentLocked(uid) {
+      return mbMembershipData(uid) != null && mbUserLockedFromMem(mbMembershipData(uid));
+    }
+
+    function mbLostActiveData(d) {
+      return d != null && (
+        (d.keys().hasAny(['mascotaPerdida']) && d.mascotaPerdida == true)
+        || (d.keys().hasAny(['alertaExtravioActiva']) && d.alertaExtravioActiva == true)
+      );
+    }
+
+    function mbMascotLostActivating() {
+      return mbLostActiveData(request.resource.data) && !mbLostActiveData(resource.data);
+    }
+
+    function mbMascotSensitiveKeysTouch(diff) {
+      return diff.changedKeys().hasAny([
+        'salud', 'vacunas', 'veterinario', 'fichaCritica', 'fotoPerfilUrl', 'fotoCabeceraUrl',
+        'galeria', 'galeriaSlots', 'muro'
+      ]);
+    }
+
+    function mbMascotaOwnerUidForWrite() {
+      return resource.data.keys().hasAny(['ownerUid']) && resource.data.ownerUid is string
+        ? resource.data.ownerUid
+        : request.auth.uid;
+    }
+
+    function mbMascotbookWriteForbidden(uid) {
+      return mbUserMascotbookProContentLocked(uid)
+        && (
+          mbMascotSensitiveKeysTouch(request.resource.data.diff(resource.data))
+          || mbMascotLostActivating()
+        );
+    }
+
+    function mbMascotCreateTouchesLockedFields() {
+      return request.resource.data.keys().hasAny([
+        'salud', 'vacunas', 'veterinario', 'fichaCritica', 'fotoPerfilUrl', 'fotoCabeceraUrl',
+        'galeria', 'galeriaSlots', 'muro', 'mascotaPerdida', 'alertaExtravioActiva', 'whatsappUrgencia'
+      ]);
+    }
+
     /**
      * /users — membresía: solo dueño o admin lee cada doc; queries a la colección solo devuelven filas permitidas (admin ve todas).
      * Alta: el usuario crea su doc con role user y status trial.
@@ -281,8 +386,12 @@ service cloud.firestore {
     match /usuarios/{userId}/mascot_card/{docId} {
       allow read: if true;
       allow create: if isOwner(userId) && mascotCardKeysOk();
-      allow update: if (isOwner(userId) && ownerUpdateMascotOk())
-        || (!isOwner(userId) && docId == 'profile' && publicMascotCounterUpdateOk());
+      allow update: if (!isOwner(userId) && docId == 'profile' && publicMascotCounterUpdateOk())
+        || (
+          isOwner(userId)
+          && ownerUpdateMascotOk()
+          && !mbMascotbookWriteForbidden(userId)
+        );
       allow delete: if isOwner(userId);
     }
 
@@ -298,9 +407,14 @@ service cloud.firestore {
      */
     match /mascotas/{mascotaId} {
       allow read: if true;
-      allow create: if mascotaDocAuthWriteOk(mascotaId);
+      allow create: if mascotaDocAuthWriteOk(mascotaId)
+        && (!mbUserMascotbookProContentLocked(request.auth.uid) || !mbMascotCreateTouchesLockedFields());
       allow delete: if mascotaDocAuthMutateOk(mascotaId);
-      allow update: if mascotaDocAuthMutateOk(mascotaId) || publicMascotCounterUpdateOk();
+      allow update: if publicMascotCounterUpdateOk()
+        || (
+          mascotaDocAuthMutateOk(mascotaId)
+          && !mbMascotbookWriteForbidden(mbMascotaOwnerUidForWrite())
+        );
     }
 
     match /vetPasses/{token} {
