@@ -52,6 +52,193 @@
         if (s) s.href = "styles.css?v=" + vCss;
       })();
     </script>
+    <style id="ec-dashboard-light-theme-overrides">
+      :root {
+        /* Fondos */
+        --bg-main: #f8f9fb;
+        --bg-card: #ffffff;
+        --bg-sidebar: #ffffff;
+        --bg-hover: #f3f4f6;
+
+        /* Bordes */
+        --border-color: #e5e7eb;
+        --border-card: #e9eaec;
+
+        /* Texto */
+        --text-primary: #111827;
+        --text-secondary: #6b7280;
+        --text-muted: #9ca3af;
+
+        /* Acentos (mismo violeta del dashboard existente) */
+        --accent: #7c3aed;
+        --accent-soft: #ede9fe;
+        --accent-hover: #6d28d9;
+
+        /* EliteCard accent */
+        --elitecard-color: #4f46e5;
+        --elitecard-soft: #eef2ff;
+
+        /* MascotBook accent */
+        --mascot-color: #ec4899;
+        --mascot-soft: #fdf2f8;
+
+        /* Sombras */
+        --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+        --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      body,
+      .dashboard-wrapper,
+      .main-content,
+      .app-container {
+        background: var(--bg-main) !important;
+        color: var(--text-primary) !important;
+      }
+
+      /* Sidebar */
+      .sidebar,
+      nav,
+      [class*="sidebar"],
+      [class*="nav-panel"] {
+        background: var(--bg-sidebar) !important;
+        border-right: 1px solid var(--border-color) !important;
+        color: var(--text-primary) !important;
+      }
+
+      /* Cards / Panels */
+      .card,
+      [class*="card"],
+      [class*="panel"],
+      [class*="widget"],
+      [class*="block"] {
+        background: var(--bg-card) !important;
+        border: 1px solid var(--border-card) !important;
+        border-radius: 16px !important;
+        box-shadow: var(--shadow-card) !important;
+        color: var(--text-primary) !important;
+      }
+
+      .card:hover,
+      [class*="card"]:hover {
+        box-shadow: var(--shadow-hover) !important;
+        transform: translateY(-1px);
+        transition: all 0.2s ease;
+      }
+
+      /* Títulos dentro de cards */
+      .card h1,
+      .card h2,
+      .card h3,
+      .card h4,
+      [class*="card"] h1,
+      [class*="card"] h2,
+      [class*="card"] h3,
+      [class*="card"] h4 {
+        color: var(--text-primary) !important;
+      }
+
+      /* Textos secundarios */
+      p,
+      span,
+      label,
+      [class*="subtitle"],
+      [class*="description"],
+      [class*="meta"] {
+        color: var(--text-secondary) !important;
+      }
+
+      /* Textos de acento EliteCard */
+      [class*="elitecard"] [class*="label"],
+      [class*="elitecard"] [class*="badge"],
+      [class*="producto-principal"],
+      .text-elitecard {
+        color: var(--elitecard-color) !important;
+      }
+
+      /* Textos de acento MascotBook */
+      [class*="mascotbook"] [class*="label"],
+      [class*="mascotbook"] [class*="badge"],
+      [class*="universo-aparte"],
+      .text-mascot {
+        color: var(--mascot-color) !important;
+      }
+
+      /* Botón activo sidebar (como el "Dashboard" violeta) */
+      .sidebar-item.active,
+      [class*="sidebar"] .active,
+      nav .active,
+      [class*="nav-item"].active {
+        background: var(--accent-soft) !important;
+        color: var(--accent) !important;
+        font-weight: 700 !important;
+        border-radius: 8px !important;
+      }
+
+      /* Botones primarios */
+      button[class*="primary"],
+      .btn-primary,
+      button[class*="crear"],
+      button[class*="guardar"],
+      a[class*="primary"] {
+        background: var(--accent) !important;
+        color: #fff !important;
+        border: none !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+      }
+
+      button[class*="primary"]:hover,
+      .btn-primary:hover {
+        background: var(--accent-hover) !important;
+      }
+
+      /* Botones outline / secundarios */
+      button[class*="secondary"],
+      .btn-outline,
+      button[class*="iniciar"] {
+        background: #fff !important;
+        color: var(--text-primary) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 8px !important;
+      }
+
+      /* Banner de aviso demo */
+      [class*="banner"],
+      [class*="alert"],
+      [class*="notice"] {
+        background: #eff6ff !important;
+        color: #1d4ed8 !important;
+        border: none !important;
+      }
+
+      /* Inputs y selects */
+      input,
+      select,
+      textarea {
+        background: #fff !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 8px !important;
+        color: var(--text-primary) !important;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--accent) !important;
+        outline: none !important;
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1) !important;
+      }
+
+      /* Eliminar cualquier fondo oscuro residual */
+      [style*="background: #0A0A0F"],
+      [style*="background: #111827"],
+      [style*="background: #1e1b4b"],
+      [style*="background-color: #0A0A0F"],
+      [style*="background-color: #111827"] {
+        background: var(--bg-main) !important;
+        color: var(--text-primary) !important;
+      }
+    </style>
   </head>
   <body>
     <div id="gate-loading">

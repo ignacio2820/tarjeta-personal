@@ -9,12 +9,12 @@
     <meta name="ec-asset-version" content="1776363335793" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <link rel="canonical" href="https://elitecard.webelitesolution.com.ar/" />
-    <title>Agencia WebElite · EliteCard y MascotBook</title>
+    <title>EliteCard y MascotBook · Tarjetas digitales | WebElite</title>
     <meta
       name="description"
-      content="Tarjeta digital profesional EliteCard y perfil social MascotBook. Probá 7 días gratis. Diseñado por Agencia WebElite."
+      content="Tu tarjeta personal y el perfil digital de tu mascota. Panel simple, diseño limpio. Probá 7 días gratis con Agencia WebElite."
     />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#0A0A0F" />
     <link rel="icon" type="image/png" href="assets/logo10.png?v=4" />
     <link rel="shortcut icon" href="assets/logo10.png?v=4" />
     <link rel="apple-touch-icon" href="assets/logo10.png?v=4" />
@@ -40,29 +40,173 @@
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <link rel="stylesheet" href="landing-elite.css?v=4.4" id="ec-landing-css" />
+    <link rel="stylesheet" href="landing-elite.css?v=6.0" id="ec-landing-css" />
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap');
+
+:root {
+  --bg-main: #F8F9FB;
+  --bg-card: #FFFFFF;
+  --bg-navbar: #FFFFFF;
+  --border-color: #E5E7EB;
+  --text-primary: #111827;
+  --text-secondary: #6B7280;
+  --accent: #7C3AED;
+  --accent-soft: #EDE9FE;
+  --accent-hover: #6D28D9;
+  --elitecard-color: #4F46E5;
+  --elitecard-bg: #EEF2FF;
+  --mascot-color: #0D9488;
+  --mascot-bg: #F0FDFA;
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-hover: 0 8px 24px rgba(0,0,0,0.10);
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Navbar */
+nav, header, .navbar, [class*="navbar"], [class*="header"] {
+  background: var(--bg-navbar) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+nav a, header a, .navbar a {
+  color: var(--text-primary) !important;
+}
+
+/* Hero section */
+.hero, section:first-of-type, [class*="hero"] {
+  background: var(--bg-main) !important;
+  color: var(--text-primary) !important;
+}
+
+h1 {
+  font-size: clamp(36px, 5vw, 72px);
+  font-weight: 900;
+  line-height: 1.05;
+  color: var(--text-primary) !important;
+}
+
+h2 {
+  font-size: clamp(24px, 3vw, 40px);
+  font-weight: 800;
+  color: var(--text-primary) !important;
+}
+
+p, span {
+  color: var(--text-secondary) !important;
+}
+
+/* Card EliteCard — preserva clases existentes, 
+   solo sobreescribe fondo y borde */
+[class*="elitecard"], .card-elitecard {
+  background: var(--elitecard-bg) !important;
+  border: 1px solid #C7D2FE !important;
+  border-radius: 20px !important;
+  box-shadow: var(--shadow-card) !important;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+[class*="elitecard"] h2,
+[class*="elitecard"] h3,
+[class*="elitecard"] strong {
+  color: var(--elitecard-color) !important;
+}
+
+[class*="elitecard"]:hover {
+  box-shadow: var(--shadow-hover) !important;
+  transform: translateY(-2px);
+}
+
+/* Card MascotBook */
+[class*="mascotbook"], .card-mascotbook {
+  background: var(--mascot-bg) !important;
+  border: 1px solid #99F6E4 !important;
+  border-radius: 20px !important;
+  box-shadow: var(--shadow-card) !important;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+[class*="mascotbook"] h2,
+[class*="mascotbook"] h3,
+[class*="mascotbook"] strong {
+  color: var(--mascot-color) !important;
+}
+
+[class*="mascotbook"]:hover {
+  box-shadow: var(--shadow-hover) !important;
+  transform: translateY(-2px);
+}
+
+/* Botón primario (Registro, Empezar, CTA) */
+button, .btn, a.btn,
+[class*="btn-primary"], [class*="registro"],
+[class*="empezar"], [class*="crear-cuenta"] {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 700 !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Botón outline (Iniciar sesión) */
+[class*="btn-outline"], [class*="iniciar-sesion"],
+[class*="login"] {
+  background: white !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+/* Secciones */
+section {
+  padding: 80px 0;
+  background: var(--bg-main);
+}
+
+section:nth-child(even) {
+  background: #FFFFFF;
+}
+
+/* Footer */
+footer, [class*="footer"] {
+  background: #FFFFFF !important;
+  border-top: 1px solid var(--border-color) !important;
+  color: var(--text-secondary) !important;
+}
+
+footer a, [class*="footer"] a {
+  color: var(--accent) !important;
+}
+
+/* Eliminar fondos oscuros residuales de inline styles */
+[style*="background:#0A0A0F"],
+[style*="background: #0A0A0F"],
+[style*="background:#111827"],
+[style*="background: #111827"],
+[style*="background:#1e1b4b"],
+[style*="background-color:#0A0A0F"],
+[style*="background-color: #111827"] {
+  background: var(--bg-main) !important;
+  color: var(--text-primary) !important;
+}
+</style>
   </head>
-  <body>
-    <header class="site-nav">
-      <a class="nav-brand" href="index.html" aria-label="Inicio Agencia WebElite">
-        <span class="nav-brand-mark" id="nav-logo-wrap" aria-hidden="true">
-          <img src="assets/logo10.png?v=4" alt="Logo Agencia WebElite" width="400" height="140" />
-        </span>
-        <span class="nav-brand-text">
-          <strong>EliteCard</strong>
-          <span class="nav-brand-slogan">Tu conexión inteligente, siempre.</span>
-          <span class="nav-brand-by">by Agencia WebElite</span>
-        </span>
+  <body class="lp-body">
+    <header class="site-nav site-nav--clean">
+      <a class="site-nav__logo" href="index.html" aria-label="Inicio — Agencia WebElite">
+        <img src="assets/logo10.png?v=4" alt="Agencia WebElite" width="280" height="98" decoding="async" />
       </a>
       <nav class="nav-actions nav-actions--header" aria-label="Cuenta">
         <a class="btn btn-ghost btn-nav-mini" href="login.html">Iniciar sesión</a>
@@ -71,128 +215,95 @@
     </header>
 
     <main>
-      <div class="hero-shell">
-        <section class="hero hero--split" aria-labelledby="hero-title">
-          <div class="hero-grid">
-            <div class="hero-copy">
-              <p class="hero-eyebrow"><i class="fa-solid fa-bolt" aria-hidden="true"></i> Presencia digital premium</p>
-              <h1 id="hero-title">Tu presencia digital, nivel agencia. Sin fricción.</h1>
-              <p class="hero-lead">
-                <strong>EliteCard</strong> vende tu mejor versión profesional. <strong>MascotBook</strong> cuenta la historia de tu mascota con
-                estética social y herramientas de rescate. Probá <strong>7 días gratis</strong> y compartí el enlace al instante.
-              </p>
-              <div class="hero-ctas">
-                <a class="btn btn-cta-hero" href="register.html">
-                  <i class="fa-solid fa-gift" aria-hidden="true"></i> Empezar 7 días gratis
-                </a>
-                <a class="btn btn-outline btn-hero-secondary" href="admin.html?viewMode=personal&amp;panel=dashboard">
-                  <i class="fa-solid fa-eye" aria-hidden="true"></i> Ver ejemplo
-                </a>
-              </div>
-            </div>
-            <div class="hero-visual" aria-hidden="true">
-              <figure class="hero-photo-frame">
-                <img
-                  class="hero-photo"
-                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80"
-                  alt="Profesional joven revisando su teléfono, ideal para tarjeta digital y contacto rápido"
-                  width="640"
-                  height="800"
-                  loading="eager"
-                  decoding="async"
-                />
-                <figcaption class="hero-photo-caption">
-                  <i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i>
-                  Tu link y QR listos en minutos — también para collares inteligentes y rescate.
-                </figcaption>
-              </figure>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <div class="curve curve--flip" aria-hidden="true">
-        <svg viewBox="0 0 1440 120" preserveAspectRatio="none" class="curve-svg">
-          <path
-            fill="currentColor"
-            d="M0,64 C240,120 480,0 720,48 C960,96 1200,24 1440,72 L1440,120 L0,120 Z"
-          />
-        </svg>
-      </div>
-
-      <section class="social-proof" aria-labelledby="social-proof-heading">
-        <div class="social-proof-inner">
-          <p class="social-proof-stat" id="social-proof-heading">
-            <span class="social-proof-accent">Más de 500</span> dueños de mascotas ya confían en nosotros
+      <section class="lp-hero lp-hero--minimal" aria-labelledby="hero-title">
+        <div class="lp-hero__inner">
+          <h1 id="hero-title" class="lp-hero__title">Tu Presencia Digital. Profesional e Inteligente.</h1>
+          <p class="lp-hero__lede">
+            Dos herramientas. Una para destacar en negocios. Otra para proteger lo que más querés.
           </p>
-          <p class="social-proof-sub">Veterinarias y clínicas aliadas recomiendan MascotBook y EliteCard para una experiencia moderna.</p>
-          <ul class="partner-strip" aria-label="Marcas y clínicas aliadas (ejemplos)">
-            <li class="partner-pill">
-              <span class="partner-logo" aria-hidden="true"><i class="fa-solid fa-paw"></i></span>
-              <span class="partner-name">Patitas Norte</span>
-            </li>
-            <li class="partner-pill">
-              <span class="partner-logo partner-logo--mint" aria-hidden="true"><i class="fa-solid fa-stethoscope"></i></span>
-              <span class="partner-name">Vet Centro</span>
-            </li>
-            <li class="partner-pill">
-              <span class="partner-logo partner-logo--sun" aria-hidden="true"><i class="fa-solid fa-heart-pulse"></i></span>
-              <span class="partner-name">Clínica 24h</span>
-            </li>
-            <li class="partner-pill">
-              <span class="partner-logo partner-logo--violet" aria-hidden="true"><i class="fa-solid fa-shield-dog"></i></span>
-              <span class="partner-name">Rescate Sur</span>
-            </li>
-          </ul>
+          <div class="lp-hero__services">
+            <article class="lp-service lp-service--elite">
+              <span class="lp-service__tag" aria-hidden="true"></span>
+              <p class="lp-service__label">EliteCard</p>
+              <h2 class="lp-service__title">La primera impresión es digital. Hacé que la tuya sea de élite.</h2>
+              <ul class="lp-service__bullets">
+                <li>Tu Identidad Profesional Digital</li>
+                <li>Contacto en un clic</li>
+                <li>Perfil Personalizable Premium</li>
+              </ul>
+            </article>
+            <article class="lp-service lp-service--mascot">
+              <span class="lp-service__tag lp-service__tag--mascot" aria-hidden="true"></span>
+              <p class="lp-service__label">MascotBook</p>
+              <h2 class="lp-service__title">Tu mascota no puede hablar, pero su perfil digital sí.</h2>
+              <ul class="lp-service__bullets">
+                <li>Protección Inteligente para tu Mascota</li>
+                <li>Ficha Médica Siempre Disponible</li>
+                <li>Seguridad en cada Paseo</li>
+              </ul>
+            </article>
+          </div>
+          <div class="lp-hero__pitches">
+            <p class="lp-pitch">La primera impresión es digital. Haz que la tuya sea de élite.</p>
+            <p class="lp-pitch">Tu mascota no puede hablar, pero su perfil digital sí. Protégela hoy.</p>
+          </div>
+          <div class="lp-hero__ctas">
+            <a class="btn btn-cta-hero lp-cta-primary" href="register.html">
+              <i class="fa-solid fa-gift" aria-hidden="true"></i> Empezar 7 días gratis
+            </a>
+            <a class="btn btn-outline btn-hero-secondary lp-cta-secondary" href="#como-funciona">¿Cómo funciona?</a>
+          </div>
         </div>
       </section>
 
-      <div class="curve curve--soft" aria-hidden="true">
-        <svg viewBox="0 0 1440 100" preserveAspectRatio="none" class="curve-svg">
-          <path fill="currentColor" d="M0,32 C360,100 720,0 1080,56 C1260,84 1380,72 1440,64 L1440,100 L0,100 Z" />
-        </svg>
-      </div>
-
-      <section class="steps" aria-labelledby="steps-heading">
-        <div class="steps-inner">
-          <h2 id="steps-heading" class="section-title">Empezar es simple</h2>
-          <p class="section-lead">Tres pasos y ya estás compartiendo tu perfil con estilo profesional.</p>
-          <ol class="steps-grid">
-            <li class="step-card">
-              <div class="step-icon step-icon--1" aria-hidden="true"><i class="fa-solid fa-user-plus"></i></div>
-              <span class="step-num">1</span>
-              <h3>Creá tu cuenta</h3>
-              <p>Registro rápido y acceso al panel sin complicaciones.</p>
-            </li>
-            <li class="step-card">
-              <div class="step-icon step-icon--2" aria-hidden="true"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-              <span class="step-num">2</span>
-              <h3>Personalizá</h3>
-              <p>Fotos, textos, links y tema que representen tu marca o tu mascota.</p>
-            </li>
-            <li class="step-card">
-              <div class="step-icon step-icon--3" aria-hidden="true"><i class="fa-solid fa-share-from-square"></i></div>
-              <span class="step-num">3</span>
-              <h3>Compartí</h3>
-              <p>Enlace único y QR listos para WhatsApp, redes o collar inteligente.</p>
-            </li>
-          </ol>
+      <section class="lp-how lp-section-y" id="como-funciona" aria-labelledby="how-heading">
+        <div class="lp-how__inner">
+          <h2 id="how-heading" class="lp-how__title">¿Cómo funciona?</h2>
+          <div class="lp-how__grid">
+            <article class="lp-how__col">
+              <div class="lp-how__icon" aria-hidden="true">
+                <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
+                  <rect x="9" y="7" width="22" height="26" rx="2" stroke="currentColor" stroke-width="1.25" />
+                  <path d="M13 14h14M13 18h10M13 22h12" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" />
+                </svg>
+              </div>
+              <h3 class="lp-how__step">Creás</h3>
+              <p>Registrás tus datos en un panel simple y elegís si tu tarjeta es personal o de mascota.</p>
+            </article>
+            <article class="lp-how__col">
+              <div class="lp-how__icon" aria-hidden="true">
+                <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
+                  <circle cx="20" cy="14" r="5" stroke="currentColor" stroke-width="1.25" />
+                  <path d="M8 32c2-6 8-9 12-9s10 3 12 9" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" />
+                  <path d="M26 10l4-3M26 10l4 3" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" />
+                </svg>
+              </div>
+              <h3 class="lp-how__step">Personalizás</h3>
+              <p>Elegís colores y fotos para que la tarjeta refleje tu estilo o el carácter de tu mascota.</p>
+            </article>
+            <article class="lp-how__col">
+              <div class="lp-how__icon" aria-hidden="true">
+                <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
+                  <path d="M10 22c4-6 10-8 16-6" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" />
+                  <circle cx="14" cy="26" r="2.5" stroke="currentColor" stroke-width="1.25" />
+                  <path d="M22 18h10v10H22z" stroke="currentColor" stroke-width="1.25" />
+                  <path d="M25 22h4M27 20v4" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" />
+                </svg>
+              </div>
+              <h3 class="lp-how__step">Compartís</h3>
+              <p>Tu tarjeta vive en un link único que podés pasar por WhatsApp o redes, cuando quieras.</p>
+            </article>
+          </div>
         </div>
       </section>
 
-      <div class="curve curve--between" aria-hidden="true">
-        <svg viewBox="0 0 1440 90" preserveAspectRatio="none" class="curve-svg">
-          <path fill="currentColor" d="M0,0 L1440,0 L1440,48 C1080,96 360,96 0,48 Z" />
-        </svg>
-      </div>
-
-      <section class="benefits" aria-labelledby="benefits-heading">
+      <section class="benefits lp-section-y" aria-labelledby="benefits-heading">
         <h2 id="benefits-heading" class="section-title section-title--muted">Por qué WebElite</h2>
         <ul class="benefits-grid">
           <li class="benefit-tile">
-            <i class="fa-solid fa-qrcode" aria-hidden="true"></i>
-            <strong>QR instantáneo</strong>
-            <p>Enlace y código listos para compartir desde el celular.</p>
+            <i class="fa-solid fa-link" aria-hidden="true"></i>
+            <strong>Link único</strong>
+            <p>Una dirección para tu tarjeta: fácil de pegar en WhatsApp, mail o redes.</p>
           </li>
           <li class="benefit-tile">
             <i class="fa-solid fa-location-crosshairs" aria-hidden="true"></i>
@@ -212,13 +323,7 @@
         </ul>
       </section>
 
-      <div class="curve curve--flip curve--tint" aria-hidden="true">
-        <svg viewBox="0 0 1440 100" preserveAspectRatio="none" class="curve-svg">
-          <path fill="currentColor" d="M0,80 C320,20 640,100 960,40 C1120,12 1280,8 1440,24 L1440,100 L0,100 Z" />
-        </svg>
-      </div>
-
-      <section class="products" id="productos" aria-labelledby="products-heading">
+      <section class="products lp-section-y" id="productos" aria-labelledby="products-heading">
         <h2 id="products-heading" class="section-title section-title--muted">Elegí tu camino</h2>
         <div class="product-grid">
           <article class="product-card product-card--elite">
@@ -231,7 +336,7 @@
               médicos, creativos y equipos que quieren cerrar más reuniones.
             </p>
             <ul class="feature-mini">
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i>QR y enlace listos para compartir en segundos</li>
+              <li><i class="fa-solid fa-check" aria-hidden="true"></i>Tarjeta lista para compartir en segundos</li>
               <li><i class="fa-solid fa-check" aria-hidden="true"></i>Firma de email con tu identidad corporativa</li>
               <li><i class="fa-solid fa-check" aria-hidden="true"></i>Diseño adaptable: fondos, forma de foto y botones</li>
             </ul>
@@ -278,32 +383,20 @@
         </div>
       </section>
 
-      <section class="help-block" aria-labelledby="help-heading">
-        <div class="help-block-inner">
-          <h2 id="help-heading" class="section-title">¿Necesitás ayuda?</h2>
-          <p class="help-lead">Escribinos con consultas técnicas, facturación o diseño. Respondemos con el mismo estándar que aplicamos a nuestros productos.</p>
-          <a class="help-mail" href="mailto:contacto@webelitesolution.io">
-            <i class="fa-solid fa-envelope" aria-hidden="true"></i> contacto@webelitesolution.io
-          </a>
-        </div>
-      </section>
-
-      <section class="cta-band" aria-labelledby="cta-title">
+      <section class="cta-band lp-section-y" aria-labelledby="cta-title">
         <h2 id="cta-title">¿Listo para probar sin riesgo?</h2>
         <p>
           Creá cuenta en minutos, editá tu tarjeta en un panel claro y compartí el enlace con quien quieras. Si sos equipo
           Agencia WebElite, tenés el respaldo técnico y visual que tu marca merece.
         </p>
-        <a class="btn btn-cta-hero btn-cta-hero--on-dark" href="register.html">Empezar 7 días gratis</a>
+        <a class="btn btn-cta-hero btn-cta-hero--on-dark lp-cta-primary" href="register.html">Empezar 7 días gratis</a>
       </section>
     </main>
 
-    <footer class="site-footer" role="contentinfo">
-      <div class="footer-seal">
-        <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
-        Agencia WebElite — sello de calidad
-      </div>
-      <a class="footer-mail" href="mailto:contacto@webelitesolution.io">contacto@webelitesolution.io</a>
+    <footer class="site-footer site-footer--minimal" role="contentinfo">
+      <p class="site-footer__support">
+        <a href="mailto:contacto@webelitesolution.io">Soporte: contacto@webelitesolution.io</a>
+      </p>
       <small>EliteCard y MascotBook son productos digitales desarrollados y curados por Agencia WebElite.</small>
     </footer>
   </body>
