@@ -1,5 +1,5 @@
 /**
- * Landing pública — Agencia WebElite · EliteCard / MascotBook (v5.0)
+ * Landing pública — Agencia WebElite · EliteCard / MascotBook (v6.1)
  */
 :root {
   --le-white: #ffffff;
@@ -1248,4 +1248,22 @@ a {
     min-height: 3.15rem;
     font-size: 1.08rem !important;
   }
+}
+
+/* v6.1 — Hero full-bleed + banda (coherente con <style> teal en index.html) */
+.lp-hero--minimal {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.lp-hero__inner {
+  gap: 0;
+}
+
+.lp-service__tag {
+  left: 0;
+  right: 0;
+  border-radius: 20px 20px 0 0;
 }

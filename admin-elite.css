@@ -2,17 +2,17 @@
  * Dashboard EliteCard — Agencia WebElite
  */
 :root {
-  --ae-bg: #f8fafc;
+  --ae-bg: #F7FAFA;
   --ae-surface: #ffffff;
-  --ae-text: #111827;
-  --ae-muted: rgba(17, 24, 39, 0.55);
-  --ae-border: rgba(17, 24, 39, 0.08);
-  --ae-blue: #2563eb;
-  --ae-blue-hover: #1d4ed8;
-  --ae-shadow: 0 8px 30px rgba(15, 23, 42, 0.07);
-  --ae-shadow-hover: 0 16px 48px rgba(15, 23, 42, 0.12);
+  --ae-text: #1A2E2D;
+  --ae-muted: rgba(26, 46, 45, 0.55);
+  --ae-border: rgba(42, 157, 143, 0.12);
+  --ae-blue: #2A9D8F;
+  --ae-blue-hover: #1F7A6E;
+  --ae-shadow: 0 8px 30px rgba(42, 157, 143, 0.08);
+  --ae-shadow-hover: 0 16px 48px rgba(42, 157, 143, 0.14);
   --ae-radius: 1rem;
-  --ae-icon: #2563eb;
+  --ae-icon: #2A9D8F;
 }
 
 * {
@@ -3183,6 +3183,73 @@ details.vcf-details summary {
   color: #15803d;
 }
 
+/* Temas MascotBook (dashboard): icono + título sin solape */
+.mb-dash-card,
+html[data-ec-admin] .admin-root [class*="theme-card"],
+html[data-ec-admin] .admin-root [class*="tema-card"],
+html[data-ec-admin] .admin-root [class*="theme-option"],
+html[data-ec-admin] .admin-root [class*="tema-option"],
+html[data-ec-admin] .admin-root [class*="theme-item"],
+html[data-ec-admin] .admin-root [class*="tema-item"] {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 8px !important;
+  padding: 16px !important;
+  position: relative !important;
+  overflow: visible !important;
+  text-align: left !important;
+}
+
+.mb-dash-card > *:first-child,
+html[data-ec-admin] .admin-root [class*="theme-card"] > *:first-child,
+html[data-ec-admin] .admin-root [class*="theme-option"] > *:first-child,
+html[data-ec-admin] .admin-root [class*="theme-item"] > *:first-child,
+html[data-ec-admin] .admin-root [class*="theme-icon"],
+html[data-ec-admin] .admin-root [class*="tema-icon"],
+.mb-dash-card .mb-dash-card-icon {
+  position: static !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  margin: 0 0 4px 0 !important;
+  flex-shrink: 0 !important;
+}
+
+.mb-dash-card strong,
+html[data-ec-admin] .admin-root [class*="theme-card"] [class*="name"],
+html[data-ec-admin] .admin-root [class*="theme-card"] [class*="title"],
+html[data-ec-admin] .admin-root [class*="theme-card"] h3,
+html[data-ec-admin] .admin-root [class*="theme-card"] h4,
+html[data-ec-admin] .admin-root [class*="theme-option"] h3,
+html[data-ec-admin] .admin-root [class*="theme-option"] h4,
+html[data-ec-admin] .admin-root [class*="theme-item"] h3,
+html[data-ec-admin] .admin-root [class*="theme-item"] h4 {
+  position: static !important;
+  display: block !important;
+  width: 100% !important;
+  overflow: visible !important;
+  white-space: normal !important;
+  text-overflow: unset !important;
+  z-index: auto !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+  line-height: 1.3 !important;
+  margin-top: 0 !important;
+}
+
+.mb-pro-grid .mb-pro-pick {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  white-space: normal !important;
+  line-height: 1.3 !important;
+  min-height: 3.1rem !important;
+  overflow: visible !important;
+}
+
 .mascot-side-brand {
   display: flex;
   align-items: center;
@@ -4223,4 +4290,487 @@ details.vcf-details summary {
   border-radius: inherit;
   background: transparent;
   cursor: not-allowed;
+}
+
+/* =============================================================================
+   Dashboard · barra superior fija + compensación + responsive
+   (admin.html EliteCard/MascotBook + configuracion-global.html)
+   Nota: no aplicar position:fixed a todos los `nav` (rompe .admin-mobile-menu-nav).
+   ============================================================================= */
+
+/* Compensar altura del header fijo (admin) */
+html[data-ec-admin] #app {
+  padding-top: 72px !important;
+  box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+  html[data-ec-admin] #app {
+    padding-top: 108px !important;
+  }
+}
+
+html[data-ec-admin] .main-content,
+html[data-ec-admin] .dashboard-content,
+html[data-ec-admin] .page-content,
+html[data-ec-admin] [class*="main-content"],
+html[data-ec-admin] [class*="dashboard-content"],
+html[data-ec-admin] [class*="page-wrapper"],
+html[data-ec-admin] [class*="content-area"] {
+  padding-top: 70px !important;
+}
+
+/* Header admin siempre arriba (solo .admin-header; no todo `header`) */
+html[data-ec-admin] .admin-header {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  z-index: 1000 !important;
+  background: #ffffff !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  box-sizing: border-box !important;
+  min-height: 56px !important;
+}
+
+html[data-ec-admin] .admin-header .admin-brand-logo,
+html[data-ec-admin] .admin-header img.admin-brand-logo {
+  height: 40px !important;
+  width: auto !important;
+  max-height: 40px !important;
+  object-fit: contain !important;
+}
+
+/* Configuración global (tercer panel con admin-elite.css) */
+html[data-ec-config-global] .ec-config-page {
+  padding-top: 4.5rem !important;
+  box-sizing: border-box;
+}
+
+html[data-ec-config-global] .ec-config-header {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  z-index: 1000 !important;
+  background: #ffffff !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  box-sizing: border-box !important;
+}
+
+html[data-ec-config-global] .ec-config-header .ec-config-brand-logo {
+  height: 40px !important;
+  width: auto !important;
+  object-fit: contain !important;
+}
+
+/* ============================================
+   MOBILE — dashboards admin + config global
+   ============================================ */
+
+@media (max-width: 768px) {
+  html[data-ec-admin] .admin-header {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  html[data-ec-admin] #app {
+    padding-top: 100px !important;
+  }
+
+  html[data-ec-admin] .main-content,
+  html[data-ec-admin] .dashboard-content,
+  html[data-ec-admin] .page-content,
+  html[data-ec-admin] [class*="main-content"],
+  html[data-ec-admin] [class*="dashboard-content"],
+  html[data-ec-admin] [class*="page-wrapper"],
+  html[data-ec-admin] [class*="content-area"] {
+    padding-top: 56px !important;
+  }
+
+  /* No usar [class*="sidebar"]: ocultaría .ec-sidebar-mis-perfiles, etc. */
+  html[data-ec-admin] .admin-root.layout > aside.sidebar {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--ae-border, #e5e7eb) !important;
+    padding: 0.85rem 15px !important;
+    order: 1 !important;
+  }
+
+  html[data-ec-admin] .dashboard-wrapper,
+  html[data-ec-admin] [class*="dashboard-wrapper"],
+  html[data-ec-admin] .admin-root.layout {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  html[data-ec-admin] .grid,
+  html[data-ec-admin] [class*="grid"],
+  html[data-ec-admin] .cards-container,
+  html[data-ec-admin] [class*="cards-container"],
+  html[data-ec-admin] .products-grid,
+  html[data-ec-admin] [class*="products-grid"],
+  html[data-ec-config-global] .grid,
+  html[data-ec-config-global] [class*="grid"] {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  html[data-ec-admin] .card,
+  html[data-ec-admin] [class*="card"],
+  html[data-ec-admin] [class*="panel"],
+  html[data-ec-admin] [class*="widget"],
+  html[data-ec-config-global] .admin-card {
+    padding: 20px !important;
+    border-radius: 16px !important;
+  }
+
+  html[data-ec-admin] h1,
+  html[data-ec-config-global] h1 {
+    font-size: 26px !important;
+    line-height: 1.2 !important;
+  }
+
+  html[data-ec-admin] h2,
+  html[data-ec-config-global] h2 {
+    font-size: 20px !important;
+  }
+
+  html[data-ec-admin] h3,
+  html[data-ec-config-global] h3 {
+    font-size: 17px !important;
+  }
+
+  html[data-ec-admin] .admin-root p,
+  html[data-ec-admin] .admin-root span,
+  html[data-ec-admin] .admin-root li,
+  html[data-ec-config-global] .ec-config-main p,
+  html[data-ec-config-global] .ec-config-main span,
+  html[data-ec-config-global] .ec-config-main li {
+    font-size: 14px !important;
+  }
+
+  html[data-ec-admin] .admin-root .btn-primary,
+  html[data-ec-admin] .admin-root .btn-outline,
+  html[data-ec-admin] .admin-root button[class*="crear"],
+  html[data-ec-admin] .admin-root button[class*="guardar"],
+  html[data-ec-admin] .admin-root a[class*="primary"],
+  html[data-ec-config-global] .ec-config-main .btn-outline,
+  html[data-ec-config-global] .ec-config-main .btn-solid {
+    width: 100% !important;
+    text-align: center !important;
+    padding: 14px 16px !important;
+    font-size: 15px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Vista previa móvil: visible, compacta, entre sidebar y formulario (section.main) */
+  html[data-ec-admin] .admin-root.layout > aside.preview-col {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto 1rem !important;
+    order: 2 !important;
+    border-left: 0 !important;
+    border-top: none !important;
+    border-bottom: 1px solid var(--ae-border, #e5e7eb) !important;
+    padding: 1rem 12px 1.25rem !important;
+    box-sizing: border-box !important;
+  }
+
+  html[data-ec-admin] .admin-root.layout > section.main {
+    order: 3 !important;
+  }
+
+  html[data-ec-admin] .admin-root.layout > aside.sidebar {
+    order: 1 !important;
+  }
+
+  html[data-ec-admin] #phone-scale-wrap {
+    transform: scale(0.52) !important;
+    transform-origin: top center !important;
+  }
+
+  html[data-ec-admin] .phone-stage {
+    overflow: visible !important;
+  }
+
+  html[data-ec-admin] .preview-col .preview-spec,
+  html[data-ec-admin] .preview-col .link-public {
+    text-align: center !important;
+    font-size: 12px !important;
+    color: #6b7280 !important;
+    margin-top: 8px !important;
+  }
+
+  html[data-ec-admin] .admin-root input,
+  html[data-ec-admin] .admin-root select,
+  html[data-ec-admin] .admin-root textarea,
+  html[data-ec-config-global] .ec-config-main input {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    font-size: 16px !important;
+    padding: 12px !important;
+  }
+
+  html[data-ec-admin] .themes-grid,
+  html[data-ec-admin] [class*="themes-grid"],
+  html[data-ec-admin] [class*="temas-grid"],
+  html[data-ec-admin] .mb-dash-theme-cards {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  html[data-ec-admin] .mb-dash-card,
+  html[data-ec-admin] [class*="theme-card"],
+  html[data-ec-admin] [class*="theme-option"],
+  html[data-ec-admin] [class*="theme-item"] {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 14px 16px !important;
+  }
+
+  html[data-ec-admin] .mb-dash-card > span:last-child {
+    flex: 1 0 100% !important;
+    width: 100% !important;
+    margin-top: 0.15rem !important;
+  }
+
+  html[data-ec-admin] .mb-dash-card > *:first-child,
+  html[data-ec-admin] .mb-dash-card .mb-dash-card-icon,
+  html[data-ec-admin] [class*="theme-card"] > *:first-child,
+  html[data-ec-admin] [class*="theme-option"] > *:first-child,
+  html[data-ec-admin] [class*="theme-item"] > *:first-child {
+    font-size: 28px !important;
+    min-width: 36px !important;
+    margin-bottom: 0 !important;
+  }
+
+  html[data-ec-admin] .admin-root section,
+  html[data-ec-admin] .admin-root .section,
+  html[data-ec-config-global] .ec-config-main {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  html[data-ec-admin] [class*="badge"],
+  html[data-ec-admin] [class*="label"],
+  html[data-ec-admin] [class*="tag"] {
+    font-size: 10px !important;
+    padding: 4px 10px !important;
+  }
+
+  html[data-ec-admin] [class*="banner"],
+  html[data-ec-admin] [class*="alert"],
+  html[data-ec-admin] [class*="notice"] {
+    font-size: 12px !important;
+    padding: 8px 12px !important;
+    text-align: center !important;
+  }
+
+  html[data-ec-admin] [class*="tabs"],
+  html[data-ec-admin] [class*="tab-list"] {
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  html[data-ec-config-global] .ec-config-page {
+    padding-top: 3.75rem !important;
+  }
+}
+
+/* Tablet intermedio */
+@media (min-width: 769px) and (max-width: 1024px) {
+  html[data-ec-admin] .grid,
+  html[data-ec-admin] [class*="grid"],
+  html[data-ec-admin] .cards-container,
+  html[data-ec-admin] [class*="cards-container"] {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 20px !important;
+  }
+
+  html[data-ec-admin] .admin-root.layout > aside.preview-col {
+    order: 2 !important;
+  }
+
+  html[data-ec-admin] .admin-root.layout > section.main {
+    order: 3 !important;
+  }
+
+  html[data-ec-admin] #phone-scale-wrap {
+    transform: scale(0.58) !important;
+    transform-origin: top center !important;
+  }
+}
+
+/* ── Tema teal WebElite — overrides visuales ── */
+
+/* Header admin */
+html[data-ec-admin] .admin-header {
+  background: #ffffff !important;
+  border-bottom: 1px solid rgba(42, 157, 143, 0.18) !important;
+  box-shadow: 0 2px 12px rgba(42, 157, 143, 0.08) !important;
+}
+
+/* Sidebar con tinte teal */
+.admin-root.view-personal .sidebar {
+  border-right-color: rgba(42, 157, 143, 0.18) !important;
+  background: linear-gradient(
+    180deg,
+    rgba(42, 157, 143, 0.05),
+    #ffffff 40%
+  ) !important;
+}
+
+.admin-root.view-mascot .sidebar {
+  border-right-color: rgba(244, 162, 97, 0.2) !important;
+  background: linear-gradient(
+    180deg,
+    rgba(244, 162, 97, 0.06),
+    #ffffff 45%
+  ) !important;
+}
+
+/* Nav tabs activos */
+.nav-tab.active {
+  color: #fff !important;
+  background: #2a9d8f !important;
+  border-color: #2a9d8f !important;
+  box-shadow: 0 4px 14px rgba(42, 157, 143, 0.35) !important;
+}
+
+.admin-root.view-mascot .nav-tab.active {
+  background: linear-gradient(135deg, #f4a261, #e76f51) !important;
+  border-color: #e76f51 !important;
+  box-shadow: 0 4px 14px rgba(231, 111, 81, 0.35) !important;
+}
+
+/* Botón guardar */
+.btn-save {
+  background: #2a9d8f !important;
+}
+.btn-save:hover {
+  background: #1f7a6e !important;
+}
+.admin-root.view-mascot .btn-save {
+  background: linear-gradient(135deg, #f4a261, #e76f51) !important;
+}
+
+/* Hub cards */
+.hub-card.hub-elite {
+  background: linear-gradient(160deg, rgba(42, 157, 143, 0.07), #ffffff 55%) !important;
+}
+.hub-card.hub-elite .hub-eyebrow {
+  color: #2a9d8f !important;
+}
+.hub-card.hub-elite .hub-cta {
+  color: #2a9d8f !important;
+}
+
+/* Preview col fondo */
+.preview-col {
+  background: linear-gradient(180deg, #e6f4f2 0%, #d0ebe8 100%) !important;
+}
+.admin-root.view-mascot .preview-col {
+  background: linear-gradient(180deg, #fef3e8 0%, #fde8d0 100%) !important;
+}
+
+/* Botones outline */
+.btn-outline {
+  border-color: #2a9d8f !important;
+  color: #2a9d8f !important;
+}
+.btn-outline:hover {
+  background: rgba(42, 157, 143, 0.08) !important;
+}
+
+/* QR button */
+.btn-qr {
+  border-color: #2a9d8f !important;
+  color: #2a9d8f !important;
+  background: rgba(42, 157, 143, 0.06) !important;
+}
+.btn-qr:hover {
+  background: rgba(42, 157, 143, 0.12) !important;
+}
+
+/* Links azules → teal */
+.admin-contact-dropdown-item,
+.admin-footer-mail,
+.link-public {
+  color: #2a9d8f !important;
+}
+
+/* Botón sólido tabs */
+.mb-tab-btn.active,
+.pc-tab-btn.active {
+  background: #2a9d8f !important;
+  border-color: #2a9d8f !important;
+}
+
+/* Footer admin */
+.admin-site-footer {
+  background: #f7fafa !important;
+  border-top: 1px solid rgba(42, 157, 143, 0.15) !important;
+}
+.admin-footer-seal i {
+  color: #2a9d8f !important;
+}
+
+/* Panel contenido MascotBook */
+.admin-root.view-mascot #panel-contenido {
+  background: #f0fafa !important;
+}
+
+/* Mascot panel cards border */
+.mascot-panel-card--identity {
+  border-left-color: #2a9d8f !important;
+}
+.mascot-panel-card__title {
+  color: #1a3c5e !important;
+}
+
+/* Contact dropdown */
+.admin-contact-dropdown-btn {
+  border-color: rgba(42, 157, 143, 0.45) !important;
+  color: #2a9d8f !important;
+}
+.admin-contact-dropdown-btn:hover {
+  background: rgba(42, 157, 143, 0.06) !important;
+}
+
+/* Sidebar mis perfiles */
+.ec-sidebar-mis-perfiles {
+  border-color: rgba(42, 157, 143, 0.22) !important;
+  background: linear-gradient(
+    165deg,
+    rgba(42, 157, 143, 0.08),
+    rgba(42, 157, 143, 0.03)
+  ) !important;
+}
+.admin-root.view-personal .ec-sidebar-mis-perfiles {
+  border-color: rgba(42, 157, 143, 0.18) !important;
+}
+.ec-sidebar-mis-perfiles__title {
+  color: #1a3c5e !important;
+}
+.ec-sidebar-mis-perfiles__head-icon {
+  color: #2a9d8f !important;
+}
+.ec-sidebar-btn-new-mascot {
+  background: linear-gradient(135deg, #2a9d8f, #1a3c5e) !important;
+}
+.ec-sidebar-mis-perfiles__new {
+  border-color: rgba(42, 157, 143, 0.55) !important;
+  color: #1f7a6e !important;
 }
