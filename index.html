@@ -626,6 +626,52 @@ body {
   background: var(--teal-soft) !important;
 }
 
+.btn-action-pop {
+  background: linear-gradient(135deg, #FF6B6B 0%, #E76F51 100%) !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  font-weight: 800 !important;
+  padding: 0.85rem 1.5rem !important;
+  border-radius: 10px !important;
+  text-decoration: none !important;
+  font-size: 1rem !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 15px rgba(231, 111, 81, 0.4) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+  animation: pulse-pop 2.5s infinite;
+}
+.btn-action-pop:hover {
+  transform: translateY(-3px) scale(1.02) !important;
+  box-shadow: 0 8px 25px rgba(231, 111, 81, 0.6) !important;
+  background: linear-gradient(135deg, #FF8E8B 0%, #F4A261 100%) !important;
+  color: #FFFFFF !important;
+}
+
+.btn-action-pop--elite {
+  background: linear-gradient(135deg, #1A73E8 0%, #2A9D8F 100%) !important;
+  box-shadow: 0 4px 15px rgba(42, 157, 143, 0.4) !important;
+  animation: pulse-pop-elite 2.5s infinite;
+}
+.btn-action-pop--elite:hover {
+  background: linear-gradient(135deg, #2B85FF 0%, #4ECDC4 100%) !important;
+  box-shadow: 0 8px 25px rgba(42, 157, 143, 0.6) !important;
+}
+
+@keyframes pulse-pop {
+  0% { box-shadow: 0 0 0 0 rgba(231,111,81,0.6); }
+  70% { box-shadow: 0 0 0 12px rgba(231,111,81,0); }
+  100% { box-shadow: 0 0 0 0 rgba(231,111,81,0); }
+}
+
+@keyframes pulse-pop-elite {
+  0% { box-shadow: 0 0 0 0 rgba(42,157,143,0.6); }
+  70% { box-shadow: 0 0 0 12px rgba(42,157,143,0); }
+  100% { box-shadow: 0 0 0 0 rgba(42,157,143,0); }
+}
+
 .lp-hero__band .btn-outline.lp-cta-secondary {
   background: rgba(255,255,255,0.15) !important;
   color: var(--white) !important;
@@ -746,21 +792,55 @@ body {
 
   .product-grid {
     grid-template-columns: 1fr !important;
-    gap: 1.5rem !important;
+    gap: 1.25rem !important;
   }
 
   .product-card::before {
-    height: 160px !important;
+    height: 100px !important;
+  }
+
+  .product-card > *:not(:first-child) {
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+  }
+
+  .product-icon {
+    padding-top: 1rem !important;
+    padding-left: 1.25rem !important;
+  }
+
+  .product-card h3 {
+    font-size: 1.3rem !important;
+    margin: 0.25rem 0 0.5rem !important;
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+  }
+
+  .product-card > p {
+    font-size: 0.88rem !important;
+    margin-bottom: 0.75rem !important;
+    line-height: 1.4 !important;
+  }
+
+  .feature-mini {
+    margin: 0 0 1rem !important;
+  }
+
+  .feature-mini li {
+    font-size: 0.82rem !important;
   }
 
   .card-actions {
+    padding: 0 1.25rem 1.25rem !important;
     flex-direction: column !important;
+    gap: 0.5rem !important;
   }
 
   .card-actions .btn {
     width: 100% !important;
     text-align: center !important;
     justify-content: center !important;
+    padding: 0.7rem 1rem !important;
   }
 
   .lp-hero__ctas {
@@ -812,40 +892,67 @@ body {
               <a class="btn btn-outline lp-cta-secondary" href="#como-funciona">¿Cómo funciona?</a>
             </div>
           </div>
-          <div class="lp-hero__services">
-            <article class="lp-service lp-service--elite">
-              <span class="lp-service__tag" aria-hidden="true"></span>
-              <p class="lp-service__label">EliteCard</p>
-              <h2 class="lp-service__title">
-                La primera impresión es digital. Hacé que la tuya sea de élite.
-              </h2>
-              <ul class="lp-service__bullets">
-                <li>Tu Identidad Profesional Digital</li>
-                <li>Contacto en un clic</li>
-                <li>Perfil Personalizable Premium</li>
-              </ul>
-            </article>
-            <article class="lp-service lp-service--mascot">
-              <span class="lp-service__tag lp-service__tag--mascot" aria-hidden="true"></span>
-              <p class="lp-service__label">MascotBook</p>
-              <h2 class="lp-service__title">
-                Tu mascota no puede hablar, pero su perfil digital sí.
-              </h2>
-              <ul class="lp-service__bullets">
-                <li>Protección Inteligente para tu Mascota</li>
-                <li>Ficha Médica Siempre Disponible</li>
-                <li>Seguridad en cada Paseo</li>
-              </ul>
-            </article>
-          </div>
-          <div class="lp-hero__pitches">
-            <p class="lp-pitch">
-              La primera impresión es digital. Haz que la tuya sea de élite.
+        </div>
+      </section>
+
+      <section class="products lp-section-y" id="productos" aria-labelledby="products-heading" style="padding-top: 2rem;">
+        <h2 id="products-heading" class="section-title section-title--muted">Elegí tu camino</h2>
+        <div class="product-grid">
+          <article class="product-card product-card--elite">
+            <div class="product-icon" aria-hidden="true">
+              <i class="fa-solid fa-briefcase"></i>
+            </div>
+            <h3>EliteCard</h3>
+            <p>
+              Networking Profesional Instantáneo: Centralizá tu contacto, redes y portfolio en un solo link. Diseñada para vendedores, ejecutivos y creativos que buscan impactar y cerrar más reuniones al instante.
             </p>
-            <p class="lp-pitch">
-              Tu mascota no puede hablar, pero su perfil digital sí. Protégela hoy.
+            <ul class="feature-mini">
+              <li><i class="fa-solid fa-bolt" aria-hidden="true"></i>Comparte tu contacto sin demoras</li>
+              <li><i class="fa-solid fa-envelope-circle-check" aria-hidden="true"></i>Firma de correo corporativa integrada</li>
+              <li><i class="fa-solid fa-user-tie" aria-hidden="true"></i>Diseño premium que eleva tu marca personal</li>
+            </ul>
+            <div class="card-actions">
+              <a class="btn btn-outline" href="admin.html?viewMode=personal&amp;panel=dashboard">
+                <i class="fa-solid fa-mobile-screen" aria-hidden="true"></i> Ver demo
+              </a>
+              <a class="btn btn-action-pop btn-action-pop--elite" href="admin.html?viewMode=personal&amp;panel=contenido">
+                Crear mi tarjeta
+              </a>
+            </div>
+          </article>
+
+          <article class="product-card product-card--mascot">
+            <div class="product-icon" aria-hidden="true">
+              <i class="fa-solid fa-paw"></i>
+            </div>
+            <h3 style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              MascotBook
+              <span style="font-size: 0.7rem; background: #E76F51; color: #fff; padding: 0.25rem 0.6rem; border-radius: 999px; letter-spacing: 0.05em; font-weight: 800; text-transform: uppercase;">Más popular</span>
+            </h3>
+            <p>
+              Seguridad y Protección Integral: El perfil digital de tu compañero. Ficha médica, datos de rescate y un código QR único para que cualquiera pueda escanear y contactarte al instante si se extravía.
             </p>
-          </div>
+            <ul class="feature-mini">
+              <li><i class="fa-solid fa-location-dot" aria-hidden="true"></i>Escanea y encuentra: Ubicación GPS en rescate</li>
+              <li><i class="fa-solid fa-file-medical" aria-hidden="true"></i>Ficha médica y vacunas siempre a mano</li>
+              <li><i class="fa-solid fa-shield-dog" aria-hidden="true"></i>Tranquilidad inteligente para cada paseo</li>
+            </ul>
+            <div class="card-actions">
+              <a class="btn btn-outline" href="admin.html?viewMode=mascot&amp;panel=dashboard">
+                <i class="fa-solid fa-eye" aria-hidden="true"></i> Ver demo
+              </a>
+              <a class="btn btn-action-pop btn-action-pop--mascot" href="admin.html?viewMode=mascot&amp;panel=contenido&amp;action=new">
+                Activar mi Mascota Ahora
+              </a>
+              <a
+                class="btn btn-outline"
+                href="admin.html?viewMode=mascot&amp;panel=contenido&amp;action=new"
+                title="Abre el panel para dar de alta una nueva mascota"
+              >
+                <i class="fa-solid fa-plus" aria-hidden="true"></i> Nueva mascota
+              </a>
+            </div>
+          </article>
         </div>
       </section>
 
@@ -916,65 +1023,7 @@ body {
         </ul>
       </section>
 
-      <section class="products lp-section-y" id="productos" aria-labelledby="products-heading">
-        <h2 id="products-heading" class="section-title section-title--muted">Elegí tu camino</h2>
-        <div class="product-grid">
-          <article class="product-card product-card--elite">
-            <div class="product-icon" aria-hidden="true">
-              <i class="fa-solid fa-briefcase"></i>
-            </div>
-            <h3>EliteCard</h3>
-            <p>
-              Tarjeta web profesional: foto, cargo, WhatsApp, redes y estilo visual alineado a tu marca. Ideal para vendedores,
-              médicos, creativos y equipos que quieren cerrar más reuniones.
-            </p>
-            <ul class="feature-mini">
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i>Tarjeta lista para compartir en segundos</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i>Firma de email con tu identidad corporativa</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i>Diseño adaptable: fondos, forma de foto y botones</li>
-            </ul>
-            <div class="card-actions">
-              <a class="btn btn-outline" href="admin.html?viewMode=personal&amp;panel=dashboard">
-                <i class="fa-solid fa-mobile-screen" aria-hidden="true"></i> Ver demo
-              </a>
-              <a class="btn btn-solid" href="register.html?app=elitecard&amp;next=admin.html%3FviewMode%3Dpersonal%26panel%3Dcontenido">
-                Crear mi tarjeta
-              </a>
-            </div>
-          </article>
 
-          <article class="product-card product-card--mascot">
-            <div class="product-icon" aria-hidden="true">
-              <i class="fa-solid fa-paw"></i>
-            </div>
-            <h3>MascotBook</h3>
-            <p>
-              El perfil social de tu compañero: galería, historia, salud y texturas con personalidad. Un producto aparte, con el
-              mismo estándar de calidad WebElite.
-            </p>
-            <ul class="feature-mini">
-              <li><i class="fa-solid fa-heart" aria-hidden="true"></i>Galería y muro con estética social moderna</li>
-              <li><i class="fa-solid fa-palette" aria-hidden="true"></i>Temas y acentos que reflejan su carácter</li>
-              <li><i class="fa-solid fa-share-nodes" aria-hidden="true"></i>Enlace único para presumir a tu mascota</li>
-            </ul>
-            <div class="card-actions">
-              <a class="btn btn-outline" href="admin.html?viewMode=mascot&amp;panel=dashboard">
-                <i class="fa-solid fa-eye" aria-hidden="true"></i> Ver demo
-              </a>
-              <a class="btn btn-solid" href="register.html?app=mascotbook&amp;next=admin.html%3FviewMode%3Dmascot%26panel%3Dcontenido">
-                Crear MascotBook
-              </a>
-              <a
-                class="btn btn-outline"
-                href="admin.html?viewMode=mascot&amp;panel=contenido&amp;action=new"
-                title="Abre el panel para dar de alta una nueva mascota"
-              >
-                <i class="fa-solid fa-plus" aria-hidden="true"></i> Nueva mascota
-              </a>
-            </div>
-          </article>
-        </div>
-      </section>
 
       <section class="cta-band lp-section-y" aria-labelledby="cta-title">
         <h2 id="cta-title">¿Listo para probar sin riesgo?</h2>
