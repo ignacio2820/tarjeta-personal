@@ -432,16 +432,200 @@
   var __eliteLastSigText = "";
   var __eliteLastSigHtml = "";
   var __eliteShareUrl = "";
+  var __eliteShareName = "";
+  var __eliteShareProfile = { telefono: "", email: "", empresa: "WebElite SOLUTIONS" };
+
+  function eliteShareContext() {
+    var url = String(window.location.href || "").trim();
+    var domNameEl = document.getElementById("elite-name");
+    var modalNameEl = document.getElementById("elite-qr-user-name");
+    var domName = domNameEl ? String(domNameEl.textContent || "").trim() : "";
+    var modalName = modalNameEl ? String(modalNameEl.textContent || "").trim() : "";
+    var name = domName || modalName || __eliteShareName || "Mi contacto";
+    return { url: url, name: name };
+  }
+
+  function eliteGetQrServiceUrl(data) {
+    return (
+      "https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=10&data=" +
+      encodeURIComponent(String(data || ""))
+    );
+  }
+
+  function eliteRenderQrFromData(data) {
+    var img = document.getElementById("elite-qr-img");
+    if (!img) return;
+    img.src = eliteGetQrServiceUrl(data);
+  }
+
+  function eliteBuildOfflineVcard() {
+    var data = eliteShareContext();
+    var tel = String((__eliteShareProfile && __eliteShareProfile.telefono) || "").trim();
+    var email = String((__eliteShareProfile && __eliteShareProfile.email) || "").trim();
+    var empresa = String((__eliteShareProfile && __eliteShareProfile.empresa) || "WebElite SOLUTIONS").trim();
+    var lines = ["BEGIN:VCARD", "VERSION:3.0", "FN:" + data.name, "ORG:" + empresa];
+    if (tel) lines.push("TEL;TYPE=CELL:" + tel);
+    if (email) lines.push("EMAIL;TYPE=INTERNET:" + email);
+    lines.push("END:VCARD");
+    return lines.join("\r\n");
+  }
+
+  function eliteShareToast(message) {
+    var el = document.getElementById("elite-share-toast");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "elite-share-toast";
+      el.setAttribute("role", "status");
+      el.setAttribute("aria-live", "polite");
+      el.style.position = "fixed";
+      el.style.left = "50%";
+      el.style.bottom = "1.2rem";
+      el.style.transform = "translateX(-50%)";
+      el.style.zIndex = "120";
+      el.style.padding = "0.62rem 0.95rem";
+      el.style.borderRadius = "999px";
+      el.style.background = "rgba(17,24,39,0.95)";
+      el.style.color = "#fff";
+      el.style.fontSize = "0.85rem";
+      el.style.fontWeight = "600";
+      el.style.boxShadow = "0 10px 28px rgba(0,0,0,0.35)";
+      el.style.opacity = "0";
+      el.style.transition = "opacity 0.18s ease";
+      document.body.appendChild(el);
+    }
+    el.textContent = message;
+    el.style.opacity = "1";
+    clearTimeout(eliteShareToast._timer);
+    eliteShareToast._timer = setTimeout(function () {
+      el.style.opacity = "0";
+    }, 1800);
+  }
+
+  function eliteAnalyticsTrack(metricKey, meta) {
+    if (!metricKey || isPetPublicView()) return;
+    var extra = meta && typeof meta === "object" ? meta : {};
+    try {
+      if (typeof window.gtag === "function") {
+        window.gtag(
+          "event",
+          metricKey,
+          Object.assign({ event_category: "elite_share_modal", event_label: "card_public" }, extra)
+        );
+      }
+    } catch (eGtag) {}
+    try {
+      if (Array.isArray(window.dataLayer)) {
+        window.dataLayer.push(
+          Object.assign({ event: "elite_share_modal_action", metricKey: metricKey }, extra)
+        );
+      }
+    } catch (eDl) {}
+    try {
+      var uid = String(window.__EC_CARD_UID || "").trim();
+      if (!uid || typeof firebase === "undefined" || !firebase.firestore) return;
+      var usersCollection = (window.FIRESTORE_USERS_COLLECTION || "usuarios").trim() || "usuarios";
+      var payload = {};
+      payload[metricKey] = firebase.firestore.FieldValue.increment(1);
+      payload.clics_totales = firebase.firestore.FieldValue.increment(1);
+      firebase.firestore().collection(usersCollection).doc(uid).set(payload, { merge: true }).catch(function () {});
+    } catch (eFs) {}
+  }
+
+  async function eliteCopyShareLink() {
+    var data = eliteShareContext();
+    eliteAnalyticsTrack("clics_share_copy");
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(data.url);
+        eliteShareToast("¡Enlace copiado!");
+        return;
+      }
+    } catch (eClipboard) {}
+    window.prompt("Copia este enlace:", data.url);
+  }
+
+  function eliteOpenShareWindow(url) {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+
+  function eliteShareWhatsApp() {
+    var data = eliteShareContext();
+    eliteAnalyticsTrack("clics_share_whatsapp");
+    var text = "Hola, te comparto la tarjeta digital de " + data.name + ": " + data.url;
+    eliteOpenShareWindow("https://wa.me/?text=" + encodeURIComponent(text));
+  }
+
+  function eliteShareByEmail() {
+    var data = eliteShareContext();
+    eliteAnalyticsTrack("clics_share_email");
+    var subject = "Tarjeta Digital - " + data.name;
+    var body = "Hola,\n\nTe comparto la tarjeta digital de " + data.name + ":\n" + data.url;
+    window.location.href =
+      "mailto:?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+  }
+
+  function eliteShareLinkedIn() {
+    var data = eliteShareContext();
+    eliteAnalyticsTrack("clics_share_linkedin");
+    eliteOpenShareWindow(
+      "https://www.linkedin.com/sharing/share-offsite/?url=" + encodeURIComponent(data.url)
+    );
+  }
+
+  function eliteToggleOfflineState(enabled) {
+    var overlay = document.getElementById("elite-qr-overlay");
+    var qrBox = overlay ? overlay.querySelector(".ec-share-qr-box") : null;
+    if (qrBox) qrBox.classList.toggle("ec-share-qr-box--offline", !!enabled);
+    if (enabled) {
+      eliteRenderQrFromData(eliteBuildOfflineVcard());
+    } else {
+      eliteRenderQrFromData(__eliteShareUrl || eliteShareContext().url || getElitePublicUrl());
+    }
+    eliteAnalyticsTrack("clics_share_offline_toggle", { offlineEnabled: !!enabled });
+  }
+
+  function eliteShareNative() {
+    if (!navigator.share) return;
+    var data = eliteShareContext();
+    eliteAnalyticsTrack("clics_share_native");
+    navigator
+      .share({
+        title: "Tarjeta Digital - " + data.name,
+        text: "Te comparto la tarjeta digital de " + data.name,
+        url: data.url,
+      })
+      .catch(function () {});
+  }
 
   function openEliteQrOverlay() {
-    __eliteShareUrl = getElitePublicUrl();
-    var img = document.getElementById("elite-qr-img");
+    var shareData = eliteShareContext();
+    __eliteShareUrl = shareData.url || getElitePublicUrl();
     var ov = document.getElementById("elite-qr-overlay");
     var nativeBtn = document.getElementById("elite-qr-share-native");
-    if (!img || !ov) return;
-    img.src =
-      "https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=10&data=" +
-      encodeURIComponent(__eliteShareUrl);
+    var modalNameEl = document.getElementById("elite-qr-user-name");
+    var modalPhotoEl = document.getElementById("elite-qr-user-photo");
+    var headerPhotoEl = document.getElementById("elite-photo");
+    var fallbackEl = ov ? ov.querySelector(".ec-share-profile-fallback") : null;
+    var offlineToggle = document.getElementById("elite-qr-offline");
+    if (!ov) return;
+    eliteRenderQrFromData(__eliteShareUrl);
+    if (modalNameEl) modalNameEl.textContent = shareData.name;
+    if (modalPhotoEl) {
+      var hasPhoto = !!(headerPhotoEl && headerPhotoEl.getAttribute("src"));
+      if (hasPhoto) {
+        modalPhotoEl.src = String(headerPhotoEl.getAttribute("src") || "");
+        modalPhotoEl.classList.remove("hidden");
+        if (fallbackEl) fallbackEl.classList.add("hidden");
+      } else {
+        modalPhotoEl.classList.add("hidden");
+        modalPhotoEl.removeAttribute("src");
+        if (fallbackEl) fallbackEl.classList.remove("hidden");
+      }
+    }
+    if (offlineToggle) {
+      offlineToggle.checked = false;
+      eliteToggleOfflineState(false);
+    }
     ov.classList.remove("hidden");
     if (nativeBtn) {
       nativeBtn.classList.toggle("hidden", typeof navigator.share !== "function");
@@ -459,6 +643,10 @@
     var ov = document.getElementById("elite-qr-overlay");
     var closeBtn = document.getElementById("elite-qr-close");
     var copyBtn = document.getElementById("elite-qr-copy");
+    var waBtn = document.getElementById("elite-qr-share-whatsapp");
+    var emailBtn = document.getElementById("elite-qr-share-email");
+    var linkedinBtn = document.getElementById("elite-qr-share-linkedin");
+    var offlineToggle = document.getElementById("elite-qr-offline");
     var nativeBtn = document.getElementById("elite-qr-share-native");
     try {
       if (ov) ov.classList.add("hidden");
@@ -471,23 +659,19 @@
     if (closeBtn) closeBtn.addEventListener("click", closeEliteQrOverlay);
     if (copyBtn) {
       copyBtn.addEventListener("click", function () {
-        var u = __eliteShareUrl || getElitePublicUrl();
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(u).catch(function () {});
-        }
+        void eliteCopyShareLink();
+      });
+    }
+    if (waBtn) waBtn.addEventListener("click", eliteShareWhatsApp);
+    if (emailBtn) emailBtn.addEventListener("click", eliteShareByEmail);
+    if (linkedinBtn) linkedinBtn.addEventListener("click", eliteShareLinkedIn);
+    if (offlineToggle) {
+      offlineToggle.addEventListener("change", function () {
+        eliteToggleOfflineState(offlineToggle.checked);
       });
     }
     if (nativeBtn) {
-      nativeBtn.addEventListener("click", function () {
-        if (!navigator.share) return;
-        navigator
-          .share({
-            title: "EliteCard",
-            text: "Te comparto mi tarjeta digital",
-            url: __eliteShareUrl || getElitePublicUrl(),
-          })
-          .catch(function () {});
-      });
+      nativeBtn.addEventListener("click", eliteShareNative);
     }
     var ct = document.getElementById("elite-mail-sig-copy-text");
     var ch = document.getElementById("elite-mail-sig-copy-html");
@@ -602,6 +786,12 @@
     applyEliteSurfaceClass(root, p);
 
     document.getElementById("elite-name").textContent = p.user_nombre || p.nombreCompleto || "Profesional";
+    __eliteShareName = String(p.user_nombre || p.nombreCompleto || "Profesional").trim();
+    __eliteShareProfile = {
+      telefono: String(p.telefono || "").trim(),
+      email: String(p.email || p.emailInstitucional || "").trim(),
+      empresa: "WebElite SOLUTIONS",
+    };
     document.getElementById("elite-role").textContent = p.user_cargo || p.cargo || "";
     document.getElementById("elite-co").textContent = p.user_empresa || p.empresa || "";
 

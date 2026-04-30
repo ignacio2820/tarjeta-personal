@@ -433,12 +433,70 @@
         </button>
       </footer>
       <div id="elite-qr-overlay" class="ec-qr-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="elite-qr-title">
-        <div class="ec-qr-panel">
-          <button type="button" id="elite-qr-close" class="ec-qr-close" aria-label="Cerrar">×</button>
-          <p id="elite-qr-title" class="ec-qr-title">Compartir tarjeta</p>
-          <img id="elite-qr-img" class="ec-qr-img" src="" alt="Código QR de la tarjeta" width="200" height="200" />
-          <button type="button" id="elite-qr-copy" class="ec-qr-copy">Copiar enlace</button>
-          <button type="button" id="elite-qr-share-native" class="ec-qr-native hidden">Compartir con el sistema…</button>
+        <div class="ec-share-sheet">
+          <div class="ec-share-sheet-head">
+            <div class="ec-share-profile">
+              <div class="ec-share-profile-avatar-wrap" aria-hidden="true">
+                <img
+                  id="elite-qr-user-photo"
+                  class="ec-share-profile-avatar hidden"
+                  src=""
+                  alt=""
+                  width="36"
+                  height="36"
+                />
+                <span class="ec-share-profile-fallback">
+                  <i class="fa-solid fa-user" aria-hidden="true"></i>
+                </span>
+              </div>
+              <div class="ec-share-profile-meta">
+                <p id="elite-qr-user-name" class="ec-share-profile-name"></p>
+                <p class="ec-share-profile-subtitle">Compartir</p>
+              </div>
+            </div>
+            <button type="button" id="elite-qr-close" class="ec-share-close" aria-label="Cerrar">
+              <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+            </button>
+          </div>
+
+          <div class="ec-share-qr-box">
+            <p id="elite-qr-title" class="ec-share-qr-title">Escanea el QR para acceder a la Tarjeta Digital</p>
+            <img id="elite-qr-img" class="ec-share-qr-img" src="" alt="Código QR de la tarjeta" width="220" height="220" />
+          </div>
+
+          <div class="ec-share-offline-row">
+            <span class="ec-share-offline-icon" aria-hidden="true">
+              <i class="fa-solid fa-wifi-slash"></i>
+            </span>
+            <span class="ec-share-offline-text">Compartir Tarjeta Offline</span>
+            <label class="ec-share-switch" for="elite-qr-offline">
+              <input type="checkbox" id="elite-qr-offline" />
+              <span class="ec-share-switch-slider" aria-hidden="true"></span>
+            </label>
+          </div>
+
+          <div class="ec-share-actions">
+            <button type="button" id="elite-qr-copy" class="ec-share-action">
+              <span class="ec-share-action-icon"><i class="fa-regular fa-copy" aria-hidden="true"></i></span>
+              Copiar enlace
+            </button>
+            <button type="button" id="elite-qr-share-whatsapp" class="ec-share-action">
+              <span class="ec-share-action-icon"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></span>
+              Compartir vía WhatsApp
+            </button>
+            <button type="button" id="elite-qr-share-email" class="ec-share-action">
+              <span class="ec-share-action-icon"><i class="fa-regular fa-envelope" aria-hidden="true"></i></span>
+              Compartir vía email
+            </button>
+            <button type="button" id="elite-qr-share-linkedin" class="ec-share-action">
+              <span class="ec-share-action-icon"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i></span>
+              Compartir vía LinkedIn
+            </button>
+            <button type="button" id="elite-qr-share-native" class="ec-share-action ec-qr-native hidden">
+              <span class="ec-share-action-icon"><i class="fa-solid fa-ellipsis" aria-hidden="true"></i></span>
+              Más opciones
+            </button>
+          </div>
         </div>
       </div>
     </div>
