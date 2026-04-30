@@ -908,11 +908,14 @@ body {
               <li><i class="fa-solid fa-user-tie" aria-hidden="true"></i>Diseño premium que eleva tu marca personal</li>
             </ul>
             <div class="card-actions">
-              <a class="btn btn-outline" href="admin.html?viewMode=personal&amp;panel=dashboard">
+              <a id="elite-demo-btn" class="btn btn-outline" href="admin.html?viewMode=personal&amp;panel=dashboard">
                 <i class="fa-solid fa-mobile-screen" aria-hidden="true"></i> Ver demo
               </a>
-              <a class="btn btn-action-pop btn-action-pop--elite" href="admin.html?viewMode=personal&amp;panel=contenido">
+              <a id="elite-create-btn" class="btn btn-action-pop btn-action-pop--elite" href="admin.html?viewMode=personal&amp;panel=contenido">
                 Crear mi tarjeta
+              </a>
+              <a id="elite-dashboard-btn" class="btn btn-action-pop btn-action-pop--elite hidden" href="admin.html?viewMode=personal&amp;panel=dashboard">
+                Ir a mi Dashboard EliteCard
               </a>
             </div>
           </article>
@@ -934,18 +937,22 @@ body {
               <li><i class="fa-solid fa-shield-dog" aria-hidden="true"></i>Tranquilidad inteligente para cada paseo</li>
             </ul>
             <div class="card-actions">
-              <a class="btn btn-outline" href="admin.html?viewMode=mascot&amp;panel=dashboard">
+              <a id="mascot-demo-btn" class="btn btn-outline" href="admin.html?viewMode=mascot&amp;panel=dashboard">
                 <i class="fa-solid fa-eye" aria-hidden="true"></i> Ver demo
               </a>
-              <a class="btn btn-action-pop btn-action-pop--mascot" href="admin.html?viewMode=mascot&amp;panel=contenido">
+              <a id="mascot-create-btn" class="btn btn-action-pop btn-action-pop--mascot" href="admin.html?viewMode=mascot&amp;panel=contenido">
                 Activar mi Mascota Ahora
               </a>
               <a
+                id="mascot-new-btn"
                 class="btn btn-outline"
                 href="admin.html?viewMode=mascot&amp;panel=contenido&amp;action=new"
                 title="Abre el panel para dar de alta una nueva mascota"
               >
                 <i class="fa-solid fa-plus" aria-hidden="true"></i> Nueva mascota
+              </a>
+              <a id="mascot-dashboard-btn" class="btn btn-action-pop btn-action-pop--mascot hidden" href="admin.html?viewMode=mascot&amp;panel=dashboard">
+                Ir a mi Dashboard MascotBook
               </a>
             </div>
           </article>
@@ -1037,5 +1044,75 @@ body {
       </p>
       <small>EliteCard y MascotBook son productos digitales desarrollados y curados por Agencia WebElite.</small>
     </footer>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="admin.js"></script>
+    <script>
+      (function () {
+        function setPaidAccessUi(kind, enabled) {
+          var on = !!enabled;
+          if (kind === "elite") {
+            var eliteDemo = document.getElementById("elite-demo-btn");
+            var eliteCreate = document.getElementById("elite-create-btn");
+            var eliteDash = document.getElementById("elite-dashboard-btn");
+            if (eliteDemo) eliteDemo.classList.toggle("hidden", on);
+            if (eliteCreate) eliteCreate.classList.toggle("hidden", on);
+            if (eliteDash) eliteDash.classList.toggle("hidden", !on);
+            return;
+          }
+          var mbDemo = document.getElementById("mascot-demo-btn");
+          var mbCreate = document.getElementById("mascot-create-btn");
+          var mbNew = document.getElementById("mascot-new-btn");
+          var mbDash = document.getElementById("mascot-dashboard-btn");
+          if (mbDemo) mbDemo.classList.toggle("hidden", on);
+          if (mbCreate) mbCreate.classList.toggle("hidden", on);
+          if (mbNew) mbNew.classList.toggle("hidden", on);
+          if (mbDash) mbDash.classList.toggle("hidden", !on);
+        }
+
+        if (!window.FIREBASE_WEB_CONFIG || !window.FIREBASE_WEB_CONFIG.apiKey) return;
+        try {
+          if (!firebase.apps || !firebase.apps.length) firebase.initializeApp(window.FIREBASE_WEB_CONFIG);
+        } catch (eInit) {}
+        if (!firebase.auth || !firebase.firestore) return;
+
+        firebase.auth().onAuthStateChanged(function (user) {
+          if (!user) {
+            setPaidAccessUi("elite", false);
+            setPaidAccessUi("mascot", false);
+            return;
+          }
+          var uid = String(user.uid || "").trim();
+          if (!uid) return;
+          var db = firebase.firestore();
+          Promise.all([
+            db.collection((window.FIRESTORE_MEMBERSHIP_COLLECTION || "users").trim() || "users").doc(uid).get(),
+            db.collection((window.EC_SILO && window.EC_SILO.usersCollection && window.EC_SILO.usersCollection()) || "usuarios").doc(uid).get(),
+            db.collection((window.FIRESTORE_ELITE_MEMBERSHIP_COLLECTION || "users_elite").trim() || "users_elite").doc(uid).get(),
+          ])
+            .then(function (res) {
+              var membershipData = res[0] && res[0].exists ? res[0].data() || {} : {};
+              var legacyData = res[1] && res[1].exists ? res[1].data() || {} : {};
+              var eliteData = res[2] && res[2].exists ? res[2].data() || {} : {};
+              var merged = Object.assign({}, legacyData, membershipData);
+              var Sub = window.EliteCardAdminSubscription;
+              var email = String(user.email || "");
+              var hasElite = false;
+              var hasMascot = false;
+              if (Sub && typeof Sub.hasEliteCardDashboardAccess === "function") {
+                hasElite = !!Sub.hasEliteCardDashboardAccess(merged, eliteData, uid, email);
+              }
+              if (Sub && typeof Sub.hasMascotBookDashboardAccess === "function") {
+                hasMascot = !!Sub.hasMascotBookDashboardAccess(merged, uid, email);
+              }
+              setPaidAccessUi("elite", hasElite);
+              setPaidAccessUi("mascot", hasMascot);
+            })
+            .catch(function () {});
+        });
+      })();
+    </script>
   </body>
 </html>

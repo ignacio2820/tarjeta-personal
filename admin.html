@@ -1559,6 +1559,7 @@
         var publicUrlEl = document.getElementById("public-url");
         var toastEl = document.getElementById("toast");
         var DEFAULT_AR_PHONE_PREFIX = "+54 9 ";
+        var __ecPersonalFormBaseEditing = true;
         /** Último estado base del formulario mascota (antes del candado Plan Pro trial vencido). */
         var __ecMascotFormBaseEditing = true;
         var EC_MB_MSG_PRO_HEALTH_PHOTOS =
@@ -1615,6 +1616,70 @@
           try {
             applyMascotbookProContentLockUi();
           } catch (eMbL) {}
+        }
+
+        function setPersonalFormEditingEnabled(enabled) {
+          if (!formPersonal) return;
+          var on = !!enabled;
+          __ecPersonalFormBaseEditing = on;
+          try {
+            formPersonal.classList.toggle("ec-form-locked", !on);
+          } catch (eCl) {}
+          formPersonal.querySelectorAll("input,textarea,select,button").forEach(function (el) {
+            var id = el && el.id ? String(el.id) : "";
+            var keep =
+              id === "btn-elite-share-card" ||
+              id === "btn-save-personal" ||
+              id === "btn-premium-upgrade";
+            if (keep) return;
+            try {
+              el.disabled = !on;
+            } catch (eD) {}
+          });
+          var btnSave = document.getElementById("btn-save-personal");
+          if (btnSave) btnSave.disabled = !on;
+        }
+
+        function isRescueModeForApp(appName) {
+          if (!uid || demoModeActive) return false;
+          var Sub = window.EliteCardAdminSubscription;
+          var user = firebase.auth && firebase.auth().currentUser;
+          if (!Sub || !user) return false;
+          if (Sub.isPerpetualAccess(uid, user.email || "", lastAccountData || {})) return false;
+          var merged = Object.assign({}, lastLegacyAccountData || {}, lastMembershipData || {});
+          if (String((merged && merged.status) || "").toLowerCase() === "suspended") return true;
+          if (Sub.isVencimientoMembresiaPast && Sub.isVencimientoMembresiaPast(merged)) return true;
+          if (String(appName || currentApp) === "personal") {
+            return !Sub.hasEliteCardDashboardAccess(
+              merged,
+              lastEliteMembershipData || {},
+              uid,
+              user.email || ""
+            );
+          }
+          return !Sub.hasMascotBookDashboardAccess(merged, uid, user.email || "");
+        }
+
+        function applyRescueModeUi() {
+          var isRescue = isRescueModeForApp(currentApp);
+          var eliteRescueBanner = document.getElementById("admin-banner-rescue");
+          if (eliteRescueBanner) {
+            eliteRescueBanner.classList.toggle("hidden", !(isRescue && currentApp === "personal"));
+          }
+          var mascotRescueBanner = document.getElementById("admin-mascot-demo-readonly-banner");
+          if (mascotRescueBanner && currentApp === "mascotbook" && isRescue) {
+            var txt = mascotRescueBanner.querySelector("span");
+            if (txt) {
+              txt.textContent =
+                "Tu período gratuito terminó. Puedes navegar en modo rescate, pero para editar y compartir debes activar tu membresía.";
+            }
+            mascotRescueBanner.classList.remove("hidden");
+          }
+          if (currentApp === "personal") {
+            setPersonalFormEditingEnabled(!isRescue);
+          } else {
+            setMascotFormEditingEnabled(!isRescue);
+          }
         }
 
         function resetMascotUiBoard() {
@@ -3785,14 +3850,19 @@
           if (!m) return;
           if (!uid || demoModeActive) return;
           if (currentApp !== "mascotbook") return;
-          var st = String(lastAccountData.status || "").toLowerCase();
-          if (st !== "trial") return;
           try {
             if (sessionStorage.getItem(EC_TRIAL_WELCOME_SESSION_KEY) === "1") return;
           } catch (eSs) {}
           var Sub = window.EliteCardAdminSubscription;
           var user = firebase.auth && firebase.auth().currentUser;
-          if (Sub && user && Sub.isPerpetualAccess(uid, user.email || "", lastAccountData)) return;
+          if (!Sub || !user) return;
+          if (Sub.isPerpetualAccess(uid, user.email || "", lastAccountData)) return;
+          var mergedBilling = Object.assign({}, lastAccountData || {}, lastEliteMembershipData || {});
+          var mbPlan = String(
+            Sub.getPlanStatusFromDoc(mergedBilling, "mascotbook") ||
+            ""
+          ).toLowerCase();
+          if (mbPlan !== "trial") return;
           m.classList.remove("hidden");
         }
 
@@ -4252,6 +4322,15 @@
               : Sub.isPremiumOrActiveTrial
                 ? Sub.isPremiumOrActiveTrial(docData, "elitecard", uid, email)
                 : Sub.getPlanStatusFromDoc(docData, "elitecard") === "active";
+            var mascotUnlocked = Sub.hasMascotBookDashboardAccess
+              ? Sub.hasMascotBookDashboardAccess(docData, uid, email)
+              : Sub.getPlanStatusFromDoc(docData, "mascotbook") === "active";
+            if (mascotUnlocked && ecMascotReadOnlyDemo) {
+              ecMascotReadOnlyDemo = false;
+              try {
+                ecApplyMascotReadOnlyDemoUi();
+              } catch (eMbDemo) {}
+            }
             var expired = Sub.isTrialPeriodExpired(docData, "elitecard", uid, email);
             var showRescue =
               expired && !eliteUnlocked && !perpetual && currentApp === "personal" && gst !== "expired";
@@ -4688,39 +4767,8 @@
           var eliteD = lastEliteMembershipData || {};
           var okMb = Sub.hasMascotBookDashboardAccess(doc, uid, email);
           var okEl = Sub.hasEliteCardDashboardAccess(doc, eliteD, uid, email);
-          console.log(
-            "[admin] Product gate — requested:",
-            requested,
-            "| okMb:",
-            okMb,
-            "| okEl:",
-            okEl,
-            "| activeProducts:",
-            doc.activeProducts,
-            "| hasMascotBook:",
-            doc.hasMascotBook,
-            "| mascotbook_status:",
-            doc.mascotbook_status
-          );
-          var ok = requested === "mascotbook" ? okMb : okEl;
-
-          if (ok) {
-            revealAdminAppAfterProductCheck();
-            return;
-          }
-
-          if (requested === "mascotbook" && okEl) {
-            window.location.replace("admin.html?viewMode=personal&panel=dashboard");
-            return;
-          }
-          if (requested === "personal" && !okEl && okMb) {
-            if (productAccessDeniedShown) return;
-            showProductAccessDeniedModal("personal", { crossSellFromMascot: true });
-            return;
-          }
-
-          if (productAccessDeniedShown) return;
-          showProductAccessDeniedModal(requested);
+          revealAdminAppAfterProductCheck();
+          applyRescueModeUi();
         }
 
         function applyHubProductAccessGate(previousApp) {
@@ -4734,31 +4782,7 @@
           var eliteD = lastEliteMembershipData || {};
           var okMb = Sub.hasMascotBookDashboardAccess(doc, uid, email);
           var okEl = Sub.hasEliteCardDashboardAccess(doc, eliteD, uid, email);
-          console.log(
-            "[admin] Hub product gate — want:",
-            currentApp,
-            "| okMb:",
-            okMb,
-            "| okEl:",
-            okEl,
-            "| activeProducts:",
-            doc.activeProducts
-          );
-          var want = currentApp;
-          var ok = want === "mascotbook" ? okMb : okEl;
-          if (ok) return true;
-          if (want === "mascotbook" && okEl) {
-            window.location.replace("admin.html?viewMode=personal&panel=dashboard");
-            return false;
-          }
-          if (want === "personal" && !okEl && okMb) {
-            showProductAccessDeniedModal("personal", { crossSellFromMascot: true });
-            setCurrentApp(previousApp, { skipUrl: true, skipProductGate: true });
-            return false;
-          }
-          showProductAccessDeniedModal(want);
-          setCurrentApp(previousApp, { skipUrl: true, skipProductGate: true });
-          return false;
+          return true;
         }
 
         function setCurrentApp(nextApp, opts) {
@@ -4806,6 +4830,7 @@
           }
           refreshPreview();
           updateSubscriptionUi(lastAccountData);
+          applyRescueModeUi();
           if (!opts || !opts.skipUrl) syncAdminUrl();
           fitPhonePreview();
           if (uid && currentApp === "mascotbook" && !demoModeActive) {
@@ -4839,6 +4864,7 @@
           });
           if (activePanel === "control") loadAdminControlPanel();
           updateThemePanelVisibility();
+          applyRescueModeUi();
           if (!opts || !opts.skipUrl) syncAdminUrl();
           refreshPreview();
           fitPhonePreview();
@@ -6762,7 +6788,7 @@
         function ecUpdateMascotDashboardProfilesCard() {
           var c = document.getElementById("ec-mascot-dash-profiles-card");
           var side = document.getElementById("ec-sidebar-mis-perfiles");
-          var hide = !uid || demoModeActive;
+          var hide = !uid || demoModeActive || currentApp !== "mascotbook";
           if (c) c.classList.toggle("hidden", hide);
           if (side) side.classList.toggle("hidden", hide);
           if (!hide) {
@@ -7610,6 +7636,10 @@
               showToast("Iniciá sesión para compartir la tarjeta.", false);
               return;
             }
+            if (isRescueModeForApp("mascotbook")) {
+              showToast("Modo rescate activo: para compartir tu MascotBook debes activar la membresía.", false);
+              return;
+            }
             var shareUrl =
               window.location.origin +
               "/card.html?id=" +
@@ -7648,6 +7678,10 @@
           shareEliteBtn.addEventListener("click", function () {
             if (!uid) {
               showToast("Iniciá sesión para compartir la tarjeta.", false);
+              return;
+            }
+            if (isRescueModeForApp("personal")) {
+              showToast("Modo rescate activo: para compartir tu EliteCard debes activar la membresía.", false);
               return;
             }
             var shareUrl =

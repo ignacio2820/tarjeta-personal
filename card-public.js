@@ -434,6 +434,109 @@
   var __eliteShareUrl = "";
   var __eliteShareName = "";
   var __eliteShareProfile = { telefono: "", email: "", empresa: "WebElite SOLUTIONS" };
+  var __ecRescueMode = false;
+
+  function ecTimestampMs(v) {
+    if (v == null) return null;
+    if (typeof v === "number" && isFinite(v)) return v;
+    if (v && typeof v.toMillis === "function") {
+      try {
+        return v.toMillis();
+      } catch (e0) {}
+    }
+    if (v && typeof v.seconds === "number") return v.seconds * 1000;
+    return null;
+  }
+
+  function ecTrialExpiredFromDoc(doc) {
+    var start = ecTimestampMs(doc && (doc.trialStartDate || doc.fecha_registro || doc.createdAt));
+    if (start == null) return false;
+    return Date.now() - start > 7 * 24 * 60 * 60 * 1000;
+  }
+
+  function ecPublicRescueByDoc(doc, app) {
+    if (!doc || typeof doc !== "object") return false;
+    var globalSt = String(doc.status || "").trim().toLowerCase();
+    if (globalSt === "suspended" || globalSt === "expired") return true;
+    var dueMs = ecTimestampMs(doc.vencimientoMembresia || doc.premiumUntil);
+    if (dueMs != null && Date.now() > dueMs) return true;
+    var appKey = String(app || "elitecard") === "mascotbook" ? "mascotbook" : "elitecard";
+    var appStRaw =
+      appKey === "mascotbook"
+        ? doc.mascotbook_status || doc.plan_status || doc.status
+        : doc.elitecard_status || doc.plan_status || doc.status;
+    var appSt = String(appStRaw || "").trim().toLowerCase();
+    if (appSt === "active" || appSt === "premium" || appSt === "pro" || appSt === "paid") return false;
+    if (appSt === "trial" && !ecTrialExpiredFromDoc(doc)) return false;
+    if (appSt === "inactive" || appSt === "expired" || appSt === "suspended") return true;
+    return ecTrialExpiredFromDoc(doc);
+  }
+
+  function ecIsStandaloneDisplayMode() {
+    try {
+      if (window.navigator && window.navigator.standalone === true) return true;
+      if (!window.matchMedia) return false;
+      return (
+        window.matchMedia("(display-mode: standalone)").matches ||
+        window.matchMedia("(display-mode: fullscreen)").matches ||
+        window.matchMedia("(display-mode: minimal-ui)").matches
+      );
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function ecApplyPublicRescueUi() {
+    var shareBtn = document.getElementById("elite-footer-share");
+    if (shareBtn) {
+      shareBtn.disabled = !!__ecRescueMode;
+      shareBtn.style.opacity = __ecRescueMode ? "0.45" : "1";
+      shareBtn.title = __ecRescueMode
+        ? "Tu período gratuito finalizó. Activa la membresía para compartir."
+        : "";
+    }
+    var banner = document.getElementById("ec-rescue-public-banner");
+    if (!banner && __ecRescueMode) {
+      banner = document.createElement("div");
+      banner.id = "ec-rescue-public-banner";
+      banner.style.position = "fixed";
+      banner.style.left = "0";
+      banner.style.right = "0";
+      banner.style.bottom = "0";
+      banner.style.zIndex = "120";
+      banner.style.padding = "0.7rem 0.9rem";
+      banner.style.background = "rgba(17,24,39,0.96)";
+      banner.style.color = "#fff";
+      banner.style.fontSize = "0.86rem";
+      banner.style.fontWeight = "600";
+      banner.style.textAlign = "center";
+      banner.textContent =
+        "Tu período gratuito terminó. Modo rescate activo: visualización habilitada, edición y compartir bloqueados.";
+      document.body.appendChild(banner);
+    }
+    if (banner) banner.style.display = __ecRescueMode ? "block" : "none";
+    var pwa = document.getElementById("ec-rescue-pwa-blocker");
+    if (!pwa && __ecRescueMode && ecIsStandaloneDisplayMode()) {
+      pwa = document.createElement("div");
+      pwa.id = "ec-rescue-pwa-blocker";
+      pwa.style.position = "fixed";
+      pwa.style.inset = "0";
+      pwa.style.zIndex = "130";
+      pwa.style.background = "rgba(10,10,10,0.9)";
+      pwa.style.color = "#fff";
+      pwa.style.display = "flex";
+      pwa.style.alignItems = "center";
+      pwa.style.justifyContent = "center";
+      pwa.style.padding = "1.25rem";
+      pwa.innerHTML =
+        '<div style="max-width:28rem;text-align:center;background:#111827;border:1px solid rgba(255,255,255,0.14);border-radius:1rem;padding:1.1rem 1rem;">' +
+        '<h3 style="margin:0 0 .45rem 0;font-size:1.05rem;">Período gratuito finalizado</h3>' +
+        '<p style="margin:0;line-height:1.45;font-size:.92rem;">Esta app quedó en modo rescate. Para volver a compartir y usar funciones completas, activa tu membresía desde el panel WebElite.</p>' +
+        "</div>";
+      document.body.appendChild(pwa);
+    }
+    if (pwa) pwa.style.display = __ecRescueMode && ecIsStandaloneDisplayMode() ? "flex" : "none";
+  }
 
   function eliteShareContext() {
     var url = String(window.location.href || "").trim();
@@ -598,6 +701,10 @@
   }
 
   function openEliteQrOverlay() {
+    if (__ecRescueMode) {
+      eliteShareToast("Modo rescate activo: activa tu membresía para compartir.");
+      return;
+    }
     var shareData = eliteShareContext();
     __eliteShareUrl = shareData.url || getElitePublicUrl();
     var ov = document.getElementById("elite-qr-overlay");
@@ -697,6 +804,8 @@
     if (empty) empty.classList.add("hidden");
     if (!root) return;
     root.classList.remove("hidden");
+    __ecRescueMode = ecPublicRescueByDoc(p || {}, "elitecard");
+    ecApplyPublicRescueUi();
     root.classList.toggle("ec-admin-preview", qs("ec_admin_preview") === "1");
     applyElitePreviewOverrides(p);
     var has =
@@ -994,6 +1103,8 @@
       nm = Object.assign({}, window.DEFAULT_MASCOT_CARD || {}, base || {});
     }
     m = nm;
+    __ecRescueMode = ecPublicRescueByDoc(m || {}, "mascotbook");
+    ecApplyPublicRescueUi();
 
     try {
       var shareBtn = document.getElementById("elite-footer-share");
