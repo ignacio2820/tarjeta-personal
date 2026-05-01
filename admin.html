@@ -13,7 +13,7 @@
       })();
     </script>
     <meta charset="UTF-8" />
-    <meta name="ec-asset-version" content="2026021112" />
+    <meta name="ec-asset-version" content="2026021113" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EliteCard · Agencia WebElite</title>
     <meta name="theme-color" content="#ffffff" />
@@ -21,7 +21,7 @@
     <link rel="shortcut icon" href="assets/logo10.png?v=4" />
     <link rel="apple-touch-icon" href="assets/logo10.png?v=4" />
     <script>
-      window.__EC_ADMIN_ASSET_VER = "2026021112";
+      window.__EC_ADMIN_ASSET_VER = "2026021113";
       window.__EC_ADMIN_ASSET_TS = Date.now();
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -1884,6 +1884,10 @@
               var idxCount = (ecMascotTarjetasList || []).length;
               var n = Math.max(typeof fsCount === "number" ? fsCount : 0, idxCount);
               if (n >= 1 && !ecMbCanAddAdditionalMascota(n)) {
+                if (ecMbShouldSkipMascotPaywall()) {
+                  openAdminMascotNewModal();
+                  return;
+                }
                 openAdminMascotProtectCheckoutModal("tu nuevo compañero");
                 return;
               }
@@ -3768,6 +3772,20 @@
             });
         }
 
+        /** Agencia / perpetuo / admin: no mostrar checkout $24.999 ni modal protect (alta directa). */
+        function ecMbShouldSkipMascotPaywall() {
+          var Sub = window.EliteCardAdminSubscription;
+          var user = firebase.auth && firebase.auth().currentUser;
+          if (!Sub || !uid || !user) return false;
+          var email = user.email || "";
+          if (typeof Sub.shouldSkipMascotbookPaymentModal === "function") {
+            if (Sub.shouldSkipMascotbookPaymentModal(uid, email, lastMembershipData, lastLegacyAccountData)) {
+              return true;
+            }
+          }
+          return !!Sub.isPerpetualAccess(uid, email, lastAccountData || {});
+        }
+
         /** Trial MascotBook vencido (7 días + ventana premiumUntil) sin pasar a plan activo. */
         function ecMbMergedMascotbookTrialExpired() {
           var Sub = window.EliteCardAdminSubscription;
@@ -4053,6 +4071,10 @@
          * @param {string} displayName - Nombre para el copy (ej. desde el formulario de nueva mascota).
          */
         function openAdminMascotProtectCheckoutModal(displayName) {
+          if (ecMbShouldSkipMascotPaywall()) {
+            openAdminMascotNewModal();
+            return;
+          }
           wireAdminMascotProtectModalOnce();
           var m = document.getElementById("admin-mascot-protect-modal");
           var lead = document.getElementById("admin-mascot-protect-lead");
@@ -7103,7 +7125,8 @@
               var perpetual0 =
                 sub0 &&
                 sub0.isPerpetualAccess(uid, user ? ecNormalizeOwnerEmail(user.email) : "", lastAccountData || {});
-              if (!perpetual0 && !isPrem && nEff >= 1 && !ecMbCanAddAdditionalMascota(nEff)) {
+              var skipPay0 = ecMbShouldSkipMascotPaywall();
+              if (!perpetual0 && !skipPay0 && !isPrem && nEff >= 1 && !ecMbCanAddAdditionalMascota(nEff)) {
                 openAdminMascotProtectCheckoutModal(String(initialName || "").trim() || "tu compañero");
                 return;
               }
@@ -7174,6 +7197,7 @@
                   String((mergedErr && mergedErr.role) || "").toLowerCase() === "admin";
                 if (
                   !adminLocal &&
+                  !ecMbShouldSkipMascotPaywall() &&
                   (code.indexOf("failed-precondition") >= 0 ||
                     /Se requiere|Sin créditos|pago pendiente/i.test(msg))
                 ) {

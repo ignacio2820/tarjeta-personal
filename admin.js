@@ -53,6 +53,15 @@
     return false;
   }
 
+  /**
+   * Misma fusión que el panel (membresía + legacy): detecta admin en `usuarios` aunque `users` no tenga `role`.
+   * Sustituye la lógica de «abrir modal de pago MascotBook»: si devuelve true, ir directo al alta de mascota.
+   */
+  function shouldSkipMascotbookPaymentModal(uid, email, membershipDoc, legacyUserDoc) {
+    var merged = Object.assign({}, membershipDoc || {}, legacyUserDoc || {});
+    return isPerpetualAccess(uid, email, merged);
+  }
+
   function resolveStatusField(docData, app) {
     var g = docData && docData.status != null ? String(docData.status).trim().toLowerCase() : "";
     if (g === "suspended" || g === "expired") return g;
@@ -285,6 +294,7 @@
     isAgencyOwnerEmail: isAgencyOwnerEmail,
     isPerpetualUid: isPerpetualUid,
     isPerpetualAccess: isPerpetualAccess,
+    shouldSkipMascotbookPaymentModal: shouldSkipMascotbookPaymentModal,
     getPlanStatusFromDoc: getPlanStatusFromDoc,
     getFechaRegistroMs: getFechaRegistroMs,
     isTrialPeriodExpired: isTrialPeriodExpired,
