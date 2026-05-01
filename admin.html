@@ -13,7 +13,7 @@
       })();
     </script>
     <meta charset="UTF-8" />
-    <meta name="ec-asset-version" content="1776363335793" />
+    <meta name="ec-asset-version" content="2026021112" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EliteCard · Agencia WebElite</title>
     <meta name="theme-color" content="#ffffff" />
@@ -21,6 +21,7 @@
     <link rel="shortcut icon" href="assets/logo10.png?v=4" />
     <link rel="apple-touch-icon" href="assets/logo10.png?v=4" />
     <script>
+      window.__EC_ADMIN_ASSET_VER = "2026021112";
       window.__EC_ADMIN_ASSET_TS = Date.now();
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -40,8 +41,8 @@
     <link rel="stylesheet" href="styles.css?v=6.0" id="ec-link-styles-mascot" />
     <script>
       (function () {
-        var v = window.__EC_ADMIN_ASSET_TS || Date.now();
-        var vCss = "4.6";
+        var v = window.__EC_ADMIN_ASSET_VER || String(window.__EC_ADMIN_ASSET_TS || Date.now());
+        var vCss = window.__EC_ADMIN_ASSET_VER || "4.7";
         var a = document.getElementById("ec-link-mascot-themes");
         var c = document.getElementById("ec-link-mascot-book-pro");
         var b = document.getElementById("ec-link-admin-elite");
@@ -1487,7 +1488,7 @@
 
     <script>
       (function () {
-        var t = Date.now();
+        var t = window.__EC_ADMIN_ASSET_VER || String(Date.now());
         document.write('<script src="firebase-config.js?v=' + t + '"><\/script>');
         document.write('<script src="config.js?v=' + t + '"><\/script>');
         document.write('<script src="ec-silos.js?v=' + t + '"><\/script>');
@@ -3107,6 +3108,22 @@
           return String(window.location.origin || "").replace(/\/$/, "") + (window.location.pathname || "/admin.html").replace(/\/$/, "");
         }
 
+        function ecNormalizeMpPreferenceResult(res) {
+          var data = (res && res.data) || {};
+          if (data && typeof data === "object" && data.data && typeof data.data === "object" && !Array.isArray(data.data)) {
+            data = Object.assign({}, data, data.data);
+          }
+          return data;
+        }
+
+        function ecMpResultIsAdminBypass(data) {
+          if (!data || typeof data !== "object") return false;
+          if (data.membership_admin_bypass === true || data.skip_checkout === true) return true;
+          if (String(data.membership_admin_bypass || "").toLowerCase() === "true") return true;
+          if (String(data.skip_checkout || "").toLowerCase() === "true") return true;
+          return false;
+        }
+
         function generarPreferenciaPago(idPerfil, tipoPlan, mpOpts) {
           mpOpts = mpOpts || {};
           if (!ecEnsureFirebaseFunctions() || !window.__ecFirebaseFunctions) {
@@ -3124,18 +3141,26 @@
           if (mpOpts.nuevaMascota) payload.nuevaMascota = true;
           if (mpOpts.mascotId) payload.mascotId = String(mpOpts.mascotId);
           return fn(payload).then(function (res) {
-            var data = res && res.data ? res.data : {};
-            if (data.membership_admin_bypass || data.skip_checkout) {
-              showToast("Acceso administrador: no se requiere pago para este perfil.", true);
+            var data = ecNormalizeMpPreferenceResult(res);
+            if (ecMpResultIsAdminBypass(data)) {
               try {
                 sessionStorage.removeItem("ec_mb_pending_mp_create");
                 sessionStorage.removeItem("ec_mb_pending_pet_label");
               } catch (eSt) {}
               try {
+                ecClearMascotProtectRescueSchedule();
+                ecHideMascotProtectRescueUi();
+              } catch (eR) {}
+              try {
                 var prot = document.getElementById("admin-mascot-protect-modal");
                 if (prot) prot.classList.add("hidden");
                 closeAdminMascotSecondPetPaywallModal();
               } catch (eC) {}
+              try {
+                if (String(payload.producto || "").toLowerCase() === "mascota_adicional") {
+                  openAdminMascotNewModal();
+                }
+              } catch (eOm) {}
               return data;
             }
             var url = data.init_point || (data.data && data.data.init_point);
@@ -3591,8 +3616,9 @@
           wireAdminMascotProtectModalOnce();
         }
 
+        /** Misma fusión que `lastAccountData`: primero `users` (membresía), encima `usuarios` (legacy gana en colisiones, p. ej. `role`). */
         function ecMbMergedAccountDoc() {
-          return Object.assign({}, lastLegacyAccountData || {}, lastMembershipData || {});
+          return Object.assign({}, lastMembershipData || {}, lastLegacyAccountData || {});
         }
 
         /** Trial vencido / sin Pro: mismo criterio que `checkMascotaAccess` (admin.js). */
@@ -3766,6 +3792,9 @@
           var Sub = window.EliteCardAdminSubscription;
           var user = firebase.auth && firebase.auth().currentUser;
           if (!uid || !user) return false;
+          if (String((lastAccountData && lastAccountData.role) || "").toLowerCase() === "admin") return true;
+          var mergedEarly = ecMbMergedAccountDoc();
+          if (String((mergedEarly && mergedEarly.role) || "").toLowerCase() === "admin") return true;
           if (!Sub) return true;
           if (Sub.isPerpetualAccess(uid, user.email || "", lastAccountData || {})) return true;
           if (n < 1) return true;
@@ -7056,7 +7085,7 @@
           var isPrem = false;
           if (window.EliteCardAdminSubscription) {
             isPrem = window.EliteCardAdminSubscription.isPremiumOrActiveTrial(
-              lastMembershipData,
+              lastAccountData,
               "mascotbook",
               uid,
               user ? ecNormalizeOwnerEmail(user.email) : ""
@@ -7070,7 +7099,11 @@
               (ecMascotTarjetasList || []).length
             );
             if (ecMascotTarjetasList && ecMascotTarjetasList.length > 0) {
-              if (!isPrem && nEff >= 1 && !ecMbCanAddAdditionalMascota(nEff)) {
+              var sub0 = window.EliteCardAdminSubscription;
+              var perpetual0 =
+                sub0 &&
+                sub0.isPerpetualAccess(uid, user ? ecNormalizeOwnerEmail(user.email) : "", lastAccountData || {});
+              if (!perpetual0 && !isPrem && nEff >= 1 && !ecMbCanAddAdditionalMascota(nEff)) {
                 openAdminMascotProtectCheckoutModal(String(initialName || "").trim() || "tu compañero");
                 return;
               }
@@ -7135,9 +7168,14 @@
                 var raw = (e && (e.message || (e.details && e.details.message))) || String(e || "");
                 var msg = String(raw || "No se pudo crear el perfil");
                 var code = String((e && e.code) || "");
+                var mergedErr = ecMbMergedAccountDoc();
+                var adminLocal =
+                  String((lastAccountData && lastAccountData.role) || "").toLowerCase() === "admin" ||
+                  String((mergedErr && mergedErr.role) || "").toLowerCase() === "admin";
                 if (
-                  code.indexOf("failed-precondition") >= 0 ||
-                  /Se requiere|Sin créditos|pago pendiente/i.test(msg)
+                  !adminLocal &&
+                  (code.indexOf("failed-precondition") >= 0 ||
+                    /Se requiere|Sin créditos|pago pendiente/i.test(msg))
                 ) {
                   openAdminMascotProtectCheckoutModal(String(initialName || "").trim() || "tu compañero");
                 }

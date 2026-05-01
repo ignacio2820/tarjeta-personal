@@ -1,5 +1,8 @@
 /**
  * EliteCard / MascotBook — suscripción, trial y acceso perpetuo.
+ * Nota panel: `lastAccountData` y `ecMbMergedAccountDoc()` en admin.html deben fusionar
+ * primero la colección de membresía (`users`) y encima la legacy (`usuarios`) para que
+ * `role: "admin"` u otros campos en `usuarios` no queden ocultos.
  */
 (function (global) {
   "use strict";
