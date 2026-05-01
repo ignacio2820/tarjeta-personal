@@ -3125,6 +3125,19 @@
           if (mpOpts.mascotId) payload.mascotId = String(mpOpts.mascotId);
           return fn(payload).then(function (res) {
             var data = res && res.data ? res.data : {};
+            if (data.membership_admin_bypass || data.skip_checkout) {
+              showToast("Acceso administrador: no se requiere pago para este perfil.", true);
+              try {
+                sessionStorage.removeItem("ec_mb_pending_mp_create");
+                sessionStorage.removeItem("ec_mb_pending_pet_label");
+              } catch (eSt) {}
+              try {
+                var prot = document.getElementById("admin-mascot-protect-modal");
+                if (prot) prot.classList.add("hidden");
+                closeAdminMascotSecondPetPaywallModal();
+              } catch (eC) {}
+              return data;
+            }
             var url = data.init_point || (data.data && data.data.init_point);
             if (!url) throw new Error("Sin init_point");
             window.location.href = url;

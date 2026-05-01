@@ -23,6 +23,35 @@ function membershipCollectionName() {
   return String(process.env.FIRESTORE_MEMBERSHIP_COLLECTION || "users").trim() || "users";
 }
 
+/** Colección legacy de perfil (mismo default que `ec-silos.js` / admin.html). */
+function legacyUsersCollectionName() {
+  return String(process.env.FIRESTORE_USERS_COLLECTION || "usuarios").trim() || "usuarios";
+}
+
+/**
+ * Igual que el panel admin: base `users` (membresía) y encima `usuarios` (legacy gana en colisiones, p. ej. `role`).
+ */
+async function fetchMergedMembershipForUid(db, uid) {
+  const u = String(uid || "").trim();
+  const memCol = membershipCollectionName();
+  const legCol = legacyUsersCollectionName();
+  if (!u) {
+    return { merged: {}, mem: {}, leg: {}, memCol, legCol };
+  }
+  const [memSnap, legSnap] = await Promise.all([
+    db.collection(memCol).doc(u).get(),
+    db.collection(legCol).doc(u).get(),
+  ]);
+  const mem = memSnap.exists ? memSnap.data() || {} : {};
+  const leg = legSnap.exists ? legSnap.data() || {} : {};
+  const merged = Object.assign({}, mem, leg);
+  return { merged, mem, leg, memCol, legCol };
+}
+
+function isMembershipAdminFromMerged(merged) {
+  return String((merged && merged.role) || "").trim().toLowerCase() === "admin";
+}
+
 function timestampMsFromFirestoreVal(v) {
   if (v == null) return null;
   if (typeof v === "number" && isFinite(v)) return v;
@@ -118,11 +147,8 @@ function unitPriceMascotaAdicional() {
   return Number(process.env.MP_PRICE_MASCOTA_ADICIONAL || process.env.MP_UNIT_PRICE_MASCOTBOOK || 24999);
 }
 
-/** Descuento sobre unit_price de Mascota Adicional si ya hay ≥1 mascota activa (no memorial) (0.5 = 50%). */
-const MP_MASCOTA_ADICIONAL_MULTIMASCOTA_FACTOR = Math.min(
-  1,
-  Math.max(0.01, Number(process.env.MP_MASCOTA_ADICIONAL_MULTIMASCOTA_FACTOR || 0.5) || 0.5)
-);
+/** 2.ª y siguientes mascotas activas: precio de lista al 50% (sin variable de entorno). */
+const MP_MASCOTA_ADICIONAL_MULTIMASCOTA_FACTOR = 0.5;
 
 /**
  * Cuenta mascotas que ocupan cupo (excluye memorial por completo).
@@ -959,6 +985,27 @@ exports.createMercadoPagoPreference = onCall({ secrets: [mpAccessToken], cors: t
     ];
     metaProducto = "elite_suscripcion";
   } else if (productoRaw === "mascota_adicional") {
+    const adb = getAdmin().firestore();
+    const { merged, mem, leg, memCol, legCol } = await fetchMergedMembershipForUid(adb, uid);
+    const membershipAdmin = isMembershipAdminFromMerged(merged);
+    console.log("[createMercadoPagoPreference] mascota_adicional role detection", {
+      uid,
+      membershipCollection: memCol,
+      legacyUsersCollection: legCol,
+      roleOnMembershipDoc: mem.role,
+      roleOnLegacyUserDoc: leg.role,
+      mergedRole: merged.role,
+      membershipAdmin,
+    });
+    if (membershipAdmin) {
+      return {
+        skip_checkout: true,
+        membership_admin_bypass: true,
+        init_point: null,
+        preference_id: null,
+        external_reference: "",
+      };
+    }
     const cantidad = Math.max(1, Math.min(999, Math.floor(Number(data.cantidad) || 1)));
     const mascotId = String(data.mascotId || "").trim();
     const nuevaMascota = !!data.nuevaMascota || !mascotId;
@@ -1116,21 +1163,32 @@ exports.allocateNewMascotProfile = onCall({ cors: true }, async (request) => {
       .slice(0, 200) || "Mi mascota";
     const admin = getAdmin();
     const db = admin.firestore();
+
+    const { merged, mem, leg, memCol, legCol } = await fetchMergedMembershipForUid(db, uid);
+    const isMembershipAdmin = isMembershipAdminFromMerged(merged);
+    console.log("[allocateNewMascotProfile] membership role detection", {
+      uid,
+      membershipCollection: memCol,
+      legacyUsersCollection: legCol,
+      roleOnMembershipDoc: mem.role,
+      roleOnLegacyUserDoc: leg.role,
+      mergedRole: merged.role,
+      isMembershipAdmin,
+    });
+
     const countSnap = await db.collection("mascotas").where("ownerUid", "==", uid).get();
     const nActive = countMascotasActiveSlots(countSnap);
     if (nActive >= 5) {
       throw new HttpsError("resource-exhausted", "Alcanzaste el límite de 5 perfiles MascotBook.");
     }
+
     const col = membershipCollectionName();
     const memRef = db.collection(col).doc(uid);
-    const memSnap = await memRef.get();
-    const m = memSnap.exists ? memSnap.data() || {} : {};
-    const isMembershipAdmin = String(m.role || "").trim().toLowerCase() === "admin";
     const hasSubscription =
-      m.isPremium === true ||
-      m.mascotbook_multi_unlocked === true ||
-      String(m.mascotbook_status || "").toLowerCase() === "active";
-    const credits = Number(m.mascotbookExtraProfileCredits || 0);
+      merged.isPremium === true ||
+      merged.mascotbook_multi_unlocked === true ||
+      String(merged.mascotbook_status || "").toLowerCase() === "active";
+    const credits = Number(merged.mascotbookExtraProfileCredits || 0);
     let useCredit = false;
     if (isMembershipAdmin) {
       useCredit = false;
