@@ -13,8 +13,15 @@ service cloud.firestore {
 
     function isMembershipAdmin() {
       return request.auth != null
-        && exists(usersMembershipPath(request.auth.uid))
-        && get(usersMembershipPath(request.auth.uid)).data.role == 'admin';
+        && (
+          (exists(usersMembershipPath(request.auth.uid))
+            && get(usersMembershipPath(request.auth.uid)).data.role == 'admin')
+          || (
+            exists(/databases/$(database)/documents/usuarios/$(request.auth.uid))
+            && get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.keys().hasAny(['role'])
+            && get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.role == 'admin'
+          )
+        );
     }
 
     /** Campos permitidos en /users/{uid} (membresía + productos activos). */
@@ -256,7 +263,65 @@ service cloud.firestore {
 
     function mbUserMascotbookProContentLocked(uid) {
       let m = mbMembershipData(uid);
-      return m != null && mbUserLockedFromMem(uid, m);
+      return !mbUidEffectiveAdmin(uid) && (m == null || mbUserLockedFromMem(uid, m));
+    }
+
+    function eliteMembershipData(uid) {
+      let p = /databases/$(database)/documents/users_elite/$(uid);
+      return exists(p) ? get(p).data : null;
+    }
+
+    function eliteMemPlanPaidGrace(m) {
+      return m != null && (
+        (m.keys().hasAny(['status']) && (m.status == 'active' || m.status == 'premium' || m.status == 'activo'))
+        || (m.keys().hasAny(['elitecard_status'])
+          && (m.elitecard_status == 'active' || m.elitecard_status == 'premium' || m.elitecard_status == 'activo'))
+        || (m.keys().hasAny(['plan_status'])
+          && (m.plan_status == 'active' || m.plan_status == 'pro' || m.plan_status == 'paid' || m.plan_status == 'premium' || m.plan_status == 'activo'))
+        || (m.keys().hasAny(['premiumUntil']) && m.premiumUntil is timestamp && m.premiumUntil > request.time)
+      );
+    }
+
+    function eliteMemTrialStartTs(m) {
+      return m != null && (m.keys().hasAny(['trialStartDate']) && m.trialStartDate is timestamp)
+        ? m.trialStartDate
+        : (m != null && m.keys().hasAny(['createdAt']) && m.createdAt is timestamp ? m.createdAt : null);
+    }
+
+    function eliteMemTrialExpiredAfterGrace(m) {
+      return eliteMemTrialStartTs(m) != null
+        && request.time > eliteMemTrialStartTs(m) + duration.value(7, 'd');
+    }
+
+    function eliteMainProductEnabled(m) {
+      return m != null && (
+        (m.keys().hasAny(['hasEliteCard']) && m.hasEliteCard == true)
+        || (
+          m.keys().hasAny(['activeProducts'])
+          && m.activeProducts is list
+          && m.activeProducts.hasAny(['elitecard'])
+        )
+        || eliteMemPlanPaidGrace(m)
+      );
+    }
+
+    function eliteSidecarEnabled(e) {
+      return e != null && (
+        eliteMemPlanPaidGrace(e)
+        || (!eliteMemTrialExpiredAfterGrace(e) && !mbMemGlobalSuspendedExpired(e))
+      );
+    }
+
+    function eliteUserContentLocked(uid) {
+      let m = mbMembershipData(uid);
+      let e = eliteMembershipData(uid);
+      return !mbUidEffectiveAdmin(uid)
+        && (
+          m == null
+          || mbMemGlobalSuspendedExpired(m)
+          || mbMemVencimientoPast(m)
+          || (!eliteMainProductEnabled(m) && !eliteSidecarEnabled(e))
+        );
     }
 
     function mbLostActiveData(d) {
@@ -299,12 +364,11 @@ service cloud.firestore {
     }
 
     /**
-     * /users — membresía: solo dueño o admin lee cada doc; queries a la colección solo devuelven filas permitidas (admin ve todas).
+     * /users — membresía: solo el dueño lee/actualiza su doc (gestión global vía consola Firebase / Admin SDK).
      * Alta: el usuario crea su doc con role user y status trial.
-     * /usuarios — tarjetas y metadatos legacy; lectura pública del doc raíz para flujos existentes.
      */
     match /users/{userId} {
-      allow read: if request.auth != null && (isOwner(userId) || isMembershipAdmin());
+      allow read: if request.auth != null && isOwner(userId);
       allow create: if request.auth != null
         && isOwner(userId)
         && request.resource.data.keys().hasAll(['email', 'role', 'status', 'createdAt', 'premiumUntil'])
@@ -313,8 +377,6 @@ service cloud.firestore {
         && request.resource.data.status == 'trial'
         && membershipTrialProductFieldsOk()
         && membershipTrialStartOk();
-      allow update: if isMembershipAdmin()
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(membershipProfileKeys());
       /** El dueño puede pasar a expired cuando ya venció premiumUntil (sincroniza estado en cliente). */
       allow update: if request.auth != null
         && isOwner(userId)
@@ -330,7 +392,7 @@ service cloud.firestore {
         && request.resource.data.status == resource.data.status
         && request.resource.data.premiumUntil == resource.data.premiumUntil
         && request.resource.data.createdAt == resource.data.createdAt;
-      allow delete: if isMembershipAdmin();
+      allow delete: if false;
     }
 
     /**
@@ -338,15 +400,13 @@ service cloud.firestore {
      * Alta: el usuario autenticado crea su doc (mismo patrón que /users).
      */
     match /users_elite/{userId} {
-      allow read: if request.auth != null && (isOwner(userId) || isMembershipAdmin());
+      allow read: if request.auth != null && isOwner(userId);
       allow create: if request.auth != null
         && isOwner(userId)
         && request.resource.data.keys().hasAll(['email', 'role', 'status', 'createdAt', 'premiumUntil'])
         && request.resource.data.keys().hasOnly(usersEliteProfileKeys())
         && request.resource.data.role == 'user'
         && request.resource.data.status == 'trial';
-      allow update: if isMembershipAdmin()
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(usersEliteProfileKeys());
       allow update: if request.auth != null
         && isOwner(userId)
         && request.resource.data.status == 'expired'
@@ -361,7 +421,7 @@ service cloud.firestore {
         && request.resource.data.status == resource.data.status
         && request.resource.data.premiumUntil == resource.data.premiumUntil
         && request.resource.data.createdAt == resource.data.createdAt;
-      allow delete: if isMembershipAdmin();
+      allow delete: if false;
     }
 
     match /usuarios/{userId} {
@@ -377,34 +437,37 @@ service cloud.firestore {
       allow read: if request.auth != null && resource.data.ownerUid == request.auth.uid;
       allow create: if request.auth != null
         && request.resource.data.ownerUid == request.auth.uid
+        && !mbUserMascotbookProContentLocked(request.auth.uid)
         && request.resource.data.ownerEmail is string
         && request.resource.data.mascotaNombre is string
         && request.resource.data.publicCardId is string
         && request.resource.data.tipo is string;
       allow update: if request.auth != null
         && resource.data.ownerUid == request.auth.uid
+        && !mbUserMascotbookProContentLocked(resource.data.ownerUid)
         && request.resource.data.ownerUid == resource.data.ownerUid;
       allow delete: if request.auth != null
-        && resource.data.ownerUid == request.auth.uid;
+        && resource.data.ownerUid == request.auth.uid
+        && !mbUserMascotbookProContentLocked(resource.data.ownerUid);
     }
 
     match /usuarios/{userId}/personal_card/{docId} {
       allow read: if true;
-      allow create: if isOwner(userId) && personalCardKeysOk();
-      allow update: if isOwner(userId) && ownerUpdatePersonalOk();
-      allow delete: if isOwner(userId);
+      allow create: if isOwner(userId) && personalCardKeysOk() && !eliteUserContentLocked(userId);
+      allow update: if isOwner(userId) && ownerUpdatePersonalOk() && !eliteUserContentLocked(userId);
+      allow delete: if isOwner(userId) && !eliteUserContentLocked(userId);
     }
 
     match /usuarios/{userId}/mascot_card/{docId} {
       allow read: if true;
-      allow create: if isOwner(userId) && mascotCardKeysOk();
+      allow create: if isOwner(userId) && mascotCardKeysOk() && !mbUserMascotbookProContentLocked(userId);
       allow update: if (!isOwner(userId) && docId == 'profile' && publicMascotCounterUpdateOk())
         || (
           isOwner(userId)
           && ownerUpdateMascotOk()
-          && !mbMascotbookWriteForbidden(userId)
+          && !mbUserMascotbookProContentLocked(userId)
         );
-      allow delete: if isOwner(userId);
+      allow delete: if isOwner(userId) && !mbUserMascotbookProContentLocked(userId);
     }
 
     match /usuarios/{userId}/mascot_lost_scans/{scanId} {
@@ -420,12 +483,12 @@ service cloud.firestore {
     match /mascotas/{mascotaId} {
       allow read: if true;
       allow create: if mascotaDocAuthWriteOk(mascotaId)
-        && (!mbUserMascotbookProContentLocked(request.auth.uid) || !mbMascotCreateTouchesLockedFields());
+        && !mbUserMascotbookProContentLocked(request.auth.uid);
       allow delete: if mascotaDocAuthMutateOk(mascotaId);
       allow update: if publicMascotCounterUpdateOk()
         || (
           mascotaDocAuthMutateOk(mascotaId)
-          && !mbMascotbookWriteForbidden(mbMascotaOwnerUidForWrite())
+          && !mbUserMascotbookProContentLocked(mbMascotaOwnerUidForWrite())
         );
     }
 

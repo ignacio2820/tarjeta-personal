@@ -13,7 +13,7 @@
       })();
     </script>
     <meta charset="UTF-8" />
-    <meta name="ec-asset-version" content="2026021114" />
+    <meta name="ec-asset-version" content="2026021120" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EliteCard · Agencia WebElite</title>
     <meta name="theme-color" content="#ffffff" />
@@ -21,13 +21,13 @@
     <link rel="shortcut icon" href="assets/logo10.png?v=4" />
     <link rel="apple-touch-icon" href="assets/logo10.png?v=4" />
     <script>
-      window.__EC_ADMIN_ASSET_VER = "2026021114";
+      window.__EC_ADMIN_ASSET_VER = "2026021120";
       window.__EC_ADMIN_ASSET_TS = Date.now();
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link
@@ -393,32 +393,9 @@
           <div class="sidebar-nav" role="tablist" aria-label="Secciones">
             <button type="button" class="nav-tab active" data-panel="dashboard" role="tab">Dashboard</button>
             <button type="button" class="nav-tab" data-panel="contenido" role="tab">Contenido</button>
-            <button type="button" class="nav-tab hidden" data-panel="control" id="nav-tab-control" role="tab">
-              Administración
-            </button>
             <button type="button" class="nav-tab hidden" id="nav-tab-config" role="tab">
               Configuración
             </button>
-          </div>
-          <div id="ec-sidebar-mis-perfiles" class="ec-sidebar-mis-perfiles hidden" aria-labelledby="ec-sidebar-mis-perfiles-title">
-            <div class="ec-sidebar-mis-perfiles__head">
-              <span class="ec-sidebar-mis-perfiles__head-icon" aria-hidden="true"><i class="fa-solid fa-paw"></i></span>
-              <h3 id="ec-sidebar-mis-perfiles-title" class="ec-sidebar-mis-perfiles__title">Mis Perfiles</h3>
-            </div>
-            <div id="ec-sidebar-mis-perfiles-list" class="ec-sidebar-mis-perfiles__list" role="list"></div>
-            <p id="ec-sidebar-active-mascot-name" class="ec-sidebar-mis-perfiles__active-caption hidden" aria-live="polite"></p>
-            <div class="ec-sidebar-mis-perfiles__actions" role="group" aria-label="Acciones de perfiles MascotBook">
-              <button type="button" class="ec-sidebar-mis-perfiles__new" id="ec-sidebar-btn-nueva-mascota">
-                + Agregar Mascota
-              </button>
-              <button type="button" class="ec-sidebar-memorial-sky-btn" id="ec-sidebar-btn-memorial-sky">
-                <span class="ec-sidebar-memorial-sky-btn__inner">
-                  <i class="fa-solid fa-cloud" aria-hidden="true"></i>
-                  <span class="ec-sidebar-memorial-sky-btn__title">Cielo de Mascotas</span>
-                </span>
-                <span class="ec-sidebar-memorial-sky-btn__sub">Ver perfiles en modo memorial</span>
-              </button>
-            </div>
           </div>
           <div id="theme-panel" class="theme-panel hidden">
             <div class="mascot-side-brand">
@@ -561,49 +538,29 @@
             </div>
           </div>
 
-          <div id="panel-control" class="hidden">
-            <div class="admin-card admin-card--control">
-              <h2 class="form-personal-title">Administración</h2>
-              <p class="admin-card-hint">
-                Usuarios registrados (colección <strong>users</strong> en Firestore): roles, membresía y acciones de administración.
-              </p>
-              <div id="ec-manual-pay-activation" class="ec-manual-pay-activation hidden" aria-live="polite">
-                <p class="admin-card-hint" style="margin-top: 0">
-                  <strong>Activación manual (post-pago)</strong> — hasta integrar webhooks. Documento típico: UID del usuario en la colección de
-                  membresía.
-                </p>
-                <div class="ec-manual-pay-activation__row">
-                  <input
-                    type="text"
-                    id="ec-manual-pay-docid-input"
-                    class="ec-manual-pay-activation__input"
-                    placeholder="docId (uid)"
-                    autocomplete="off"
-                  />
-                  <button type="button" class="btn-solid" id="ec-manual-pay-docid-run">habilitarPerfilTrasPago</button>
-                </div>
-              </div>
-              <div class="mascot-table-wrap admin-control-table-wrap">
-                <table class="mascot-data-table admin-control-table" aria-label="Usuarios registrados">
-                  <thead>
-                    <tr>
-                      <th>Email</th>
-                      <th>Nombre</th>
-                      <th>Rol</th>
-                      <th>Estado</th>
-                      <th>Premium hasta</th>
-                      <th>UID</th>
-                      <th class="admin-control-th-actions">Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody id="admin-control-tbody"></tbody>
-                </table>
-              </div>
-              <button type="button" class="btn-outline" id="btn-admin-control-refresh">Actualizar lista</button>
+          <div id="panel-contenido" class="hidden">
+          <div id="ec-sidebar-mis-perfiles" class="ec-sidebar-mis-perfiles ec-mb-profiles-strip hidden" aria-labelledby="ec-sidebar-mis-perfiles-title">
+            <div class="ec-sidebar-mis-perfiles__head">
+              <span class="ec-sidebar-mis-perfiles__head-icon" aria-hidden="true"><i class="fa-solid fa-paw"></i></span>
+              <h3 id="ec-sidebar-mis-perfiles-title" class="ec-sidebar-mis-perfiles__title">Mis Perfiles</h3>
+            </div>
+            <p id="ec-sidebar-active-mascot-name" class="ec-sidebar-mis-perfiles__active-caption hidden" aria-live="polite"></p>
+            <div id="ec-mb-stories-scroll" class="ec-mb-stories-scroll">
+              <div id="ec-sidebar-mis-perfiles-list" class="ec-sidebar-mis-perfiles__list" role="list"></div>
+            </div>
+            <div class="ec-sidebar-mis-perfiles__actions" role="group" aria-label="Acciones de perfiles MascotBook">
+              <button type="button" class="ec-sidebar-mis-perfiles__new" id="ec-sidebar-btn-nueva-mascota" aria-label="Agregar mascota">
+                + Agregar Mascota
+              </button>
+              <button type="button" class="ec-sidebar-memorial-sky-btn" id="ec-sidebar-btn-memorial-sky">
+                <span class="ec-sidebar-memorial-sky-btn__inner">
+                  <i class="fa-solid fa-cloud" aria-hidden="true"></i>
+                  <span class="ec-sidebar-memorial-sky-btn__title">Cielo de Mascotas</span>
+                </span>
+                <span class="ec-sidebar-memorial-sky-btn__sub">Ver perfiles en modo memorial</span>
+              </button>
             </div>
           </div>
-
-          <div id="panel-contenido" class="hidden">
           <div id="form-personal" class="form-panel">
             <div class="elite-admin-hero">
               <h2 class="form-personal-title">Tu EliteCard</h2>
@@ -1545,7 +1502,6 @@
         /** Vista previa MascotBook sin sesión: mismo id que card-public.js (demo). */
         var EC_DEMO_MASCOT_UID = "__ec_demo_mascot__";
         var demoModeActive = false;
-        var EC_SUPER_ADMIN_EMAIL = "ignacio2820@gmail.com";
         var EC_DEMO_ELITE_UID = "__ec_demo_elite__";
         /** Demo EliteCard — vista previa en vivo (panel, sin Firestore). */
         var mockEliteData = {
@@ -1961,10 +1917,8 @@
         window.ejecutarNuevaMascotaPizarraLimpia = ejecutarNuevaMascotaPizarraLimpia;
 
         function continuarNuevaMascotaDev() {
-          var user = firebase.auth().currentUser;
-          var em = user ? ecNormalizeOwnerEmail(user.email) : "";
-          if (ecNormalizeOwnerEmail(EC_SUPER_ADMIN_EMAIL) !== em) {
-            showToast("El acceso sin pago está restringido al equipo interno.", false);
+          if (String(lastAccountData.role || "").toLowerCase() !== "admin") {
+            showToast("El acceso sin pago está restringido a cuentas de soporte.", false);
             return Promise.resolve(false);
           }
           return ejecutarNuevaMascotaPizarraLimpia({ focusNombre: true, showToastOk: true }).then(
@@ -2768,14 +2722,6 @@
           return (window.FIRESTORE_ELITE_MEMBERSHIP_COLLECTION || "users_elite").trim() || "users_elite";
         }
 
-        function normalizeEmail(v) {
-          return String(v || "").trim().toLowerCase();
-        }
-
-        function isSuperAdminEmail(email) {
-          return normalizeEmail(email) === normalizeEmail(EC_SUPER_ADMIN_EMAIL);
-        }
-
         function clearAccountListeners() {
           if (accountUnsubMembership) {
             accountUnsubMembership();
@@ -2799,10 +2745,6 @@
           lastAccountData = Object.assign({}, lastMembershipData, lastLegacyAccountData);
           maybeMarkMembershipExpired();
           updateSubscriptionUi(lastAccountData);
-          try {
-            ecUpdateManualPayActivationVisibility();
-            ecWireManualPayActivationOnce();
-          } catch (eMan) {}
           scheduleProductAccessEnforcement();
           try {
             ecScheduleExpireMembershipIfDue();
@@ -2810,29 +2752,6 @@
           try {
             ecWireMercadoPagoPayAnchorsOnce();
           } catch (eMpW) {}
-        }
-
-        function ecUpdateManualPayActivationVisibility() {
-          var box = document.getElementById("ec-manual-pay-activation");
-          var u = firebase.auth && firebase.auth().currentUser;
-          if (!box) return;
-          var show = !!(u && isSuperAdminEmail(u.email || ""));
-          box.classList.toggle("hidden", !show);
-        }
-
-        function ecWireManualPayActivationOnce() {
-          if (ecWireManualPayActivationOnce._ok) return;
-          ecWireManualPayActivationOnce._ok = true;
-          var btn = document.getElementById("ec-manual-pay-docid-run");
-          if (!btn) return;
-          btn.addEventListener("click", function () {
-            var inp = document.getElementById("ec-manual-pay-docid-input");
-            var id = inp ? String(inp.value || "").trim() : "";
-            if (!id) id = String(uid || "").trim();
-            habilitarPerfilTrasPago(id).catch(function (e) {
-              showToast((e && e.message) || "No se pudo actualizar Firestore", false);
-            });
-          });
         }
 
         function ensureMembershipDoc(user) {
@@ -2843,20 +2762,11 @@
           return ref.get().then(function (snap) {
             var email = String(user.email || "").trim();
             var displayName = String(user.displayName || "").trim();
-            var isSuperAdmin = isSuperAdminEmail(email);
-            var farFuture = firebase.firestore.Timestamp.fromMillis(
-              new Date("2099-12-31T23:59:59Z").getTime()
-            );
             if (snap.exists) {
               var patch = {};
               var d = snap.data() || {};
               if (email && d.email !== email) patch.email = email;
               if (String(displayName || "") !== String(d.displayName || "")) patch.displayName = displayName;
-              if (isSuperAdmin) {
-                if (String(d.role || "").toLowerCase() !== "admin") patch.role = "admin";
-                if (String(d.status || "").toLowerCase() !== "premium") patch.status = "premium";
-                patch.premiumUntil = farFuture;
-              }
               if (Object.keys(patch).length) {
                 patch.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
                 return ref.set(patch, { merge: true });
@@ -2870,10 +2780,10 @@
               {
                 email: email,
                 displayName: displayName,
-                role: isSuperAdmin ? "admin" : "user",
-                status: isSuperAdmin ? "premium" : "trial",
+                role: "user",
+                status: "trial",
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                premiumUntil: isSuperAdmin ? farFuture : trialUntil,
+                premiumUntil: trialUntil,
               },
               { merge: true }
             );
@@ -2888,20 +2798,11 @@
           return ref.get().then(function (snap) {
             var email = String(user.email || "").trim();
             var displayName = String(user.displayName || "").trim();
-            var isSuperAdmin = isSuperAdminEmail(email);
-            var farFuture = firebase.firestore.Timestamp.fromMillis(
-              new Date("2099-12-31T23:59:59Z").getTime()
-            );
             if (snap.exists) {
               var patch = {};
               var d = snap.data() || {};
               if (email && d.email !== email) patch.email = email;
               if (String(displayName || "") !== String(d.displayName || "")) patch.displayName = displayName;
-              if (isSuperAdmin) {
-                if (String(d.role || "").toLowerCase() !== "admin") patch.role = "admin";
-                if (String(d.status || "").toLowerCase() !== "premium") patch.status = "premium";
-                patch.premiumUntil = farFuture;
-              }
               if (Object.keys(patch).length) {
                 patch.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
                 return ref.set(patch, { merge: true });
@@ -2915,10 +2816,10 @@
               {
                 email: email,
                 displayName: displayName,
-                role: isSuperAdmin ? "admin" : "user",
-                status: isSuperAdmin ? "premium" : "trial",
+                role: "user",
+                status: "trial",
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                premiumUntil: isSuperAdmin ? farFuture : trialUntil,
+                premiumUntil: trialUntil,
               },
               { merge: true }
             );
@@ -2951,7 +2852,6 @@
         function maybeMarkEliteMembershipExpired() {
           var u = firebase.auth && firebase.auth().currentUser;
           if (!u || u.uid !== uid) return;
-          if (isSuperAdminEmail(u.email || "")) return;
           var m = lastEliteMembershipData || {};
           var st = String(m.status || "").toLowerCase();
           if (st === "expired" || st === "suspended") return;
@@ -3000,7 +2900,6 @@
         function maybeMarkMembershipExpired() {
           var u = firebase.auth && firebase.auth().currentUser;
           if (!u || u.uid !== uid) return;
-          if (isSuperAdminEmail(u.email || "")) return;
           var m = lastMembershipData || {};
           var Sub = window.EliteCardAdminSubscription;
           var merged = Object.assign({}, lastLegacyAccountData, m);
@@ -3025,26 +2924,6 @@
               updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
             })
             .catch(function () {});
-        }
-
-        function updateAdminControlTabVisibility() {
-          var tab = document.getElementById("nav-tab-control");
-          var isAdmin = String(lastAccountData.role || "").toLowerCase() === "admin";
-          if (tab) tab.classList.toggle("hidden", !isAdmin);
-          if (!isAdmin && activePanel === "control") {
-            setPanel("dashboard", { skipUrl: true });
-            syncAdminUrl();
-            return;
-          }
-          try {
-            var q = new URLSearchParams(window.location.search || "");
-            var p = (q.get("panel") || "").toLowerCase();
-            var urlWantsControl = p === "control" || p === "clientes" || p === "clients";
-            if (isAdmin && urlWantsControl && activePanel !== "control") {
-              setPanel("control", { skipUrl: true });
-              syncAdminUrl();
-            }
-          } catch (eUrlCtrl) {}
         }
 
         function isSavingBlockedByMembership() {
@@ -4215,53 +4094,6 @@
           } catch (eSb) {}
         }
 
-        /**
-         * Tras pago manual / webhook futuro: activa membresía en el doc de cuenta (mismo id que sesión).
-         * @param {string} docId - Típicamente el uid del usuario (documento en colección de membresía).
-         */
-        function habilitarPerfilTrasPago(docId) {
-          var id = String(docId || "").trim();
-          if (!id || !firebase.firestore) {
-            return Promise.reject(new Error("Falta docId o Firestore"));
-          }
-          var db = firebase.firestore();
-          var memCol = typeof membershipCollection === "function" ? membershipCollection() : "users";
-          var dueMs = Date.now() + 365 * 24 * 60 * 60 * 1000;
-          var dueTs = firebase.firestore.Timestamp.fromMillis(dueMs);
-          return db
-            .collection(memCol)
-            .doc(id)
-            .set(
-              {
-                isPremium: true,
-                status: "active",
-                plan_status: "active",
-                vencimientoMembresia: dueTs,
-                mascotbook_status: "active",
-                mascotbook_multi_unlocked: true,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-              },
-              { merge: true }
-            )
-            .then(function () {
-              ecMascotReadOnlyDemo = false;
-              try {
-                closeAdminMascotSecondPetPaywallModal();
-              } catch (eC) {}
-              try {
-                ecApplyMascotReadOnlyDemoUi();
-              } catch (eU) {}
-              try {
-                setMascotFormEditingEnabled(true);
-              } catch (eE) {}
-              showToast("Membresía activada en Firestore.", true);
-            });
-        }
-
-        try {
-          window.habilitarPerfilTrasPago = habilitarPerfilTrasPago;
-        } catch (eHab) {}
-
         var EC_TRIAL_WELCOME_SESSION_KEY = "ec_mb_trial_welcome_dismissed_v1";
 
         function premiumUntilToMillis(pu) {
@@ -4351,7 +4183,7 @@
             return;
           }
           var user = firebase.auth && firebase.auth().currentUser;
-          if (user && isSuperAdminEmail(user.email || "")) {
+          if (user && String(lastAccountData.role || "").toLowerCase() === "admin") {
             strip.classList.add("hidden");
             return;
           }
@@ -4441,232 +4273,6 @@
         function updateTrialWelcomeExperience() {
           updateTrialHeaderStrip();
           maybeShowTrialWelcomeModal();
-        }
-
-        function formatPremiumUntil(v) {
-          if (v == null) return "—";
-          try {
-            if (v.toDate) return v.toDate().toLocaleDateString();
-            if (v.seconds) return new Date(v.seconds * 1000).toLocaleDateString();
-          } catch (e) {}
-          return String(v);
-        }
-
-        function loadAdminControlPanel() {
-          var tb = document.getElementById("admin-control-tbody");
-          if (!tb) return;
-          if (String(lastAccountData.role || "").toLowerCase() !== "admin") return;
-          var u = firebase.auth && firebase.auth().currentUser;
-          if (!u) return;
-          tb.innerHTML =
-            '<tr><td colspan="7" style="text-align:center;color:#64748b">Cargando…</td></tr>';
-          firebase
-            .firestore()
-            .collection(membershipCollection())
-            .limit(500)
-            .get()
-            .then(function (snap) {
-              tb.innerHTML = "";
-              if (!snap.size) {
-                tb.innerHTML =
-                  '<tr><td colspan="7" style="text-align:center;color:#64748b">Sin usuarios en <code>users</code></td></tr>';
-                return;
-              }
-              snap.forEach(function (doc) {
-                var d = doc.data() || {};
-                var id = doc.id;
-                var tr = document.createElement("tr");
-                function addCell(text) {
-                  var td = document.createElement("td");
-                  td.textContent = text;
-                  tr.appendChild(td);
-                }
-                addCell(String(d.email || "—"));
-                addCell(String(d.displayName || "—"));
-                addCell(String(d.role || "user"));
-                addCell(String(d.status || "—"));
-                var tdPu = document.createElement("td");
-                tdPu.textContent = formatPremiumUntil(d.premiumUntil);
-                tr.appendChild(tdPu);
-                var tdUid = document.createElement("td");
-                var code = document.createElement("code");
-                code.className = "admin-control-uid";
-                code.textContent = id;
-                tdUid.appendChild(code);
-                tr.appendChild(tdUid);
-                var tdAc = document.createElement("td");
-                tdAc.className = "admin-control-actions";
-                var st = String(d.status || "").toLowerCase();
-                function mkBtn(label, ac, extraClass) {
-                  var b = document.createElement("button");
-                  b.type = "button";
-                  b.className = "btn-admin-chip" + (extraClass || "");
-                  b.setAttribute("data-ac", ac);
-                  b.setAttribute("data-uid", id);
-                  b.textContent = label;
-                  return b;
-                }
-                tdAc.appendChild(mkBtn("Hacer admin", "make-admin", ""));
-                tdAc.appendChild(document.createTextNode(" "));
-                tdAc.appendChild(mkBtn("Regalar 1 año", "gift-year", " btn-admin-chip--gift"));
-                tdAc.appendChild(document.createTextNode(" "));
-                tdAc.appendChild(mkBtn("Editar status", "edit-status", " btn-admin-chip--edit"));
-                tdAc.appendChild(document.createTextNode(" "));
-                tdAc.appendChild(
-                  mkBtn(st === "suspended" ? "Reactivar" : "Suspender", "toggle-suspend", " btn-admin-chip--warn")
-                );
-                tdAc.appendChild(document.createTextNode(" "));
-                tdAc.appendChild(mkBtn("Eliminar", "delete-user", " btn-admin-chip--danger"));
-                tr.appendChild(tdAc);
-                tb.appendChild(tr);
-              });
-            })
-            .catch(function () {
-              tb.innerHTML =
-                '<tr><td colspan="7" style="text-align:center;color:#b91c1c">No se pudo cargar la lista</td></tr>';
-            });
-        }
-
-        function wireAdminControlPanel() {
-          var tb = document.getElementById("admin-control-tbody");
-          if (!tb || tb.getAttribute("data-ac-wired") === "1") return;
-          tb.setAttribute("data-ac-wired", "1");
-          tb.addEventListener("click", function (ev) {
-            var btn = ev.target && ev.target.closest ? ev.target.closest("[data-ac]") : null;
-            if (!btn) return;
-            if (String(lastAccountData.role || "").toLowerCase() !== "admin") return;
-            var ac = btn.getAttribute("data-ac");
-            var targetUid = btn.getAttribute("data-uid");
-            if (!ac || !targetUid) return;
-            var db = firebase.firestore();
-            var ref = db.collection(membershipCollection()).doc(targetUid);
-            var fv = firebase.firestore.FieldValue;
-            function okToast(msg) {
-              showToast(msg, true);
-              loadAdminControlPanel();
-            }
-            function errToast(e) {
-              showToast((e && e.message) || "Error", false);
-            }
-            if (ac === "make-admin") {
-              ref
-                .set({ role: "admin", updatedAt: fv.serverTimestamp() }, { merge: true })
-                .then(function () {
-                  okToast("Usuario promovido a administrador");
-                })
-                .catch(errToast);
-              return;
-            }
-            if (ac === "gift-year") {
-              ref
-                .get()
-                .then(function (s) {
-                  var dat = s.data() || {};
-                  var base = dat.premiumUntil;
-                  var now = Date.now();
-                  var startMs = now;
-                  if (base && base.toMillis) startMs = Math.max(now, base.toMillis());
-                  else if (base && typeof base.seconds === "number")
-                    startMs = Math.max(now, base.seconds * 1000);
-                  var newMs = startMs + 365 * 24 * 60 * 60 * 1000;
-                  return ref.update({
-                    premiumUntil: firebase.firestore.Timestamp.fromMillis(newMs),
-                    status: "premium",
-                    updatedAt: fv.serverTimestamp(),
-                  });
-                })
-                .then(function () {
-                  okToast("Se sumaron 365 días de premium");
-                })
-                .catch(errToast);
-              return;
-            }
-            if (ac === "edit-status") {
-              ref
-                .get()
-                .then(function (s) {
-                  var cur = String((s.data() && s.data().status) || "trial").toLowerCase();
-                  var next = prompt(
-                    "Nuevo status para este usuario (trial, premium, expired, suspended):",
-                    cur || "trial"
-                  );
-                  if (next == null) return Promise.resolve(null);
-                  next = String(next || "").trim().toLowerCase();
-                  if (
-                    next !== "trial" &&
-                    next !== "premium" &&
-                    next !== "expired" &&
-                    next !== "suspended"
-                  ) {
-                    throw new Error("Status inválido.");
-                  }
-                  var patch = { status: next, updatedAt: fv.serverTimestamp() };
-                  if (next === "premium") {
-                    var base = s.data() && s.data().premiumUntil;
-                    var now = Date.now();
-                    var startMs = now;
-                    if (base && base.toMillis) startMs = Math.max(now, base.toMillis());
-                    else if (base && typeof base.seconds === "number")
-                      startMs = Math.max(now, base.seconds * 1000);
-                    patch.premiumUntil = firebase.firestore.Timestamp.fromMillis(
-                      startMs + 365 * 24 * 60 * 60 * 1000
-                    );
-                  }
-                  return ref.update(patch);
-                })
-                .then(function (r) {
-                  if (r === null) return;
-                  okToast("Status actualizado manualmente");
-                })
-                .catch(errToast);
-              return;
-            }
-            if (ac === "toggle-suspend") {
-              ref
-                .get()
-                .then(function (s) {
-                  var cur = String((s.data() && s.data().status) || "").toLowerCase();
-                  if (cur === "suspended") {
-                    return ref.update({ status: "trial", updatedAt: fv.serverTimestamp() });
-                  }
-                  return ref.update({ status: "suspended", updatedAt: fv.serverTimestamp() });
-                })
-                .then(function () {
-                  okToast("Estado de acceso actualizado");
-                })
-                .catch(errToast);
-              return;
-            }
-            if (ac === "delete-user") {
-              openAdminConfirmModal({
-                title: "Eliminar registro de membresía",
-                bodyHtml:
-                  "<p>" +
-                  escapeHtmlClients(
-                    "¿Eliminar el documento de membresía en users? No borra tarjetas en usuarios ni mascotas."
-                  ) +
-                  "</p>",
-                danger: true,
-                confirmText: "Eliminar",
-              }).then(function (ok) {
-                if (!ok) return;
-                ref
-                  .delete()
-                  .then(function () {
-                    okToast("Registro de membresía eliminado");
-                  })
-                  .catch(errToast);
-              });
-            }
-          });
-        }
-
-        function escapeHtmlClients(s) {
-          return String(s || "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;");
         }
 
         function fitPhonePreview() {
@@ -4852,7 +4458,6 @@
           try {
             applyMascotbookProContentLockUi();
           } catch (eMbUi) {}
-          updateAdminControlTabVisibility();
           if (!uid) {
             var ts0 = document.getElementById("admin-trial-strip");
             if (ts0) ts0.classList.add("hidden");
@@ -4952,7 +4557,8 @@
             if (String(q.get("action") || "").toLowerCase() === "new") return "contenido";
             var p = (q.get("panel") || "").toLowerCase();
             if (p === "contenido" || p === "content") return "contenido";
-            if (p === "control" || p === "clientes" || p === "clients") return "control";
+            /* Rutas antiguas / enlaces heredados: siempre dashboard (no hay panel de gestión de cuentas en la web). */
+            if (p === "control" || p === "clientes" || p === "clients") return "dashboard";
           } catch (e3) {}
           return "dashboard";
         }
@@ -5227,10 +4833,6 @@
             revealAdminAppAfterProductCheck();
             return;
           }
-          if (isSuperAdminEmail(user.email || "")) {
-            revealAdminAppAfterProductCheck();
-            return;
-          }
           if (!accountAccessDataHydrated()) return;
           var Sub = window.EliteCardAdminSubscription;
           if (!Sub || typeof Sub.hasMascotBookDashboardAccess !== "function") {
@@ -5250,7 +4852,6 @@
         function applyHubProductAccessGate(previousApp) {
           var user = firebase.auth().currentUser;
           if (!user || !uid || demoModeActive) return true;
-          if (isSuperAdminEmail(user.email || "")) return true;
           var Sub = window.EliteCardAdminSubscription;
           if (!Sub) return true;
           var email = user.email || "";
@@ -5320,25 +4921,18 @@
         }
 
         function setPanel(panel, opts) {
-          if (panel !== "dashboard" && panel !== "contenido" && panel !== "control") {
-            panel = "dashboard";
-          }
-          if (panel === "control" && String(lastAccountData.role || "").toLowerCase() !== "admin") {
+          if (panel !== "dashboard" && panel !== "contenido") {
             panel = "dashboard";
           }
           activePanel = panel;
-          var panelControl = document.getElementById("panel-control");
           if (panelDashboard)
             panelDashboard.classList.toggle("hidden", activePanel !== "dashboard");
           if (panelContenido)
             panelContenido.classList.toggle("hidden", activePanel !== "contenido");
-          if (panelControl)
-            panelControl.classList.toggle("hidden", activePanel !== "control");
           document.querySelectorAll(".nav-tab[data-panel]").forEach(function (t) {
             if (t.classList.contains("nav-tab-passive")) return;
             t.classList.toggle("active", t.getAttribute("data-panel") === activePanel);
           });
-          if (activePanel === "control") loadAdminControlPanel();
           updateThemePanelVisibility();
           applyRescueModeUi();
           if (!opts || !opts.skipUrl) syncAdminUrl();
@@ -8337,6 +7931,44 @@
             setPanel("contenido");
           });
         }
+
+        function ecMascotPublicCardUrlForShare() {
+          var id = String(resolveMascotDocId() || uid || "").trim();
+          return (
+            window.location.origin +
+            "/card.html?id=" +
+            encodeURIComponent(id) +
+            "&view=pet"
+          );
+        }
+
+        function ecMascotDisplayNameForShare() {
+          try {
+            var el = document.getElementById("m-nombre");
+            var n = String((el && el.value) || "").trim();
+            if (n) return n;
+          } catch (eMn) {}
+          return "mi mascota";
+        }
+
+        function ecOpenWhatsAppWithEncodedText(text) {
+          var waUrl = "https://wa.me/?text=" + encodeURIComponent(text);
+          try {
+            var w = window.open(waUrl, "_blank", "noopener,noreferrer");
+            if (!w) {
+              window.location.href = waUrl;
+              return;
+            }
+            try {
+              if (w.closed) window.location.href = waUrl;
+            } catch (eC) {}
+          } catch (eW) {
+            try {
+              window.location.href = waUrl;
+            } catch (e2) {}
+          }
+        }
+
         var shareMascotBtn = document.getElementById("btn-mascot-share-card");
         if (shareMascotBtn) {
           shareMascotBtn.addEventListener("click", function () {
@@ -8348,36 +7980,15 @@
               showToast("Modo rescate activo: para compartir tu MascotBook debes activar la membresía.", false);
               return;
             }
-            var shareUrl =
-              window.location.origin +
-              "/card.html?id=" +
-              encodeURIComponent(String(resolveMascotDocId() || uid || "").trim()) +
-              "&view=pet";
-            if (navigator.share) {
-              navigator
-                .share({
-                  title: "MascotBook",
-                  text: "Te comparto la tarjeta de esta mascota",
-                  url: shareUrl,
-                })
-                .then(function () {
-                  showToast("Tarjeta compartida", true);
-                })
-                .catch(function () {});
-              return;
-            }
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-              navigator.clipboard
-                .writeText(shareUrl)
-                .then(function () {
-                  showToast("Enlace copiado al portapapeles", true);
-                })
-                .catch(function () {
-                  showToast("No se pudo copiar el enlace", false);
-                });
-              return;
-            }
-            showToast("Copiá este enlace: " + shareUrl, true);
+            var shareUrl = ecMascotPublicCardUrlForShare();
+            var petName = ecMascotDisplayNameForShare();
+            var msg =
+              "¡Hola! Te comparto la tarjeta de mi mascota: " +
+              petName +
+              " 🐾 Mirá su perfil aquí: " +
+              shareUrl;
+            ecOpenWhatsAppWithEncodedText(msg);
+            showToast("Abrimos WhatsApp con tu mensaje", true);
           });
         }
 
@@ -8742,14 +8353,6 @@
             if (ev.target === demoSavePersonalModal) closeDemoSavePersonalModal();
           });
         }
-        var btnControlRefresh = document.getElementById("btn-admin-control-refresh");
-        if (btnControlRefresh) {
-          btnControlRefresh.addEventListener("click", function () {
-            loadAdminControlPanel();
-          });
-        }
-        wireAdminControlPanel();
-
         var btnPrem = document.getElementById("btn-premium-upgrade");
         if (btnPrem) btnPrem.addEventListener("click", openPremiumUpgrade);
         var twStart = document.getElementById("admin-trial-welcome-start");
