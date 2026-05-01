@@ -3,3 +3,7 @@
 firebase-debug.log
 firebase-debug.*.log
 functions/node_modules/
+
+# Backups locales del editor
+*.bak*
+card-public.js.bak-*
