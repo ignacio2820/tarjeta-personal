@@ -232,7 +232,11 @@ function extractPaymentIdFromWebhook(req) {
 
 function getAdmin() {
   const admin = require("firebase-admin");
-  if (!admin.apps.length) {
+  try {
+    // En algunos runtimes de gen2 el namespace puede quedar sin app default
+    // pese a lecturas previas de `admin.apps`; este acceso fuerza validación real.
+    admin.app();
+  } catch (e) {
     admin.initializeApp();
   }
   return admin;
