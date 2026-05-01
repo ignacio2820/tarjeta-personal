@@ -144,7 +144,46 @@
           <p id="global-pw-feedback" class="admin-card-hint" role="status" aria-live="polite" style="min-height: 1.25rem"></p>
           <button type="button" class="btn-outline" id="btn-global-update-password">Actualizar contraseña</button>
         </div>
+
+        <div class="admin-card ec-mb-close-account-card" style="margin-top: 1.5rem; border-color: rgba(244, 63, 94, 0.35)">
+          <h3 class="admin-card-title" style="color: #be123c">MascotBook · Cierre de datos</h3>
+          <p class="admin-card-hint">
+            Eliminá todos los perfiles de mascota, el índice MascotBook en Firestore y las fotos en la nube bajo tu carpeta de
+            MascotBook. <strong>No modifica tu EliteCard</strong> ni el documento de membresía de la cuenta.
+          </p>
+          <button type="button" class="btn-outline btn-admin-chip--danger" id="btn-ec-mb-close-account-open">
+            Cerrar cuenta permanentemente (MascotBook)
+          </button>
+          <p id="ec-mb-close-account-feedback" class="admin-card-hint" role="status" aria-live="polite" style="min-height: 1.25rem"></p>
+        </div>
       </main>
+    </div>
+
+    <div
+      id="ec-mb-close-account-modal"
+      class="admin-modal admin-modal--blocking hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="ec-mb-close-account-title"
+    >
+      <div class="admin-modal-panel admin-modal-panel--confirm" style="max-width: 26rem">
+        <button type="button" class="admin-modal-close" id="ec-mb-close-account-close" aria-label="Cerrar">×</button>
+        <h4 id="ec-mb-close-account-title">Cerrar datos MascotBook</h4>
+        <p class="admin-modal-sub">
+          Vas a borrar mascotas, tarjetas MascotBook y archivos de fotos asociados. Para confirmar, escribí exactamente:
+          <strong>ELIMINAR MIS DATOS MASCOTBOOK</strong>
+        </p>
+        <div class="field">
+          <label for="ec-mb-close-account-phrase">Frase de confirmación</label>
+          <input id="ec-mb-close-account-phrase" type="text" autocomplete="off" />
+        </div>
+        <div class="admin-modal-confirm-actions" style="margin-top: 1rem">
+          <button type="button" class="btn-outline" id="ec-mb-close-account-cancel">Cancelar</button>
+          <button type="button" class="btn-solid btn-admin-chip--danger" id="ec-mb-close-account-confirm" disabled>
+            Borrar y cerrar sesión
+          </button>
+        </div>
+      </div>
     </div>
 
     <div id="toast" class="toast" role="status"></div>
@@ -153,10 +192,13 @@
       (function () {
         var t = Date.now();
         document.write('<script src="firebase-config.js?v=' + t + '"><\/script>');
+        document.write('<script src="ec-silos.js?v=' + t + '"><\/script>');
       })();
     </script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
     <script>
       (function () {
         "use strict";
@@ -303,6 +345,156 @@
           });
         }
 
+        var EC_MB_CLOSE_PHRASE = "ELIMINAR MIS DATOS MASCOTBOOK";
+
+        function ecCfgDeleteStorageRecursive(ref) {
+          return ref.listAll().then(function (res) {
+            var chain = Promise.resolve();
+            res.prefixes.forEach(function (pref) {
+              chain = chain.then(function () {
+                return ecCfgDeleteStorageRecursive(pref);
+              });
+            });
+            res.items.forEach(function (itemRef) {
+              chain = chain.then(function () {
+                return itemRef.delete().catch(function () {});
+              });
+            });
+            return chain;
+          });
+        }
+
+        function runMascotbookAccountClosure(user) {
+          if (!user || !user.uid || !window.EC_SILO) {
+            return Promise.reject(new Error("No se pudo iniciar el cierre."));
+          }
+          var uid = user.uid;
+          var db = firebase.firestore();
+          showToast("Estamos procesando tu solicitud con respeto…", true);
+          return db
+            .collection("mascotas")
+            .where("ownerUid", "==", uid)
+            .get()
+            .then(function (mSnap) {
+              var batch = db.batch();
+              var n = 0;
+              mSnap.forEach(function (doc) {
+                batch.delete(doc.ref);
+                n++;
+              });
+              if (n === 0) return Promise.resolve();
+              return batch.commit();
+            })
+            .then(function () {
+              return db.collection("tarjetas").where("ownerUid", "==", uid).get();
+            })
+            .then(function (tSnap) {
+              var batch2 = db.batch();
+              var n2 = 0;
+              tSnap.forEach(function (doc) {
+                var x = doc.data() || {};
+                if (String(x.tipo || "mascotbook").toLowerCase() === "elitecard") return;
+                batch2.delete(doc.ref);
+                n2++;
+              });
+              if (n2 === 0) return Promise.resolve();
+              return batch2.commit();
+            })
+            .then(function () {
+              return window.EC_SILO.mascotLostScansRef(db, uid).get();
+            })
+            .then(function (lsSnap) {
+              var b3 = db.batch();
+              var n3 = 0;
+              lsSnap.forEach(function (d) {
+                b3.delete(d.ref);
+                n3++;
+              });
+              if (n3 === 0) return Promise.resolve();
+              return b3.commit();
+            })
+            .then(function () {
+              return window.EC_SILO.mascotCardRef(db, uid).delete().catch(function () {});
+            })
+            .then(function () {
+              var root = firebase.storage().ref("usuarios/" + uid + "/mascot_profiles");
+              return ecCfgDeleteStorageRecursive(root).catch(function () {});
+            })
+            .then(function () {
+              return firebase.auth().signOut();
+            })
+            .then(function () {
+              try {
+                window.location.href = "index.html";
+              } catch (eL) {
+                window.location.replace("index.html");
+              }
+            });
+        }
+
+        function bindMascotbookCloseAccountFlow() {
+          if (window.__ecCfgMbCloseBound) return;
+          window.__ecCfgMbCloseBound = true;
+          var openBtn = document.getElementById("btn-ec-mb-close-account-open");
+          var modal = document.getElementById("ec-mb-close-account-modal");
+          var inp = document.getElementById("ec-mb-close-account-phrase");
+          var btnOk = document.getElementById("ec-mb-close-account-confirm");
+          var btnCancel = document.getElementById("ec-mb-close-account-cancel");
+          var btnClose = document.getElementById("ec-mb-close-account-close");
+          var fbEl = document.getElementById("ec-mb-close-account-feedback");
+          if (!openBtn || !modal || !inp || !btnOk) return;
+
+          function syncOk() {
+            var ok = String(inp.value || "").trim() === EC_MB_CLOSE_PHRASE;
+            btnOk.disabled = !ok;
+          }
+
+          inp.addEventListener("input", syncOk);
+          inp.addEventListener("keyup", syncOk);
+
+          function closeModal() {
+            modal.classList.add("hidden");
+            inp.value = "";
+            syncOk();
+            if (fbEl) fbEl.textContent = "";
+          }
+
+          openBtn.addEventListener("click", function () {
+            if (fbEl) fbEl.textContent = "";
+            modal.classList.remove("hidden");
+            syncOk();
+            try {
+              inp.focus();
+            } catch (eF) {}
+          });
+          if (btnCancel) btnCancel.addEventListener("click", closeModal);
+          if (btnClose) btnClose.addEventListener("click", closeModal);
+
+          var idleConfirm = "Borrar y cerrar sesión";
+          btnOk.addEventListener("click", function () {
+            if (String(inp.value || "").trim() !== EC_MB_CLOSE_PHRASE) {
+              showToast("La frase de confirmación no coincide.", false);
+              return;
+            }
+            var user = firebase.auth().currentUser;
+            if (!user) {
+              showToast("No hay sesión activa.", false);
+              return;
+            }
+            setButtonBusy(btnOk, true, "Procesando…", idleConfirm);
+            runMascotbookAccountClosure(user)
+              .then(function () {})
+              .catch(function (err) {
+                var msg = err && err.message ? err.message : "No se pudo completar el cierre.";
+                if (fbEl) fbEl.textContent = msg;
+                showToast(msg, false);
+              })
+              .then(function () {
+                setButtonBusy(btnOk, false, "Procesando…", idleConfirm);
+              });
+          });
+        }
+
         var cfg = window.FIREBASE_WEB_CONFIG;
         if (!cfg || !cfg.apiKey || String(cfg.apiKey).indexOf("REEMPLAZAR") !== -1) {
           if (gate) gate.innerHTML = "<p>Configurá <code>firebase-config.js</code></p>";
@@ -333,6 +525,7 @@
             if (gate) gate.classList.add("hidden");
             if (app) app.classList.remove("hidden");
             bindPasswordForm();
+            bindMascotbookCloseAccountFlow();
           });
         }
       })();

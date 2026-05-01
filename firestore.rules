@@ -76,7 +76,8 @@ service cloud.firestore {
         'themeId', 'textureId', 'mascotProTheme', 'tema', 'mascotSurfaceTheme', 'accentColor', 'textColor',
         'fotoPerfilUrl', 'fotoCabeceraUrl', 'galeria', 'galeriaSlots', 'muro',
         'vacunas', 'dueno', 'veterinario', 'fichaCritica', 'visitas', 'likes', 'mascotaPerdida', 'alertaExtravioActiva', 'whatsappUrgencia',
-        'updatedAt'
+        'updatedAt',
+        'mbProfileStatus', 'memorialAt'
       ];
     }
 

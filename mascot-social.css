@@ -2,6 +2,37 @@
  * MascotBook — perfil estilo red social + texturas Park / Candy / Elite.
  * Variables: --mb-accent (color acento desde Firestore)
  */
+.mb-public-memorial-ribbon {
+  position: relative;
+  z-index: 22;
+  margin: 0;
+  padding: 0.5rem 0.85rem;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fdf4ff;
+  background: linear-gradient(105deg, #4c1d95 0%, #7c3aed 38%, #c026d3 72%, #4c1d95 100%);
+  border-bottom: 1px solid rgba(250, 250, 250, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.mb-public-memorial-ribbon.hidden {
+  display: none !important;
+}
+
+.mb-public-memorial-ribbon__inner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.mb-public-memorial-ribbon__inner .fa-feather-pointed {
+  opacity: 0.9;
+}
+
 .mb-social {
   --mb-accent: #ec4899;
   --mb-text-color: #fafafa;

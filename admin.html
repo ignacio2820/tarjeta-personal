@@ -757,6 +757,10 @@
               <div>
                 <h2 class="form-mascot-title">MascotBook Pro</h2>
                 <p class="mascot-admin-tagline">Perfil premium con salud estructurada · Agencia WebElite</p>
+                <div id="mascot-admin-memorial-ribbon" class="mascot-admin-memorial-ribbon hidden" role="status">
+                  <i class="fa-solid fa-feather-pointed" aria-hidden="true"></i>
+                  <span>Perfil en modo memorial · solo lectura · las fotos se conservan</span>
+                </div>
               </div>
               <button type="button" class="btn-outline btn-mascot-share" id="btn-mascot-share-card">
                 <i class="fa-solid fa-share-nodes" aria-hidden="true"></i> Compartir Tarjeta
@@ -1384,6 +1388,52 @@
     </div>
 
     <div
+      id="admin-mb-pet-downgrade-modal"
+      class="admin-modal admin-modal--blocking admin-modal--mb-pet-downgrade hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="admin-mb-pet-dg-title"
+    >
+      <div class="admin-modal-panel admin-modal-panel--mb-pet-downgrade">
+        <button type="button" class="admin-modal-close" id="admin-mb-pet-dg-close-x" aria-label="Cerrar">×</button>
+        <p class="admin-mb-pet-dg-eyebrow">MascotBook</p>
+        <h4 id="admin-mb-pet-dg-title">Dar de baja perfil</h4>
+        <p id="admin-mb-pet-dg-lead" class="admin-mb-pet-dg-lead"></p>
+        <div id="admin-mb-pet-dg-step-choose" class="admin-mb-pet-dg-step">
+          <p class="admin-modal-sub">
+            Elegí con calma. Podés conservar las fotos en un <strong>modo memorial</strong> (solo lectura, sin editar desde el panel) o
+            <strong>eliminar el registro</strong> por completo.
+          </p>
+          <div class="admin-mb-pet-dg-actions">
+            <button type="button" class="btn-solid admin-mb-pet-dg-btn-memorial" id="admin-mb-pet-dg-memorial">
+              <i class="fa-solid fa-dove" aria-hidden="true"></i> Modo memorial
+            </button>
+            <button type="button" class="btn-outline btn-admin-chip--danger" id="admin-mb-pet-dg-delete-open">
+              <i class="fa-solid fa-file-circle-xmark" aria-hidden="true"></i> Eliminar registro…
+            </button>
+          </div>
+        </div>
+        <div id="admin-mb-pet-dg-step-delete" class="admin-mb-pet-dg-step hidden">
+          <p class="admin-modal-sub">
+            Vas a borrar datos y archivos de esta mascota en la nube. Para confirmar, escribí exactamente el nombre del perfil.
+          </p>
+          <div class="field">
+            <label for="admin-mb-pet-dg-delete-input">Nombre de la mascota</label>
+            <input id="admin-mb-pet-dg-delete-input" type="text" autocomplete="off" placeholder="" />
+          </div>
+          <p id="admin-mb-pet-dg-delete-hint" class="admin-card-hint" aria-live="polite"></p>
+        </div>
+        <div class="admin-modal-confirm-actions admin-mb-pet-dg-footer">
+          <button type="button" class="btn-outline" id="admin-mb-pet-dg-back">Volver</button>
+          <button type="button" class="btn-outline" id="admin-mb-pet-dg-cancel">Cancelar</button>
+          <button type="button" class="btn-solid btn-admin-chip--danger hidden" id="admin-mb-pet-dg-delete-confirm" disabled>
+            Eliminar para siempre
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
       id="admin-mp-success-modal"
       class="admin-modal admin-modal--blocking admin-modal--mp-success-gate hidden"
       role="dialog"
@@ -1587,6 +1637,9 @@
           ) {
             on = false;
           }
+          try {
+            if (String((currentMascotData || {}).mbProfileStatus || "").toLowerCase() === "memorial") on = false;
+          } catch (eMemEd) {}
           try {
             formMascot.classList.toggle("ec-form-locked", !on);
           } catch (eCl) {}
@@ -2124,10 +2177,14 @@
           var mid = String(resolveMascotDocId() || "").trim();
           var u = String(uid || "").trim();
           var proLock = currentApp === "mascotbook" && isMascotbookProContentLocked();
-          var canMedia = !!uid && !demoModeActive && mid && mid === u && !proLock;
+          var mem = false;
+          try {
+            mem = String((currentMascotData || {}).mbProfileStatus || "").toLowerCase() === "memorial";
+          } catch (eMz) {}
+          var canMedia = !!uid && !demoModeActive && mid && mid === u && !proLock && !mem;
           if (bf) bf.disabled = !canMedia || !ecIsCloudMediaUrl(lastMascotFoto);
           if (bc) bc.disabled = !canMedia || !ecIsCloudMediaUrl(lastMascotCabecera);
-          if (dz) dz.classList.toggle("hidden", !canMedia);
+          if (dz) dz.classList.toggle("hidden", !canMedia || mem);
           refreshMascotPrimaryMediaUploadLabels();
         }
 
@@ -2172,6 +2229,10 @@
 
         function runRemoveMascotPrimaryMedia(kind) {
           if (!uid || demoModeActive) return;
+          if (String((currentMascotData || {}).mbProfileStatus || "").toLowerCase() === "memorial") {
+            showToast("Perfil en modo memorial: no se pueden quitar fotos.", false);
+            return;
+          }
           if (isMascotbookProContentLocked()) {
             showToast(EC_MB_MSG_PRO_HEALTH_PHOTOS, false);
             return;
@@ -2208,19 +2269,69 @@
             });
         }
 
-        function runDeleteMascotBookProfile() {
+        function ecMbMascotStorageFolderRef(ownerUid, mascotDocId) {
+          var safe = String(mascotDocId || "")
+            .replace(/[^a-zA-Z0-9_-]/g, "_")
+            .slice(0, 120) || "perfil";
+          return firebase.storage().ref("usuarios/" + String(ownerUid || "").trim() + "/mascot_profiles/" + safe);
+        }
+
+        function ecMbDeleteStorageFolderRecursive(ref) {
+          return ref.listAll().then(function (res) {
+            var chain = Promise.resolve();
+            res.prefixes.forEach(function (pref) {
+              chain = chain.then(function () {
+                return ecMbDeleteStorageFolderRecursive(pref);
+              });
+            });
+            res.items.forEach(function (itemRef) {
+              chain = chain.then(function () {
+                return itemRef.delete().catch(function () {});
+              });
+            });
+            return chain;
+          });
+        }
+
+        function ecMbCollectMascotMediaUrlsFromDoc(md) {
+          var urls = [];
+          var d = md && typeof md === "object" ? md : {};
+          if (ecIsCloudMediaUrl(d.fotoPerfilUrl)) urls.push(d.fotoPerfilUrl);
+          if (ecIsCloudMediaUrl(d.fotoCabeceraUrl)) urls.push(d.fotoCabeceraUrl);
+          var slots = normalizeMascotGallerySlots(d);
+          (slots || []).forEach(function (x) {
+            if (ecIsCloudMediaUrl(x)) urls.push(x);
+          });
+          (d.galeria || []).forEach(function (g) {
+            if (typeof g === "string" && ecIsCloudMediaUrl(g)) urls.push(g);
+            else if (g && ecIsCloudMediaUrl(g.url)) urls.push(g.url);
+          });
+          return urls;
+        }
+
+        function ecMbNormalizePetNameForConfirm(s) {
+          return String(s || "")
+            .trim()
+            .replace(/\s+/g, " ")
+            .toLowerCase();
+        }
+
+        function ecMbResolveTarjetaDocIdForPublic(publicCardId) {
+          var pid = String(publicCardId || "").trim();
+          var list = ecMascotTarjetasList || [];
+          for (var i = 0; i < list.length; i++) {
+            if (String(list[i].publicCardId || "").trim() === pid) return String(list[i].docId || "").trim();
+          }
+          return "";
+        }
+
+        function runDeleteMascotBookProfile(optMid) {
           var db = firebase.firestore();
           var u = String(uid || "").trim();
-          var mid = String(resolveMascotDocId() || "").trim();
+          var mid = String(optMid || resolveMascotDocId() || "").trim();
           if (!u || !mid) {
             return Promise.reject(new Error("No se puede eliminar este perfil con la sesión actual."));
           }
-          var urls = [];
-          if (ecIsCloudMediaUrl(lastMascotFoto)) urls.push(lastMascotFoto);
-          if (ecIsCloudMediaUrl(lastMascotCabecera)) urls.push(lastMascotCabecera);
-          (lastMascotGallerySlots || []).forEach(function (x) {
-            if (ecIsCloudMediaUrl(x)) urls.push(x);
-          });
           return db
             .collection("mascotas")
             .doc(mid)
@@ -2237,6 +2348,7 @@
               if (!owner && mid !== u) {
                 return Promise.reject(new Error("No tenés permiso para eliminar este perfil."));
               }
+              var urls = ecMbCollectMascotMediaUrlsFromDoc(md);
               return db
                 .collection("tarjetas")
                 .where("ownerUid", "==", u)
@@ -2268,14 +2380,231 @@
                       firebase.storage().refFromURL(url).delete().catch(function () {});
                     } catch (e) {}
                   });
+                  return ecMbDeleteStorageFolderRecursive(ecMbMascotStorageFolderRef(u, mid)).catch(function () {});
+                })
+                .then(function () {
                   try {
                     sessionStorage.removeItem("ec_sel_mascot_public_id_" + u);
                     sessionStorage.removeItem("ec_sel_mascot_tarjeta_doc_" + u);
                   } catch (e2) {}
-                  showToast("Perfil MascotBook eliminado", true);
+                  showToast("Perfil eliminado correctamente. Liberamos el espacio en la nube con respeto.", true);
                   window.location.reload();
                 });
             });
+        }
+
+        function runMascotMemorialForPet(mascotDocId, tarjetaDocId) {
+          var db = firebase.firestore();
+          var u = String(uid || "").trim();
+          var mid = String(mascotDocId || "").trim();
+          var tid = String(tarjetaDocId || "").trim();
+          if (!u || !mid) return Promise.reject(new Error("Sesión o perfil no válido."));
+          var fv = firebase.firestore.FieldValue;
+          showToast("Estamos procesando tu solicitud con respeto…", true);
+          return db
+            .collection("mascotas")
+            .doc(mid)
+            .get()
+            .then(function (snap) {
+              if (!snap.exists) throw new Error("Perfil no encontrado.");
+              var d = snap.data() || {};
+              if (String(d.ownerUid || "").trim() !== u) throw new Error("No tenés permiso para modificar este perfil.");
+              var patch = {
+                mbProfileStatus: "memorial",
+                memorialAt: fv.serverTimestamp(),
+                ownerUid: u,
+                mascotId: mid,
+                updatedAt: fv.serverTimestamp(),
+              };
+              return db
+                .collection("mascotas")
+                .doc(mid)
+                .set(patch, { merge: true })
+                .then(function () {
+                  if (tid) {
+                    return db
+                      .collection("tarjetas")
+                      .doc(tid)
+                      .set({ mbProfileStatus: "memorial", updatedAt: fv.serverTimestamp() }, { merge: true });
+                  }
+                })
+                .then(function () {
+                  if (mid === u) {
+                    return window.EC_SILO.mascotCardRef(db, u).set(patch, { merge: true }).catch(function () {});
+                  }
+                })
+                .then(function () {
+                  showToast("Perfil en modo memorial. Conservamos las fotos.", true);
+                  return actualizarListaSelectorMascotas({ skipBootPet: true })
+                    .then(function () {
+                      return cargarSidebarMisPerfiles();
+                    })
+                    .then(function () {
+                      if (String(currentMascotShareId || "").trim() === mid) {
+                        var arr = ecMascotTarjetasList || [];
+                        if (arr.length && String(arr[0].publicCardId || "").trim()) {
+                          return cambiarPerfilActivo(String(arr[0].docId || "").trim() || String(arr[0].publicCardId || "").trim());
+                        }
+                        try {
+                          setPanel("dashboard", { skipUrl: true });
+                        } catch (eDash) {}
+                      }
+                    });
+                });
+            });
+        }
+
+        var __ecMbPetDgCtx = { mascotDocId: "", displayName: "", tarjetaDocId: "", deleteStep: false };
+
+        function closeAdminMbPetDowngradeModal() {
+          var m = document.getElementById("admin-mb-pet-downgrade-modal");
+          if (m) m.classList.add("hidden");
+          __ecMbPetDgCtx = { mascotDocId: "", displayName: "", tarjetaDocId: "", deleteStep: false };
+          var inp = document.getElementById("admin-mb-pet-dg-delete-input");
+          if (inp) inp.value = "";
+          var stDel = document.getElementById("admin-mb-pet-dg-step-delete");
+          var stCh = document.getElementById("admin-mb-pet-dg-step-choose");
+          var btnDel = document.getElementById("admin-mb-pet-dg-delete-confirm");
+          var btnMem = document.getElementById("admin-mb-pet-dg-memorial");
+          var btnOpenDel = document.getElementById("admin-mb-pet-dg-delete-open");
+          if (stDel) stDel.classList.add("hidden");
+          if (stCh) stCh.classList.remove("hidden");
+          if (btnDel) {
+            btnDel.classList.add("hidden");
+            btnDel.disabled = true;
+          }
+          if (btnMem) btnMem.classList.remove("hidden");
+          if (btnOpenDel) btnOpenDel.classList.remove("hidden");
+        }
+
+        function openAdminMbPetDowngradeModal(ctx) {
+          ctx = ctx || {};
+          __ecMbPetDgCtx.mascotDocId = String(ctx.mascotDocId || "").trim();
+          __ecMbPetDgCtx.displayName = String(ctx.displayName || "Sin nombre").trim();
+          __ecMbPetDgCtx.tarjetaDocId = String(ctx.tarjetaDocId || "").trim();
+          __ecMbPetDgCtx.deleteStep = false;
+          var m = document.getElementById("admin-mb-pet-downgrade-modal");
+          var lead = document.getElementById("admin-mb-pet-dg-lead");
+          if (lead) {
+            lead.textContent =
+              "Estamos aquí para acompañarte con el perfil de «" +
+              __ecMbPetDgCtx.displayName +
+              "». Elegí la opción que mejor represente lo que necesitás.";
+          }
+          var inp = document.getElementById("admin-mb-pet-dg-delete-input");
+          if (inp) {
+            inp.value = "";
+            inp.placeholder = __ecMbPetDgCtx.displayName;
+          }
+          var hint = document.getElementById("admin-mb-pet-dg-delete-hint");
+          if (hint) hint.textContent = "";
+          var stDel = document.getElementById("admin-mb-pet-dg-step-delete");
+          var stCh = document.getElementById("admin-mb-pet-dg-step-choose");
+          var btnDel = document.getElementById("admin-mb-pet-dg-delete-confirm");
+          var btnMem = document.getElementById("admin-mb-pet-dg-memorial");
+          var btnOpenDel = document.getElementById("admin-mb-pet-dg-delete-open");
+          if (stDel) stDel.classList.add("hidden");
+          if (stCh) stCh.classList.remove("hidden");
+          if (btnDel) {
+            btnDel.classList.add("hidden");
+            btnDel.disabled = true;
+          }
+          if (btnMem) btnMem.classList.remove("hidden");
+          if (btnOpenDel) btnOpenDel.classList.remove("hidden");
+          if (m) m.classList.remove("hidden");
+        }
+
+        function bindAdminMbPetDowngradeModal() {
+          if (window.__ecMbPetDgBound) return;
+          window.__ecMbPetDgBound = true;
+          var m = document.getElementById("admin-mb-pet-downgrade-modal");
+          if (!m) return;
+          function syncDeleteConfirmEnabled() {
+            var inp = document.getElementById("admin-mb-pet-dg-delete-input");
+            var btn = document.getElementById("admin-mb-pet-dg-delete-confirm");
+            if (!inp || !btn) return;
+            var ok =
+              ecMbNormalizePetNameForConfirm(inp.value) ===
+              ecMbNormalizePetNameForConfirm(__ecMbPetDgCtx.displayName);
+            btn.disabled = !ok;
+          }
+          var inp = document.getElementById("admin-mb-pet-dg-delete-input");
+          if (inp) {
+            inp.addEventListener("input", syncDeleteConfirmEnabled);
+            inp.addEventListener("keyup", syncDeleteConfirmEnabled);
+          }
+          document.getElementById("admin-mb-pet-dg-memorial").addEventListener("click", function () {
+            var mid = String(__ecMbPetDgCtx.mascotDocId || "").trim();
+            var tid = String(__ecMbPetDgCtx.tarjetaDocId || "").trim();
+            if (!mid) return;
+            closeAdminMbPetDowngradeModal();
+            runMascotMemorialForPet(mid, tid).catch(function (e) {
+              showToast(e.message || "No se pudo activar el modo memorial.", false);
+            });
+          });
+          document.getElementById("admin-mb-pet-dg-delete-open").addEventListener("click", function () {
+            __ecMbPetDgCtx.deleteStep = true;
+            var stDel = document.getElementById("admin-mb-pet-dg-step-delete");
+            var stCh = document.getElementById("admin-mb-pet-dg-step-choose");
+            var btnDel = document.getElementById("admin-mb-pet-dg-delete-confirm");
+            var btnMem = document.getElementById("admin-mb-pet-dg-memorial");
+            var btnOpenDel = document.getElementById("admin-mb-pet-dg-delete-open");
+            if (stCh) stCh.classList.add("hidden");
+            if (stDel) stDel.classList.remove("hidden");
+            if (btnMem) btnMem.classList.add("hidden");
+            if (btnOpenDel) btnOpenDel.classList.add("hidden");
+            if (btnDel) btnDel.classList.remove("hidden");
+            syncDeleteConfirmEnabled();
+            try {
+              document.getElementById("admin-mb-pet-dg-delete-input").focus();
+            } catch (eF) {}
+          });
+          document.getElementById("admin-mb-pet-dg-delete-confirm").addEventListener("click", function () {
+            var mid = String(__ecMbPetDgCtx.mascotDocId || "").trim();
+            if (!mid) return;
+            var inp = document.getElementById("admin-mb-pet-dg-delete-input");
+            if (
+              ecMbNormalizePetNameForConfirm(inp ? inp.value : "") !==
+              ecMbNormalizePetNameForConfirm(__ecMbPetDgCtx.displayName)
+            ) {
+              showToast("El nombre no coincide. Verificá mayúsculas y espacios.", false);
+              return;
+            }
+            closeAdminMbPetDowngradeModal();
+            showToast("Estamos procesando tu solicitud con respeto…", true);
+            runDeleteMascotBookProfile(mid).catch(function (e) {
+              showToast(e.message || "No se pudo eliminar el perfil.", false);
+            });
+          });
+          function goBackOrClose() {
+            if (__ecMbPetDgCtx.deleteStep) {
+              __ecMbPetDgCtx.deleteStep = false;
+              var stDel = document.getElementById("admin-mb-pet-dg-step-delete");
+              var stCh = document.getElementById("admin-mb-pet-dg-step-choose");
+              var btnDel = document.getElementById("admin-mb-pet-dg-delete-confirm");
+              var btnMem = document.getElementById("admin-mb-pet-dg-memorial");
+              var btnOpenDel = document.getElementById("admin-mb-pet-dg-delete-open");
+              if (stDel) stDel.classList.add("hidden");
+              if (stCh) stCh.classList.remove("hidden");
+              if (btnDel) {
+                btnDel.classList.add("hidden");
+                btnDel.disabled = true;
+              }
+              if (btnMem) btnMem.classList.remove("hidden");
+              if (btnOpenDel) btnOpenDel.classList.remove("hidden");
+              var inp2 = document.getElementById("admin-mb-pet-dg-delete-input");
+              if (inp2) inp2.value = "";
+            } else {
+              closeAdminMbPetDowngradeModal();
+            }
+          }
+          document.getElementById("admin-mb-pet-dg-back").addEventListener("click", goBackOrClose);
+          document.getElementById("admin-mb-pet-dg-cancel").addEventListener("click", function () {
+            closeAdminMbPetDowngradeModal();
+          });
+          document.getElementById("admin-mb-pet-dg-close-x").addEventListener("click", function () {
+            closeAdminMbPetDowngradeModal();
+          });
         }
 
         function ensurePhonePrefixOnEmpty(inputEl) {
@@ -3277,6 +3606,9 @@
             wireEcMascotSaveProShieldOnce();
           } catch (eW) {}
           var base = typeof __ecMascotFormBaseEditing === "boolean" ? __ecMascotFormBaseEditing : true;
+          try {
+            if (String((currentMascotData || {}).mbProfileStatus || "").toLowerCase() === "memorial") base = false;
+          } catch (eMemBase) {}
           var locked =
             !!uid &&
             !demoModeActive &&
@@ -3344,7 +3676,13 @@
             .where("ownerUid", "==", u)
             .get()
             .then(function (snap) {
-              return snap && typeof snap.size === "number" ? snap.size : 0;
+              if (!snap || typeof snap.forEach !== "function") return 0;
+              var c = 0;
+              snap.forEach(function (doc) {
+                var st = String((doc.data() || {}).mbProfileStatus || "active").toLowerCase();
+                if (st !== "memorial") c++;
+              });
+              return c;
             })
             .catch(function () {
               return (ecMascotTarjetasList || []).length;
@@ -5774,6 +6112,11 @@
               refreshPreview();
             }
           }
+          try {
+            var rib = document.getElementById("mascot-admin-memorial-ribbon");
+            var isMemorialProf = String(rawDoc.mbProfileStatus || "").toLowerCase() === "memorial";
+            if (rib) rib.classList.toggle("hidden", !isMemorialProf);
+          } catch (eRib) {}
           syncMascotMediaRemoveButtons();
           try {
             currentMascotData = rawDoc && typeof rawDoc === "object" ? Object.assign({}, rawDoc) : {};
@@ -6108,13 +6451,14 @@
           lista.forEach(function (item) {
             var docMid = String(item.docId || "").trim();
             if (!docMid) return;
+            var row = document.createElement("div");
+            row.className = "ec-sidebar-mascot-row";
             var btn = document.createElement("button");
             btn.type = "button";
             btn.className = "ec-sidebar-mis-perfiles__btn";
             btn.style.display = "flex";
             btn.style.alignItems = "center";
             btn.style.gap = "6px";
-            btn.style.width = "100%";
             btn.style.textAlign = "left";
             if (!ecMascotCreationMode && docMid === activeMid) btn.classList.add("ec-sidebar-mis-perfiles__btn--active");
             btn.setAttribute("data-doc-id", docMid);
@@ -6134,7 +6478,26 @@
             btn.addEventListener("click", function () {
               cambiarPerfilActivo(docMid);
             });
-            container.appendChild(btn);
+            row.appendChild(btn);
+            if (uid && !demoModeActive && currentApp === "mascotbook") {
+              var unreg = document.createElement("button");
+              unreg.type = "button";
+              unreg.className = "ec-sidebar-mascot-unregister";
+              unreg.setAttribute("aria-label", "Dar de baja perfil");
+              unreg.title = "Dar de baja perfil";
+              unreg.innerHTML = '<i class="fa-solid fa-hand-holding-heart" aria-hidden="true"></i>';
+              unreg.addEventListener("click", function (ev) {
+                try {
+                  ev.preventDefault();
+                  ev.stopPropagation();
+                } catch (eStop) {}
+                var rawName = String(item.nombre || "Sin nombre").trim();
+                var tid = ecMbResolveTarjetaDocIdForPublic(docMid);
+                openAdminMbPetDowngradeModal({ mascotDocId: docMid, displayName: rawName, tarjetaDocId: tid });
+              });
+              row.appendChild(unreg);
+            }
+            container.appendChild(row);
           });
         }
 
@@ -6152,6 +6515,7 @@
               var lista = [];
               snap.forEach(function (doc) {
                 var d = doc.data() || {};
+                if (String(d.mbProfileStatus || "active").toLowerCase() === "memorial") return;
                 lista.push({
                   docId: doc.id,
                   nombre: String(d.nombre || d.mascotaNombre || "Sin nombre").trim(),
@@ -6301,17 +6665,30 @@
                   mascotaNombre: String(x.mascotaNombre || "").trim() || "Sin nombre",
                 });
               });
-              ecMascotTarjetasList = list;
-              try {
-                var _petSel = document.getElementById("ec-pet-selector");
-                if (_petSel) _petSel.innerHTML = "";
-              } catch (eClrPet) {}
-              llenarSelectorMascotas(ecMascotTarjetasList);
-              _ecApplyPetSelectorChrome();
-              try {
-                ecRenderSidebarMascotasFromList(ecMascotTarjetasList);
-              } catch (eSb2) {}
-              return ecMaybeLoadBootMascotProfileAfterListRefresh(opts);
+              return db
+                .collection("mascotas")
+                .where("ownerUid", "==", user.uid)
+                .get()
+                .then(function (mSnap) {
+                  var mem = {};
+                  mSnap.forEach(function (md) {
+                    mem[md.id] = String((md.data() || {}).mbProfileStatus || "active").toLowerCase();
+                  });
+                  list = list.filter(function (row) {
+                    return mem[String(row.publicCardId || "").trim()] !== "memorial";
+                  });
+                  ecMascotTarjetasList = list;
+                  try {
+                    var _petSel = document.getElementById("ec-pet-selector");
+                    if (_petSel) _petSel.innerHTML = "";
+                  } catch (eClrPet) {}
+                  llenarSelectorMascotas(ecMascotTarjetasList);
+                  _ecApplyPetSelectorChrome();
+                  try {
+                    ecRenderSidebarMascotasFromList(ecMascotTarjetasList);
+                  } catch (eSb2) {}
+                  return ecMaybeLoadBootMascotProfileAfterListRefresh(opts);
+                });
             })
             .catch(function () {
               _ecApplyPetSelectorChrome();
@@ -7178,6 +7555,10 @@
             showToast("Iniciá sesión para guardar.", false);
             return Promise.resolve();
           }
+          if (String((currentMascotData || {}).mbProfileStatus || "").toLowerCase() === "memorial") {
+            showToast("Este perfil está en modo memorial (solo lectura).", false);
+            return Promise.resolve();
+          }
           if (isSavingBlockedByMembership()) {
             showToast("Membresía vencida o suspendida: no se puede guardar.", false);
             return Promise.resolve();
@@ -7247,6 +7628,10 @@
         function uploadMascotPrimaryMedia(kind, file) {
           if (!uid || !file) {
             if (!uid) showToast("Iniciá sesión para subir imágenes.", false);
+            return Promise.resolve();
+          }
+          if (String((currentMascotData || {}).mbProfileStatus || "").toLowerCase() === "memorial") {
+            showToast("Perfil en modo memorial: no se pueden cambiar las fotos.", false);
             return Promise.resolve();
           }
           if (isMascotbookProContentLocked()) {
@@ -7398,6 +7783,10 @@
           if (!uid) {
             wireDemoRegistrationLinks();
             openDemoSaveModal();
+            return;
+          }
+          if (String((currentMascotData || {}).mbProfileStatus || "").toLowerCase() === "memorial") {
+            showToast("Este perfil está en modo memorial (solo lectura). Conservamos las fotos tal como están.", false);
             return;
           }
           if (isMascotbookProContentLocked()) {
@@ -7947,30 +8336,25 @@
           });
         }
 
+        bindAdminMbPetDowngradeModal();
+
         var btnDelMascot = document.getElementById("btn-delete-mascot-profile");
         if (btnDelMascot) {
           btnDelMascot.addEventListener("click", function () {
             var mid = String(resolveMascotDocId() || "").trim();
             var u = String(uid || "").trim();
-            if (!u || mid !== u) {
-              showToast("No se puede eliminar este perfil.", false);
+            if (!u || !mid) {
+              showToast("No se puede gestionar este perfil con la sesión actual.", false);
               return;
             }
-            openAdminConfirmModal({
-              eyebrow: "Acción irreversible",
-              title: "¿Eliminar perfil MascotBook?",
-              bodyHtml:
-                "<p>Se eliminarán los datos del perfil en Firestore (colección <strong>mascotas</strong> y espejo en tu usuario). " +
-                "El enlace público dejará de mostrar la mascota.</p>" +
-                "<p>Los archivos en almacenamiento se borran en segundo plano cuando es posible.</p>",
-              danger: true,
-              confirmText: "Eliminar perfil",
-            }).then(function (ok) {
-              if (!ok) return;
-              runDeleteMascotBookProfile().catch(function (e) {
-                showToast(e.message || "No se pudo eliminar el perfil", false);
-              });
-            });
+            var rawName = "";
+            try {
+              var nomeEl = document.getElementById("m-nombre");
+              rawName = nomeEl ? String(nomeEl.value || "").trim() : "";
+            } catch (eNm) {}
+            if (!rawName) rawName = String((currentMascotData || {}).nombre || "").trim() || "Sin nombre";
+            var tid = ecMbResolveTarjetaDocIdForPublic(mid);
+            openAdminMbPetDowngradeModal({ mascotDocId: mid, displayName: rawName, tarjetaDocId: tid });
           });
         }
 

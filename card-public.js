@@ -345,6 +345,10 @@
         visitasMostradas: visDisplay,
         likes: Number(d.likes || 0) || 0,
       });
+
+      var memRibbon = document.getElementById("mascot-public-memorial-ribbon");
+      var isMemorialPublic = String(d.mbProfileStatus || "").toLowerCase() === "memorial";
+      if (memRibbon) memRibbon.classList.toggle("hidden", !isMemorialPublic);
     } catch (e) {
       console.error("[MascotBook] applyDoc error:", e);
     }
