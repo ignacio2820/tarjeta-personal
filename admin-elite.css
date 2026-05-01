@@ -4439,35 +4439,46 @@ html[data-ec-admin] .admin-root [class*="theme-item"] h4 {
 }
 
 .admin-modal-panel--mb-memorial-sky {
-  max-width: 26rem;
+  max-width: 28rem;
   width: calc(100vw - 2rem);
-  max-height: min(85vh, 32rem);
+  max-height: min(88vh, 36rem);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  padding: 1.85rem 1.95rem 1.75rem;
+  text-align: left;
+}
+
+.admin-modal-panel--mb-memorial-sky h4 {
+  margin-bottom: 0.65rem;
+}
+
+.admin-modal-panel--mb-memorial-sky .admin-modal-sub {
+  margin: 0 0 1.15rem;
+  line-height: 1.45;
 }
 
 .ec-mb-memorial-sky-list {
-  margin-top: 0.5rem;
+  margin-top: 0.35rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1rem;
   overflow-y: auto;
   flex: 1;
   min-height: 0;
-  max-height: min(52vh, 20rem);
-  padding-right: 0.15rem;
+  max-height: min(54vh, 22rem);
+  padding: 0.35rem 0.35rem 0.5rem 0;
 }
 
 .ec-mb-memorial-sky-row {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 0.65rem;
+  gap: 1rem;
   flex-wrap: wrap;
-  padding: 0.55rem 0.65rem;
-  border-radius: 0.65rem;
+  padding: 0.95rem 1.05rem;
+  border-radius: 0.75rem;
   border: 1px solid rgba(167, 139, 250, 0.35);
   background: rgba(255, 255, 255, 0.72);
   min-width: 0;
@@ -4499,17 +4510,53 @@ html[data-ec-admin] .admin-root [class*="theme-item"] h4 {
   gap: 0.25rem;
 }
 
+.ec-mb-memorial-sky-row__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.55rem;
+  flex: 0 0 auto;
+  min-width: 9.5rem;
+}
+
 .ec-mb-memorial-sky-row__link {
   flex: 0 0 auto;
   font-size: 0.72rem !important;
-  padding: 0.35rem 0.55rem !important;
+  padding: 0.4rem 0.65rem !important;
   white-space: nowrap;
+  text-align: center;
+  justify-content: center;
+}
+
+.ec-mb-memorial-sky-row__del {
+  font-size: 0.68rem !important;
+  padding: 0.35rem 0.5rem !important;
+  line-height: 1.25;
+  color: #b91c1c !important;
+  border-color: rgba(220, 38, 38, 0.45) !important;
+  background: rgba(254, 242, 242, 0.65) !important;
+  white-space: normal;
+  text-align: center;
+}
+
+.ec-mb-memorial-sky-row__del:hover {
+  background: rgba(254, 226, 226, 0.92) !important;
+}
+
+.admin-modal-panel--mb-memorial-sky .ec-mb-memorial-sky-footer {
+  margin-top: 1.35rem;
+  padding-top: 0.35rem;
 }
 
 @media (max-width: 480px) {
   .ec-mb-memorial-sky-row {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .ec-mb-memorial-sky-row__actions {
+    min-width: 0;
+    width: 100%;
   }
 
   .ec-mb-memorial-sky-row__link {

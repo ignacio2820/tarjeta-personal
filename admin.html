@@ -1459,7 +1459,7 @@
         </p>
         <div id="ec-mb-memorial-sky-list" class="ec-mb-memorial-sky-list" role="list"></div>
         <p id="ec-mb-memorial-sky-empty" class="admin-card-hint hidden" role="status">No hay compañeros en el Cielo de Mascotas.</p>
-        <div class="admin-modal-confirm-actions" style="margin-top: 1rem">
+        <div class="admin-modal-confirm-actions ec-mb-memorial-sky-footer">
           <button type="button" class="btn-outline" id="admin-mb-memorial-sky-done">Cerrar</button>
         </div>
       </div>
@@ -2139,6 +2139,13 @@
               if (ev.key === "Escape") onDone(false);
             }
             btnOk.onclick = function () {
+              if (opts.validateBeforeOk && typeof opts.validateBeforeOk === "function") {
+                try {
+                  if (!opts.validateBeforeOk()) return;
+                } catch (eVal) {
+                  return;
+                }
+              }
               onDone(true);
             };
             btnCancel.onclick = function () {
@@ -7453,6 +7460,48 @@
           if (m) m.classList.add("hidden");
         }
 
+        function requestMemorialSkyPermanentDelete(mascotDocId, displayName) {
+          var mid = String(mascotDocId || "").trim();
+          var name = String(displayName || "Sin nombre").trim();
+          if (!mid) return;
+          var body =
+            '<p class="admin-modal-sub" style="text-align:left;margin:0 0 0.75rem">' +
+            "Vamos a borrar por completo este perfil memorial, la tarjeta asociada y los archivos en la nube. " +
+            "Esta acción no se puede deshacer.</p>" +
+            '<p class="admin-card-hint" style="text-align:left;margin:0 0 0.5rem">Escribí el nombre exacto: <strong>' +
+            escapeAdminHtml(name) +
+            "</strong></p>" +
+            '<label class="field" style="text-align:left;display:block;margin:0 0 0.35rem">Confirmar nombre</label>' +
+            '<input type="text" id="ec-mb-memorial-sky-del-name-input" class="field-input" autocomplete="off" ' +
+            'placeholder="' +
+            escapeAdminHtml(name) +
+            '" style="width:100%;box-sizing:border-box" />';
+          openAdminConfirmModal({
+            danger: true,
+            eyebrow: "MascotBook",
+            title: "Eliminar definitivamente",
+            bodyHtml: body,
+            confirmText: "Eliminar para siempre",
+            validateBeforeOk: function () {
+              var inp = document.getElementById("ec-mb-memorial-sky-del-name-input");
+              if (
+                ecMbNormalizePetNameForConfirm(inp ? inp.value : "") !==
+                ecMbNormalizePetNameForConfirm(name)
+              ) {
+                showToast("El nombre no coincide. Verificá mayúsculas y espacios.", false);
+                return false;
+              }
+              return true;
+            },
+          }).then(function (ok) {
+            if (!ok) return;
+            showToast("Estamos procesando tu solicitud con respeto…", true);
+            runDeleteMascotBookProfile(mid).catch(function (e) {
+              showToast(e.message || "No se pudo eliminar el perfil.", false);
+            });
+          });
+        }
+
         function openAdminMbMemorialSkyModal() {
           if (!uid || demoModeActive || !firebase.firestore) {
             showToast("Iniciá sesión para ver el Cielo de Mascotas.", false);
@@ -7503,9 +7552,19 @@
                   escapeAdminHtml(r.nombre) +
                   '</span>' +
                   '<span class="ec-mb-memorial-sky-row__badge"><i class="fa-solid fa-feather-pointed" aria-hidden="true"></i> Memorial</span></div>' +
+                  '<div class="ec-mb-memorial-sky-row__actions">' +
                   '<a class="btn-outline ec-mb-memorial-sky-row__link" href="' +
                   escapeAdminHtml(pub) +
-                  '" target="_blank" rel="noopener noreferrer">Ver tarjeta</a>';
+                  '" target="_blank" rel="noopener noreferrer">Ver tarjeta</a>' +
+                  '<button type="button" class="btn-outline ec-mb-memorial-sky-row__del">Eliminar definitivamente</button>' +
+                  "</div>";
+                var btnDel = row.querySelector(".ec-mb-memorial-sky-row__del");
+                if (btnDel) {
+                  btnDel.addEventListener("click", function (ev) {
+                    ev.preventDefault();
+                    requestMemorialSkyPermanentDelete(r.id, r.nombre);
+                  });
+                }
                 listEl.appendChild(row);
               });
             })

@@ -118,29 +118,34 @@ function unitPriceMascotaAdicional() {
   return Number(process.env.MP_PRICE_MASCOTA_ADICIONAL || process.env.MP_UNIT_PRICE_MASCOTBOOK || 24999);
 }
 
-/** Descuento sobre unit_price de Mascota Adicional si ya hay ≥1 mascota con pago registrado (0.5 = 50%). */
+/** Descuento sobre unit_price de Mascota Adicional si ya hay ≥1 mascota activa (no memorial) (0.5 = 50%). */
 const MP_MASCOTA_ADICIONAL_MULTIMASCOTA_FACTOR = Math.min(
   1,
   Math.max(0.01, Number(process.env.MP_MASCOTA_ADICIONAL_MULTIMASCOTA_FACTOR || 0.5) || 0.5)
 );
 
 /**
- * Cuenta mascotas del usuario con pago confirmado (pago / mbProfilePaid / paid).
+ * Cuenta mascotas que ocupan cupo (excluye memorial por completo).
  */
-async function countPaidMascotasForOwner(uid) {
-  const u = String(uid || "").trim();
-  if (!u) return 0;
-  const admin = getAdmin();
-  const db = admin.firestore();
-  const snap = await db.collection("mascotas").where("ownerUid", "==", u).get();
+function countMascotasActiveSlots(countSnap) {
   let n = 0;
-  snap.forEach((doc) => {
+  countSnap.forEach((doc) => {
     const d = doc.data() || {};
-    if (d.pago === true || d.mbProfilePaid === true || d.paid === true) {
-      n += 1;
-    }
+    const st = String(d.mbProfileStatus ?? "")
+      .trim()
+      .toLowerCase();
+    if (st === "memorial") return;
+    n += 1;
   });
   return n;
+}
+
+async function countMascotasActiveSlotsForUid(uid) {
+  const u = String(uid || "").trim();
+  if (!u) return 0;
+  const db = getAdmin().firestore();
+  const snap = await db.collection("mascotas").where("ownerUid", "==", u).get();
+  return countMascotasActiveSlots(snap);
 }
 
 /**
@@ -934,7 +939,7 @@ exports.createMercadoPagoPreference = onCall({ secrets: [mpAccessToken], cors: t
   let items = [];
   let metaProducto = "";
   let multimascotaDiscountApplied = false;
-  let paidMascotasCount = 0;
+  let activeMascotasCount = 0;
   let mascotAddonEffectiveUnit = null;
 
   if (productoRaw === "elite_suscripcion") {
@@ -958,8 +963,8 @@ exports.createMercadoPagoPreference = onCall({ secrets: [mpAccessToken], cors: t
     const mascotId = String(data.mascotId || "").trim();
     const nuevaMascota = !!data.nuevaMascota || !mascotId;
     ext = buildMercadoPagoExternalReference({ producto: "mascota_adicional", uid, cantidad, nuevaMascota, mascotId });
-    paidMascotasCount = await countPaidMascotasForOwner(uid);
-    multimascotaDiscountApplied = paidMascotasCount >= 1;
+    activeMascotasCount = await countMascotasActiveSlotsForUid(uid);
+    multimascotaDiscountApplied = activeMascotasCount >= 1;
     const baseUnit = Number(unitPriceMascotaAdicional()) || 1;
     let unit = baseUnit;
     if (multimascotaDiscountApplied) {
@@ -972,7 +977,7 @@ exports.createMercadoPagoPreference = onCall({ secrets: [mpAccessToken], cors: t
           ? "Mascota Adicional · MascotBook (50% OFF multi-mascota)"
           : "Mascota Adicional · MascotBook",
         description: multimascotaDiscountApplied
-          ? "Beneficio: ya tenés al menos un perfil con pago confirmado"
+          ? "Beneficio: ya tenés al menos un perfil activo (multi-mascota)"
           : "Unidad adicional MascotBook",
         quantity: cantidad,
         currency_id: "ARS",
@@ -1088,7 +1093,7 @@ exports.createMercadoPagoPreference = onCall({ secrets: [mpAccessToken], cors: t
   };
   if (productoRaw === "mascota_adicional") {
     out.mascot_addon_multimascota_discount = multimascotaDiscountApplied;
-    out.mascot_addon_paid_mascotas_count = paidMascotasCount;
+    out.mascot_addon_active_mascotas_count = activeMascotasCount;
     if (mascotAddonEffectiveUnit != null) {
       out.mascot_addon_unit_price = mascotAddonEffectiveUnit;
     }
@@ -1098,24 +1103,8 @@ exports.createMercadoPagoPreference = onCall({ secrets: [mpAccessToken], cors: t
 
 /**
  * Crea tarjetas/{id} + mascotas/{id} en servidor: primer perfil gratis, plan activo/premium sin consumir crédito,
- * perfil extra requiere mascotbookExtraProfileCredits >= 1 (se descuenta 1).
+ * perfil extra requiere mascotbookExtraProfileCredits >= 1 (se descuenta 1). Membresía con role admin: siempre gratis.
  */
-/**
- * Cuenta solo mascotas que ocupan cupo (excluye memorial por completo).
- */
-function countMascotasActiveSlots(countSnap) {
-  let n = 0;
-  countSnap.forEach((doc) => {
-    const d = doc.data() || {};
-    const st = String(d.mbProfileStatus ?? "")
-      .trim()
-      .toLowerCase();
-    if (st === "memorial") return;
-    n += 1;
-  });
-  return n;
-}
-
 exports.allocateNewMascotProfile = onCall({ cors: true }, async (request) => {
   try {
     if (!request.auth || !request.auth.uid) {
@@ -1136,13 +1125,16 @@ exports.allocateNewMascotProfile = onCall({ cors: true }, async (request) => {
     const memRef = db.collection(col).doc(uid);
     const memSnap = await memRef.get();
     const m = memSnap.exists ? memSnap.data() || {} : {};
+    const isMembershipAdmin = String(m.role || "").trim().toLowerCase() === "admin";
     const hasSubscription =
       m.isPremium === true ||
       m.mascotbook_multi_unlocked === true ||
       String(m.mascotbook_status || "").toLowerCase() === "active";
     const credits = Number(m.mascotbookExtraProfileCredits || 0);
     let useCredit = false;
-    if (nActive < 1) {
+    if (isMembershipAdmin) {
+      useCredit = false;
+    } else if (nActive < 1) {
       useCredit = false;
     } else if (hasSubscription) {
       useCredit = false;
