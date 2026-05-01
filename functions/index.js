@@ -1100,91 +1100,112 @@ exports.createMercadoPagoPreference = onCall({ secrets: [mpAccessToken], cors: t
  * Crea tarjetas/{id} + mascotas/{id} en servidor: primer perfil gratis, plan activo/premium sin consumir crédito,
  * perfil extra requiere mascotbookExtraProfileCredits >= 1 (se descuenta 1).
  */
-exports.allocateNewMascotProfile = onCall({ cors: true }, async (request) => {
-  if (!request.auth || !request.auth.uid) {
-    throw new HttpsError("unauthenticated", "Sesión requerida");
-  }
-  const uid = request.auth.uid;
-  const initialName = String((request.data && request.data.initialName) || "")
-    .trim()
-    .slice(0, 200) || "Mi mascota";
-  const admin = getAdmin();
-  const db = admin.firestore();
-  const countSnap = await db.collection("mascotas").where("ownerUid", "==", uid).get();
-  /** Perfiles activos (excluye memorial): mismo criterio que admin `ecFetchMascotasCountForOwner`. */
-  let nActive = 0;
+/**
+ * Cuenta solo mascotas que ocupan cupo (excluye memorial por completo).
+ */
+function countMascotasActiveSlots(countSnap) {
+  let n = 0;
   countSnap.forEach((doc) => {
-    const st = String((doc.data() || {}).mbProfileStatus || "active").toLowerCase();
-    if (st !== "memorial") nActive += 1;
+    const d = doc.data() || {};
+    const st = String(d.mbProfileStatus ?? "")
+      .trim()
+      .toLowerCase();
+    if (st === "memorial") return;
+    n += 1;
   });
-  if (nActive >= 5) {
-    throw new HttpsError("resource-exhausted", "Alcanzaste el límite de 5 perfiles MascotBook.");
-  }
-  const col = membershipCollectionName();
-  const memRef = db.collection(col).doc(uid);
-  const memSnap = await memRef.get();
-  const m = memSnap.exists ? memSnap.data() || {} : {};
-  const hasSubscription =
-    m.isPremium === true ||
-    m.mascotbook_multi_unlocked === true ||
-    String(m.mascotbook_status || "").toLowerCase() === "active";
-  const credits = Number(m.mascotbookExtraProfileCredits || 0);
-  let useCredit = false;
-  if (nActive < 1) {
-    useCredit = false;
-  } else if (hasSubscription) {
-    useCredit = false;
-  } else if (credits >= 1) {
-    useCredit = true;
-  } else {
-    throw new HttpsError("failed-precondition", "Se requiere activar un perfil adicional (pago pendiente).");
-  }
+  return n;
+}
 
-  const tarRef = db.collection("tarjetas").doc();
-  const mascRef = db.collection("mascotas").doc();
-  const email = request.auth.token && request.auth.token.email ? String(request.auth.token.email).slice(0, 256) : "";
-  const ts = admin.firestore.FieldValue.serverTimestamp();
-
-  await db.runTransaction(async (tx) => {
-    if (useCredit) {
-      const s = await tx.get(memRef);
-      const md = s.exists ? s.data() || {} : {};
-      const cr = Number(md.mascotbookExtraProfileCredits || 0);
-      if (cr < 1) {
-        throw new HttpsError("failed-precondition", "Sin créditos de perfil disponibles.");
-      }
-      tx.set(
-        memRef,
-        {
-          mascotbookExtraProfileCredits: cr - 1,
-          updatedAt: ts,
-        },
-        { merge: true }
-      );
+exports.allocateNewMascotProfile = onCall({ cors: true }, async (request) => {
+  try {
+    if (!request.auth || !request.auth.uid) {
+      throw new HttpsError("unauthenticated", "Sesión requerida");
     }
-    tx.set(tarRef, {
-      ownerUid: uid,
-      ownerEmail: email,
-      mascotaNombre: initialName,
-      publicCardId: mascRef.id,
-      tipo: "mascotbook",
-      createdAt: ts,
-    });
-    tx.set(
-      mascRef,
-      {
-        nombre: initialName,
+    const uid = request.auth.uid;
+    const initialName = String((request.data && request.data.initialName) || "")
+      .trim()
+      .slice(0, 200) || "Mi mascota";
+    const admin = getAdmin();
+    const db = admin.firestore();
+    const countSnap = await db.collection("mascotas").where("ownerUid", "==", uid).get();
+    const nActive = countMascotasActiveSlots(countSnap);
+    if (nActive >= 5) {
+      throw new HttpsError("resource-exhausted", "Alcanzaste el límite de 5 perfiles MascotBook.");
+    }
+    const col = membershipCollectionName();
+    const memRef = db.collection(col).doc(uid);
+    const memSnap = await memRef.get();
+    const m = memSnap.exists ? memSnap.data() || {} : {};
+    const hasSubscription =
+      m.isPremium === true ||
+      m.mascotbook_multi_unlocked === true ||
+      String(m.mascotbook_status || "").toLowerCase() === "active";
+    const credits = Number(m.mascotbookExtraProfileCredits || 0);
+    let useCredit = false;
+    if (nActive < 1) {
+      useCredit = false;
+    } else if (hasSubscription) {
+      useCredit = false;
+    } else if (credits >= 1) {
+      useCredit = true;
+    } else {
+      throw new HttpsError("failed-precondition", "Se requiere activar un perfil adicional (pago pendiente).");
+    }
+
+    const tarRef = db.collection("tarjetas").doc();
+    const mascRef = db.collection("mascotas").doc();
+    const email = request.auth.token && request.auth.token.email ? String(request.auth.token.email).slice(0, 256) : "";
+    const ts = admin.firestore.FieldValue.serverTimestamp();
+
+    await db.runTransaction(async (tx) => {
+      if (useCredit) {
+        const s = await tx.get(memRef);
+        const md = s.exists ? s.data() || {} : {};
+        const cr = Number(md.mascotbookExtraProfileCredits || 0);
+        if (cr < 1) {
+          throw new HttpsError("failed-precondition", "Sin créditos de perfil disponibles.");
+        }
+        tx.set(
+          memRef,
+          {
+            mascotbookExtraProfileCredits: cr - 1,
+            updatedAt: ts,
+          },
+          { merge: true }
+        );
+      }
+      tx.set(tarRef, {
         ownerUid: uid,
         ownerEmail: email,
-        mascotId: mascRef.id,
+        mascotaNombre: initialName,
+        publicCardId: mascRef.id,
+        tipo: "mascotbook",
         createdAt: ts,
-        updatedAt: ts,
-      },
-      { merge: false }
-    );
-  });
+      });
+      tx.set(
+        mascRef,
+        {
+          nombre: initialName,
+          ownerUid: uid,
+          ownerEmail: email,
+          mascotId: mascRef.id,
+          mbProfileStatus: "active",
+          createdAt: ts,
+          updatedAt: ts,
+        },
+        { merge: false }
+      );
+    });
 
-  return { tarjetaDocId: tarRef.id, mascotDocId: mascRef.id };
+    return { tarjetaDocId: tarRef.id, mascotDocId: mascRef.id };
+  } catch (err) {
+    if (err instanceof HttpsError) throw err;
+    console.error("[allocateNewMascotProfile]", err);
+    throw new HttpsError(
+      "failed-precondition",
+      "No se pudo crear el perfil. Si el problema continúa, cerrá sesión y volvé a intentar."
+    );
+  }
 });
 
 /**

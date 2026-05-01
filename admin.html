@@ -405,13 +405,19 @@
               <h3 id="ec-sidebar-mis-perfiles-title" class="ec-sidebar-mis-perfiles__title">Mis Perfiles</h3>
             </div>
             <div id="ec-sidebar-mis-perfiles-list" class="ec-sidebar-mis-perfiles__list" role="list"></div>
-            <button type="button" class="ec-sidebar-memorial-sky-link" id="ec-sidebar-btn-memorial-sky">
-              <i class="fa-solid fa-cloud" aria-hidden="true"></i> Ver Cielo de Mascotas
-            </button>
             <p id="ec-sidebar-active-mascot-name" class="ec-sidebar-mis-perfiles__active-caption hidden" aria-live="polite"></p>
-            <button type="button" class="ec-sidebar-mis-perfiles__new" id="ec-sidebar-btn-nueva-mascota">
-              + Agregar Mascota
-            </button>
+            <div class="ec-sidebar-mis-perfiles__actions" role="group" aria-label="Acciones de perfiles MascotBook">
+              <button type="button" class="ec-sidebar-mis-perfiles__new" id="ec-sidebar-btn-nueva-mascota">
+                + Agregar Mascota
+              </button>
+              <button type="button" class="ec-sidebar-memorial-sky-btn" id="ec-sidebar-btn-memorial-sky">
+                <span class="ec-sidebar-memorial-sky-btn__inner">
+                  <i class="fa-solid fa-cloud" aria-hidden="true"></i>
+                  <span class="ec-sidebar-memorial-sky-btn__title">Cielo de Mascotas</span>
+                </span>
+                <span class="ec-sidebar-memorial-sky-btn__sub">Ver perfiles en modo memorial</span>
+              </button>
+            </div>
           </div>
           <div id="theme-panel" class="theme-panel hidden">
             <div class="mascot-side-brand">
@@ -1835,6 +1841,7 @@
                   ownerUid: uid,
                   ownerEmail: email,
                   mascotId: mascRef.id,
+                  mbProfileStatus: "active",
                   createdAt: ts,
                   updatedAt: ts,
                 },
