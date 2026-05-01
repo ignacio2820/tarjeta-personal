@@ -1111,8 +1111,13 @@ exports.allocateNewMascotProfile = onCall({ cors: true }, async (request) => {
   const admin = getAdmin();
   const db = admin.firestore();
   const countSnap = await db.collection("mascotas").where("ownerUid", "==", uid).get();
-  const n = countSnap.size;
-  if (n >= 5) {
+  /** Perfiles activos (excluye memorial): mismo criterio que admin `ecFetchMascotasCountForOwner`. */
+  let nActive = 0;
+  countSnap.forEach((doc) => {
+    const st = String((doc.data() || {}).mbProfileStatus || "active").toLowerCase();
+    if (st !== "memorial") nActive += 1;
+  });
+  if (nActive >= 5) {
     throw new HttpsError("resource-exhausted", "Alcanzaste el límite de 5 perfiles MascotBook.");
   }
   const col = membershipCollectionName();
@@ -1125,7 +1130,7 @@ exports.allocateNewMascotProfile = onCall({ cors: true }, async (request) => {
     String(m.mascotbook_status || "").toLowerCase() === "active";
   const credits = Number(m.mascotbookExtraProfileCredits || 0);
   let useCredit = false;
-  if (n < 1) {
+  if (nActive < 1) {
     useCredit = false;
   } else if (hasSubscription) {
     useCredit = false;

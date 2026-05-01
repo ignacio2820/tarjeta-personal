@@ -405,6 +405,9 @@
               <h3 id="ec-sidebar-mis-perfiles-title" class="ec-sidebar-mis-perfiles__title">Mis Perfiles</h3>
             </div>
             <div id="ec-sidebar-mis-perfiles-list" class="ec-sidebar-mis-perfiles__list" role="list"></div>
+            <button type="button" class="ec-sidebar-memorial-sky-link" id="ec-sidebar-btn-memorial-sky">
+              <i class="fa-solid fa-cloud" aria-hidden="true"></i> Ver Cielo de Mascotas
+            </button>
             <p id="ec-sidebar-active-mascot-name" class="ec-sidebar-mis-perfiles__active-caption hidden" aria-live="polite"></p>
             <button type="button" class="ec-sidebar-mis-perfiles__new" id="ec-sidebar-btn-nueva-mascota">
               + Agregar Mascota
@@ -1429,6 +1432,29 @@
           <button type="button" class="btn-solid btn-admin-chip--danger hidden" id="admin-mb-pet-dg-delete-confirm" disabled>
             Eliminar para siempre
           </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="admin-mb-memorial-sky-modal"
+      class="admin-modal admin-modal--blocking admin-modal--mb-memorial-sky hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="admin-mb-memorial-sky-title"
+    >
+      <div class="admin-modal-panel admin-modal-panel--mb-memorial-sky">
+        <button type="button" class="admin-modal-close" id="admin-mb-memorial-sky-close" aria-label="Cerrar">×</button>
+        <p class="admin-mb-pet-dg-eyebrow">MascotBook</p>
+        <h4 id="admin-mb-memorial-sky-title">Cielo de Mascotas</h4>
+        <p class="admin-modal-sub">
+          Estos perfiles siguen con vos en modo memorial: conservamos las fotos y la tarjeta pública como recuerdo. No aparecen en la lista
+          activa para no mezclarlos con el día a día.
+        </p>
+        <div id="ec-mb-memorial-sky-list" class="ec-mb-memorial-sky-list" role="list"></div>
+        <p id="ec-mb-memorial-sky-empty" class="admin-card-hint hidden" role="status">No hay compañeros en el Cielo de Mascotas.</p>
+        <div class="admin-modal-confirm-actions" style="margin-top: 1rem">
+          <button type="button" class="btn-outline" id="admin-mb-memorial-sky-done">Cerrar</button>
         </div>
       </div>
     </div>
@@ -7415,9 +7441,95 @@
           }
         }
 
+        function closeAdminMbMemorialSkyModal() {
+          var m = document.getElementById("admin-mb-memorial-sky-modal");
+          if (m) m.classList.add("hidden");
+        }
+
+        function openAdminMbMemorialSkyModal() {
+          if (!uid || demoModeActive || !firebase.firestore) {
+            showToast("Iniciá sesión para ver el Cielo de Mascotas.", false);
+            return;
+          }
+          var listEl = document.getElementById("ec-mb-memorial-sky-list");
+          var emptyEl = document.getElementById("ec-mb-memorial-sky-empty");
+          var modal = document.getElementById("admin-mb-memorial-sky-modal");
+          if (!listEl || !modal) return;
+          listEl.innerHTML = '<p class="admin-card-hint" style="margin:0">Cargando…</p>';
+          if (emptyEl) emptyEl.classList.add("hidden");
+          modal.classList.remove("hidden");
+          firebase
+            .firestore()
+            .collection("mascotas")
+            .where("ownerUid", "==", uid)
+            .get()
+            .then(function (snap) {
+              listEl.innerHTML = "";
+              var rows = [];
+              snap.forEach(function (doc) {
+                var d = doc.data() || {};
+                if (String(d.mbProfileStatus || "").toLowerCase() !== "memorial") return;
+                rows.push({
+                  id: doc.id,
+                  nombre: String(d.nombre || d.mascotaNombre || "Sin nombre").trim(),
+                });
+              });
+              if (!rows.length) {
+                if (emptyEl) emptyEl.classList.remove("hidden");
+                return;
+              }
+              rows.sort(function (a, b) {
+                return a.nombre.localeCompare(b.nombre, "es");
+              });
+              var origin = "";
+              try {
+                origin = window.location.origin || "";
+              } catch (eO) {}
+              rows.forEach(function (r) {
+                var row = document.createElement("div");
+                row.className = "ec-mb-memorial-sky-row";
+                row.setAttribute("role", "listitem");
+                var pub = origin + "/card.html?id=" + encodeURIComponent(r.id) + "&view=pet";
+                row.innerHTML =
+                  '<div class="ec-mb-memorial-sky-row__main">' +
+                  '<span class="ec-mb-memorial-sky-row__name">' +
+                  escapeAdminHtml(r.nombre) +
+                  '</span>' +
+                  '<span class="ec-mb-memorial-sky-row__badge"><i class="fa-solid fa-feather-pointed" aria-hidden="true"></i> Memorial</span></div>' +
+                  '<a class="btn-outline ec-mb-memorial-sky-row__link" href="' +
+                  escapeAdminHtml(pub) +
+                  '" target="_blank" rel="noopener noreferrer">Ver tarjeta</a>';
+                listEl.appendChild(row);
+              });
+            })
+            .catch(function (err) {
+              listEl.innerHTML = "";
+              showToast(err.message || "No se pudo cargar el Cielo de Mascotas.", false);
+              closeAdminMbMemorialSkyModal();
+            });
+        }
+
+        function wireMemorialSkyModalOnce() {
+          if (window.__ecMbMemorialSkyWired) return;
+          window.__ecMbMemorialSkyWired = true;
+          var btn = document.getElementById("ec-sidebar-btn-memorial-sky");
+          var m = document.getElementById("admin-mb-memorial-sky-modal");
+          var c1 = document.getElementById("admin-mb-memorial-sky-close");
+          var c2 = document.getElementById("admin-mb-memorial-sky-done");
+          if (btn) btn.addEventListener("click", openAdminMbMemorialSkyModal);
+          if (c1) c1.addEventListener("click", closeAdminMbMemorialSkyModal);
+          if (c2) c2.addEventListener("click", closeAdminMbMemorialSkyModal);
+          if (m) {
+            m.addEventListener("click", function (ev) {
+              if (ev.target === m) closeAdminMbMemorialSkyModal();
+            });
+          }
+        }
+
         function ecWireSidebarMisPerfilesOnce() {
           if (ecWireSidebarMisPerfilesOnce._ok) return;
           ecWireSidebarMisPerfilesOnce._ok = true;
+          wireMemorialSkyModalOnce();
           var btn = document.getElementById("ec-sidebar-btn-nueva-mascota");
           if (btn) {
             btn.addEventListener("click", function () {
