@@ -1161,6 +1161,9 @@ exports.allocateNewMascotProfile = onCall({ cors: true }, async (request) => {
     const initialName = String((request.data && request.data.initialName) || "")
       .trim()
       .slice(0, 200) || "Mi mascota";
+    const initialRaza = String((request.data && request.data.raza) || "")
+      .trim()
+      .slice(0, 120);
     const admin = getAdmin();
     const db = admin.firestore();
 
@@ -1232,25 +1235,33 @@ exports.allocateNewMascotProfile = onCall({ cors: true }, async (request) => {
         tipo: "mascotbook",
         createdAt: ts,
       });
-      tx.set(
-        mascRef,
-        {
-          nombre: initialName,
-          ownerUid: uid,
-          ownerEmail: email,
-          mascotId: mascRef.id,
-          mbProfileStatus: "active",
-          createdAt: ts,
-          updatedAt: ts,
-        },
-        { merge: false }
-      );
+      const mascPayload = {
+        nombre: initialName,
+        ownerUid: uid,
+        ownerEmail: email,
+        mascotId: mascRef.id,
+        mbProfileStatus: "active",
+        createdAt: ts,
+        updatedAt: ts,
+      };
+      if (initialRaza) {
+        mascPayload.raza = initialRaza;
+      }
+      tx.set(mascRef, mascPayload, { merge: false });
     });
 
+    console.log("[allocateNewMascotProfile] ok", {
+      uid,
+      tarjetaDocId: tarRef.id,
+      mascotDocId: mascRef.id,
+    });
     return { tarjetaDocId: tarRef.id, mascotDocId: mascRef.id };
   } catch (err) {
     if (err instanceof HttpsError) throw err;
-    console.error("[allocateNewMascotProfile]", err);
+    console.error("[allocateNewMascotProfile] error", {
+      message: err && err.message,
+      stack: err && err.stack,
+    });
     throw new HttpsError(
       "failed-precondition",
       "No se pudo crear el perfil. Si el problema continúa, cerrá sesión y volvé a intentar."

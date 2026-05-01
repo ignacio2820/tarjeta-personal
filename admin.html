@@ -13,7 +13,7 @@
       })();
     </script>
     <meta charset="UTF-8" />
-    <meta name="ec-asset-version" content="2026021113" />
+    <meta name="ec-asset-version" content="2026021114" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EliteCard · Agencia WebElite</title>
     <meta name="theme-color" content="#ffffff" />
@@ -21,7 +21,7 @@
     <link rel="shortcut icon" href="assets/logo10.png?v=4" />
     <link rel="apple-touch-icon" href="assets/logo10.png?v=4" />
     <script>
-      window.__EC_ADMIN_ASSET_VER = "2026021113";
+      window.__EC_ADMIN_ASSET_VER = "2026021114";
       window.__EC_ADMIN_ASSET_TS = Date.now();
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -3049,10 +3049,15 @@
 
         function isSavingBlockedByMembership() {
           if (!uid) return false;
+          var Sub = window.EliteCardAdminSubscription;
+          var user = firebase.auth && firebase.auth().currentUser;
+          if (Sub && user && Sub.isPerpetualAccess(uid, user.email || "", lastAccountData || {})) return false;
+          try {
+            if (typeof ecMbShouldSkipMascotPaywall === "function" && ecMbShouldSkipMascotPaywall()) return false;
+          } catch (eSk) {}
           var st = String(lastMembershipData.status || lastAccountData.status || "").toLowerCase();
           if (st === "suspended" || st === "expired") return true;
-          var Sub = window.EliteCardAdminSubscription;
-          var merged = Object.assign({}, lastLegacyAccountData || {}, lastMembershipData || {});
+          var merged = Object.assign({}, lastMembershipData || {}, lastLegacyAccountData || {});
           if (Sub && typeof Sub.isVencimientoMembresiaPast === "function" && Sub.isVencimientoMembresiaPast(merged)) {
             return true;
           }
@@ -3126,6 +3131,34 @@
           if (String(data.membership_admin_bypass || "").toLowerCase() === "true") return true;
           if (String(data.skip_checkout || "").toLowerCase() === "true") return true;
           return false;
+        }
+
+        function ecNormalizeAllocateNewProfileResult(res) {
+          var d = (res && res.data) || {};
+          if (d && typeof d === "object" && d.data && typeof d.data === "object") {
+            if (d.data.tarjetaDocId || d.data.mascotDocId) {
+              d = Object.assign({}, d, d.data);
+            }
+          }
+          return d;
+        }
+
+        function ecLogMascotBookCreateError(e, phase) {
+          var code = String((e && e.code) || "");
+          var msg = String((e && e.message) || e || "");
+          var details = e && e.details;
+          var blob = String(code + " " + msg).toLowerCase();
+          console.error("[MascotBook creación" + (phase ? " · " + phase : "") + "]", {
+            code: code || "(sin código)",
+            message: msg,
+            details: details,
+            hints: {
+              permisosFirestore: blob.indexOf("permission") >= 0,
+              sesionOCallable: blob.indexOf("unauthenticated") >= 0,
+              parametros: blob.indexOf("invalid-argument") >= 0,
+              reglasNegocioOcupos: blob.indexOf("failed-precondition") >= 0 || blob.indexOf("resource-exhausted") >= 0,
+            },
+          });
         }
 
         function generarPreferenciaPago(idPerfil, tipoPlan, mpOpts) {
@@ -7164,7 +7197,7 @@
                   if (typeof onDone === "function") onDone();
                 })
                 .catch(function (e) {
-                  console.error(e);
+                  ecLogMascotBookCreateError(e, "merge nombre en Firestore");
                   showToast(e.message || "No se pudo aplicar el nombre", false);
                 });
             }
@@ -7173,12 +7206,28 @@
                 if (!window.__ecFirebaseFunctions) {
                   return allocateAndWriteMascotStubs(nm0).then(mergeNameFirestoreThenBind);
                 }
+                var razaOpt = "";
+                try {
+                  var elMz = document.getElementById("m-raza");
+                  if (elMz) razaOpt = String(elMz.value || "").trim().slice(0, 120);
+                } catch (ez) {}
+                var allocPayload = { initialName: nm0 };
+                if (razaOpt) allocPayload.raza = razaOpt;
                 return window.__ecFirebaseFunctions
-                  .httpsCallable("allocateNewMascotProfile")({ initialName: nm0 })
+                  .httpsCallable("allocateNewMascotProfile")(allocPayload)
                   .then(function (res) {
-                    var d = (res && res.data) || {};
+                    var d = ecNormalizeAllocateNewProfileResult(res);
                     currentTarjetaDocId = String(d.tarjetaDocId || "").trim();
                     currentMascotShareId = String(d.mascotDocId || "").trim();
+                    if (!currentTarjetaDocId || !currentMascotShareId) {
+                      ecLogMascotBookCreateError(
+                        { code: "invalid-response", message: "allocateNewMascotProfile sin tarjetaDocId/mascotDocId", details: d },
+                        "parse respuesta"
+                      );
+                      return Promise.reject(
+                        new Error("Respuesta incompleta del servidor (faltan IDs de perfil). Revisá la consola.")
+                      );
+                    }
                     try {
                       window.__ecTarjetaDocId = String(currentTarjetaDocId || "");
                       window.currentDocId = String(currentMascotShareId || "");
@@ -7188,6 +7237,7 @@
                   });
               }
               startAllocateThenMerge().catch(function (e) {
+                ecLogMascotBookCreateError(e, "allocateNewMascotProfile");
                 var raw = (e && (e.message || (e.details && e.details.message))) || String(e || "");
                 var msg = String(raw || "No se pudo crear el perfil");
                 var code = String((e && e.code) || "");
@@ -7203,7 +7253,6 @@
                 ) {
                   openAdminMascotProtectCheckoutModal(String(initialName || "").trim() || "tu compañero");
                 }
-                console.error(e);
                 showToast(msg, false);
               });
               return;

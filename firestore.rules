@@ -191,6 +191,16 @@ service cloud.firestore {
       return m != null && m.keys().hasAny(['role']) && m.role == 'admin';
     }
 
+    /** Admin en membresía /users o en legacy /usuarios (mismo criterio que el panel y Cloud Functions). */
+    function mbUidEffectiveAdmin(uid) {
+      return mbMemIsAdmin(mbMembershipData(uid))
+        || (
+          exists(/databases/$(database)/documents/usuarios/$(uid))
+          && get(/databases/$(database)/documents/usuarios/$(uid)).data.keys().hasAny(['role'])
+          && get(/databases/$(database)/documents/usuarios/$(uid)).data.role == 'admin'
+        );
+    }
+
     function mbMemGlobalSuspendedExpired(m) {
       return m != null && m.keys().hasAny(['status'])
         && (m.status == 'suspended' || m.status == 'expired');
@@ -234,8 +244,8 @@ service cloud.firestore {
         && request.time > mbMemTrialStartTs(m) + duration.value(7, 'd');
     }
 
-    function mbUserLockedFromMem(m) {
-      return !mbMemIsAdmin(m)
+    function mbUserLockedFromMem(uid, m) {
+      return !mbUidEffectiveAdmin(uid)
         && (
           mbMemGlobalSuspendedExpired(m)
           || mbMemVencimientoPast(m)
@@ -245,7 +255,8 @@ service cloud.firestore {
     }
 
     function mbUserMascotbookProContentLocked(uid) {
-      return mbMembershipData(uid) != null && mbUserLockedFromMem(mbMembershipData(uid));
+      let m = mbMembershipData(uid);
+      return m != null && mbUserLockedFromMem(uid, m);
     }
 
     function mbLostActiveData(d) {
