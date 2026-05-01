@@ -1411,6 +1411,7 @@
         document.write('<script src="ec-silos.js?v=' + t + '"><\/script>');
         document.write('<script src="auth-navbar-user.js?v=' + t + '"><\/script>');
         document.write('<script src="admin.js?v=' + t + '"><\/script>');
+        document.write('<script src="ec-image-compress.js?v=' + t + '"><\/script>');
         document.write('<script src="elite-mail-sig.js?v=' + t + '"><\/script>');
       })();
     </script>
@@ -5568,6 +5569,7 @@
           var safeName = String(file.name || "foto").replace(/\W/g, "_");
           var path =
             ecMascotaStorageBasePath() + "/galeria_slot_" + (idx + 1) + "_" + Date.now() + "_" + safeName;
+          showToast("Optimizando y subiendo foto…", true);
           putFile(path, file)
             .then(function (newUrl) {
               var next = lastMascotGallerySlots.slice();
@@ -7216,8 +7218,23 @@
 
         function putFile(path, file) {
           var ref = firebase.storage().ref(path);
-          return ref.put(file).then(function () {
-            return ref.getDownloadURL();
+          var compressFn = window.EC_compressImageForUpload;
+          var defaults = window.EC_imageCompressDefaults || {};
+          var prep =
+            typeof compressFn === "function"
+              ? compressFn(file, defaults).catch(function () {
+                  return file;
+                })
+              : Promise.resolve(file);
+          return prep.then(function (toUpload) {
+            var blob = toUpload || file;
+            var contentType =
+              blob && blob.type && String(blob.type).indexOf("image/") === 0
+                ? blob.type
+                : file.type || "application/octet-stream";
+            return ref.put(blob, { contentType: contentType }).then(function () {
+              return ref.getDownloadURL();
+            });
           });
         }
 
@@ -7249,7 +7266,7 @@
           var path = isProfile
             ? base + "/fotoPerfil_" + Date.now() + "_" + safe
             : base + "/cabecera_" + Date.now() + "_" + safe;
-          showToast("Guardando imagen...", true);
+          showToast("Optimizando y subiendo imagen…", true);
           return putFile(path, file)
             .then(function (url) {
               var patch = {
@@ -7312,7 +7329,7 @@
           } else {
             return Promise.resolve();
           }
-          showToast("Guardando imagen...", true);
+          showToast("Optimizando y subiendo imagen…", true);
           return putFile(path, file)
             .then(function (url) {
               var patch = {
