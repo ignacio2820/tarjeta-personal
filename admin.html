@@ -13,7 +13,7 @@
       })();
     </script>
     <meta charset="UTF-8" />
-    <meta name="ec-asset-version" content="2026021121" />
+    <meta name="ec-asset-version" content="2026021124" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EliteCard · Agencia WebElite</title>
     <meta name="theme-color" content="#ffffff" />
@@ -21,7 +21,7 @@
     <link rel="shortcut icon" href="assets/logo10.png?v=4" />
     <link rel="apple-touch-icon" href="assets/logo10.png?v=4" />
     <script>
-      window.__EC_ADMIN_ASSET_VER = "2026021121";
+      window.__EC_ADMIN_ASSET_VER = "2026021124";
       window.__EC_ADMIN_ASSET_TS = Date.now();
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -719,19 +719,40 @@
           </div>
 
           <div id="form-mascot" class="form-panel form-panel--mascot hidden">
-            <div class="mascot-admin-hero">
-              <span class="mascot-admin-logo" aria-hidden="true"><i class="fa-solid fa-paw"></i></span>
-              <div>
-                <h2 class="form-mascot-title">MascotBook Pro</h2>
-                <p class="mascot-admin-tagline">Perfil premium con salud estructurada · Agencia WebElite</p>
+            <div class="mascot-admin-hero mb-mascot-hero-banner">
+              <div class="mb-mascot-hero-banner__shell">
+                <div class="mb-mascot-hero-banner__inner">
+                  <div class="mb-mascot-hero-banner__left">
+                    <span class="mb-mascot-hero-banner__paw" aria-hidden="true"><i class="fa-solid fa-paw"></i></span>
+                    <div class="mb-mascot-hero-banner__titles">
+                      <h2 class="form-mascot-title mb-mascot-hero-banner__title">MascotBook Pro</h2>
+                      <p class="mascot-admin-tagline mb-mascot-hero-banner__tagline">
+                        El perfil digital que protege y conecta a tu mascota
+                      </p>
+                    </div>
+                  </div>
+                  <div class="mb-mascot-hero-banner__right">
+                    <div class="mb-mascot-hero-banner__badges" aria-hidden="true">
+                      <span class="mb-mascot-hero-banner__badge"
+                        ><span class="mb-mascot-hero-banner__badge-ico" aria-hidden="true">🏥</span> Ficha médica digital</span
+                      >
+                      <span class="mb-mascot-hero-banner__badge"
+                        ><span class="mb-mascot-hero-banner__badge-ico" aria-hidden="true">📍</span> Ubicación en QR</span
+                      >
+                      <span class="mb-mascot-hero-banner__badge"
+                        ><span class="mb-mascot-hero-banner__badge-ico" aria-hidden="true">🐕</span> Perfil social</span
+                      >
+                    </div>
+                    <button type="button" class="btn-outline btn-mascot-share mb-mascot-hero-banner__share" id="btn-mascot-share-card">
+                      <i class="fa-solid fa-share-nodes" aria-hidden="true"></i> Compartir Tarjeta
+                    </button>
+                  </div>
+                </div>
                 <div id="mascot-admin-memorial-ribbon" class="mascot-admin-memorial-ribbon hidden" role="status">
                   <i class="fa-solid fa-feather-pointed" aria-hidden="true"></i>
                   <span>Perfil en modo memorial · solo lectura · las fotos se conservan</span>
                 </div>
               </div>
-              <button type="button" class="btn-outline btn-mascot-share" id="btn-mascot-share-card">
-                <i class="fa-solid fa-share-nodes" aria-hidden="true"></i> Compartir Tarjeta
-              </button>
             </div>
 
             <div class="mb-work-tabs" role="tablist" aria-label="Secciones MascotBook">
@@ -746,6 +767,9 @@
                   <h3 id="mb-card-id-title" class="mascot-panel-card__title">
                     <i class="fa-solid fa-id-card" aria-hidden="true"></i> Identidad básica
                   </h3>
+                  <div class="mb-mb-value-callout mb-mb-value-callout--identity" role="note">
+                    ✨ Estos datos aparecen en la tarjeta pública que escaneará quien encuentre a tu mascota.
+                  </div>
                   <p class="mascot-panel-card__hint">Datos principales del perfil en formato compacto para escritorio.</p>
                   <div class="mascot-table-wrap mascot-identidad-body">
                   <div class="field field-upload field-upload--mascot-primary" data-mb-pro-gate="mascot-photos">
@@ -801,6 +825,9 @@
                   <h4 id="mb-card-story-title" class="mascot-panel-card__subtitle mascot-panel-card__subtitle--spaced">
                     <i class="fa-solid fa-pen-nib" aria-hidden="true"></i> Historia y muro
                   </h4>
+                  <div class="mb-mb-value-callout mb-mb-value-callout--story" role="note">
+                    💜 Una historia emotiva aumenta los likes y el engagement del perfil.
+                  </div>
                   <p class="mascot-panel-card__hint mascot-panel-card__hint--tight">Humanizá el perfil con una narrativa clara y fácil de leer.</p>
                   <div class="field">
                     <label for="m-historia">Historia</label>
@@ -868,6 +895,10 @@
                     <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Seguridad
                   </h3>
                   <p class="mascot-panel-card__hint">Modo mascota perdida: alerta roja y botón de pánico para contacto inmediato.</p>
+                  <div class="mb-lost-status-pills" aria-live="polite">
+                    <span class="mb-lost-status-pill mb-lost-status-pill--safe">● Mascota segura</span>
+                    <span class="mb-lost-status-pill mb-lost-status-pill--lost">● MODO PERDIDA ACTIVO</span>
+                  </div>
                   <div class="mascot-lost-switch-row mascot-lost-switch-row--xl">
                     <label class="mascot-lost-switch-label mascot-lost-switch-label--xl" for="dash-mascota-perdida">
                       <input type="checkbox" id="dash-mascota-perdida" />
@@ -899,6 +930,9 @@
                   <h3 id="mb-card-health-title" class="mascot-panel-card__title">
                     <i class="fa-solid fa-paw" aria-hidden="true"></i> Ficha de salud
                   </h3>
+                  <div class="mb-mb-value-callout mb-mb-value-callout--health" role="note">
+                    🚨 Esta información puede salvar la vida de tu mascota en una emergencia.
+                  </div>
                   <p class="mascot-panel-card__hint">Vacunas, veterinario de cabecera, ficha crítica y notas libres.</p>
                   <div class="mascot-table-wrap">
                     <table class="mascot-data-table" aria-label="Vacunas">
@@ -1000,6 +1034,33 @@
                   tabindex="-1"
                   aria-hidden="true"
                 ></button>
+              </div>
+            </div>
+
+            <div class="mb-medal-cta" id="mb-medal-cta-block">
+              <div class="mb-medal-cta__badge">NUEVO</div>
+              <div class="mb-medal-cta__content">
+                <div class="mb-medal-cta__icon" aria-hidden="true">🏅</div>
+                <div class="mb-medal-cta__text">
+                  <h4>Medalla física con QR grabado</h4>
+                  <p>
+                    Imprimimos y enviamos la medalla en bicapa simil metálico con el QR de tu mascota. Quien la encuentre escanea y accede al
+                    perfil al instante.
+                  </p>
+                  <ul>
+                    <li>✅ Bicapa simil metálico grabado al láser</li>
+                    <li>✅ QR enlazado a tu perfil MascotBook</li>
+                    <li>✅ Envío a todo el país</li>
+                  </ul>
+                </div>
+                <div class="mb-medal-cta__price">
+                  <span class="mb-medal-cta__price-amount">$10.000</span>
+                  <span class="mb-medal-cta__price-sub">+ envío</span>
+                  <button type="button" class="mb-medal-cta__btn" id="btn-pedir-medalla" onclick="alert('¡Próximamente! Te avisamos cuando esté disponible.')">
+                    Quiero mi medalla 🐾
+                  </button>
+                  <p class="mb-medal-cta__disclaimer">El QR se genera automáticamente con tu perfil activo.</p>
+                </div>
               </div>
             </div>
           </div>
@@ -4918,6 +4979,12 @@
               } catch (eMb) {}
             }, 0);
           }
+          try {
+            var __mbTicker = document.getElementById("mb-vet-ticker");
+            var __mbShowTicker = currentApp === "mascotbook" && !!String(uid || "").trim();
+            if (__mbTicker) __mbTicker.style.display = __mbShowTicker ? "flex" : "none";
+            document.body.classList.toggle("mb-ticker-visible", __mbShowTicker);
+          } catch (eMbTk) {}
         }
 
         function setPanel(panel, opts) {
@@ -5146,9 +5213,7 @@
             loggedIn = !!(firebase.auth && firebase.auth().currentUser);
           } catch (eLI) {}
           if (currentApp === "mascotbook" && loggedIn && !demoModeActive) {
-            var midMb =
-              String(currentMascotShareId || "").trim() ||
-              String(resolveMascotPublicCardIdForPreview() || "").trim();
+            var midMb = String(getMascotCardIdForPreviewUrl() || "").trim();
             if (!String(midMb || "").trim()) {
               try {
                 previewFrame.src = "about:blank";
@@ -5162,16 +5227,23 @@
             }
           }
           var base;
+          var mbCardPageHref = "";
+          try {
+            var _mbCardU = new URL("card.html", window.location.href);
+            _mbCardU.search = "";
+            _mbCardU.hash = "";
+            mbCardPageHref = _mbCardU.href;
+          } catch (eMbCardU) {
+            mbCardPageHref = window.location.origin + "/card.html";
+          }
           if (currentApp === "mascotbook") {
-            var cardIdForUrl =
-              String(currentMascotShareId || "").trim() ||
-              String(resolveMascotPublicCardIdForPreview() || "").trim();
+            var mascotPreviewDocId = String(getMascotCardIdForPreviewUrl() || "").trim();
             base =
-              window.location.origin +
-              "/card.html?id=" +
-              encodeURIComponent(cardIdForUrl) +
-              "&view=pet&ec_admin_preview=1&t=" +
-              Date.now();
+              mbCardPageHref +
+              (mbCardPageHref.indexOf("?") >= 0 ? "&" : "?") +
+              "id=" +
+              encodeURIComponent(mascotPreviewDocId) +
+              "&view=pet&ec_admin_preview=1";
           } else {
             base =
               window.location.origin +
@@ -5209,17 +5281,33 @@
             }
           };
           previewFrame.src = base;
+          try {
+            console.log("[Preview] src del iframe:", base);
+            console.log("[Preview] effectiveUid:", effectiveUid);
+            console.log("[Preview] currentApp:", currentApp);
+            if (currentApp === "mascotbook") {
+              console.log(
+                "[Preview] id en query (doc público mascotas):",
+                String(getMascotCardIdForPreviewUrl() || "").trim()
+              );
+            }
+          } catch (ePvLog) {}
           fitPhonePreview();
           var pubId =
             currentApp === "mascotbook"
-              ? String(currentMascotShareId || "").trim() ||
-                String(resolveMascotPublicCardIdForPreview() || "").trim()
+              ? String(getMascotCardIdForPreviewUrl() || "").trim()
               : effectiveUid;
           var pub =
-            window.location.origin +
-            "/card.html?id=" +
-            encodeURIComponent(pubId) +
-            (currentApp === "mascotbook" ? "&view=pet" : "");
+            currentApp === "mascotbook"
+              ? mbCardPageHref +
+                (mbCardPageHref.indexOf("?") >= 0 ? "&" : "?") +
+                "id=" +
+                encodeURIComponent(pubId) +
+                "&view=pet"
+              : window.location.origin +
+                window.location.pathname.replace(/[^/]*$/, "card.html") +
+                "?id=" +
+                encodeURIComponent(pubId);
           if (publicUrlEl) {
             if (currentApp === "mascotbook" && demoModeActive && !loggedIn) {
               publicUrlEl.innerHTML =
@@ -8483,6 +8571,11 @@
                   "<p style=\"color: rgba(17,24,39,0.5); font-size:0.9rem\">Cargando panel…</p>";
               }
               hideProductAccessDeniedModal();
+              try {
+                var __mbTkOut = document.getElementById("mb-vet-ticker");
+                if (__mbTkOut) __mbTkOut.style.display = "none";
+                document.body.classList.remove("mb-ticker-visible");
+              } catch (eMbTkOut) {}
               uid = "";
               ecMascotTarjetasList = [];
               ecMascotCreationMode = false;
@@ -8630,5 +8723,94 @@
         }
       })();
     </script>
+
+    <div class="mb-vet-ticker" id="mb-vet-ticker" style="display: none" aria-label="Amigos MascotBook">
+      <div class="mb-vet-ticker__label">
+        <i class="fa-solid fa-heart" style="color: #ef4444" aria-hidden="true"></i>
+        🐾 AMIGOS MASCOTBOOK
+      </div>
+      <div class="mb-vet-ticker__track-wrap">
+        <div class="mb-vet-ticker__track" id="mb-vet-track">
+          <div class="mb-vet-ticker__item">
+            <div class="mb-vet-ticker__logo-wrap" style="background: #fff2e8">
+              <i class="fa-solid fa-paw" style="color: #f97316; font-size: 1.4rem" aria-hidden="true"></i>
+            </div>
+            <div>
+              <strong>Clínica Vet Sur</strong>
+              <span>Buenos Aires</span>
+            </div>
+          </div>
+          <div class="mb-vet-ticker__item">
+            <div class="mb-vet-ticker__logo-wrap" style="background: #f0fdf4">
+              <i class="fa-solid fa-stethoscope" style="color: #16a34a; font-size: 1.4rem" aria-hidden="true"></i>
+            </div>
+            <div>
+              <strong>PetCare Córdoba</strong>
+              <span>Córdoba</span>
+            </div>
+          </div>
+          <div class="mb-vet-ticker__item">
+            <div class="mb-vet-ticker__logo-wrap" style="background: #eff6ff">
+              <i class="fa-solid fa-shield-dog" style="color: #2563eb; font-size: 1.4rem" aria-hidden="true"></i>
+            </div>
+            <div>
+              <strong>VetPlus Rosario</strong>
+              <span>Rosario</span>
+            </div>
+          </div>
+          <div class="mb-vet-ticker__item">
+            <div class="mb-vet-ticker__logo-wrap" style="background: #fdf4ff">
+              <i class="fa-solid fa-store" style="color: #a855f7; font-size: 1.4rem" aria-hidden="true"></i>
+            </div>
+            <div>
+              <strong>PetShop Pampa</strong>
+              <span>Entre Ríos</span>
+            </div>
+          </div>
+          <div class="mb-vet-ticker__separator" aria-hidden="true">🐾</div>
+          <div class="mb-vet-ticker__item">
+            <div class="mb-vet-ticker__logo-wrap" style="background: #fff2e8">
+              <i class="fa-solid fa-paw" style="color: #f97316; font-size: 1.4rem" aria-hidden="true"></i>
+            </div>
+            <div>
+              <strong>Clínica Vet Sur</strong>
+              <span>Buenos Aires</span>
+            </div>
+          </div>
+          <div class="mb-vet-ticker__item">
+            <div class="mb-vet-ticker__logo-wrap" style="background: #f0fdf4">
+              <i class="fa-solid fa-stethoscope" style="color: #16a34a; font-size: 1.4rem" aria-hidden="true"></i>
+            </div>
+            <div>
+              <strong>PetCare Córdoba</strong>
+              <span>Córdoba</span>
+            </div>
+          </div>
+          <div class="mb-vet-ticker__item">
+            <div class="mb-vet-ticker__logo-wrap" style="background: #eff6ff">
+              <i class="fa-solid fa-shield-dog" style="color: #2563eb; font-size: 1.4rem" aria-hidden="true"></i>
+            </div>
+            <div>
+              <strong>VetPlus Rosario</strong>
+              <span>Rosario</span>
+            </div>
+          </div>
+          <div class="mb-vet-ticker__item">
+            <div class="mb-vet-ticker__logo-wrap" style="background: #fdf4ff">
+              <i class="fa-solid fa-store" style="color: #a855f7; font-size: 1.4rem" aria-hidden="true"></i>
+            </div>
+            <div>
+              <strong>PetShop Pampa</strong>
+              <span>Entre Ríos</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mb-vet-ticker__cta">
+        <button type="button" onclick="alert('¡Próximamente! Contactanos para aparecer aquí.')" class="mb-vet-ticker__join-btn">
+          ¿Tu negocio aquí? →
+        </button>
+      </div>
+    </div>
   </body>
 </html>

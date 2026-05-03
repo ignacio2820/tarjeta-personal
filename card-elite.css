@@ -463,19 +463,15 @@
   line-height: 1.45;
   color: rgba(255, 255, 255, 0.92);
   text-align: left;
+  overflow-x: auto;
 }
 
-.elite-shell .ec-mail-sig-preview .ec-mail-sig-inner a {
+.elite-shell .ec-mail-sig-preview .ec-elite-mail-sig a {
   color: #e8c547;
 }
 
-.elite-shell .ec-mail-sig-preview .ec-mail-sig-role {
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 0.82rem;
-}
-
-.elite-shell .ec-mail-sig-preview .ec-mail-sig-line {
-  font-size: 0.82rem;
+.elite-shell .ec-mail-sig-preview .ec-elite-mail-sig {
+  color: #111827;
 }
 
 .elite-shell .ec-mail-sig-actions {
@@ -512,12 +508,8 @@
   color: #111827;
 }
 
-.elite-shell.ec-surface-light .ec-mail-sig-preview .ec-mail-sig-inner a {
+.elite-shell.ec-surface-light .ec-mail-sig-preview .ec-elite-mail-sig a {
   color: #92400e;
-}
-
-.elite-shell.ec-surface-light .ec-mail-sig-preview .ec-mail-sig-role {
-  color: rgba(17, 24, 39, 0.65);
 }
 
 .elite-shell.ec-surface-light .ec-mail-sig-btn {
@@ -531,7 +523,7 @@
   background: rgba(15, 23, 42, 0.35);
 }
 
-.elite-shell.ec-surface-blue .ec-mail-sig-preview .ec-mail-sig-inner a {
+.elite-shell.ec-surface-blue .ec-mail-sig-preview .ec-elite-mail-sig a {
   color: #fde68a;
 }
 
