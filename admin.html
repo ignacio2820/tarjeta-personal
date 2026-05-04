@@ -743,9 +743,6 @@
                         ><span class="mb-mascot-hero-banner__badge-ico" aria-hidden="true">🐕</span> Perfil social</span
                       >
                     </div>
-                    <button type="button" class="btn-outline btn-mascot-share mb-mascot-hero-banner__share" id="btn-mascot-share-card">
-                      <i class="fa-solid fa-share-nodes" aria-hidden="true"></i> Compartir Tarjeta
-                    </button>
                   </div>
                 </div>
                 <div id="mascot-admin-memorial-ribbon" class="mascot-admin-memorial-ribbon hidden" role="status">
@@ -753,6 +750,13 @@
                   <span>Perfil en modo memorial · solo lectura · las fotos se conservan</span>
                 </div>
               </div>
+            </div>
+
+            <div class="mb-mascot-share-bar">
+              <button type="button" class="mb-mascot-share-subtle" id="btn-mascot-share-card" title="Copiar o compartir enlace público">
+                <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
+                <span>Compartir perfil</span>
+              </button>
             </div>
 
             <div class="mb-work-tabs" role="tablist" aria-label="Secciones MascotBook">
@@ -1097,25 +1101,6 @@
         >
         <small>Sello de calidad en diseño y experiencia digital para EliteCard y MascotBook.</small>
       </footer>
-    </div>
-
-    <div
-      id="admin-trial-welcome-modal"
-      class="admin-modal admin-modal--trial-welcome hidden"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="admin-trial-welcome-title"
-    >
-      <div class="admin-modal-panel admin-modal-panel--trial-welcome">
-        <button type="button" class="admin-modal-close" id="admin-trial-welcome-close" aria-label="Cerrar">×</button>
-        <p class="admin-trial-welcome-eyebrow">MascotBook Pro</p>
-        <h4 id="admin-trial-welcome-title" class="admin-trial-welcome-title">¡Bienvenido a MascotBook Pro! &#x1F43E;</h4>
-        <p class="admin-trial-welcome-body">
-          Ya podés disfrutar de todas las funciones exclusivas durante 7 días. Creá la tarjeta de identidad más completa para tu mascota y
-          compartila con el mundo.
-        </p>
-        <button type="button" class="btn-trial-welcome-cta" id="admin-trial-welcome-start">¡Empezar ahora!</button>
-      </div>
     </div>
 
     <div
@@ -4210,29 +4195,10 @@
           try {
             sessionStorage.setItem(EC_TRIAL_WELCOME_SESSION_KEY, "1");
           } catch (eS) {}
-          var m = document.getElementById("admin-trial-welcome-modal");
-          if (m) m.classList.add("hidden");
         }
 
         function maybeShowTrialWelcomeModal() {
-          var m = document.getElementById("admin-trial-welcome-modal");
-          if (!m) return;
-          if (!uid || demoModeActive) return;
-          if (currentApp !== "mascotbook") return;
-          try {
-            if (sessionStorage.getItem(EC_TRIAL_WELCOME_SESSION_KEY) === "1") return;
-          } catch (eSs) {}
-          var Sub = window.EliteCardAdminSubscription;
-          var user = firebase.auth && firebase.auth().currentUser;
-          if (!Sub || !user) return;
-          if (Sub.isPerpetualAccess(uid, user.email || "", lastAccountData)) return;
-          var mergedBilling = Object.assign({}, lastAccountData || {}, lastEliteMembershipData || {});
-          var mbPlan = String(
-            Sub.getPlanStatusFromDoc(mergedBilling, "mascotbook") ||
-            ""
-          ).toLowerCase();
-          if (mbPlan !== "trial") return;
-          m.classList.remove("hidden");
+          return;
         }
 
         function updateTrialHeaderStrip() {
@@ -4522,8 +4488,6 @@
           if (!uid) {
             var ts0 = document.getElementById("admin-trial-strip");
             if (ts0) ts0.classList.add("hidden");
-            var wm0 = document.getElementById("admin-trial-welcome-modal");
-            if (wm0) wm0.classList.add("hidden");
           } else {
             updateTrialWelcomeExperience();
           }
