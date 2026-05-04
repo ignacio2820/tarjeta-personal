@@ -59,6 +59,8 @@ window.EC_PREMIUM_MANUAL_CONTACT_ONLY = false;
 window.PRECIOS_LINKS = {
   elitecard: "",
   mascotbook: "",
+  mascotbook_medalla_envio: "",
+  mascotbook_medalla_retiro: "",
 };
 
 /** Precios mostrados en el panel (solo texto UI). */

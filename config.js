@@ -45,7 +45,12 @@
    * aquí se fusionan con los vacíos por defecto.
    */
   window.PRECIOS_LINKS = Object.assign(
-    { elitecard: "", mascotbook: "" },
+    {
+      elitecard: "",
+      mascotbook: "",
+      mascotbook_medalla_envio: "",
+      mascotbook_medalla_retiro: "",
+    },
     window.PRECIOS_LINKS && typeof window.PRECIOS_LINKS === "object" ? window.PRECIOS_LINKS : {}
   );
 
