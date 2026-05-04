@@ -2049,7 +2049,7 @@ details.vcf-details summary {
   font-size: 1.05rem;
 }
 
-.admin-modal-panel img {
+.admin-modal-panel:not(.admin-modal-panel--mb-medal) img {
   width: 220px;
   max-width: 100%;
   height: auto;
@@ -2067,6 +2067,9 @@ details.vcf-details summary {
 
 /* —— Modal Medalla física (MascotBook) —— */
 .admin-modal-panel--mb-medal {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   max-width: 50rem;
   width: min(50rem, 96vw);
   text-align: left;
@@ -2074,8 +2077,9 @@ details.vcf-details summary {
   color: rgba(248, 250, 252, 0.92);
   border: 1px solid rgba(245, 158, 11, 0.45);
   border-radius: 1.1rem;
-  padding: 0.75rem 0.95rem 0.85rem;
-  max-height: 90vh;
+  padding: 0.75rem 0.95rem 0.95rem;
+  max-height: 92vh;
+  overflow-x: hidden;
   overflow-y: auto;
   box-shadow:
     0 0 0 1px rgba(245, 158, 11, 0.12),
@@ -2083,12 +2087,9 @@ details.vcf-details summary {
   box-sizing: border-box;
 }
 
-@media (min-width: 861px) {
-  .admin-modal-panel--mb-medal {
-    max-height: min(560px, 88vh);
-    overflow-y: hidden;
-    overflow-x: hidden;
-  }
+.admin-modal-panel--mb-medal .mb-medal-modal__layout {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .mb-medal-modal__layout {
@@ -2101,6 +2102,23 @@ details.vcf-details summary {
 .mb-medal-modal__left,
 .mb-medal-modal__right {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.mb-medal-modal__img-wrap {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 0;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
 }
 
 .mb-medal-modal__eyebrow {
@@ -2195,15 +2213,19 @@ details.vcf-details summary {
   font-size: 0.82rem;
 }
 
-.mb-medal-modal__img {
-  display: block;
-  width: 100%;
-  max-width: 260px;
-  margin: 0.4rem auto 0;
-  height: auto;
+.admin-modal-panel--mb-medal .medal-display {
+  display: block !important;
+  margin: 15px auto !important;
+  position: relative;
+  z-index: 10;
+  width: auto !important;
+  max-width: 260px !important;
+  height: auto !important;
+  max-height: none !important;
   object-fit: contain;
-  -webkit-mask-image: radial-gradient(circle, #000 50%, transparent 100%);
-  mask-image: radial-gradient(circle, #000 50%, transparent 100%);
+  border-radius: 0;
+  -webkit-mask-image: radial-gradient(circle, black 60%, transparent 100%);
+  mask-image: radial-gradient(circle, black 60%, transparent 100%);
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;
@@ -2218,7 +2240,7 @@ details.vcf-details summary {
     max-width: 34rem;
     width: min(34rem, 96vw);
     padding: 1rem 0.95rem;
-    max-height: 90vh;
+    max-height: 92vh;
     overflow-y: auto;
     overflow-x: hidden;
   }
@@ -2226,10 +2248,6 @@ details.vcf-details summary {
   .mb-medal-modal__layout {
     grid-template-columns: 1fr;
     gap: 0.8rem;
-  }
-
-  .mb-medal-modal__img {
-    margin-top: 0.55rem;
   }
 }
 
