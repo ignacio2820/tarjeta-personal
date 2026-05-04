@@ -1182,46 +1182,52 @@
     >
       <div class="admin-modal-panel admin-modal-panel--mb-medal">
         <button type="button" class="admin-modal-close admin-modal-close--light" id="admin-mb-medal-close" aria-label="Cerrar">×</button>
-        <p class="mb-medal-modal__eyebrow">MascotBook · Medalla física</p>
-        <h4 id="admin-mb-medal-title" class="mb-medal-modal__title">Medalla física con QR grabado</h4>
-        <p class="mb-medal-modal__sub">
-          Grabada al láser y con QR enlazado a tu perfil MascotBook. Ideal para chapita/collar: si alguien la encuentra, escanea y accede al
-          perfil al instante.
-        </p>
+        <div class="mb-medal-modal__layout">
+          <div class="mb-medal-modal__left">
+            <p class="mb-medal-modal__eyebrow">MascotBook · Medalla física</p>
+            <h4 id="admin-mb-medal-title" class="mb-medal-modal__title">Medalla física con QR grabado</h4>
+            <p class="mb-medal-modal__sub">
+              Grabada al láser y con QR enlazado a tu perfil MascotBook. Ideal para chapita/collar: si alguien la encuentra, escanea y accede
+              al perfil al instante.
+            </p>
 
-        <ul class="mb-medal-modal__benefits" aria-label="Beneficios">
-          <li>✅ Bicapa simil metálico grabado al láser.</li>
-          <li>✅ QR enlazado a tu perfil MascotBook.</li>
-          <li>✅ Costo medalla: $10.000.</li>
-          <li>✅ Costo envío: $9.000.</li>
-          <li>✅ Envío a todo el país o entrega a coordinar con el vendedor.</li>
-        </ul>
+            <ul class="mb-medal-modal__benefits" aria-label="Beneficios">
+              <li>✅ Bicapa simil metálico grabado al láser.</li>
+              <li>✅ QR enlazado a tu perfil MascotBook.</li>
+              <li>✅ Costo medalla: $10.000.</li>
+              <li>✅ Costo envío: $9.000.</li>
+              <li>✅ Envío a todo el país o entrega a coordinar con el vendedor.</li>
+            </ul>
+          </div>
 
-        <div class="mb-medal-modal__delivery" role="group" aria-label="Entrega">
-          <p class="mb-medal-modal__delivery-title">Entrega</p>
-          <label class="mb-medal-modal__radio">
-            <input type="radio" name="mb_medal_delivery" value="envio" checked />
-            Envío a domicilio (+ $9.000)
-          </label>
-          <label class="mb-medal-modal__radio">
-            <input type="radio" name="mb_medal_delivery" value="retiro" />
-            Retiro en persona / Coordino con el vendedor (- $9.000)
-          </label>
-          <p class="mb-medal-modal__total" aria-live="polite">
-            Total: <strong id="mb-medal-total">$19.000</strong>
-          </p>
+          <div class="mb-medal-modal__right">
+            <div class="mb-medal-modal__delivery" role="group" aria-label="Entrega">
+              <p class="mb-medal-modal__delivery-title">Entrega</p>
+              <label class="mb-medal-modal__radio">
+                <input type="radio" name="mb_medal_delivery" value="envio" checked />
+                Envío a domicilio ($19.000 total)
+              </label>
+              <label class="mb-medal-modal__radio">
+                <input type="radio" name="mb_medal_delivery" value="retiro" />
+                Retiro / Coordino con vendedor ($10.000 total)
+              </label>
+              <p class="mb-medal-modal__total" aria-live="polite">
+                Total: <strong id="mb-medal-total">$19.000</strong>
+              </p>
+            </div>
+
+            <button type="button" class="btn-ec-pay-gold mb-medal-modal__pay" id="admin-mb-medal-pay">
+              Quiero mi medalla 🐾
+            </button>
+
+            <img
+              class="mb-medal-modal__img"
+              src="assets/medalla.png"
+              alt="Medalla física con QR grabado"
+              decoding="async"
+            />
+          </div>
         </div>
-
-        <button type="button" class="btn-ec-pay-gold mb-medal-modal__pay" id="admin-mb-medal-pay">
-          Quiero mi medalla 🐾
-        </button>
-
-        <img
-          class="mb-medal-modal__img"
-          src="assets/medalla.png"
-          alt="Medalla física con QR grabado"
-          decoding="async"
-        />
       </div>
     </div>
 
