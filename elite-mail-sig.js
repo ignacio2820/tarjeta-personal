@@ -50,7 +50,7 @@
 
   function qrImageUrl(cardUrl) {
     return (
-      "https://api.qrserver.com/v1/create-qr-code/?size=128x128&margin=3&color=000000&bgcolor=FFFFFF&data=" +
+      "https://api.qrserver.com/v1/create-qr-code/?size=120x120&margin=3&color=000000&bgcolor=FFFFFF&data=" +
       encodeURIComponent(String(cardUrl || "").trim())
     );
   }
@@ -95,7 +95,7 @@
 
   function sigIconCell(symbolHtml) {
     return (
-      '<td width="24" style="width:24px;padding:0 10px 5px 0;vertical-align:top;text-align:center;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.4;color:#111111;">' +
+      '<td width="30" style="width:30px;padding:0 8px 6px 0;vertical-align:top;text-align:center;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.35;color:#0f172a;">' +
       symbolHtml +
       "</td>"
     );
@@ -106,7 +106,7 @@
       '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">' +
       "<tr>" +
       sigIconCell(iconSymbol) +
-      '<td style="padding:0 0 5px 0;vertical-align:top;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.45;color:#111111;">' +
+      '<td style="padding:0 0 6px 0;vertical-align:top;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;color:#1e293b;">' +
       innerHtml +
       "</td>" +
       "</tr>" +
@@ -115,7 +115,7 @@
   }
 
   function linkStyle() {
-    return "color:#111111;text-decoration:underline;text-underline-offset:2px;";
+    return "color:#1e40af;font-weight:600;text-decoration:underline;text-underline-offset:2px;";
   }
 
   function buildEliteMailSigText(p, cardUrl) {
@@ -127,10 +127,10 @@
     var em = displayEmpresa(p);
     if (em) lines.push(em);
     var mail = displayEmail(p);
-    if (mail) lines.push("Email: " + mail);
-    if (trimStr(p.telefono)) lines.push("Tel.: " + trimStr(p.telefono));
+    if (mail) lines.push("📧 " + mail);
+    if (trimStr(p.telefono)) lines.push("📞 " + trimStr(p.telefono));
     var wa = displayWhatsapp(p);
-    if (wa) lines.push("WhatsApp: " + wa);
+    if (wa) lines.push("💬 " + wa);
     lines.push("");
     lines.push("Tarjeta digital: " + String(cardUrl || "").trim());
     return lines.join("\n");
@@ -155,7 +155,7 @@
     if (email) {
       var emEsc = escapeHtml(email);
       contactBlocks += sigTextRow(
-        "&#9993;",
+        "&#128231;",
         '<a href="mailto:' + escapeAttr(email) + '" style="' + linkStyle() + '">' + emEsc + "</a>"
       );
     }
@@ -163,7 +163,7 @@
       var phEsc = escapeHtml(phone);
       var tUri = escapeAttr(telUri(phone));
       contactBlocks += sigTextRow(
-        "&#9742;",
+        "&#128222;",
         '<a href="' + tUri + '" style="' + linkStyle() + '">' + phEsc + "</a>"
       );
     }
@@ -171,7 +171,7 @@
       var waEsc = escapeHtml(whatsapp);
       var waUri = escapeAttr(waMeUrl(whatsapp));
       contactBlocks += sigTextRow(
-        '<span style="display:inline-block;width:15px;height:15px;line-height:15px;text-align:center;border-radius:3px;background:#25D366;color:#ffffff;font-size:9px;font-weight:bold;font-family:Arial,sans-serif;">W</span>',
+        "&#128172;",
         '<a href="' + waUri + '" style="' + linkStyle() + '">' + waEsc + "</a>"
       );
     }
@@ -185,23 +185,23 @@
     var nameBlock = "";
     if (name) {
       nameBlock +=
-        '<div style="font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;color:#111111;line-height:1.25;padding:0 0 2px 0;">' +
+        '<div style="font-family:Arial,Helvetica,sans-serif;font-size:19px;font-weight:800;color:#0f172a;line-height:1.2;padding:0 0 5px 0;letter-spacing:-0.02em;">' +
         name +
         "</div>";
     }
     if (cargo) {
       nameBlock +=
-        '<div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:normal;color:#111111;line-height:1.35;padding:0 0 2px 0;">' +
+        '<div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:600;color:#334155;line-height:1.35;padding:0 0 3px 0;">' +
         cargo +
         "</div>";
     }
     if (empresa) {
       nameBlock +=
-        '<div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:normal;color:#333333;line-height:1.35;padding:0 0 10px 0;">' +
+        '<div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:normal;color:#475569;line-height:1.35;padding:0 0 12px 0;">' +
         empresa +
         "</div>";
     } else if (cargo || name) {
-      nameBlock += '<div style="font-size:0;line-height:10px;">&nbsp;</div>';
+      nameBlock += '<div style="font-size:0;line-height:8px;">&nbsp;</div>';
     }
 
     var logoEsc = escapeHtml(logoSrc);
@@ -210,24 +210,24 @@
     var inner =
       '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">' +
       "<tr>" +
-      '<td valign="top" style="vertical-align:top;padding:0 14px 0 0;">' +
+      '<td valign="top" style="vertical-align:top;padding:0 10px 0 0;">' +
       '<img src="' +
       logoEsc +
-      '" width="72" height="72" alt="' +
+      '" width="68" height="68" alt="' +
       logoAlt +
-      '" style="display:block;width:72px;height:72px;border-radius:50%;object-fit:cover;border:1px solid #dddddd;" />' +
+      '" style="display:block;width:68px;height:68px;border-radius:50%;object-fit:cover;border:1px solid #e2e8f0;" />' +
       "</td>" +
-      '<td valign="top" style="vertical-align:top;padding:0 0 0 14px;border-left:1px solid #111111;">' +
+      '<td valign="top" style="vertical-align:top;padding:0 0 0 12px;border-left:2px solid #0f172a;">' +
       nameBlock +
       contactBlocks +
       "</td>" +
-      '<td valign="top" align="right" style="vertical-align:top;text-align:right;padding:0 0 0 16px;">' +
+      '<td valign="middle" align="right" style="vertical-align:middle;text-align:right;padding:8px 4px 8px 22px;white-space:nowrap;">' +
       '<a href="' +
       escapeAttr(cardUrlTrim) +
-      '" style="text-decoration:none;border:0;display:inline-block;" title="Tarjeta digital">' +
+      '" style="text-decoration:none;border:0;display:inline-block;padding:10px 10px 10px 14px;" title="Tarjeta digital">' +
       '<img src="' +
       qrSrc +
-      '" width="128" height="128" alt="QR EliteCard" style="display:block;width:128px;height:128px;border:0;" />' +
+      '" width="120" height="120" alt="QR EliteCard" style="display:block;width:120px;height:120px;max-width:120px;max-height:120px;border:0;object-fit:contain;" />' +
       "</a>" +
       "</td>" +
       "</tr>" +
@@ -236,7 +236,7 @@
     return (
       '<table role="presentation" cellpadding="0" cellspacing="0" border="0" class="ec-elite-mail-sig" width="100%" style="border-collapse:collapse;max-width:560px;background:#ffffff;">' +
       "<tr>" +
-      '<td style="padding:12px 16px;border:1px solid #e8e8e8;border-radius:8px;">' +
+      '<td style="padding:18px 20px 18px 14px;border:1px solid #e5e7eb;border-radius:10px;">' +
       inner +
       "</td>" +
       "</tr>" +

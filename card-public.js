@@ -918,6 +918,8 @@
       var a = document.createElement("a");
       a.href = def.href;
       a.className = "ec-btn " + (def.kind || "");
+      a.setAttribute("aria-label", def.ariaLabel || def.label);
+      if (def.title) a.title = def.title;
       if (!def.isMailto) {
         a.target = "_blank";
         a.rel = "noopener noreferrer";
@@ -938,7 +940,8 @@
     if (p.telefono) {
       btnDefs.push({
         href: "tel:" + String(p.telefono).replace(/\s/g, ""),
-        label: "Llámame",
+        label: "Teléfono",
+        ariaLabel: "Llamar por teléfono",
         icon: "fa-solid fa-phone",
         kind: "ec-call",
         isMailto: true,
@@ -949,7 +952,8 @@
     if (wLink) {
       btnDefs.push({
         href: wLink,
-        label: "Contáctame por WhatsApp",
+        label: "WhatsApp",
+        ariaLabel: "Contactar por WhatsApp",
         icon: "fa-brands fa-whatsapp",
         kind: "ec-wa",
         isMailto: false,
@@ -958,7 +962,8 @@
     if (em) {
       btnDefs.push({
         href: "mailto:" + em + "?subject=" + mailSubj + "&body=" + mailBody,
-        label: "Escríbeme un mensaje",
+        label: "Email",
+        ariaLabel: "Enviar correo electrónico",
         icon: "fa-regular fa-envelope",
         kind: "ec-mail",
         isMailto: true,
@@ -968,7 +973,8 @@
     if (inst && inst.toLowerCase() !== em.toLowerCase()) {
       btnDefs.push({
         href: "mailto:" + inst + "?subject=" + mailSubj + "&body=" + mailBody,
-        label: "Correo Institucional",
+        label: "Corporativo",
+        ariaLabel: "Correo institucional",
         icon: "fa-regular fa-envelope",
         kind: "ec-mail-inst",
         isMailto: true,
@@ -989,7 +995,7 @@
     if (liL) {
       btnDefs.push({
         href: liL,
-        label: "Sígueme en LinkedIn",
+        label: "LinkedIn",
         icon: "fa-brands fa-linkedin-in",
         kind: "ec-li",
         isMailto: false,
@@ -999,7 +1005,7 @@
     if (web) {
       btnDefs.push({
         href: web,
-        label: "Página Web",
+        label: "Web",
         icon: "fa-solid fa-globe",
         kind: "ec-web",
         isMailto: false,
