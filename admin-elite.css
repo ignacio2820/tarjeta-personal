@@ -392,14 +392,18 @@ body {
 }
 
 .admin-header {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   padding: 0.65rem 1rem;
   border-bottom: 1px solid var(--ae-border);
   background: rgba(255, 255, 255, 0.97);
   backdrop-filter: blur(10px);
   position: sticky;
   top: 0;
-  z-index: 75;
+  z-index: 800;
 }
 
 .admin-header-grid {
@@ -409,6 +413,8 @@ body {
   gap: 0.75rem 1.35rem;
   width: 100%;
   max-width: 100%;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .admin-header-zone--brand {
@@ -653,6 +659,7 @@ button.admin-mobile-menu-link:hover {
   align-items: center;
   gap: 0.75rem;
   min-width: 0;
+  flex-shrink: 1;
   text-decoration: none;
   color: inherit;
 }
@@ -729,6 +736,9 @@ button.admin-mobile-menu-link:hover {
   font-size: 1.05rem;
   font-weight: 700;
   letter-spacing: -0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .admin-brand-text small {
@@ -744,6 +754,7 @@ button.admin-mobile-menu-link:hover {
   gap: 0.5rem;
   flex-wrap: wrap;
   justify-content: flex-end;
+  flex-shrink: 0;
 }
 
 .admin-header-user-wrap {
@@ -6052,21 +6063,18 @@ html[data-ec-admin] .admin-header {
   }
 }
 
-/* —— Ticker veterinarias —— */
+/* —— Ticker Amigos MascotBook (2 filas, responsive) —— */
 .mb-vet-ticker {
   position: fixed;
+  bottom: 0;
   left: 0;
   right: 0;
-  bottom: 0;
   z-index: 900;
-  height: 56px;
-  display: none;
-  align-items: center;
-  gap: 1rem;
-  overflow: hidden;
   background: linear-gradient(90deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
   border-top: 1px solid rgba(139, 92, 246, 0.3);
   box-shadow: 0 -4px 20px rgba(139, 92, 246, 0.15);
+  display: none;
+  flex-direction: column;
   box-sizing: border-box;
 }
 
@@ -6077,19 +6085,52 @@ html[data-ec-admin] .admin-header {
   }
 }
 
+.mb-vet-ticker__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.3rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  min-height: 32px;
+}
+
 .mb-vet-ticker__label {
-  flex-shrink: 0;
-  display: inline-flex;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0 1rem;
-  color: #fff;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
   white-space: nowrap;
+}
+
+.mb-vet-ticker__join-btn {
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 0.2rem 0.8rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: transform 0.15s;
+}
+
+.mb-vet-ticker__join-btn:hover {
+  transform: scale(1.04);
+}
+
+.mb-vet-ticker__row {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  height: 44px;
 }
 
 .mb-vet-ticker__track-wrap {
@@ -6104,10 +6145,11 @@ html[data-ec-admin] .admin-header {
 .mb-vet-ticker__track {
   display: flex;
   align-items: center;
-  gap: 2.5rem;
+  gap: 1.5rem;
   width: max-content;
   white-space: nowrap;
-  animation: mb-vet-scroll 18s linear infinite;
+  animation: mb-vet-scroll 22s linear infinite;
+  will-change: transform;
 }
 
 @keyframes mb-vet-scroll {
@@ -6132,18 +6174,18 @@ html[data-ec-admin] .admin-header {
 .mb-vet-ticker__item {
   display: inline-flex;
   align-items: center;
-  gap: 0.65rem;
-  flex-shrink: 0;
-  padding: 0.3rem 0.75rem;
-  border-radius: 8px;
+  gap: 0.5rem;
   background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 0.2rem 0.65rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
 }
 
 .mb-vet-ticker__logo-wrap {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -6152,61 +6194,235 @@ html[data-ec-admin] .admin-header {
 
 .mb-vet-ticker__item strong {
   color: #fff;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   display: block;
-  line-height: 1.2;
+  line-height: 1.1;
 }
 
 .mb-vet-ticker__item span {
   color: rgba(255, 255, 255, 0.5);
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   display: block;
 }
 
 .mb-vet-ticker__separator {
-  font-size: 1.2rem;
-  opacity: 0.4;
-  padding: 0 1rem;
+  font-size: 1rem;
+  opacity: 0.35;
+  padding: 0 0.75rem;
   flex-shrink: 0;
-}
-
-.mb-vet-ticker__cta {
-  flex-shrink: 0;
-  padding: 0 1rem;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.mb-vet-ticker__join-btn {
-  background: linear-gradient(135deg, #7c3aed, #a855f7);
-  color: #fff;
-  border: none;
-  border-radius: 999px;
-  padding: 0.35rem 0.9rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: transform 0.15s ease;
-}
-
-.mb-vet-ticker__join-btn:hover {
-  transform: scale(1.04);
 }
 
 body.mb-ticker-visible {
-  padding-bottom: 60px;
+  padding-bottom: 80px;
 }
 
 html[data-ec-admin] body.mb-ticker-visible {
-  padding-bottom: 60px;
+  padding-bottom: 80px;
+}
+
+@media (max-width: 640px) {
+  .mb-vet-ticker__header {
+    padding: 0.25rem 0.65rem;
+  }
+
+  .mb-vet-ticker__label {
+    font-size: 0.62rem;
+  }
+
+  .mb-vet-ticker__join-btn {
+    font-size: 0.62rem;
+    padding: 0.18rem 0.6rem;
+  }
+
+  .mb-vet-ticker__row {
+    height: 40px;
+  }
+
+  body.mb-ticker-visible {
+    padding-bottom: 76px;
+  }
+
+  html[data-ec-admin] body.mb-ticker-visible {
+    padding-bottom: 76px;
+  }
 }
 
 @media (max-width: 1024px) {
   html[data-ec-admin] body.mb-ticker-visible .admin-root.layout > section.main {
-    padding-bottom: calc(5.5rem + 60px + env(safe-area-inset-bottom, 0px)) !important;
+    padding-bottom: calc(5.5rem + 80px + env(safe-area-inset-bottom, 0px)) !important;
   }
 
   html[data-ec-admin] body.mb-ticker-visible .admin-root.layout > aside.preview-col {
-    padding-bottom: calc(4.5rem + 60px + env(safe-area-inset-bottom, 0px)) !important;
+    padding-bottom: calc(4.5rem + 80px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  html[data-ec-admin] body.mb-ticker-visible .admin-root.layout > section.main {
+    padding-bottom: calc(5.5rem + 76px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  html[data-ec-admin] body.mb-ticker-visible .admin-root.layout > aside.preview-col {
+    padding-bottom: calc(4.5rem + 76px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
+/* ═══ FIX 2–3: preview sticky (desktop) + flujo mobile + header responsive ═══ */
+
+@media (min-width: 1024px) {
+  html[data-ec-admin] .admin-root.layout > aside.preview-col {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    align-self: flex-start;
+    scrollbar-width: none;
+    max-height: none;
+  }
+
+  html[data-ec-admin] .admin-root.layout > aside.preview-col::-webkit-scrollbar {
+    display: none;
+  }
+
+  html[data-ec-admin] #phone-stage {
+    max-height: calc(100vh - 140px);
+  }
+}
+
+@media (max-width: 1023px) {
+  html[data-ec-admin] .admin-root.layout > aside.preview-col {
+    position: static !important;
+    height: auto !important;
+    width: 100%;
+    order: 999 !important;
+    padding: 1rem;
+    box-sizing: border-box;
+    max-height: none !important;
+  }
+
+  html[data-ec-admin] .admin-root.layout > section.main {
+    order: 2 !important;
+    width: 100% !important;
+    min-width: unset !important;
+  }
+
+  html[data-ec-admin] #phone-stage {
+    max-height: 500px;
+    overflow: hidden;
+  }
+
+  html[data-ec-admin] #phone-scale-wrap {
+    transform-origin: top center !important;
+  }
+
+  html[data-ec-admin] .admin-root.layout {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+  }
+
+  html[data-ec-admin] .admin-root.layout > aside.sidebar {
+    order: 1 !important;
+    width: 100% !important;
+    min-width: unset !important;
+    max-width: unset !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  html[data-ec-admin] .sidebar-nav {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto;
+    scrollbar-width: none;
+    gap: 0 !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  html[data-ec-admin] .sidebar-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  html[data-ec-admin] .sidebar-nav .nav-tab {
+    flex-shrink: 0;
+    border-radius: 0 !important;
+    border-right: 1px solid rgba(0, 0, 0, 0.06) !important;
+    padding: 0.6rem 1rem !important;
+    font-size: 0.82rem !important;
+  }
+
+  html[data-ec-admin] #theme-panel {
+    padding: 0.5rem 1rem !important;
+  }
+
+  html[data-ec-admin] .mb-pro-grid {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 0.35rem !important;
+  }
+
+  html[data-ec-admin] #ec-sidebar-mis-perfiles-list {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto;
+    gap: 0.5rem;
+    padding-bottom: 0.25rem;
+    scrollbar-width: none;
+  }
+
+  html[data-ec-admin] #ec-sidebar-mis-perfiles-list::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+html[data-ec-admin] .admin-header {
+  z-index: 800 !important;
+}
+
+@media (max-width: 480px) {
+  html[data-ec-admin] .admin-header .admin-header-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
+    grid-template-columns: unset !important;
+    grid-template-rows: unset !important;
+  }
+
+  html[data-ec-admin] .admin-header-zone--brand,
+  html[data-ec-admin] .admin-header-zone--center,
+  html[data-ec-admin] .admin-header-zone--actions {
+    grid-column: unset !important;
+    grid-row: unset !important;
+    width: 100%;
+  }
+
+  html[data-ec-admin] .admin-header-actions {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  html[data-ec-admin] #admin-badge-perpetual {
+    font-size: 0.62rem !important;
+    padding: 0.2rem 0.5rem !important;
+  }
+
+  html[data-ec-admin] .btn-logout,
+  html[data-ec-admin] #gate-btn-login,
+  html[data-ec-admin] #gate-btn-register {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.65rem;
+  }
+
+  html[data-ec-admin] .admin-guest-hint {
+    font-size: 0.75rem;
+    width: 100%;
   }
 }
