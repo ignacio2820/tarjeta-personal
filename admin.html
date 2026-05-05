@@ -1221,12 +1221,19 @@
               Quiero mi medalla 🐾
             </button>
 
-            <div style="display: flex !important; justify-content: center; width: 100%; margin-top: 20px; position: relative; z-index: 999;">
-              <img
-                src="assets/medalla.png"
-                style="width: 260px !important; height: auto !important; display: block !important; -webkit-mask-image: radial-gradient(circle, black 65%, transparent 100%); mask-image: radial-gradient(circle, black 65%, transparent 100%); filter: drop-shadow(0 0 12px rgba(0,0,0,0.6));"
-              />
-            </div>
+            <figure class="mb-medal-modal__visual" aria-label="Vista de la medalla física">
+              <div class="mb-medal-modal__photo-wrap">
+                <img
+                  class="mb-medal-modal__photo"
+                  src="assets/medalla.png"
+                  alt="Medalla física MascotBook con QR grabado al láser"
+                  width="240"
+                  height="240"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </figure>
           </div>
         </div>
       </div>

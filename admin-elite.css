@@ -2207,6 +2207,66 @@ details.vcf-details summary {
   font-size: 0.82rem;
 }
 
+/* Foto producto: bordes suaves + halo acorde al panel dorado */
+.mb-medal-modal__visual {
+  margin: 1rem 0 0;
+  padding: 0.35rem 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.mb-medal-modal__photo-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 13.75rem;
+}
+
+.mb-medal-modal__photo-wrap::before {
+  content: "";
+  position: absolute;
+  inset: -12% -8% -18% -8%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse 68% 72% at 50% 42%,
+    rgba(245, 158, 11, 0.22) 0%,
+    rgba(245, 158, 11, 0.06) 45%,
+    transparent 72%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.mb-medal-modal__photo {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  max-width: 13.75rem;
+  height: auto;
+  object-fit: contain;
+  -webkit-mask-image: radial-gradient(
+    ellipse 82% 82% at 50% 50%,
+    #000 58%,
+    #000 82%,
+    rgba(0, 0, 0, 0.45) 92%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 82% 82% at 50% 50%,
+    #000 58%,
+    #000 82%,
+    rgba(0, 0, 0, 0.45) 92%,
+    transparent 100%
+  );
+  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 40px rgba(245, 158, 11, 0.14));
+}
+
 @media (max-width: 860px) {
   .admin-modal-panel--mb-medal {
     max-width: 34rem;
@@ -2220,6 +2280,11 @@ details.vcf-details summary {
   .mb-medal-modal__layout {
     grid-template-columns: 1fr;
     gap: 0.8rem;
+  }
+
+  .mb-medal-modal__photo-wrap,
+  .mb-medal-modal__photo {
+    max-width: 11.25rem;
   }
 }
 
