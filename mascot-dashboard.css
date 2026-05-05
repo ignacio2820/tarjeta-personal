@@ -1,0 +1,634 @@
+/* MascotBook · panel Contenido (view-mascot) — design system
+   Carga después de admin-elite.css. No afecta EliteCard. */
+
+@import url("https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap");
+
+body.admin-view-mascot,
+body.admin-view-mascot .admin-root.view-mascot {
+  --mascot-primary: #7c5cbf;
+  --mascot-primary-light: #ede8f9;
+  --mascot-accent: #f97316;
+  --mascot-neutral-50: #fafafa;
+  --mascot-neutral-100: #f4f4f5;
+  --mascot-neutral-200: #e4e4e7;
+  --mascot-neutral-700: #3f3f46;
+  --mascot-neutral-900: #18181b;
+  --mascot-success: #16a34a;
+  --mascot-danger: #dc2626;
+}
+
+body.admin-view-mascot {
+  font-family: "DM Sans", system-ui, -apple-system, sans-serif;
+}
+
+body.admin-view-mascot .visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* —— Header (solo MascotBook) —— */
+body.admin-view-mascot .admin-header {
+  background: #fff !important;
+  border-bottom: 1px solid var(--mascot-neutral-200) !important;
+  min-height: 56px;
+  box-shadow: none !important;
+}
+
+body.admin-view-mascot .admin-header-grid {
+  min-height: 56px;
+  align-items: center;
+}
+
+/* —— Shell layout —— */
+body.admin-view-mascot .admin-root.view-mascot .sidebar {
+  background: #fff !important;
+  border-right: 1px solid var(--mascot-neutral-200) !important;
+}
+
+body.admin-view-mascot .admin-root.view-mascot .sidebar .nav-tab {
+  border-radius: 10px !important;
+  color: var(--mascot-neutral-700) !important;
+  background: transparent !important;
+  border: none !important;
+  font-weight: 500 !important;
+}
+
+body.admin-view-mascot .admin-root.view-mascot .sidebar .nav-tab:hover {
+  background: var(--mascot-neutral-100) !important;
+}
+
+body.admin-view-mascot .admin-root.view-mascot .sidebar .nav-tab.active {
+  background: var(--mascot-primary-light) !important;
+  color: var(--mascot-primary) !important;
+  font-weight: 600 !important;
+}
+
+body.admin-view-mascot .admin-root.view-mascot .main {
+  background: var(--mascot-neutral-50) !important;
+  padding: 32px 16px !important;
+}
+
+@media (max-width: 640px) {
+  body.admin-view-mascot .admin-root.view-mascot .main {
+    padding: 16px 12px !important;
+  }
+}
+
+body.admin-view-mascot .admin-root.view-mascot #panel-contenido {
+  background: var(--mascot-neutral-50) !important;
+}
+
+/* Formulario principal: ancho máximo (supera admin-elite max-width: none) */
+body.admin-view-mascot #form-mascot.form-panel--mascot {
+  max-width: 760px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  width: 100%;
+  font-family: "DM Sans", system-ui, sans-serif;
+  color: var(--mascot-neutral-900);
+}
+
+/* —— Hero + share —— */
+body.admin-view-mascot #form-mascot .mascot-admin-hero.mb-mascot-hero-banner {
+  background: #fff !important;
+  border: 1px solid var(--mascot-neutral-200) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 1px 3px rgba(24, 24, 27, 0.06) !important;
+  margin-bottom: 1rem !important;
+}
+
+body.admin-view-mascot #form-mascot .mb-mascot-hero-banner__title,
+body.admin-view-mascot #form-mascot .form-mascot-title {
+  color: var(--mascot-neutral-900) !important;
+}
+
+body.admin-view-mascot #form-mascot .mb-mascot-share-subtle {
+  background: #fff !important;
+  border: 1.5px solid var(--mascot-neutral-200) !important;
+  color: var(--mascot-neutral-700) !important;
+  border-radius: 10px !important;
+  font-family: "DM Sans", sans-serif !important;
+  font-weight: 500 !important;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+body.admin-view-mascot #form-mascot .mb-mascot-share-subtle:hover {
+  border-color: var(--mascot-primary) !important;
+  color: var(--mascot-primary) !important;
+}
+
+body.admin-view-mascot #form-mascot .mb-mascot-share-bar {
+  margin-bottom: 1rem;
+}
+
+/* —— Tab shell —— */
+body.admin-view-mascot #form-mascot .mascot-tab-container {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(24, 24, 27, 0.08), 0 4px 12px rgba(24, 24, 27, 0.04);
+  border: 1px solid var(--mascot-neutral-200);
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+
+body.admin-view-mascot #form-mascot .mascot-tabs.mb-work-tabs {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  gap: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-bottom: 1px solid var(--mascot-neutral-200) !important;
+  background: #fff !important;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+body.admin-view-mascot #form-mascot .mascot-tabs.mb-work-tabs .mb-tab-btn {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 14px 12px !important;
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--mascot-neutral-700) !important;
+  font-family: "DM Sans", sans-serif !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
+  border-bottom: 2px solid transparent !important;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+body.admin-view-mascot #form-mascot .mascot-tabs.mb-work-tabs .mb-tab-btn:hover {
+  background: var(--mascot-neutral-50) !important;
+  color: var(--mascot-neutral-900) !important;
+}
+
+body.admin-view-mascot #form-mascot .mascot-tabs.mb-work-tabs .mb-tab-btn.active {
+  background: var(--mascot-primary-light) !important;
+  color: var(--mascot-primary) !important;
+  font-weight: 600 !important;
+  border-bottom-color: var(--mascot-primary) !important;
+}
+
+body.admin-view-mascot #form-mascot .mascot-tab-panels {
+  padding: 24px;
+  background: #fff;
+}
+
+@media (max-width: 640px) {
+  body.admin-view-mascot #form-mascot .mascot-tab-panels {
+    padding: 16px;
+  }
+
+  body.admin-view-mascot #form-mascot .mascot-tabs.mb-work-tabs .mb-tab-btn {
+    font-size: 0.75rem !important;
+    padding: 12px 8px !important;
+  }
+}
+
+/* —— Callouts IA —— */
+body.admin-view-mascot #form-mascot .mb-mb-value-callout {
+  background: var(--mascot-primary-light) !important;
+  border: 1px solid var(--mascot-primary) !important;
+  border-radius: 10px !important;
+  padding: 12px 16px !important;
+  color: var(--mascot-primary) !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+}
+
+/* —— Cards dentro del workspace —— */
+body.admin-view-mascot #form-mascot .mascot-panel-card {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin-bottom: 1.5rem !important;
+}
+
+body.admin-view-mascot #form-mascot .mascot-panel-card:last-child {
+  margin-bottom: 0 !important;
+}
+
+body.admin-view-mascot #form-mascot .mascot-panel-card--identity {
+  border-left: none !important;
+  padding: 0 !important;
+}
+
+body.admin-view-mascot #form-mascot .mascot-panel-card__title {
+  color: var(--mascot-neutral-900) !important;
+  font-weight: 700 !important;
+  font-size: 1.05rem !important;
+}
+
+body.admin-view-mascot #form-mascot .mascot-panel-card__subtitle {
+  color: var(--mascot-neutral-900) !important;
+  font-weight: 600 !important;
+}
+
+body.admin-view-mascot #form-mascot .mascot-panel-card__hint {
+  color: var(--mascot-neutral-700) !important;
+  font-size: 0.8125rem !important;
+}
+
+/* —— Labels & fields —— */
+body.admin-view-mascot #form-mascot .field > label:not(.mascot-lost-switch-label) {
+  font-family: "DM Sans", sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: var(--mascot-neutral-700) !important;
+  margin-bottom: 6px !important;
+  display: block !important;
+}
+
+body.admin-view-mascot #form-mascot .mascot-lost-switch-label {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  margin-bottom: 0 !important;
+  font-family: "DM Sans", sans-serif !important;
+  font-weight: 600 !important;
+  color: var(--mascot-neutral-900) !important;
+}
+
+body.admin-view-mascot #form-mascot .field input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="file"]),
+body.admin-view-mascot #form-mascot .field textarea,
+body.admin-view-mascot #form-mascot .field select {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1.5px solid var(--mascot-neutral-200) !important;
+  border-radius: 10px !important;
+  padding: 10px 14px !important;
+  font-family: "DM Mono", ui-monospace, monospace !important;
+  font-size: 14px !important;
+  color: var(--mascot-neutral-900) !important;
+  background: #fff !important;
+  outline: none !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+body.admin-view-mascot #form-mascot .field input:focus,
+body.admin-view-mascot #form-mascot .field textarea:focus,
+body.admin-view-mascot #form-mascot .field select:focus {
+  border-color: var(--mascot-primary) !important;
+  box-shadow: 0 0 0 3px var(--mascot-primary-light) !important;
+  outline: none !important;
+}
+
+body.admin-view-mascot #form-mascot .mascot-field-row--2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 640px) {
+  body.admin-view-mascot #form-mascot .mascot-field-row--2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+body.admin-view-mascot #form-mascot .field-grid.field-grid--two {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 16px !important;
+}
+
+@media (max-width: 640px) {
+  body.admin-view-mascot #form-mascot .field-grid.field-grid--two {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Tablas salud */
+body.admin-view-mascot #form-mascot .mascot-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: "DM Mono", monospace !important;
+  font-size: 13px !important;
+}
+
+body.admin-view-mascot #form-mascot .mascot-data-table th {
+  text-align: left;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--mascot-neutral-200);
+  color: var(--mascot-neutral-700);
+  font-weight: 600;
+  font-family: "DM Sans", sans-serif !important;
+  font-size: 11px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+body.admin-view-mascot #form-mascot .mascot-data-table td {
+  padding: 8px;
+  border-bottom: 1px solid var(--mascot-neutral-100);
+}
+
+body.admin-view-mascot #form-mascot .mascot-data-table input,
+body.admin-view-mascot #form-mascot .mascot-data-table select {
+  font-family: "DM Mono", monospace !important;
+  font-size: 13px !important;
+}
+
+/* —— Botones panel mascot —— */
+body.admin-view-mascot #form-mascot .btn-save {
+  background: var(--mascot-primary) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 10px 24px !important;
+  font-family: "DM Sans", sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  transition: filter 0.15s ease !important;
+}
+
+body.admin-view-mascot #form-mascot .btn-save:hover:not(:disabled) {
+  filter: brightness(1.08) !important;
+}
+
+body.admin-view-mascot #form-mascot .btn-outline:not(.m-gallery-slot-delete):not(.btn-admin-chip--danger),
+body.admin-view-mascot #form-mascot .btn-mascot-add,
+body.admin-view-mascot #form-mascot .btn-dash-lost-save,
+body.admin-view-mascot #form-mascot .btn-qr {
+  background: #fff !important;
+  border: 1.5px solid var(--mascot-neutral-200) !important;
+  color: var(--mascot-neutral-700) !important;
+  border-radius: 10px !important;
+  font-family: "DM Sans", sans-serif !important;
+  font-weight: 500 !important;
+  transition: border-color 0.15s ease, color 0.15s ease !important;
+}
+
+body.admin-view-mascot #form-mascot .btn-outline:hover:not(:disabled),
+body.admin-view-mascot #form-mascot .btn-mascot-add:hover:not(:disabled),
+body.admin-view-mascot #form-mascot .btn-dash-lost-save:hover:not(:disabled),
+body.admin-view-mascot #form-mascot .btn-qr:hover:not(:disabled) {
+  border-color: var(--mascot-primary) !important;
+  color: var(--mascot-primary) !important;
+}
+
+body.admin-view-mascot #form-mascot .btn-admin-chip--danger,
+body.admin-view-mascot #form-mascot #btn-delete-mascot-profile {
+  background: #fff !important;
+  border: 1.5px solid var(--mascot-danger) !important;
+  color: var(--mascot-danger) !important;
+  border-radius: 10px !important;
+}
+
+body.admin-view-mascot #form-mascot .btn-admin-chip--danger:hover,
+body.admin-view-mascot #form-mascot #btn-delete-mascot-profile:hover {
+  background: var(--mascot-danger) !important;
+  color: #fff !important;
+}
+
+/* —— Zona crítica —— */
+body.admin-view-mascot #form-mascot .mascot-danger-zone {
+  margin-top: 1.5rem !important;
+  padding: 1.25rem !important;
+  border-radius: 12px !important;
+  background: #fef2f2 !important;
+  border: 1px solid #fecaca !important;
+  border-top: 2px dashed rgba(220, 38, 38, 0.35) !important;
+}
+
+body.admin-view-mascot #form-mascot .mascot-danger-zone__title {
+  color: var(--mascot-danger) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+}
+
+body.admin-view-mascot #form-mascot .mascot-danger-zone__hint {
+  color: var(--mascot-neutral-700) !important;
+  font-size: 0.8125rem !important;
+}
+
+/* —— Banner medalla —— */
+body.admin-view-mascot #form-mascot .mb-medal-cta {
+  border: none !important;
+  border-radius: 16px !important;
+  padding: 1.25rem 1.5rem !important;
+  background: linear-gradient(115deg, #5b21b6 0%, #4f46e5 100%) !important;
+  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.25) !important;
+}
+
+body.admin-view-mascot #form-mascot .mb-medal-cta__text h4,
+body.admin-view-mascot #form-mascot .mb-medal-cta__text p,
+body.admin-view-mascot #form-mascot .mb-medal-cta__text li {
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+body.admin-view-mascot #form-mascot .mb-medal-cta__price-amount {
+  color: #fff !important;
+  font-size: 22px !important;
+  font-weight: 700 !important;
+}
+
+body.admin-view-mascot #form-mascot .mb-medal-cta__price-sub {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+body.admin-view-mascot #form-mascot .mb-medal-cta__btn {
+  background: var(--mascot-accent) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  border-radius: 8px !important;
+  padding: 10px 20px !important;
+  border: none !important;
+}
+
+body.admin-view-mascot #form-mascot .mb-medal-cta__btn:hover {
+  filter: brightness(1.06) !important;
+}
+
+body.admin-view-mascot #form-mascot .mb-medal-cta__badge {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #4f46e5 !important;
+}
+
+/* —— Sidebar perfiles (panel contenido) —— */
+body.admin-view-mascot .ec-sidebar-mis-perfiles {
+  background: #fff !important;
+  border: 1px solid var(--mascot-neutral-200) !important;
+  border-radius: 12px !important;
+}
+
+body.admin-view-mascot .ec-sidebar-mis-perfiles__title {
+  color: var(--mascot-neutral-900) !important;
+}
+
+body.admin-view-mascot .ec-sidebar-mis-perfiles__btn--active {
+  background: var(--mascot-primary-light) !important;
+  color: var(--mascot-primary) !important;
+}
+
+/* —— Galería · grid —— */
+body.admin-view-mascot #m-gallery-slots.m-gallery-slots {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  margin-top: 0.75rem !important;
+}
+
+@media (max-width: 900px) {
+  body.admin-view-mascot #m-gallery-slots.m-gallery-slots {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  body.admin-view-mascot #m-gallery-slots.m-gallery-slots {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+body.admin-view-mascot #m-gallery-slots .m-gallery-slot--tile {
+  position: relative;
+  min-width: 0;
+}
+
+body.admin-view-mascot #m-gallery-slots .m-gallery-slot-tile {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  border: 2px dashed var(--mascot-neutral-200);
+  background: var(--mascot-neutral-50);
+  overflow: hidden;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+body.admin-view-mascot #m-gallery-slots .m-gallery-slot--has-image .m-gallery-slot-tile {
+  border-style: solid;
+  border-color: var(--mascot-neutral-200);
+  background: #000;
+}
+
+body.admin-view-mascot #m-gallery-slots .m-gallery-slot-preview {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  z-index: 1;
+}
+
+body.admin-view-mascot #m-gallery-slots .m-gallery-slot-empty {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--mascot-neutral-700);
+  font-family: "DM Sans", sans-serif !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  pointer-events: none;
+}
+
+body.admin-view-mascot #m-gallery-slots .m-gallery-slot-empty i {
+  font-size: 1.35rem;
+  opacity: 0.65;
+}
+
+body.admin-view-mascot #m-gallery-slots .m-gallery-slot--has-image .m-gallery-slot-empty {
+  opacity: 0;
+}
+
+body.admin-view-mascot #m-gallery-slots .m-gallery-slot-hit {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  cursor: pointer;
+  margin: 0;
+}
+
+body.admin-view-mascot #m-gallery-slots .m-gallery-slot-delete--floating {
+  position: absolute !important;
+  top: 8px;
+  right: 8px;
+  z-index: 4;
+  width: 34px !important;
+  height: 34px !important;
+  min-height: 34px !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid var(--mascot-danger) !important;
+  color: var(--mascot-danger) !important;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+body.admin-view-mascot #m-gallery-slots .m-gallery-slot--has-image:hover .m-gallery-slot-delete--floating:not(:disabled) {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+body.admin-view-mascot #m-gallery-slots .m-gallery-slot-delete--floating:not(:disabled):hover {
+  background: var(--mascot-danger) !important;
+  color: #fff !important;
+}
+
+body.admin-view-mascot #m-gallery-slots .m-gallery-slot-badge {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  z-index: 4;
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--mascot-neutral-700);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-family: "DM Mono", monospace !important;
+  pointer-events: none;
+}
+
+body.admin-view-mascot #m-gallery-slots .m-gallery-slot--has-image .m-gallery-slot-badge {
+  color: #fff;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+/* Upload compactos perfil/banner (lista superior) */
+body.admin-view-mascot #form-mascot .compact-image-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+body.admin-view-mascot #form-mascot .compact-image-item .m-gallery-slot-row {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Lost pills */
+body.admin-view-mascot #form-mascot .mb-lost-status-pill--safe {
+  color: var(--mascot-success) !important;
+}
+
+body.admin-view-mascot #form-mascot .mb-lost-status-pill--lost {
+  color: var(--mascot-danger) !important;
+}
+
+/* Preview column legibilidad */
+body.admin-view-mascot .preview-col {
+  background: var(--mascot-neutral-50) !important;
+}

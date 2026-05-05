@@ -38,6 +38,7 @@
     <link rel="stylesheet" href="mascot-themes.css" id="ec-link-mascot-themes" />
     <link rel="stylesheet" href="mascot-book-pro.css" id="ec-link-mascot-book-pro" />
     <link rel="stylesheet" href="admin-elite.css" id="ec-link-admin-elite" />
+    <link rel="stylesheet" href="mascot-dashboard.css" id="ec-link-mascot-dashboard" />
     <link rel="stylesheet" href="styles.css?v=6.0" id="ec-link-styles-mascot" />
     <script>
       (function () {
@@ -46,9 +47,11 @@
         var a = document.getElementById("ec-link-mascot-themes");
         var c = document.getElementById("ec-link-mascot-book-pro");
         var b = document.getElementById("ec-link-admin-elite");
+        var md = document.getElementById("ec-link-mascot-dashboard");
         if (a) a.href = "mascot-themes.css?v=" + vCss;
         if (c) c.href = "mascot-book-pro.css?v=" + vCss;
         if (b) b.href = "admin-elite.css?v=" + vCss;
+        if (md) md.href = "mascot-dashboard.css?v=" + vCss;
         var s = document.getElementById("ec-link-styles-mascot");
         if (s) s.href = "styles.css?v=" + vCss;
       })();
@@ -748,15 +751,24 @@
               </button>
             </div>
 
-            <div class="mb-work-tabs" role="tablist" aria-label="Secciones MascotBook">
-              <button type="button" class="mb-tab-btn active" data-mb-tab="identidad" role="tab">Identidad</button>
-              <button type="button" class="mb-tab-btn" data-mb-tab="salud" role="tab">Salud</button>
-              <button type="button" class="mb-tab-btn" data-mb-tab="seguridad" role="tab">Seguridad y contacto</button>
-            </div>
-
+            <div class="mascot-tab-container">
+              <div class="mascot-tabs mb-work-tabs" role="tablist" aria-label="Secciones MascotBook">
+                <button type="button" class="mb-tab-btn active" data-mb-tab="contenido" role="tab" aria-selected="true">
+                  Contenido
+                </button>
+                <button type="button" class="mb-tab-btn" data-mb-tab="salud" role="tab" aria-selected="false">Salud</button>
+                <button type="button" class="mb-tab-btn" data-mb-tab="seguridad" role="tab" aria-selected="false">Seguridad</button>
+                <button type="button" class="mb-tab-btn" data-mb-tab="contacto" role="tab" aria-selected="false">Contacto</button>
+              </div>
+              <div class="mascot-tab-panels">
             <div class="mascot-form-workspace">
               <div class="mascot-form-main">
-                <section class="mascot-panel-card mascot-panel-card--identity" data-mb-tab-panel="identidad" aria-labelledby="mb-card-id-title">
+                <section
+                  id="mb-tab-contenido"
+                  class="mascot-panel-card mascot-panel-card--identity"
+                  data-mb-tab-panel="contenido"
+                  aria-labelledby="mb-card-id-title"
+                >
                   <h3 id="mb-card-id-title" class="mascot-panel-card__title">
                     <i class="fa-solid fa-id-card" aria-hidden="true"></i> Identidad básica
                   </h3>
@@ -801,7 +813,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="field-grid field-grid--three">
+                  <div class="mascot-field-row--2">
                     <div class="field">
                       <label for="m-nombre">Nombre mascota</label>
                       <input id="m-nombre" type="text" autocomplete="off" placeholder="Ej. Luna" />
@@ -810,10 +822,10 @@
                       <label for="m-raza">Raza</label>
                       <input id="m-raza" type="text" placeholder="Ej. mestizo, caniche toy, golden…" />
                     </div>
-                    <div class="field">
-                      <label for="m-sexo">Sexo</label>
-                      <input id="m-sexo" type="text" placeholder="macho, hembra o cómo preferís indicarlo" />
-                    </div>
+                  </div>
+                  <div class="field">
+                    <label for="m-sexo">Sexo</label>
+                    <input id="m-sexo" type="text" placeholder="macho, hembra o cómo preferís indicarlo" />
                   </div>
                   <h4 id="mb-card-story-title" class="mascot-panel-card__subtitle mascot-panel-card__subtitle--spaced">
                     <i class="fa-solid fa-pen-nib" aria-hidden="true"></i> Historia y muro
@@ -856,7 +868,12 @@
               </div>
 
               <aside class="mascot-security-aside mascot-form-side" aria-label="Columna salud MascotBook">
-                <section class="mascot-panel-card mascot-panel-card--security" data-mb-tab-panel="seguridad" aria-labelledby="mb-card-security-title">
+                <section
+                  id="mb-tab-seguridad"
+                  class="mascot-panel-card mascot-panel-card--security"
+                  data-mb-tab-panel="seguridad"
+                  aria-labelledby="mb-card-security-title"
+                >
                   <h4 class="mascot-panel-card__subtitle"><i class="fa-solid fa-user" aria-hidden="true"></i> Datos del dueño</h4>
                   <p class="mascot-panel-card__hint mascot-panel-card__hint--tight">
                     Datos clave de rescate: se muestran en la tarjeta pública encima del veterinario.
@@ -915,6 +932,7 @@
                 </section>
 
                 <section
+                  id="mb-tab-salud"
                   class="mascot-panel-card mascot-panel-card--health"
                   data-mb-tab-panel="salud"
                   data-mb-pro-gate="health"
@@ -989,7 +1007,7 @@
                   </div>
                 </section>
 
-                <section class="mascot-panel-card" data-mb-tab-panel="seguridad" aria-labelledby="mb-card-contact-title">
+                <section id="mb-tab-contacto" class="mascot-panel-card" data-mb-tab-panel="contacto" aria-labelledby="mb-card-contact-title">
                   <h3 id="mb-card-contact-title" class="mascot-panel-card__title">
                     <i class="fa-solid fa-address-book" aria-hidden="true"></i> Canales de contacto
                   </h3>
@@ -1002,6 +1020,8 @@
                 </section>
 
               </aside>
+            </div>
+              </div>
             </div>
 
             <div class="mascot-danger-zone admin-card" id="mascot-danger-zone">
@@ -1637,7 +1657,7 @@
         /** Vista principal: selector de producto o formularios. */
         var activePanel = "dashboard";
         var currentPersonalTab = "identidad";
-        var currentMascotTab = "identidad";
+        var currentMascotTab = "contenido";
         var currentTexture = "elite";
         var currentMascotProTheme = "classic_paws";
         var currentMascotSurfaceTheme = "cloud_cream";
@@ -2055,7 +2075,7 @@
               }, 100);
               if (opts.showToastOk !== false) showToast("Nuevo perfil creado", true);
               try {
-                setMascotTab("identidad");
+                setMascotTab("contenido");
               } catch (eTab) {}
               if (opts.focusNombre) {
                 var mn = document.getElementById("m-nombre");
@@ -4509,11 +4529,16 @@
         }
 
         function setMascotTab(tab) {
-          var next = tab === "salud" || tab === "seguridad" ? tab : "identidad";
+          var allowed = { contenido: 1, salud: 1, seguridad: 1, contacto: 1 };
+          var next = allowed[tab] ? tab : "contenido";
           var prevMascotTab = currentMascotTab;
           currentMascotTab = next;
           document.querySelectorAll(".mb-tab-btn[data-mb-tab]").forEach(function (btn) {
-            btn.classList.toggle("active", btn.getAttribute("data-mb-tab") === next);
+            var on = btn.getAttribute("data-mb-tab") === next;
+            btn.classList.toggle("active", on);
+            try {
+              btn.setAttribute("aria-selected", on ? "true" : "false");
+            } catch (eAria) {}
           });
           document.querySelectorAll("#form-mascot [data-mb-tab-panel]").forEach(function (panel) {
             panel.classList.toggle("mb-tab-panel-hidden", panel.getAttribute("data-mb-tab-panel") !== next);
@@ -5095,12 +5120,16 @@
           }
           adminRoot.classList.remove("view-personal", "view-mascot");
           adminRoot.classList.add(currentApp === "mascotbook" ? "view-mascot" : "view-personal");
+          try {
+            document.body.classList.toggle("admin-view-mascot", currentApp === "mascotbook");
+            document.body.classList.toggle("admin-view-personal", currentApp === "personal");
+          } catch (eBodyCls) {}
           formPersonal.classList.toggle("hidden", currentApp !== "personal");
           formMascot.classList.toggle("hidden", currentApp !== "mascotbook");
           updateThemePanelVisibility();
           updateMascotMultiUiChrome();
           if (currentApp === "personal") setPersonalTab(currentPersonalTab || "identidad");
-          if (currentApp === "mascotbook") setMascotTab(currentMascotTab || "identidad");
+          if (currentApp === "mascotbook") setMascotTab(currentMascotTab || "contenido");
           bindFirestore();
           if (uid && currentApp === "mascotbook" && !demoModeActive) {
             try {
@@ -5765,30 +5794,35 @@
 
         function ensureMascotGallerySlotUi() {
           var host = document.getElementById("m-gallery-slots");
-          if (!host || host.getAttribute("data-gallery-ui") === "row-v2") return;
+          if (!host || host.getAttribute("data-gallery-ui") === "grid-v3") return;
           host.innerHTML = "";
-          host.setAttribute("data-gallery-ui", "row-v2");
+          host.setAttribute("data-gallery-ui", "grid-v3");
           var frag = document.createDocumentFragment();
           for (var i = 0; i < MAX_MASCOT_GALLERY_SLOTS; i++) {
             var item = document.createElement("div");
-            item.className = "m-gallery-slot";
+            item.className = "m-gallery-slot m-gallery-slot--tile";
             item.setAttribute("data-slot-idx", String(i));
             item.innerHTML =
-              '<div class="m-gallery-slot-row">' +
-              '<span class="m-gallery-slot-idx">' +
+              '<div class="m-gallery-slot-tile">' +
+              '<div class="m-gallery-slot-preview" aria-hidden="true"></div>' +
+              '<div class="m-gallery-slot-empty">' +
+              '<i class="fa-solid fa-camera" aria-hidden="true"></i>' +
+              "<span>Agregar foto</span>" +
+              "</div>" +
+              '<label class="m-gallery-slot-hit m-gallery-slot-change">' +
+              '<input type="file" class="file-input-hidden m-gallery-slot-input" accept="image/*" />' +
+              '<span class="visually-hidden">Elegir imagen para el slot ' +
               (i + 1) +
               "</span>" +
-              '<label class="file-upload-box file-upload-box--compact file-upload-box--slot m-gallery-slot-change">' +
-              '<i class="fa-solid fa-upload" aria-hidden="true"></i><span>Subir</span>' +
-              '<input type="file" class="file-input-hidden m-gallery-slot-input" accept="image/*" />' +
               "</label>" +
-              '<div class="m-gallery-slot-filename-wrap">' +
-              '<span class="m-gallery-slot-filename">Sin foto</span>' +
-              "</div>" +
-              '<button type="button" class="btn-outline m-gallery-slot-delete" disabled aria-label="Eliminar foto">' +
+              '<button type="button" class="btn-outline m-gallery-slot-delete m-gallery-slot-delete--floating" disabled aria-label="Eliminar foto">' +
               '<i class="fa-solid fa-trash-can" aria-hidden="true"></i>' +
               "</button>" +
-              "</div>";
+              '<span class="m-gallery-slot-badge" aria-hidden="true">' +
+              (i + 1) +
+              "</span>" +
+              "</div>" +
+              '<span class="m-gallery-slot-filename visually-hidden" aria-live="polite">Sin foto</span>';
             frag.appendChild(item);
           }
           host.appendChild(frag);
@@ -5817,6 +5851,17 @@
             var fnEl = slot.querySelector(".m-gallery-slot-filename");
             var del = slot.querySelector(".m-gallery-slot-delete");
             var inp = slot.querySelector(".m-gallery-slot-input");
+            var pv = slot.querySelector(".m-gallery-slot-preview");
+            try {
+              slot.classList.toggle("m-gallery-slot--has-image", !!url);
+              if (pv) {
+                if (url) {
+                  pv.style.backgroundImage = 'url("' + String(url).replace(/\\/g, "/").replace(/"/g, '\\"') + '")';
+                } else {
+                  pv.style.backgroundImage = "";
+                }
+              }
+            } catch (ePv) {}
             if (fnEl) {
               if (url) {
                 var disp = "Imagen";
@@ -8142,7 +8187,7 @@
 
         document.querySelectorAll(".mb-tab-btn[data-mb-tab]").forEach(function (btn) {
           btn.addEventListener("click", function () {
-            setMascotTab(btn.getAttribute("data-mb-tab") || "identidad");
+            setMascotTab(btn.getAttribute("data-mb-tab") || "contenido");
           });
         });
 
@@ -8154,7 +8199,7 @@
 
         ensureMascotGallerySlotUi();
         renderMascotGallerySlots();
-        setMascotTab("identidad");
+        setMascotTab("contenido");
         setPersonalTab("identidad");
 
         var navTabConfig = document.getElementById("nav-tab-config");
