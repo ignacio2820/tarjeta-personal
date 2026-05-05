@@ -2249,19 +2249,21 @@ details.vcf-details summary {
   width: 100%;
   max-width: 13.75rem;
   height: auto;
+  aspect-ratio: 896 / 1195;
   object-fit: contain;
+  /* Borde suave en formato retrato (896×1195) */
   -webkit-mask-image: radial-gradient(
-    ellipse 82% 82% at 50% 50%,
-    #000 58%,
-    #000 82%,
-    rgba(0, 0, 0, 0.45) 92%,
+    ellipse 72% 78% at 50% 48%,
+    #000 52%,
+    #000 80%,
+    rgba(0, 0, 0, 0.42) 91%,
     transparent 100%
   );
   mask-image: radial-gradient(
-    ellipse 82% 82% at 50% 50%,
-    #000 58%,
-    #000 82%,
-    rgba(0, 0, 0, 0.45) 92%,
+    ellipse 72% 78% at 50% 48%,
+    #000 52%,
+    #000 80%,
+    rgba(0, 0, 0, 0.42) 91%,
     transparent 100%
   );
   filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 40px rgba(245, 158, 11, 0.14));
