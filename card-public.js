@@ -66,8 +66,8 @@
   function applyElitePreviewOverrides(p) {
     var oa = qs("ec_pa").toLowerCase();
     if (oa === "round" || oa === "rect") p.user_avatarShape = oa;
-    var ol = qs("ec_pl").toLowerCase();
-    if (ol === "list" || ol === "grid") p.user_buttonLayout = ol;
+    /* No pisar user_buttonLayout desde ec_pl: el iframe usa postMessage con datos frescos del dash;
+       si ec_pl queda desfasado del dropdown, la vista previa ignoraba el valor guardado/en vivo. */
     var ob = qs("ec_pb");
     if (ob) {
       try {
@@ -892,7 +892,9 @@
     root.classList.toggle("ec-avatar-round", avatarShape === "round" || avatarShape === "circle");
     var buttonLayout = String(p.user_buttonLayout || p.buttonLayout || "list").toLowerCase();
     if (buttonLayout !== "grid" && buttonLayout !== "icons") buttonLayout = "list";
-    root.classList.toggle("ec-buttons-grid", buttonLayout === "grid" || buttonLayout === "icons");
+    var isGridLayout = buttonLayout === "grid" || buttonLayout === "icons";
+    root.classList.toggle("ec-buttons-grid", isGridLayout);
+    root.classList.toggle("ec-buttons-list", buttonLayout === "list");
     var bg = String(p.user_bgColor || "#000000").trim();
     if (!/^#[0-9a-f]{6}$/i.test(bg) && !/^#[0-9a-f]{3}$/i.test(bg)) bg = "#000000";
     root.style.setProperty("--ec-user-bg", bg);

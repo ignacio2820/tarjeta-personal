@@ -50,7 +50,7 @@
 
   function qrImageUrl(cardUrl) {
     return (
-      "https://api.qrserver.com/v1/create-qr-code/?size=120x120&margin=3&color=000000&bgcolor=FFFFFF&data=" +
+      "https://api.qrserver.com/v1/create-qr-code/?size=100x100&margin=3&color=000000&bgcolor=FFFFFF&data=" +
       encodeURIComponent(String(cardUrl || "").trim())
     );
   }
@@ -208,26 +208,26 @@
     var logoAlt = escapeHtml(name || "Logo institucional");
 
     var inner =
-      '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">' +
+      '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;table-layout:fixed;width:100%;">' +
       "<tr>" +
-      '<td valign="top" style="vertical-align:top;padding:0 10px 0 0;">' +
+      '<td valign="top" width="78" style="vertical-align:top;padding:0 10px 0 0;width:78px;">' +
       '<img src="' +
       logoEsc +
       '" width="68" height="68" alt="' +
       logoAlt +
       '" style="display:block;width:68px;height:68px;border-radius:50%;object-fit:cover;border:1px solid #e2e8f0;" />' +
       "</td>" +
-      '<td valign="top" style="vertical-align:top;padding:0 0 0 12px;border-left:2px solid #0f172a;">' +
+      '<td valign="top" style="vertical-align:top;padding:0 0 0 12px;border-left:2px solid #0f172a;max-width:260px;overflow-wrap:break-word;word-wrap:break-word;">' +
       nameBlock +
       contactBlocks +
       "</td>" +
-      '<td valign="middle" align="right" style="vertical-align:middle;text-align:right;padding:8px 4px 8px 22px;white-space:nowrap;">' +
+      '<td valign="middle" align="right" width="108" style="vertical-align:middle;text-align:right;width:108px;padding:8px 0 8px 16px;white-space:nowrap;">' +
       '<a href="' +
       escapeAttr(cardUrlTrim) +
-      '" style="text-decoration:none;border:0;display:inline-block;padding:10px 10px 10px 14px;" title="Tarjeta digital">' +
+      '" style="text-decoration:none;border:0;display:inline-block;line-height:0;" title="Tarjeta digital">' +
       '<img src="' +
       qrSrc +
-      '" width="120" height="120" alt="QR EliteCard" style="display:block;width:120px;height:120px;max-width:120px;max-height:120px;border:0;object-fit:contain;" />' +
+      '" width="100" height="100" alt="QR EliteCard" style="display:block;width:100px;height:100px;max-width:100px;max-height:100px;border:0;object-fit:contain;" />' +
       "</a>" +
       "</td>" +
       "</tr>" +

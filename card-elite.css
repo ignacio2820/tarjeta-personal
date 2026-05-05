@@ -168,17 +168,26 @@
   gap: 0.58rem;
 }
 
+/* Lista larga: columna única · Grid: solo con .ec-buttons-grid en #layout-elite */
 .elite-shell .ec-actions {
   margin-top: 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.5rem;
-  width: 100%;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch;
+  width: 100% !important;
+  gap: 0.58rem;
   box-sizing: border-box;
 }
 
+.elite-shell.ec-buttons-grid .ec-actions {
+  display: grid !important;
+  flex-direction: unset !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
 @media (max-width: 380px) {
-  .elite-shell .ec-actions {
+  .elite-shell.ec-buttons-grid .ec-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -293,8 +302,8 @@
   background: rgba(255, 255, 255, 0.06);
 }
 
-/* Botones de contacto en grilla compacta (siempre): icono grande, texto breve */
-.elite-shell.elite-ghost .ec-actions .ec-btn {
+/* Grilla compacta (solo modo grid): icono grande, texto breve */
+.elite-shell.ec-buttons-grid.elite-ghost .ec-actions .ec-btn {
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -305,13 +314,13 @@
   font-size: 0.7rem;
 }
 
-.elite-shell.elite-ghost .ec-actions .ec-btn .ec-btn-icon {
+.elite-shell.ec-buttons-grid.elite-ghost .ec-actions .ec-btn .ec-btn-icon {
   width: 2.8rem;
   height: 2.8rem;
   font-size: 1.14rem;
 }
 
-.elite-shell.elite-ghost .ec-actions .ec-btn .ec-btn-text {
+.elite-shell.ec-buttons-grid.elite-ghost .ec-actions .ec-btn .ec-btn-text {
   flex: 0 1 auto;
   font-size: 0.62rem;
   line-height: 1.12;
@@ -487,16 +496,24 @@
   line-height: 1.45;
   color: rgba(255, 255, 255, 0.92);
   text-align: left;
-  overflow-x: auto;
+  overflow-x: visible;
 }
 
 .elite-shell .ec-mail-sig-preview .ec-elite-mail-sig img[alt="QR EliteCard"] {
-  aspect-ratio: 1 / 1;
+  flex-shrink: 0 !important;
+  aspect-ratio: 1 / 1 !important;
   object-fit: contain;
-  width: 120px;
-  height: 120px;
-  max-width: min(120px, 100%);
+  width: 100px !important;
+  height: 100px !important;
+  max-width: 100px !important;
+  max-height: 100px !important;
   box-sizing: border-box;
+}
+
+.elite-shell .ec-mail-sig-preview .ec-elite-mail-sig table > tbody > tr > td:nth-child(2) {
+  max-width: 260px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .elite-shell .ec-mail-sig-preview .ec-elite-mail-sig {
@@ -804,20 +821,20 @@
   }
 }
 
-/* Vista previa admin: botones más táctiles */
-.elite-shell.ec-admin-preview.elite-ghost .ec-actions .ec-btn {
+/* Vista previa admin: refuerzo solo en modo grilla */
+.elite-shell.ec-admin-preview.ec-buttons-grid.elite-ghost .ec-actions .ec-btn {
   min-height: 3.65rem;
   padding: 0.38rem 0.32rem;
   font-size: 0.72rem;
 }
 
-.elite-shell.ec-admin-preview .ec-actions .ec-btn .ec-btn-icon {
+.elite-shell.ec-admin-preview.ec-buttons-grid .ec-actions .ec-btn .ec-btn-icon {
   width: 2.65rem;
   height: 2.65rem;
   font-size: 1.08rem;
 }
 
-.elite-shell.ec-admin-preview .ec-actions .ec-btn .ec-btn-text {
+.elite-shell.ec-admin-preview.ec-buttons-grid .ec-actions .ec-btn .ec-btn-text {
   font-size: 0.6rem;
 }
 
