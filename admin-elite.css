@@ -1398,6 +1398,12 @@ details.vcf-details summary {
   max-width: 100%;
 }
 
+.admin-sig-preview .ec-elite-mail-sig > tbody > tr > td > table > tbody > tr > td:nth-child(2) {
+  max-width: min(100%, 420px);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
 .admin-sig-preview .ec-elite-mail-sig img[alt="QR EliteCard"] {
   flex-shrink: 0 !important;
   aspect-ratio: 1 / 1 !important;
