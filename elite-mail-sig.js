@@ -137,7 +137,7 @@
   }
 
   /**
-   * Firma HTML: logo circular | borde izquierdo (divisor) + datos | QR arriba alineado con el nombre.
+   * Firma HTML: columna izquierda (logo + QR apilados) | datos personales con divisor vertical.
    */
   function buildEliteMailSigHtml(p, cardUrl) {
     var origin = baseOriginFromCardUrl(cardUrl);
@@ -207,21 +207,19 @@
     var logoEsc = escapeHtml(logoSrc);
     var logoAlt = escapeHtml(name || "Logo institucional");
 
-    var inner =
-      '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;table-layout:fixed;width:100%;">' +
+    var logoStack =
+      '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;width:100px;">' +
       "<tr>" +
-      '<td valign="top" width="78" style="vertical-align:top;padding:0 10px 0 0;width:78px;">' +
+      '<td align="center" style="padding:0 0 14px 0;vertical-align:top;">' +
       '<img src="' +
       logoEsc +
       '" width="68" height="68" alt="' +
       logoAlt +
-      '" style="display:block;width:68px;height:68px;border-radius:50%;object-fit:cover;border:1px solid #e2e8f0;" />' +
+      '" style="display:block;margin:0 auto;width:68px;height:68px;border-radius:50%;object-fit:cover;border:1px solid #e2e8f0;" />' +
       "</td>" +
-      '<td valign="top" style="vertical-align:top;padding:0 0 0 12px;border-left:2px solid #0f172a;max-width:260px;overflow-wrap:break-word;word-wrap:break-word;">' +
-      nameBlock +
-      contactBlocks +
-      "</td>" +
-      '<td valign="middle" align="right" width="108" style="vertical-align:middle;text-align:right;width:108px;padding:8px 0 8px 16px;white-space:nowrap;">' +
+      "</tr>" +
+      "<tr>" +
+      '<td align="center" style="padding:0;vertical-align:top;line-height:0;">' +
       '<a href="' +
       escapeAttr(cardUrlTrim) +
       '" style="text-decoration:none;border:0;display:inline-block;line-height:0;" title="Tarjeta digital">' +
@@ -229,6 +227,19 @@
       qrSrc +
       '" width="100" height="100" alt="QR EliteCard" style="display:block;width:100px;height:100px;max-width:100px;max-height:100px;border:0;object-fit:contain;" />' +
       "</a>" +
+      "</td>" +
+      "</tr>" +
+      "</table>";
+
+    var inner =
+      '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;table-layout:fixed;width:100%;">' +
+      "<tr>" +
+      '<td valign="top" width="112" style="vertical-align:top;width:112px;padding:0 16px 0 0;">' +
+      logoStack +
+      "</td>" +
+      '<td valign="top" style="vertical-align:top;padding:2px 0 0 0;border-left:2px solid #0f172a;padding-left:16px;overflow-wrap:break-word;word-wrap:break-word;">' +
+      nameBlock +
+      contactBlocks +
       "</td>" +
       "</tr>" +
       "</table>";

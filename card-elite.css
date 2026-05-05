@@ -510,8 +510,18 @@
   box-sizing: border-box;
 }
 
-.elite-shell .ec-mail-sig-preview .ec-elite-mail-sig table > tbody > tr > td:nth-child(2) {
-  max-width: 260px;
+/* Columna de texto principal (no filas internas de iconos de contacto) */
+.elite-shell
+  .ec-mail-sig-preview
+  .ec-elite-mail-sig
+  > tbody
+  > tr
+  > td
+  > table
+  > tbody
+  > tr
+  > td:nth-child(2) {
+  max-width: min(100%, 420px);
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
